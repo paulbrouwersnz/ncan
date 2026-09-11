@@ -1325,6 +1325,357 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 .contact-card p { font-size: .94rem; color: var(--text-soft); }
 .contact-card a { font-weight: 600; }
 
+/* =========================================================
+   Committee page
+   ========================================================= */
+
+.page-head {
+  background: var(--green-800);
+  color: var(--text-on-dark);
+  padding-block: clamp(2.5rem, 6vw, 4.5rem);
+}
+.page-head h1 {
+  color: var(--white);
+  font-size: clamp(2.1rem, 4.5vw, 3.4rem);
+  margin-bottom: .5em;
+}
+.page-head .lede { color: var(--text-on-dark); max-width: 62ch; }
+.page-head .btn-row { margin-top: 2rem; }
+
+.breadcrumb {
+  margin-bottom: 1.5rem;
+  font-size: .85rem;
+  color: rgba(255, 255, 255, .6);
+}
+.breadcrumb a { color: rgba(255, 255, 255, .8); text-decoration: none; }
+.breadcrumb a:hover { color: var(--yellow-500); }
+.breadcrumb span[aria-hidden] { padding-inline: .4rem; }
+
+/* ---------- Committee members ---------- */
+.people {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: clamp(1rem, 2vw, 1.5rem);
+}
+.person {
+  display: flex;
+  flex-direction: column;
+  gap: .35rem;
+  padding: 1.4rem;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-top: 4px solid var(--yellow-500);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  transition: transform .2s var(--ease), box-shadow .2s var(--ease);
+}
+.person:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+.person__role {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--green-600);
+}
+.person__name { margin: 0; font-size: 1.15rem; }
+.person__note { margin: .2rem 0 0; font-size: .92rem; color: var(--text-soft); }
+.person__contact {
+  margin-top: auto;
+  padding-top: .9rem;
+  font-size: .88rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+/* ---------- Document lists ---------- */
+.doc-list { display: grid; gap: .75rem; }
+.doc {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.1rem 1.35rem;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--green-600);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
+  transition: transform .18s var(--ease), box-shadow .18s var(--ease), border-color .18s var(--ease);
+}
+.doc:hover { transform: translateX(3px); box-shadow: var(--shadow); border-left-color: var(--yellow-500); }
+.doc__body { min-width: 0; }
+.doc__title { margin: 0; font-size: 1.05rem; }
+.doc__title a { text-decoration: none; }
+.doc__title a:hover { text-decoration: underline; }
+.doc__meta { margin: .25rem 0 0; font-size: .88rem; color: var(--text-soft); }
+.doc__type {
+  flex: 0 0 auto;
+  padding: .2rem .55rem;
+  background: var(--green-100);
+  color: var(--green-700);
+  border-radius: 5px;
+  font-family: var(--font-display);
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+}
+
+/* ---------- AGM papers ---------- */
+.agm-list { display: grid; gap: clamp(.85rem, 1.5vw, 1.15rem); }
+.agm {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  gap: 1rem clamp(1.5rem, 3vw, 2.5rem);
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+}
+.agm__year h3 { margin: 0; font-size: 1.25rem; }
+.agm__when { margin: .2rem 0 0; font-size: .85rem; color: var(--text-soft); }
+.agm__docs { display: grid; gap: .5rem; }
+.agm__docs li { display: flex; align-items: center; gap: .6rem; }
+.agm__docs a { font-weight: 600; font-size: .95rem; }
+
+
+/* older AGMs, folded away behind a native <details> - no JS needed */
+.agm-more { margin-top: 1.25rem; }
+.agm-more > summary {
+  display: flex;
+  align-items: center;
+  gap: .7rem;
+  width: fit-content;
+  padding: .8rem 1.4rem;
+  background: transparent;
+  color: var(--green-800);
+  border: 2px solid var(--line-strong);
+  border-radius: 999px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: .95rem;
+  cursor: pointer;
+  list-style: none;
+  transition: background .16s var(--ease), color .16s var(--ease), border-color .16s var(--ease);
+}
+.agm-more > summary::-webkit-details-marker { display: none; }   /* Safari */
+.agm-more > summary::marker { content: ""; }
+.agm-more > summary:hover {
+  background: var(--green-800);
+  color: var(--white);
+  border-color: var(--green-800);
+}
+.agm-more > summary:focus-visible {
+  outline: 3px solid var(--yellow-500);
+  outline-offset: 3px;
+}
+.agm-more__meta {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: .85rem;
+  opacity: .75;
+}
+.agm-more__chev {                       /* CSS chevron, no image */
+  width: 9px; height: 9px;
+  margin-left: .1rem;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: translateY(-2px) rotate(45deg);
+  transition: transform .2s var(--ease);
+}
+.agm-more[open] > summary .agm-more__chev { transform: translateY(1px) rotate(-135deg); }
+.agm-more[open] > summary { margin-bottom: 1.25rem; }
+/* `.agm-list` sets display:grid, which would override the UA stylesheet's
+   display:none for closed <details> content - so hide it explicitly. */
+.agm-more:not([open]) .agm-list--earlier { display: none; }
+.agm-list--earlier .agm { background: var(--green-050); }
+
+@media (max-width: 720px) {
+  .agm-more > summary { width: 100%; justify-content: center; flex-wrap: wrap; }
+}
+
+@media (max-width: 720px) {
+  .agm { grid-template-columns: 1fr; align-items: start; }
+  .doc { flex-direction: column; align-items: flex-start; gap: .6rem; }
+}
+
+/* =========================================================
+   History page
+   ========================================================= */
+
+/* key facts, as a definition list */
+.facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: clamp(1rem, 2vw, 1.5rem);
+  margin: 0;
+}
+.fact {
+  padding: 1.3rem 1.4rem;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--green-600);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
+}
+.fact dt {
+  font-family: var(--font-display);
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--green-600);
+}
+.fact dd { margin: .4rem 0 0; font-size: .96rem; color: var(--text-soft); }
+
+/* honours board */
+.honours {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: clamp(1rem, 2vw, 1.4rem);
+}
+.honour {
+  padding: 1.25rem 1.35rem;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-top: 4px solid var(--yellow-500);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+}
+.honour h3 { margin: 0 0 .3em; font-size: 1.08rem; }
+.honour p { margin: 0; font-size: .93rem; color: var(--text-soft); }
+
+/* season-by-season timeline */
+.timeline {
+  position: relative;
+  display: grid;
+  gap: clamp(1.5rem, 3vw, 2.25rem);
+  margin: 0;
+  padding: 0 0 0 clamp(1.25rem, 3vw, 2rem);
+  list-style: none;
+  border-left: 2px solid var(--line);
+}
+.timeline__item {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 8rem) minmax(0, 1fr);
+  gap: .5rem clamp(1.25rem, 3vw, 2.5rem);
+  align-items: start;
+}
+.timeline__item::before {              /* node on the spine */
+  content: "";
+  position: absolute;
+  left: calc(-1 * clamp(1.25rem, 3vw, 2rem) - 7px);
+  top: .45rem;
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: var(--yellow-500);
+  border: 2px solid var(--white);
+  box-shadow: 0 0 0 2px var(--line);
+}
+.timeline__year {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--green-800);
+  letter-spacing: -.01em;
+}
+.timeline__body p { font-size: .97rem; color: var(--text-soft); }
+.timeline__body p:last-child { margin-bottom: 0; }
+
+@media (max-width: 720px) {
+  .timeline__item { grid-template-columns: 1fr; }
+  .timeline__year { font-size: 1rem; }
+}
+
+/* =========================================================
+   Gallery page - albums
+   ========================================================= */
+
+.album-nav { margin-bottom: clamp(2rem, 4vw, 3rem); }
+.album-nav ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .6rem;
+}
+.album-nav a {
+  display: inline-flex;
+  align-items: baseline;
+  gap: .45rem;
+  padding: .5rem 1rem;
+  background: var(--white);
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  color: var(--green-800);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: .88rem;
+  text-decoration: none;
+  transition: background .16s var(--ease), color .16s var(--ease), border-color .16s var(--ease);
+}
+.album-nav a span {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: .78rem;
+  opacity: .65;
+}
+.album-nav a:hover {
+  background: var(--green-800);
+  color: var(--white);
+  border-color: var(--green-800);
+}
+
+.album { margin-bottom: clamp(2.5rem, 5vw, 4rem); scroll-margin-top: 96px; }
+.album:last-of-type { margin-bottom: 0; }
+.album__head {
+  display: flex;
+  align-items: baseline;
+  gap: .9rem;
+  padding-bottom: .7rem;
+  margin-bottom: clamp(1rem, 2vw, 1.4rem);
+  border-bottom: 2px solid var(--line);
+}
+.album__head h2 { margin: 0; font-size: clamp(1.4rem, 2.2vw, 1.8rem); }
+.album__count {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: .78rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--green-600);
+}
+
+.album__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: clamp(.6rem, 1.2vw, 1rem);
+}
+.album__item { margin: 0; }
+.album__item a {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  background: var(--green-050);
+}
+.album__item img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  transition: transform .35s var(--ease);
+}
+.album__item a:hover img { transform: scale(1.05); }
+.album__item a:focus-visible { outline: 3px solid var(--yellow-500); outline-offset: 3px; }
+
+@media (max-width: 520px) {
+  .album__grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+}
+
 /* ---------- Footer ---------- */
 .site-footer {
   background: var(--green-900);
