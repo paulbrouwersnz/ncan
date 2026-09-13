@@ -15,14 +15,33 @@ Links in the partials are written as if from a page other than the home page
 plain anchors (#training) so in-page links do not reload the page. The nav link
 matching the page being written gets aria-current="page".
 """
-import io, os, re, sys
+import io, os, re, sys, time
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PARTIALS = ('header', 'footer')
 
 
+ATTEMPTS = 5
+
+
+def retry(action, attempts=ATTEMPTS):
+    """Run an action that touches a file, giving a transient lock time to clear.
+
+    On Windows an editor, sync client or virus scanner can hold a file open for
+    a moment, which surfaces here as EACCES or EINVAL. Retrying briefly turns a
+    hard failure into a pause.
+    """
+    for attempt in range(attempts):
+        try:
+            return action()
+        except OSError:
+            if attempt == attempts - 1:
+                raise
+            time.sleep(0.2 * (attempt + 1))
+
+
 def read(path):
-    return io.open(path, encoding='utf-8').read()
+    return retry(lambda: io.open(path, encoding='utf-8').read())
 
 
 def localise(markup, page):
@@ -42,6 +61,24 @@ def localise(markup, page):
     pattern = r'(<li><a href="%s")' % re.escape(page)
     markup = re.sub(pattern, r'\1 aria-current="page"', markup)
     return markup
+
+
+def write_atomic(path, text, attempts=ATTEMPTS):
+    """Replace a file in one step, retrying a briefly locked target.
+
+    A direct open(path, 'w') truncates before it writes, so a failure midway
+    leaves a half-written page. Windows also raises EINVAL/EACCES here when an
+    editor or scanner momentarily holds the file, which has bitten this script
+    mid-run and left some pages synced and others not.
+    """
+    tmp = path + '.tmp'
+    with io.open(tmp, 'w', encoding='utf-8', newline='') as fh:
+        fh.write(text)
+    try:
+        retry(lambda: os.replace(tmp, path), attempts)
+    except OSError:
+        os.remove(tmp)
+        raise
 
 
 def sync(page_path):
@@ -67,7 +104,7 @@ def sync(page_path):
             changed.append(name)
 
     if changed:
-        io.open(page_path, 'w', encoding='utf-8', newline='').write(html)
+        write_atomic(page_path, html)
     print('   %s: %s' % (page, ', '.join(changed) if changed else 'already up to date'))
     return bool(changed)
 
@@ -77,8 +114,22 @@ def main():
              if f.endswith('.html')]
     print('syncing partials into %d page(s):' % len(pages))
     any_changed = False
+    failed = []
     for p in pages:
-        any_changed |= sync(p)
+        # a page we cannot read or write is reported and skipped - stopping here
+        # would leave some pages synced and the rest stale, which is worse
+        try:
+            any_changed |= sync(p)
+        except OSError as err:
+            failed.append(os.path.basename(p))
+            print('   ! %s: %s' % (os.path.basename(p), err))
+
+    if failed:
+        print('done, but %d page(s) were not synced: %s'
+              % (len(failed), ', '.join(failed)))
+        print('nothing was half-written - run again once they are free.')
+        return 1
+
     print('done.')
     return 0
 

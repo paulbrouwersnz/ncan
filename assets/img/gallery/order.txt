@@ -1,0 +1,43 @@
+# Album order for gallery.html - one album folder per line, top to bottom.
+# Lines starting with # are ignored.
+#
+# The single * marks where albums that are NOT listed here go, keeping the
+# automatic order (newest year first) among themselves. It sits at the top so
+# a newly added folder shows up first; move it lower, or delete it, to send
+# new albums further down. With no * at all they go last.
+#
+# Rewrite this file from the current order with:
+#     python tools/build-gallery.py --write-order
+
+*
+
+2026/Colgate Games/Day 3
+2026/Colgate Games/Day 2
+2026/Colgate Games/Day 1
+2025/Colgate Games/Day 3
+2025/Colgate Games/Day 2
+2025/Colgate Games/Day 1
+2024/Colgate Games
+2024/Canterbury Champs
+2024/International Track Meet
+2024/Prizegiving
+2023/Colgate Games Timaru
+2023/Cross Country
+2022/Colgate Games Invercargill
+2021/Colgate Games Nelson
+2021/Canterbury Champs
+2020/Colgate Games Christchurch
+2020/Colgate Games (Caitlin's Photos)
+2020/Colgate Games (Mike's Photos)
+2020/Canterbury Champs
+2019/Colgate Games Dunedin
+2019/Canterbury Champs
+2019/Greta Valley Relay
+2018/Colgate Games Timaru
+2018/Canterbury Champs Timaru
+2018/Jane Patterson, Rawhiti Domain
+2018/Bottle Lake Relay
+2018/Hagley Relays
+2017/Colgate Games Invercargill
+2017/Canterbury Champs Timaru
+2017/Senior Athletes
