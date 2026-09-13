@@ -147,6 +147,10 @@ ul { margin: 0; padding: 0; list-style: none; }
 .lede { font-size: clamp(1.05rem, .5vw + 1rem, 1.3rem); color: var(--text-soft); }
 
 .section-head { max-width: 62ch; margin-bottom: clamp(2rem, 4vw, 3.25rem); }
+/* the first head in a section is spaced by the section's own padding; one that
+   starts a new block partway down has content directly above it, so it needs
+   its own room */
+.wrap > .section-head:not(:first-child) { margin-top: clamp(3rem, 6vw, 5rem); }
 .section-head--wide { max-width: none; }   /* heading + lede run the full container */
 .section-head--split {
   max-width: none;
@@ -215,6 +219,8 @@ ul { margin: 0; padding: 0; list-style: none; }
 }
 
 .btn-row { display: flex; flex-wrap: wrap; gap: .75rem; }
+/* stacked: the buttons take the width of the widest one, so they line up */
+.btn-row--stack { flex-direction: column; align-items: stretch; }
 
 .link-arrow {
   display: inline-flex;
@@ -1545,7 +1551,15 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
   border-radius: var(--radius);
   box-shadow: var(--shadow-sm);
 }
-.honour h3 { margin: 0 0 .3em; font-size: 1.08rem; }
+.honour h3,
+.honour h4 { margin: 0 0 .3em; font-size: 1.08rem; }
+
+/* a heading that introduces a block partway down a section */
+.subhead {
+  margin: clamp(2rem, 4vw, 2.75rem) 0 clamp(.9rem, 2vw, 1.2rem);
+  font-size: clamp(1.15rem, 1.8vw, 1.35rem);
+  color: var(--green-800);
+}
 .honour p { margin: 0; font-size: .93rem; color: var(--text-soft); }
 
 /* season-by-season timeline */
@@ -1596,39 +1610,6 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
    Gallery page - albums
    ========================================================= */
 
-.album-nav { margin-bottom: clamp(2rem, 4vw, 3rem); }
-.album-nav ul {
-  display: flex;
-  flex-wrap: wrap;
-  gap: .6rem;
-}
-.album-nav a {
-  display: inline-flex;
-  align-items: baseline;
-  gap: .45rem;
-  padding: .5rem 1rem;
-  background: var(--white);
-  border: 1px solid var(--line-strong);
-  border-radius: 999px;
-  color: var(--green-800);
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: .88rem;
-  text-decoration: none;
-  transition: background .16s var(--ease), color .16s var(--ease), border-color .16s var(--ease);
-}
-.album-nav a span {
-  font-family: var(--font-sans);
-  font-weight: 500;
-  font-size: .78rem;
-  opacity: .65;
-}
-.album-nav a:hover {
-  background: var(--green-800);
-  color: var(--white);
-  border-color: var(--green-800);
-}
-
 .album { margin-bottom: clamp(2.5rem, 5vw, 4rem); scroll-margin-top: 96px; }
 .album:last-of-type { margin-bottom: 0; }
 .album__head {
@@ -1638,16 +1619,87 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
   padding-bottom: .7rem;
   margin-bottom: clamp(1rem, 2vw, 1.4rem);
   border-bottom: 2px solid var(--line);
+  cursor: pointer;
+  list-style: none;                /* the default triangle, replaced below */
+  transition: border-color .2s var(--ease);
 }
+.album__head::-webkit-details-marker { display: none; }
+.album__head:hover { border-bottom-color: var(--green-600); }
+.album__head:focus-visible {
+  outline: 3px solid var(--yellow-500);
+  outline-offset: 4px;
+  border-radius: var(--radius-sm);
+}
+.album__head::after {                /* chevron token: down = closed, up = open */
+  content: '';
+  flex: none;
+  align-self: center;
+  margin-left: auto;
+  width: 2rem;
+  height: 2rem;
+  border: 2px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--white) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230B3B2E' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") center / .85rem auto no-repeat;
+  transition: transform .25s var(--ease), border-color .16s var(--ease),
+              background-color .16s var(--ease);
+}
+.album[open] > .album__head::after { transform: rotate(180deg); }
+.album__head:hover::after { border-color: var(--green-600); background-color: var(--green-050); }
 .album__head h2 { margin: 0; font-size: clamp(1.4rem, 2.2vw, 1.8rem); }
 .album__count {
   margin: 0;
+  flex: none;
   font-family: var(--font-display);
   font-size: .78rem;
   font-weight: 700;
   letter-spacing: .1em;
   text-transform: uppercase;
   color: var(--green-600);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .album__head::after { transition: none; }
+}
+
+.album__intro {
+  max-width: 68ch;
+  margin: -.2rem 0 clamp(1.1rem, 2.4vw, 1.6rem);
+  color: var(--text-soft);
+}
+.album__intro > *:first-child { margin-top: 0; }
+.album__intro > *:last-child { margin-bottom: 0; }
+.album__intro p { margin: 0 0 .8rem; }
+.album__intro h3,
+.album__intro h4,
+.album__intro h5,
+.album__intro h6 {
+  margin: 1.2rem 0 .5rem;
+  font-family: var(--font-display);
+  color: var(--green-800);
+}
+.album__intro h3 { font-size: 1.1rem; }
+.album__intro h4 { font-size: 1rem; }
+.album__intro h5,
+.album__intro h6 { font-size: .95rem; }
+/* the global reset strips markers from every ul - a prose list wants them */
+.album__intro ul,
+.album__intro ol { margin: 0 0 .8rem; padding-left: 1.25rem; }
+.album__intro ul { list-style: disc; }
+.album__intro ol { list-style: decimal; }
+.album__intro li::marker { color: var(--green-600); }
+.album__intro li { margin-bottom: .25rem; }
+.album__intro a { color: var(--green-800); }
+.album__intro code {
+  padding: .1em .35em;
+  border-radius: var(--radius-sm);
+  background: var(--green-050);
+  font-size: .9em;
+}
+.album__intro blockquote {
+  margin: 0 0 .8rem;
+  padding-left: .9rem;
+  border-left: 3px solid var(--yellow-500);
+  font-style: italic;
 }
 
 .album__grid {
@@ -1674,6 +1726,119 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 
 @media (max-width: 520px) {
   .album__grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+}
+
+/* ---------- Photo viewer ---------- */
+
+/* Only [open] gets a display, so the closed dialog keeps the UA's display:none */
+.lightbox {
+  width: 100vw;
+  max-width: 100vw;
+  height: 100dvh;
+  max-height: 100dvh;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  overflow: hidden;
+}
+.lightbox[open] {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: clamp(.4rem, 2vw, 1.5rem);
+  padding: clamp(.75rem, 2vw, 1.5rem);
+}
+.lightbox::backdrop { background: rgba(6, 28, 22, .93); }
+
+.lightbox__figure {
+  grid-column: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: .9rem;
+  margin: 0;
+  min-width: 0;
+  height: 100%;
+}
+.lightbox__img {
+  max-width: 100%;
+  min-height: 0;
+  flex: 1;
+  object-fit: contain;
+  border-radius: var(--radius-sm);
+}
+.lightbox__caption {
+  flex: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: .35rem .9rem;
+  color: var(--white);
+  text-align: center;
+}
+.lightbox__text { font-size: .95rem; }
+.lightbox__count {
+  font-family: var(--font-display);
+  font-size: .78rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  opacity: .7;
+}
+
+.lightbox__btn {
+  display: grid;
+  place-items: center;
+  width: clamp(2.5rem, 6vw, 3.25rem);
+  aspect-ratio: 1;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .12);
+  color: var(--white);
+  cursor: pointer;
+  transition: background .16s var(--ease), transform .16s var(--ease);
+}
+.lightbox__btn svg {
+  width: 45%;
+  height: 45%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.lightbox__btn:hover { background: rgba(255, 255, 255, .24); }
+.lightbox__btn:active { transform: scale(.94); }
+.lightbox__btn:focus-visible {
+  outline: 3px solid var(--yellow-500);
+  outline-offset: 3px;
+}
+.lightbox__prev { grid-column: 1; }
+.lightbox__next { grid-column: 3; }
+.lightbox__close {
+  position: absolute;
+  top: clamp(.75rem, 2vw, 1.5rem);
+  right: clamp(.75rem, 2vw, 1.5rem);
+  background: rgba(255, 255, 255, .16);
+}
+
+/* On a phone the arrows sit under the photo rather than squeezing it */
+@media (max-width: 600px) {
+  .lightbox[open] {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: minmax(0, 1fr) auto;
+    padding-top: 4rem;
+  }
+  .lightbox__figure { grid-column: 1 / -1; grid-row: 1; }
+  .lightbox__prev { grid-column: 1; grid-row: 2; justify-self: end; }
+  .lightbox__next { grid-column: 2; grid-row: 2; justify-self: start; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lightbox__btn { transition: none; }
 }
 
 /* ---------- Footer ---------- */
