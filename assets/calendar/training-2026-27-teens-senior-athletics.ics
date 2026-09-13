@@ -1,0 +1,44 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//North Canterbury Athletic Club//teens-senior-athletics 2026/27//
+ EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:Teens and senior athletics training
+X-WR-TIMEZONE:Pacific/Auckland
+X-WR-CALDESC:Teens and senior athletics training\, summer season 2026/27. 
+ One session per week\, so you can subscribe to just this one.
+BEGIN:VTIMEZONE
+TZID:Pacific/Auckland
+X-LIC-LOCATION:Pacific/Auckland
+BEGI
+ N:DAYLIGHT
+TZOFFSETFROM:+1200
+TZOFFSETTO:+1300
+TZNAME:NZDT
+DTSTART:197009
+ 27T020000
+RRULE:FREQ=YEARLY;BYMONTH=9;BYDAY=-1SU
+END:DAYLIGHT
+BEGIN:STAND
+ ARD
+TZOFFSETFROM:+1300
+TZOFFSETTO:+1200
+TZNAME:NZST
+DTSTART:19700405T0300
+ 00
+RRULE:FREQ=YEARLY;BYMONTH=4;BYDAY=1SU
+END:STANDARD
+END:VTIMEZONE
+BEGIN:VEVENT
+UID:training-2026-27-teens-senior-athletics@ncan.nz
+DTSTAMP:20260913T112932Z
+DTSTART;TZID=Pacific/Auckland:20261006T181500
+DTEND;TZID=Pacific/Auckland:20261006T191500
+RRULE:FREQ=WEEKLY;BYDAY=TU;UNTIL=20270401T120000Z
+SUMMARY:Teens and senior athletics training
+LOCATION:Rangiora New Life School field
+DESCRIPTION:Event-group squads with qualified coaches and individualised t
+ raining.
+END:VEVENT
+END:VCALENDAR

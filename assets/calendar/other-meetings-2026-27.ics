@@ -1,0 +1,239 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Athletics Canterbury 2026-2027 Season//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:Other meetings 2026-27
+X-WR-TIMEZONE:Pacific/Auckland
+X-WR-CALDESC:Administration\, venue notices and Mid South Canterbury meet
+ ings\, 2026-27. Built from the AC 2026-2027 Interclub Event Schedule (Pr
+ e-Christmas) and the Athletics Canterbury events page.
+BEGIN:VTIMEZONE
+TZID:Pacific/Auckland
+X-LIC-LOCATION:Pacific/Auckland
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+1200
+TZOFFSETTO:+1300
+TZNAME:NZDT
+DTSTART:19700927T020000
+RRULE:FREQ=YEARLY;BYMONTH=9;BYDAY=-1SU
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+1300
+TZOFFSETTO:+1200
+TZNAME:NZST
+DTSTART:19700405T030000
+RRULE:FREQ=YEARLY;BYMONTH=4;BYDAY=1SU
+END:STANDARD
+END:VTIMEZONE
+BEGIN:VEVENT
+UID:ac-awards-night@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20260527T184500
+DTEND;TZID=Pacific/Auckland:20260527T203000
+TRANSP:OPAQUE
+SUMMARY:Athletics Canterbury Awards Night
+LOCATION:Gary Cockram Hyundai\, cnr St Asaph Street and Durham Street Sou
+ th\, Christchurch
+DESCRIPTION:Athletics Canterbury Awards Night.\nhttps://athleticscanterbu
+ ry.org.nz/competition/events/
+CATEGORIES:Athletics Canterbury Board
+URL:https://athleticscanterbury.org.nz/events/athletics-canterbury-awards
+ -night-2/
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-primary-xc-closed@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20260617T090000
+DTEND;TZID=Pacific/Auckland:20260617T150000
+TRANSP:OPAQUE
+SUMMARY:Primary Schools Cross Country Finals Day - Track & Practice Area 
+ Closed
+LOCATION:Ngā Puna Wai Sports Hub\, Augustine Drive\, Christchurch
+DESCRIPTION:Primary Schools Cross Country Finals Day - Track & Practice A
+ rea Closed.\nhttps://athleticscanterbury.org.nz/competition/events/
+CATEGORIES:Athletics Canterbury Board
+URL:https://athleticscanterbury.org.nz/events/primary-schools-cross-count
+ ry-finals-day-track-closed/
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-agm@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20260723T193000
+DTEND;TZID=Pacific/Auckland:20260723T203000
+TRANSP:OPAQUE
+SUMMARY:Athletics Canterbury AGM
+LOCATION:Hotel Elms\, 456 Papanui Road\, Christchurch
+DESCRIPTION:Athletics Canterbury AGM.\nhttps://athleticscanterbury.org.nz
+ /competition/events/
+CATEGORIES:Athletics Canterbury Board
+URL:https://athleticscanterbury.org.nz/events/athletics-canterbury-agm-5/
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-si-club-connect@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20260830T140000
+DTEND;TZID=Pacific/Auckland:20260830T170000
+TRANSP:OPAQUE
+SUMMARY:South Island Club Connect (online)
+LOCATION:Online
+DESCRIPTION:South Island Club Connect (online).\nhttps://athleticscanterb
+ ury.org.nz/competition/events/
+CATEGORIES:Athletics Canterbury Board
+URL:https://athleticscanterbury.org.nz/events/south-island-club-connect-o
+ nline/
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-masters-agm@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20260920T140000
+DTEND;TZID=Pacific/Auckland:20260920T153000
+TRANSP:OPAQUE
+SUMMARY:Canterbury Master Athletics AGM
+LOCATION:St Luke's Union Church Hall\, 438 Halswell Road\, Christchurch
+DESCRIPTION:Canterbury Master Athletics AGM.\nhttps://athleticscanterbury
+ .org.nz/competition/events/
+CATEGORIES:Athletics Canterbury Board
+URL:https://athleticscanterbury.org.nz/events/canterbury-master-athletics
+ -agm/
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-club-connect@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20260927T100000
+DTEND;TZID=Pacific/Auckland:20260927T150000
+TRANSP:OPAQUE
+SUMMARY:Canterbury Club Connect
+LOCATION:Ngā Puna Wai Lounge\, Augustine Drive\, Christchurch
+DESCRIPTION:Canterbury Club Connect.\nhttps://athleticscanterbury.org.nz/
+ competition/events/
+CATEGORIES:Athletics Canterbury Board
+URL:https://athleticscanterbury.org.nz/events/canterbury-club-connect/
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-track-closed-halberg@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20261003T090000
+DTEND;TZID=Pacific/Auckland:20261003T150000
+TRANSP:OPAQUE
+SUMMARY:Track Closed for Halberg Games 9am - 3pm
+LOCATION:Ngā Puna Wai Sports Hub\, Augustine Drive\, Christchurch
+DESCRIPTION:Ngā Puna Wai track closed for the Halberg Games\, 9am - 3pm.
+ \nhttps://athleticscanterbury.org.nz/competition/events/
+CATEGORIES:Nga Puna Wai Community
+URL:https://athleticscanterbury.org.nz/events/track-closed-for-private-bo
+ oking-2/
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-msc-arthur@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20261030T180000
+DTEND;TZID=Pacific/Auckland:20261030T200000
+TRANSP:OPAQUE
+SUMMARY:Mid South Canterbury Meeting - Arthur Cup
+LOCATION:Ashburton
+DESCRIPTION:Mid South Canterbury Meeting - Arthur Cup.\nhttps://athletics
+ canterbury.org.nz/competition/events/
+CATEGORIES:Mid South Canterbury Events
+URL:https://athleticscanterbury.org.nz/events/mid-south-canterbury-meetin
+ g-arthur-cap/
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-msc-tw1@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20261106T180000
+DTEND;TZID=Pacific/Auckland:20261106T200000
+TRANSP:OPAQUE
+SUMMARY:Mid South Canterbury Twilight Meeting 1
+LOCATION:Aorangi Stadium\, Timaru
+DESCRIPTION:Mid South Canterbury Twilight Meeting 1.\nhttps://athleticsca
+ nterbury.org.nz/competition/events/
+CATEGORIES:Mid South Canterbury Events
+URL:https://athleticscanterbury.org.nz/events/mid-south-canterbury-twilig
+ ht-meeting-1-2/
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-msc-tw2@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20261113T180000
+DTEND;TZID=Pacific/Auckland:20261113T200000
+TRANSP:OPAQUE
+SUMMARY:Mid South Canterbury Twilight Meeting 2
+LOCATION:Aorangi Stadium\, Timaru
+DESCRIPTION:Mid South Canterbury Twilight Meeting 2.\nhttps://athleticsca
+ nterbury.org.nz/competition/events/
+CATEGORIES:Mid South Canterbury Events
+URL:https://athleticscanterbury.org.nz/events/mid-south-canterbury-twilig
+ ht-meeting-2/
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-msc-rose@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20261122T100000
+DTEND;TZID=Pacific/Auckland:20261122T130000
+TRANSP:OPAQUE
+SUMMARY:Mid South Canterbury Meeting - Rose Sheild
+LOCATION:Geraldine
+DESCRIPTION:Mid South Canterbury Meeting - Rose Sheild.\nhttps://athletic
+ scanterbury.org.nz/competition/events/
+CATEGORIES:Mid South Canterbury Events
+URL:https://athleticscanterbury.org.nz/events/mid-south-canterbury-meetin
+ g-rose-sheild/
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-msc-tw3@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20261127T180000
+DTEND;TZID=Pacific/Auckland:20261127T200000
+TRANSP:OPAQUE
+SUMMARY:Mid South Canterbury Twilight Meeting 3
+LOCATION:Aorangi Stadium\, Timaru
+DESCRIPTION:Mid South Canterbury Twilight Meeting 3.\nhttps://athleticsca
+ nterbury.org.nz/competition/events/
+CATEGORIES:Mid South Canterbury Events
+URL:https://athleticscanterbury.org.nz/events/mid-south-canterbury-twilig
+ ht-meeting-3-2/
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-msc-tw4@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20261204T180000
+DTEND;TZID=Pacific/Auckland:20261204T200000
+TRANSP:OPAQUE
+SUMMARY:Mid South Canterbury Twilight Meeting 4
+LOCATION:Aorangi Stadium\, Timaru
+DESCRIPTION:Mid South Canterbury Twilight Meeting 4.\nhttps://athleticsca
+ nterbury.org.nz/competition/events/
+CATEGORIES:Mid South Canterbury Events
+URL:https://athleticscanterbury.org.nz/events/mid-south-canterbury-twilig
+ ht-meeting-4-2/
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-msc-jubilee@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20261206T100000
+DTEND;TZID=Pacific/Auckland:20261206T130000
+TRANSP:OPAQUE
+SUMMARY:Mid South Canterbury Meeting - Jubilee Cup
+LOCATION:Waimate
+DESCRIPTION:Mid South Canterbury Meeting - Jubilee Cup.\nhttps://athletic
+ scanterbury.org.nz/competition/events/
+CATEGORIES:Mid South Canterbury Events
+URL:https://athleticscanterbury.org.nz/events/mid-south-canterbury-meetin
+ g-jubilee-cup/
+STATUS:CONFIRMED
+END:VEVENT
+END:VCALENDAR
