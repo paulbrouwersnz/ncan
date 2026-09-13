@@ -1,0 +1,59 @@
+{
+  "calendars": [
+    {
+      "file": "athletics-canterbury-childrens-2026-27.ics",
+      "name": "Children's athletics 2026-27",
+      "colour": "#2A5DA8"
+    },
+    {
+      "file": "athletics-canterbury-coaching-2026-27.ics",
+      "name": "Coaching & officials courses 2026-27",
+      "colour": "#7A3E9D"
+    },
+    {
+      "file": "athletics-canterbury-road-xc-2026-27.ics",
+      "name": "Cross country & road 2026-27",
+      "colour": "#4B6157"
+    },
+    {
+      "file": "training-2026-27-cross-country-road-race-walking.ics",
+      "name": "Cross country, road and race walking coaching",
+      "colour": "#12684D"
+    },
+    {
+      "file": "training-2026-27-junior-club-night.ics",
+      "name": "Junior club night (ages 7–14)",
+      "colour": "#B4531A"
+    },
+    {
+      "file": "other-meetings-2026-27.ics",
+      "name": "Other meetings 2026-27",
+      "colour": "#A8123F"
+    },
+    {
+      "file": "training-2026-27-race-walks-coaching.ics",
+      "name": "Race walks coaching",
+      "colour": "#0E7490"
+    },
+    {
+      "file": "training-2026-27-sprints-running-race-walking.ics",
+      "name": "Sprints, running and race walking coaching",
+      "colour": "#854D0E"
+    },
+    {
+      "file": "athletics-canterbury-senior-2026-27.ics",
+      "name": "Teens & senior athletics 2026-27",
+      "colour": "#1E3A8A"
+    },
+    {
+      "file": "training-2026-27-teens-senior-athletics.ics",
+      "name": "Teens and senior athletics training",
+      "colour": "#9D174D"
+    },
+    {
+      "file": "training-2026-27-the-good-trot.ics",
+      "name": "The Good Trot – adult and teen social intervals",
+      "colour": "#3F6212"
+    }
+  ]
+}

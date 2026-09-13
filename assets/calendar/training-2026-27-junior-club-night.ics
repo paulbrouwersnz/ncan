@@ -1,0 +1,44 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//North Canterbury Athletic Club//junior-club-night 2026/27//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:Junior club night (ages 7–14)
+X-WR-TIMEZONE:Pacific/Auckland
+X-WR-CALDESC:Junior club night (ages 7–14)\, summer season 2026/27. One 
+ session per week\, so you can subscribe to just this one.
+BEGIN:VTIMEZONE
+TZID:Pacific/Auckland
+X-LIC-LOCATION:Pacific/Auckland
+BEGI
+ N:DAYLIGHT
+TZOFFSETFROM:+1200
+TZOFFSETTO:+1300
+TZNAME:NZDT
+DTSTART:197009
+ 27T020000
+RRULE:FREQ=YEARLY;BYMONTH=9;BYDAY=-1SU
+END:DAYLIGHT
+BEGIN:STAND
+ ARD
+TZOFFSETFROM:+1300
+TZOFFSETTO:+1200
+TZNAME:NZST
+DTSTART:19700405T0300
+ 00
+RRULE:FREQ=YEARLY;BYMONTH=4;BYDAY=1SU
+END:STANDARD
+END:VTIMEZONE
+BEGIN:VEVENT
+UID:training-2026-27-junior-club-night@ncan.nz
+DTSTAMP:20260913T112932Z
+DTSTART;TZID=Pacific/Auckland:20261006T171500
+DTEND;TZID=Pacific/Auckland:20261006T183000
+RRULE:FREQ=WEEKLY;BYDAY=TU;UNTIL=20270401T120000Z
+SUMMARY:Junior club night (ages 7–14)
+LOCATION:Rangiora New Life School field
+DESCRIPTION:Sprints\, distance\, long jump\, high jump\, shot put\, discus
+ \, race walking and hurdles\, taught as play. Parent helpers always welco
+ me.
+END:VEVENT
+END:VCALENDAR

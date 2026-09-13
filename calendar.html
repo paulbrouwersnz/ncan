@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="en-NZ">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Club Calendar — North Canterbury Athletic Club</title>
+<meta name="description" content="Upcoming North Canterbury Athletic Club training sessions, interclub competition and club events, as an agenda you can subscribe to.">
+<meta name="theme-color" content="#0B3B2E">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Club Calendar — North Canterbury Athletic Club">
+<meta property="og:description" content="Training, competition and club events. Subscribe and it stays up to date.">
+<meta property="og:image" content="assets/img/logo.svg">
+<meta property="og:image:alt" content="North Canterbury Athletic Club">
+<meta property="og:locale" content="en_NZ">
+
+<link rel="icon" href="assets/img/logo.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/img/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<!-- @partial:header -->
+<!-- ================= Header ================= -->
+<header class="site-header" id="site-header">
+  <div class="wrap site-header__bar">
+    <a class="brand" href="index.html" aria-label="North Canterbury Athletic Club — home">
+      <img src="assets/img/logo.svg" alt="" width="888" height="508">
+      <span class="brand__name">
+        North Canterbury<br>Athletic Club
+      </span>
+    </a>
+
+    <button class="nav-toggle" type="button" id="nav-toggle" aria-expanded="false" aria-controls="primary-nav">
+      <span class="nav-toggle__bars" aria-hidden="true"><i></i></span>
+      Menu
+    </button>
+
+    <nav class="nav" id="primary-nav" aria-label="Primary">
+      <ul>
+        <li><a href="index.html#why">Why NCAN</a></li>
+        <li><a href="index.html#programmes">Programmes</a></li>
+        <li><a href="index.html#training">Training</a></li>
+        <li><a href="index.html#join">Get Involved</a></li>
+        <li><a href="index.html#news">Community</a></li>
+        <li><a href="gallery.html">Gallery</a></li>
+        <li><a href="index.html#contact">Contact</a></li>
+        <li class="nav__cta"><a class="btn btn--accent" href="index.html#join">Join the club</a></li>
+      </ul>
+    </nav>
+
+    <div class="site-header__cta">
+      <a class="btn btn--accent btn--sm" href="index.html#join">Join the club</a>
+    </div>
+  </div>
+</header>
+<!-- /@partial:header -->
+<main id="main">
+  <span id="top"></span>
+
+  <!-- ================= Page head ================= -->
+  <section class="page-head" aria-labelledby="page-heading">
+    <div class="wrap">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="index.html">Home</a> <span aria-hidden="true">/</span> <span>Club calendar</span>
+      </nav>
+      <p class="eyebrow eyebrow--light">What&rsquo;s on</p>
+      <h1 id="page-heading">Club calendar</h1>
+      <p class="lede">
+        Training, interclub competition and club events. Subscribe in your own calendar app
+        and it keeps itself up to date &mdash; no need to come back here.
+      </p>
+      <div class="btn-row">
+        <a class="btn btn--accent" href="#subscribe">Subscribe or download</a>
+        <a class="btn btn--ghost-light" href="index.html#training">Weekly schedule</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= Agenda ================= -->
+  <section class="section" id="agenda" aria-labelledby="agenda-heading">
+    <div class="wrap">
+      <div class="section-head section-head--split" data-reveal>
+        <p class="eyebrow">Coming up</p>
+        <h2 id="agenda-heading">Agenda</h2>
+        <div>
+          <p class="lede">
+            Everything scheduled for the months ahead, soonest first. Times are shown in
+            New Zealand time.
+          </p>
+        </div>
+        <div class="section-head__aside">
+          <a class="btn btn--ghost" href="index.html#contact">Tell us about an event</a>
+        </div>
+      </div>
+
+      <!-- The agenda is built by the script below from the .ics named in data-ics.
+           Without JavaScript the fallback link below is what the reader gets. -->
+      <div class="agenda"
+           id="agenda-list"
+           data-ics-dir="assets/calendar/"
+           data-months="12"
+           data-months-past="6"
+           data-months-near="4"
+           aria-live="polite"
+           aria-busy="true">
+        <p class="agenda__state">Loading the club calendar&hellip;</p>
+      </div>
+
+      <noscript>
+        <p class="note">
+          This agenda needs JavaScript. You can still
+          <a href="assets/calendar/">browse the calendar files</a>
+          and open them in your own calendar app.
+        </p>
+      </noscript>
+
+      <p class="note" id="agenda-meta" hidden></p>
+    </div>
+  </section>
+
+  <!-- ================= How to subscribe ================= -->
+  <section class="section section--tint" id="subscribe" aria-labelledby="subscribe-heading">
+    <div class="wrap">
+      <div class="section-head section-head--wide" data-reveal>
+        <p class="eyebrow">Keep it on your phone</p>
+        <h2 id="subscribe-heading">Adding the calendar to your own app</h2>
+        <p class="lede">
+          Subscribing is better than downloading: a subscription updates itself when we change
+          a time or add a fixture, where a download is a snapshot of today.
+        </p>
+      </div>
+
+      <ul class="honours" data-reveal>
+        <li class="honour">
+          <h3>iPhone and iPad</h3>
+          <p>Settings &rsaquo; Apps &rsaquo; Calendar &rsaquo; Accounts &rsaquo; Add Account &rsaquo;
+            Other &rsaquo; Add Subscribed Calendar, then paste the calendar address.</p>
+        </li>
+        <li class="honour">
+          <h3>Android and Google Calendar</h3>
+          <p>On a computer, open Google Calendar, then Other calendars &rsaquo; From URL, and
+            paste the address. It syncs to your phone.</p>
+        </li>
+        <li class="honour">
+          <h3>Outlook</h3>
+          <p>Add calendar &rsaquo; Subscribe from web, then paste the address.</p>
+        </li>
+        <li class="honour">
+          <h3>One-off download</h3>
+          <p>Use the button at the top of this page to grab the file and import it. It will not
+            update later.</p>
+        </li>
+      </ul>
+
+      <h3 class="subhead" data-reveal>Our calendars</h3>
+      <ul class="doc-list" id="calendar-files" data-reveal>
+        <li class="doc">
+          <div class="doc__body">
+            <p class="doc__meta">Looking for calendars&hellip;</p>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </section>
+</main>
+
+<!-- @partial:footer -->
+<!-- ================= Footer ================= -->
+<footer class="site-footer" aria-labelledby="footer-heading">
+  <div class="wrap">
+    <h2 class="visually-hidden" id="footer-heading">Site footer</h2>
+
+    <div class="site-footer__grid">
+      <div>
+        <div class="footer-brand">
+          <img src="assets/img/logo.svg" alt="" width="888" height="508">
+          <div>
+            <strong><a href="index.html">North Canterbury<br>Athletic Club</a></strong>
+            <span>Rangiora, New Zealand</span>
+          </div>
+        </div>
+        <p>A volunteer-run club affiliated with <a href="https://athletics.org.nz/">Athletics New Zealand</a> and <a href="https://athleticscanterbury.org.nz/">Athletics Canterbury</a>, welcoming athletes of every age and ability since 1978.</p>
+
+        <div class="socials">
+          <a href="https://www.facebook.com/NorthCanterburyAthleticClub" aria-label="North Canterbury Athletic Club on Facebook">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 22v-8h2.8l.4-3.2h-3.2V8.7c0-.9.3-1.5 1.6-1.5h1.7V4.1A22 22 0 0 0 14.4 4C12 4 10.3 5.5 10.3 8.3v2.5H7.6V14h2.7v8Z"/></svg>
+            <span>Club</span>
+          </a>
+          <a href="https://www.facebook.com/NorthCanterburyChildrensAthletics" aria-label="Children's Athletics on Facebook">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 22v-8h2.8l.4-3.2h-3.2V8.7c0-.9.3-1.5 1.6-1.5h1.7V4.1A22 22 0 0 0 14.4 4C12 4 10.3 5.5 10.3 8.3v2.5H7.6V14h2.7v8Z"/></svg>
+            <span>Children&rsquo;s</span>
+          </a>
+        </div>
+      </div>
+      <div>
+        <h3>Quick links</h3>
+        <ul>
+          <li><a href="index.html#programmes">Our programmes</a></li>
+          <li><a href="index.html#training">Training times</a></li>
+          <li><a href="index.html#join">Register &amp; fees</a></li>
+          <li><a href="index.html#news">News &amp; results</a></li>
+          <li><a href="gallery.html">Photo gallery</a></li>
+          <li><a href="index.html#contact">Contact the club</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3>Get involved</h3>
+        <ul>
+          <li><a href="index.html#join">Become a member</a></li>
+          <li><a href="calendar.html" aria-current="page">Club calendar</a></li>
+          <li><a href="coaches-officials-volunteers.html#volunteer">Volunteer roles</a></li>
+          <li><a href="coaches-officials-volunteers.html#coaching">Coaching development</a></li>
+          <li><a href="coaches-officials-volunteers.html#officials">Officials training</a></li>
+          <li><a href="index.html#sponsors">Sponsor the club</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3>Club information</h3>
+        <ul>
+          <li><a href="committee.html">Committee and documents</a></li>
+          <li><a href="safeguarding.html">Child safeguarding</a></li>
+          <li><a href="history.html">History</a></li>
+          <li><a href="https://codesport.co.nz/catalog/%20NorthCanterburyAthleticsClub%20-1107550.htmx">Uniform and apparel</a></li>
+<!--           <li><a href="index.html#contact">Club records</a></li> -->
+          <li><a href="resources.html">Athletics resources</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="site-footer__base">
+      <p>&copy; 2026 <a href="index.html">North Canterbury Athletic Club Incorporated</a>. All rights reserved.</p>
+      <ul>
+        <li><a href="index.html">Back to top</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+<!-- /@partial:footer -->
+
+<script>
+(function () {
+  'use strict';
+
+  /* Mobile navigation ------------------------------------------------ */
+  var toggle = document.getElementById('nav-toggle');
+  var nav = document.getElementById('primary-nav');
+
+  function closeNav() {
+    nav.removeAttribute('data-open');
+    toggle.setAttribute('aria-expanded', 'false');
+  }
+
+  toggle.addEventListener('click', function () {
+    if (nav.getAttribute('data-open') === 'true') {
+      closeNav();
+    } else {
+      nav.setAttribute('data-open', 'true');
+      toggle.setAttribute('aria-expanded', 'true');
+    }
+  });
+
+  nav.addEventListener('click', function (event) {
+    if (event.target.closest('a')) { closeNav(); }
+  });
+
+  document.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape' && nav.getAttribute('data-open') === 'true') {
+      closeNav();
+      toggle.focus();
+    }
+  });
+
+  /* Header shadow once scrolled ------------------------------------- */
+  var header = document.getElementById('site-header');
+  var onScroll = function () {
+    header.classList.toggle('is-stuck', window.scrollY > 8);
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  /* Reveal on scroll ------------------------------------------------- */
+  var targets = document.querySelectorAll('[data-reveal]');
+
+  if (!('IntersectionObserver' in window) ||
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    Array.prototype.forEach.call(targets, function (el) { el.classList.add('is-visible'); });
+    return;
+  }
+
+  var observer = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.12 });
+
+  Array.prototype.forEach.call(targets, function (el) { observer.observe(el); });
+}());
+</script>
+
+<script>
+/* Club calendar -------------------------------------------------------------
+   Reads every iCalendar (.ics) file in a folder and renders one merged
+   agenda. No dependencies.
+
+   The files are discovered from assets/calendar/calendars.json if it exists
+   (run tools/build-calendar-list.py to refresh it), otherwise by reading the
+   folder's directory listing - which works on a dev server but not on most
+   static hosts, so ship the manifest.
+
+   A manifest entry may also carry a "url" for a calendar published elsewhere.
+   The local mirror is tried first because it always works; the url is only
+   used if there is no mirror, and then only if that host sends CORS headers.
+   Most providers do not - Google Calendar included - which is why
+   build-calendar-list.py --fetch mirrors them here instead.
+
+   Supports the parts a club calendar actually uses: VEVENT, folded lines,
+   escaped text, all-day and timed events, and repeating events using
+   RRULE (FREQ, INTERVAL, COUNT, UNTIL, BYDAY) with EXDATE exclusions.
+
+   Times carrying a TZID are read as local wall-clock time, which is right for
+   anyone in the same timezone as the club. Times ending in Z are true UTC and
+   are converted properly.
+--------------------------------------------------------------------------- */
+(function () {
+  'use strict';
+
+  var root = document.getElementById('agenda-list');
+  if (!root) { return; }
+
+  var DIR = root.getAttribute('data-ics-dir') || 'assets/calendar/';
+  if (DIR.charAt(DIR.length - 1) !== '/') { DIR += '/'; }
+  var MONTHS_AHEAD = parseInt(root.getAttribute('data-months'), 10) || 12;
+  var MONTHS_BACK = parseInt(root.getAttribute('data-months-past'), 10) || 0;
+  // events beyond this many months are folded away, as the past ones are
+  var MONTHS_NEAR = parseInt(root.getAttribute('data-months-near'), 10) || 0;
+  var MAX_OCCURRENCES = 400;          // guard against a runaway RRULE
+
+  var DAY_MS = 86400000;
+  // used only when the manifest does not name a colour for a calendar
+  var PALETTE = ['#12684D', '#B4531A', '#2A5DA8', '#7A3E9D', '#A8123F', '#4B6157'];
+  var WEEKDAYS = { SU: 0, MO: 1, TU: 2, WE: 3, TH: 4, FR: 5, SA: 6 };
+
+  /* ---------------------------------------------------------------- parsing */
+
+  function unfold(text) {
+    // RFC 5545: a CRLF followed by a space or tab continues the previous line
+    return text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').replace(/\n[ \t]/g, '');
+  }
+
+  function parseLine(line) {
+    var i = 0, quoted = false;
+    for (; i < line.length; i++) {
+      var c = line.charAt(i);
+      if (c === '"') { quoted = !quoted; }
+      else if (c === ':' && !quoted) { break; }
+    }
+    var head = line.slice(0, i);
+    var bits = head.split(';');
+    var params = {};
+    bits.slice(1).forEach(function (bit) {
+      var eq = bit.indexOf('=');
+      if (eq > 0) {
+        params[bit.slice(0, eq).toUpperCase()] = bit.slice(eq + 1).replace(/^"|"$/g, '');
+      }
+    });
+    return { name: bits[0].toUpperCase(), params: params, value: line.slice(i + 1) };
+  }
+
+  function unescapeText(value) {
+    return value.replace(/\\n/gi, '\n')
+                .replace(/\\,/g, ',')
+                .replace(/\\;/g, ';')
+                .replace(/\\\\/g, '\\');
+  }
+
+  function parseDate(value, params) {
+    var m = /^(\d{4})(\d{2})(\d{2})(?:T(\d{2})(\d{2})(\d{2})(Z)?)?$/.exec(value.trim());
+    if (!m) { return null; }
+    var y = +m[1], mo = +m[2] - 1, d = +m[3];
+    var allDay = !m[4] || (params && params.VALUE === 'DATE');
+    if (allDay) { return { date: new Date(y, mo, d), allDay: true }; }
+    var hh = +m[4], mi = +m[5], ss = +m[6];
+    if (m[7]) { return { date: new Date(Date.UTC(y, mo, d, hh, mi, ss)), allDay: false }; }
+    // floating, or carrying a TZID - treat as local wall-clock time
+    return { date: new Date(y, mo, d, hh, mi, ss), allDay: false };
+  }
+
+  function calendarName(text, fallback) {
+    var m = /^X-WR-CALNAME:(.*)$/im.exec(unfold(text));
+    return m ? unescapeText(m[1].trim()) : fallback;
+  }
+
+  function parseEvents(text) {
+    var lines = unfold(text).split('\n');
+    var events = [];
+    var current = null;
+
+    lines.forEach(function (raw) {
+      var line = raw.trim();
+      if (!line) { return; }
+      if (line === 'BEGIN:VEVENT') { current = { exdates: [] }; return; }
+      if (line === 'END:VEVENT') {
+        if (current && current.start) { events.push(current); }
+        current = null;
+        return;
+      }
+      if (!current) { return; }
+
+      var f = parseLine(line);
+      switch (f.name) {
+        case 'DTSTART':
+          current.start = parseDate(f.value, f.params);
+          break;
+        case 'DTEND':
+          current.end = parseDate(f.value, f.params);
+          break;
+        case 'SUMMARY':
+          current.summary = unescapeText(f.value);
+          break;
+        case 'LOCATION':
+          current.location = unescapeText(f.value);
+          break;
+        case 'DESCRIPTION':
+          current.description = unescapeText(f.value);
+          break;
+        case 'URL':
+          current.url = f.value;
+          break;
+        case 'UID':
+          current.uid = f.value;
+          break;
+        case 'RRULE':
+          current.rrule = parseRule(f.value);
+          break;
+        case 'EXDATE':
+          f.value.split(',').forEach(function (v) {
+            var parsed = parseDate(v, f.params);
+            if (parsed) { current.exdates.push(parsed.date.getTime()); }
+          });
+          break;
+      }
+    });
+
+    return events;
+  }
+
+  function parseRule(value) {
+    var rule = {};
+    value.split(';').forEach(function (part) {
+      var eq = part.indexOf('=');
+      if (eq < 0) { return; }
+      var key = part.slice(0, eq).toUpperCase();
+      var val = part.slice(eq + 1);
+      if (key === 'INTERVAL' || key === 'COUNT') { rule[key] = parseInt(val, 10); }
+      else if (key === 'UNTIL') { var u = parseDate(val); rule.UNTIL = u && u.date; }
+      else if (key === 'BYDAY') { rule.BYDAY = val.toUpperCase().split(','); }
+      else { rule[key] = val.toUpperCase(); }
+    });
+    return rule;
+  }
+
+  /* ------------------------------------------------------------- recurrence */
+
+  function addMonths(date, n) {
+    var d = new Date(date.getTime());
+    var day = d.getDate();
+    d.setDate(1);
+    d.setMonth(d.getMonth() + n);
+    // clamp, so 31 Jan + 1 month lands on 28/29 Feb rather than overflowing
+    d.setDate(Math.min(day, new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate()));
+    return d;
+  }
+
+  function occurrences(ev, windowEnd) {
+    var first = ev.start.date;
+    var duration = ev.end ? ev.end.date.getTime() - first.getTime()
+                          : (ev.start.allDay ? DAY_MS : 3600000);
+    var rule = ev.rrule;
+    if (!rule || !rule.FREQ) { return [{ start: first, duration: duration }]; }
+
+    var interval = rule.INTERVAL > 0 ? rule.INTERVAL : 1;
+    var stopAt = rule.UNTIL && rule.UNTIL < windowEnd ? rule.UNTIL : windowEnd;
+    var days = rule.BYDAY ? rule.BYDAY.map(function (d) {
+      return WEEKDAYS[d.replace(/^[-+]?\d+/, '')];
+    }).filter(function (d) { return d !== undefined; }) : null;
+
+    var out = [];
+    var cursor = new Date(first.getTime());
+    var guard = 0;
+
+    while (cursor <= stopAt && out.length < MAX_OCCURRENCES && guard++ < 2000) {
+      if (rule.FREQ === 'WEEKLY' && days && days.length) {
+        // walk the week the cursor starts, emitting each named weekday
+        var weekStart = new Date(cursor.getTime() - cursor.getDay() * DAY_MS);
+        for (var i = 0; i < 7; i++) {
+          var candidate = new Date(weekStart.getTime() + i * DAY_MS);
+          candidate.setHours(first.getHours(), first.getMinutes(), first.getSeconds(), 0);
+          if (days.indexOf(candidate.getDay()) < 0) { continue; }
+          if (candidate < first || candidate > stopAt) { continue; }
+          out.push({ start: candidate, duration: duration });
+        }
+        cursor = new Date(cursor.getTime() + 7 * interval * DAY_MS);
+      } else {
+        out.push({ start: new Date(cursor.getTime()), duration: duration });
+        if (rule.FREQ === 'DAILY') { cursor = new Date(cursor.getTime() + interval * DAY_MS); }
+        else if (rule.FREQ === 'WEEKLY') { cursor = new Date(cursor.getTime() + 7 * interval * DAY_MS); }
+        else if (rule.FREQ === 'MONTHLY') { cursor = addMonths(cursor, interval); }
+        else if (rule.FREQ === 'YEARLY') { cursor = addMonths(cursor, 12 * interval); }
+        else { break; }
+      }
+      if (rule.COUNT && out.length >= rule.COUNT) { break; }
+    }
+
+    out.sort(function (a, b) { return a.start - b.start; });
+    if (rule.COUNT) { out = out.slice(0, rule.COUNT); }
+    return out.filter(function (o) {
+      return ev.exdates.indexOf(o.start.getTime()) < 0;
+    });
+  }
+
+  /* --------------------------------------------------------------- rendering */
+
+  var MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July',
+                     'August', 'September', 'October', 'November', 'December'];
+  var DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+  function clockTime(date) {
+    var h = date.getHours(), m = date.getMinutes();
+    var suffix = h < 12 ? 'am' : 'pm';
+    var hour = h % 12; if (hour === 0) { hour = 12; }
+    return hour + (m ? ':' + (m < 10 ? '0' + m : m) : '') + suffix;
+  }
+
+  function isoDate(date) {
+    function pad(n) { return n < 10 ? '0' + n : '' + n; }
+    return date.getFullYear() + '-' + pad(date.getMonth() + 1) + '-' + pad(date.getDate());
+  }
+
+  /* Saving one event ------------------------------------------------ */
+
+  function pad(n) { return n < 10 ? '0' + n : '' + n; }
+
+  function utcStamp(date) {
+    return date.getUTCFullYear() + pad(date.getUTCMonth() + 1) + pad(date.getUTCDate()) +
+           'T' + pad(date.getUTCHours()) + pad(date.getUTCMinutes()) +
+           pad(date.getUTCSeconds()) + 'Z';
+  }
+
+  function dateStamp(date) {
+    return date.getFullYear() + pad(date.getMonth() + 1) + pad(date.getDate());
+  }
+
+  // iCalendar's escaping and line endings are all backslash and control
+  // characters; naming them by code keeps this readable and unambiguous
+  var BACKSLASH = String.fromCharCode(92);
+  var CR = String.fromCharCode(13);
+  var LF = String.fromCharCode(10);
+  var CRLF = CR + LF;
+
+  function icsEscape(text) {
+    return String(text)
+      .split(BACKSLASH).join(BACKSLASH + BACKSLASH)
+      .split(';').join(BACKSLASH + ';')
+      .split(',').join(BACKSLASH + ',')
+      .split(CRLF).join(BACKSLASH + 'n')
+      .split(LF).join(BACKSLASH + 'n')
+      .split(CR).join(BACKSLASH + 'n');
+  }
+
+  function icsFold(line) {
+    if (line.length <= 75) { return line; }
+    // the continuation's leading space is the fold marker, so a space in the
+    // content survives as the first character after it
+    var out = [line.slice(0, 74)];
+    var rest = line.slice(74);
+    while (rest) {
+      out.push(' ' + rest.slice(0, 73));
+      rest = rest.slice(73);
+    }
+    return out.join(CRLF);
+  }
+
+  function buildIcs(item) {
+    var finish = new Date(item.start.getTime() + item.duration);
+    var lines = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//North Canterbury Athletic Club//Club Calendar//EN',
+      'CALSCALE:GREGORIAN',
+      'METHOD:PUBLISH',
+      'BEGIN:VEVENT',
+      // one occurrence of a repeating event needs a uid of its own, or a
+      // calendar app will treat the whole series as already added
+      'UID:' + (item.uid ? item.uid.split('@')[0] + '-' + dateStamp(item.start) + '@ncan.nz'
+                         : 'ncan-' + item.start.getTime() + '@ncan.nz'),
+      'DTSTAMP:' + utcStamp(new Date())
+    ];
+
+    if (item.allDay) {
+      lines.push('DTSTART;VALUE=DATE:' + dateStamp(item.start));
+      lines.push('DTEND;VALUE=DATE:' + dateStamp(finish));
+    } else {
+      // absolute UTC, so no VTIMEZONE is needed and the time is unambiguous
+      lines.push('DTSTART:' + utcStamp(item.start));
+      lines.push('DTEND:' + utcStamp(finish));
+    }
+
+    lines.push('SUMMARY:' + icsEscape(item.summary || 'Club event'));
+    if (item.location) { lines.push('LOCATION:' + icsEscape(item.location)); }
+    if (item.description) { lines.push('DESCRIPTION:' + icsEscape(item.description)); }
+    if (item.url) { lines.push('URL:' + item.url); }
+    lines.push('END:VEVENT', 'END:VCALENDAR');
+
+    return lines.map(icsFold).join(CRLF) + CRLF;
+  }
+
+  function fileNameFor(item) {
+    var stem = (item.summary || 'club-event').toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 48);
+    return (stem || 'club-event') + '-' + isoDate(item.start) + '.ics';
+  }
+
+  function saveEvent(item) {
+    var blob = new Blob([buildIcs(item)], { type: 'text/calendar;charset=utf-8' });
+    var href = URL.createObjectURL(blob);
+    var link = document.createElement('a');
+    link.href = href;
+    link.download = fileNameFor(item);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(function () { URL.revokeObjectURL(href); }, 1000);
+  }
+
+  var SAVE_ICON =
+    '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">' +
+    '<path d="M12 3v11m0 0l-4-4m4 4l4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/>' +
+    '</svg>';
+
+  function el(tag, className, text) {
+    var node = document.createElement(tag);
+    if (className) { node.className = className; }
+    if (text !== undefined && text !== null && text !== '') { node.textContent = text; }
+    return node;
+  }
+
+  function disclosure(labelText, metaText) {
+    var box = el('details', 'agenda-past');
+    var summary = document.createElement('summary');
+    summary.appendChild(el('span', 'agenda-past__label', labelText));
+    summary.appendChild(el('span', 'agenda-past__meta', metaText));
+    var chev = el('span', 'agenda-past__chev');
+    chev.setAttribute('aria-hidden', 'true');
+    summary.appendChild(chev);
+    box.appendChild(summary);
+    var body = el('div', 'agenda-past__body');
+    box.appendChild(body);
+    return { box: box, body: body };
+  }
+
+  function render(items, showSource, startOfToday) {
+    root.innerHTML = '';
+    root.setAttribute('aria-busy', 'false');
+
+    if (!items.length) {
+      root.appendChild(el('p', 'agenda__state',
+        'Nothing on the calendar just yet. Check our Facebook pages for the latest.'));
+      return;
+    }
+
+    var past = items.filter(function (i) { return i.start < startOfToday; });
+    var upcoming = items.filter(function (i) { return i.start >= startOfToday; });
+    var totals = countByMonth(items);
+
+    // anything past the horizon is folded away too, so the agenda opens on the
+    // months a reader can actually plan around
+    var horizon = MONTHS_NEAR ? addMonths(startOfToday, MONTHS_NEAR) : null;
+    var near = upcoming;
+    var far = [];
+    if (horizon) {
+      near = upcoming.filter(function (i) { return i.start < horizon; });
+      far = upcoming.filter(function (i) { return i.start >= horizon; });
+    }
+
+    // what the open agenda shows - the yardstick for a split month's label
+    var shownCounts = countByMonth(near);
+
+    // Events that have already happened are folded away, oldest first inside,
+    // so the list still reads as one timeline running into today.
+    if (past.length) {
+      var earlier = disclosure('Show events already held',
+        plural(past.length) + ' in the last ' + MONTHS_BACK + ' months');
+      appendMonths(earlier.body, past, showSource, totals, shownCounts, 'past');
+      root.appendChild(earlier.box);
+    }
+
+    if (!upcoming.length) {
+      root.appendChild(el('p', 'agenda__state',
+        'Nothing further on the calendar just yet. Check our Facebook pages for the latest.'));
+      return;
+    }
+
+    appendMonths(root, near, showSource, totals, shownCounts, 'shown');
+
+    if (far.length) {
+      var later = disclosure('Show events further ahead',
+        plural(far.length) + ' more than ' + MONTHS_NEAR + ' months away');
+      appendMonths(later.body, far, showSource, totals, shownCounts, 'later');
+      later.box.className = 'agenda-past agenda-later';
+      root.appendChild(later.box);
+    }
+  }
+
+  function monthKey(date) {
+    return date.getFullYear() + '-' + date.getMonth();
+  }
+
+  function countByMonth(items) {
+    var counts = {};
+    items.forEach(function (item) {
+      var key = monthKey(item.start);
+      counts[key] = (counts[key] || 0) + 1;
+    });
+    return counts;
+  }
+
+  function plural(n) { return n + ' event' + (n === 1 ? '' : 's'); }
+
+  function appendMonths(container, items, showSource, totals, shownCounts, mode) {
+    // group by month first, so each heading can state its own count
+    var months = [];
+    var byKey = {};
+    items.forEach(function (item) {
+      var key = monthKey(item.start);
+      if (!byKey[key]) {
+        byKey[key] = { key: key, first: item.start, items: [] };
+        months.push(byKey[key]);
+      }
+      byKey[key].items.push(item);
+    });
+
+    months.forEach(function (month) {
+      var heading = el('h3', 'agenda__month');
+      heading.appendChild(el('span', 'agenda__month-name',
+        MONTH_NAMES[month.first.getMonth()] + ' ' + month.first.getFullYear()));
+      // A folded block counts only what it holds - saying "17 events, 11
+      // displayed" above six past events describes the agenda, not the block
+      // the reader has just opened. The open agenda is the one place where
+      // mentioning the hidden remainder is useful.
+      var here = month.items.length;
+      var label;
+      if (mode === 'past') {
+        label = here + ' past event' + (here === 1 ? '' : 's');
+      } else if (mode === 'later') {
+        label = here + ' future event' + (here === 1 ? '' : 's');
+      } else {
+        var total = totals ? totals[month.key] : here;
+        label = plural(total);
+        if (total !== here) {
+          label += ', ' + ((shownCounts && shownCounts[month.key]) || 0) + ' displayed';
+        }
+      }
+      heading.appendChild(el('span', 'agenda__month-count', label));
+      container.appendChild(heading);
+
+      var list = el('ol', 'agenda__list');
+      container.appendChild(list);
+      month.items.forEach(function (item) { list.appendChild(buildRow(item, showSource)); });
+    });
+  }
+
+  function buildRow(item, showSource) {
+      var row = el('li', 'agenda__item');
+      if (item.colour) { row.style.setProperty('--cal-colour', item.colour); }
+
+      var when = el('div', 'agenda__when');
+      var time = el('time', 'agenda__date');
+      time.setAttribute('datetime', isoDate(item.start));
+      time.appendChild(el('span', 'agenda__weekday', DAY_NAMES[item.start.getDay()].slice(0, 3)));
+      time.appendChild(el('span', 'agenda__day', item.start.getDate()));
+      when.appendChild(time);
+      row.appendChild(when);
+
+      var body = el('div', 'agenda__body');
+      var title = el('h4', 'agenda__title');
+      if (item.url) {
+        var link = el('a', null, item.summary || 'Club event');
+        link.href = item.url;
+        link.target = '_blank';
+        link.rel = 'noopener';
+        title.appendChild(link);
+      } else {
+        title.textContent = item.summary || 'Club event';
+      }
+      body.appendChild(title);
+
+      var facts = [];
+      if (item.allDay) {
+        var days = Math.round(item.duration / DAY_MS);
+        facts.push(days > 1 ? days + ' days' : 'All day');
+      } else {
+        var finish = new Date(item.start.getTime() + item.duration);
+        facts.push(clockTime(item.start) +
+                   (item.duration ? '\u2013' + clockTime(finish) : ''));
+      }
+      if (item.location) { facts.push(item.location); }
+      body.appendChild(el('p', 'agenda__meta', facts.join(' \u00b7 ')));
+
+      if (showSource && item.source) {
+        body.appendChild(el('span', 'agenda__source', item.source));
+      }
+
+      if (item.description) {
+        body.appendChild(el('p', 'agenda__note', item.description));
+      }
+
+      row.appendChild(body);
+
+      var save = el('button', 'agenda__save');
+      save.type = 'button';
+      save.title = 'Download this event as a calendar file';
+      save.setAttribute('aria-label',
+        'Download “' + (item.summary || 'Club event') + '” as a calendar file');
+      save.innerHTML = SAVE_ICON;
+      save.addEventListener('click', function () { saveEvent(item); });
+      row.appendChild(save);
+
+      return row;
+  }
+
+  function fail(message, detail) {
+    root.setAttribute('aria-busy', 'false');
+    root.innerHTML = '';
+    var p = el('p', 'agenda__state', message + ' You can still ');
+    var a = el('a', null, 'browse the calendar files');
+    a.href = DIR;
+    p.appendChild(a);
+    p.appendChild(document.createTextNode(' and open them in your own calendar app.'));
+    root.appendChild(p);
+    if (detail) { console.warn('calendar:', detail); }
+  }
+
+  /* --------------------------------------------------------------- discovery */
+
+  function fromManifest() {
+    return fetch(DIR + 'calendars.json', { cache: 'no-cache' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (data) {
+        if (!data || !data.calendars || !data.calendars.length) { return null; }
+        return data.calendars
+          .filter(function (c) { return c && (c.file || c.url); })
+          .filter(function (c) { return c.file || c.url; })
+          .map(function (c) {
+            return {
+              file: c.file,
+              url: c.url,
+              name: c.name || c.file || c.url,
+              colour: c.colour || c.color
+            };
+          });
+      })
+      .catch(function () { return null; });
+  }
+
+  function fromDirectoryListing() {
+    // a dev server or a host with autoindex on returns a page of links
+    return fetch(DIR, { cache: 'no-cache' })
+      .then(function (r) { return r.ok ? r.text() : ''; })
+      .then(function (html) {
+        var found = [];
+        var seen = {};
+        var re = /href="([^"?#]+\.ics)"/gi;
+        var m;
+        while ((m = re.exec(html)) !== null) {
+          var file = decodeURIComponent(m[1].split('/').pop());
+          if (file && !seen[file]) { seen[file] = true; found.push({ file: file, name: file }); }
+        }
+        found.sort(function (a, b) { return a.file.localeCompare(b.file); });
+        return found;
+      })
+      .catch(function () { return []; });
+  }
+
+  function discover() {
+    return fromManifest().then(function (list) {
+      return list && list.length ? list : fromDirectoryListing();
+    }).then(function (list) {
+      // a calendar without a colour of its own takes the next palette slot
+      list.forEach(function (cal, i) {
+        if (!cal.colour) { cal.colour = PALETTE[i % PALETTE.length]; }
+      });
+      return list;
+    });
+  }
+
+  function listCalendars(calendars) {
+    var box = document.getElementById('calendar-files');
+    if (!box) { return; }
+    box.innerHTML = '';
+    calendars.forEach(function (cal) {
+      // a published url is the better thing to subscribe to: it updates at the
+      // source, where the mirror only updates when the site is rebuilt
+      var address = cal.url || new URL(DIR + cal.file, window.location.href).href;
+      var li = el('li', 'doc');
+      if (cal.colour) { li.style.setProperty('--cal-colour', cal.colour); }
+      var body = el('div', 'doc__body');
+      var title = el('h4', 'doc__title');
+      var link = el('a', null, cal.name);
+      link.href = cal.file ? DIR + cal.file : cal.url;
+      title.appendChild(link);
+      body.appendChild(title);
+      var meta = el('p', 'doc__meta');
+      var code = el('code', null, address);
+      meta.appendChild(code);
+      body.appendChild(meta);
+      li.appendChild(body);
+      li.appendChild(el('span', 'doc__type', 'ICS'));
+      box.appendChild(li);
+    });
+  }
+
+  /* ------------------------------------------------------------------- load */
+
+  discover().then(function (calendars) {
+    if (!calendars.length) {
+      fail('No calendar files were found.');
+      return;
+    }
+
+    return Promise.all(calendars.map(function (cal) {
+      // the mirror first - a remote url only works if that host sends CORS
+      var addresses = [];
+      if (cal.file) { addresses.push(DIR + cal.file); }
+      if (cal.url) { addresses.push(cal.url); }
+
+      function attempt(i) {
+        if (i >= addresses.length) {
+          throw new Error((cal.name || 'calendar') + ': no source could be read');
+        }
+        return fetch(addresses[i], { cache: 'no-cache' })
+          .then(function (r) {
+            if (!r.ok) { throw new Error('HTTP ' + r.status); }
+            return r.text();
+          })
+          .catch(function (err) {
+            if (i + 1 < addresses.length) {
+              console.warn('calendar: ' + addresses[i] + ' failed (' + err.message +
+                           '), trying the next source');
+              return attempt(i + 1);
+            }
+            throw new Error(addresses[i] + ': ' + err.message);
+          });
+      }
+
+      return attempt(0)
+        .then(function (text) { return { cal: cal, text: text }; })
+        .catch(function (err) { console.warn('calendar:', err.message); return null; });
+    })).then(function (loaded) {
+      loaded = loaded.filter(Boolean);
+      if (!loaded.length) { fail('The calendars could not be loaded.'); return; }
+
+      var windowEnd = addMonths(new Date(), MONTHS_AHEAD);
+      var startOfToday = new Date();
+      startOfToday.setHours(0, 0, 0, 0);
+      var windowStart = MONTHS_BACK ? addMonths(startOfToday, -MONTHS_BACK) : startOfToday;
+
+      var items = [];
+      var seen = {};
+      var sources = [];
+
+      loaded.forEach(function (entry) {
+        var name = calendarName(entry.text, entry.cal.name);
+        entry.cal.name = name;
+        if (sources.indexOf(name) < 0) { sources.push(name); }
+
+        parseEvents(entry.text).forEach(function (ev) {
+          occurrences(ev, windowEnd).forEach(function (o) {
+            if (o.start < windowStart || o.start > windowEnd) { return; }
+            // the same fixture may appear in more than one calendar
+            var key = (ev.uid || ev.summary || '') + '@' + o.start.getTime();
+            if (seen[key]) { return; }
+            seen[key] = true;
+            items.push({
+              start: o.start,
+              duration: o.duration,
+              allDay: ev.start.allDay,
+              summary: ev.summary,
+              location: ev.location,
+              description: ev.description,
+              url: ev.url,
+              uid: ev.uid,
+              source: name,
+              colour: entry.cal.colour
+            });
+          });
+        });
+      });
+
+      items.sort(function (a, b) { return a.start - b.start; });
+      render(items, sources.length > 1, startOfToday);
+      listCalendars(calendars);
+
+      var meta = document.getElementById('agenda-meta');
+      if (meta) {
+        var ahead = items.filter(function (i) { return i.start >= startOfToday; }).length;
+        var used = loaded.length;
+        meta.textContent = items.length
+          ? ahead + ' event' + (ahead === 1 ? '' : 's') +
+            ' from ' + used + ' calendar' + (used === 1 ? '' : 's') +
+            ' over the next ' + MONTHS_AHEAD + ' months. Times shown in New Zealand time.'
+          : '';
+        meta.hidden = !items.length;
+      }
+    });
+  }).catch(function (err) {
+    fail('The calendar could not be loaded.', err && err.message);
+  });
+
+}());
+</script>
+
+</body>
+</html>
