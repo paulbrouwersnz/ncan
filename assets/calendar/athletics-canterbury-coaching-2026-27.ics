@@ -1,0 +1,92 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Athletics Canterbury 2026-2027 Season//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:Coaching & officials courses 2026-27
+X-WR-TIMEZONE:Pacific/Auckland
+X-WR-CALDESC:Coaching Athlete Development (CAD) Level 1 courses\, 2026-27
+ . Built from the AC 2026-2027 Interclub Event Schedule (Pre-Christmas) a
+ nd the Athletics Canterbury events page.
+BEGIN:VTIMEZONE
+TZID:Pacific/Auckland
+X-LIC-LOCATION:Pacific/Auckland
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+1200
+TZOFFSETTO:+1300
+TZNAME:NZDT
+DTSTART:19700927T020000
+RRULE:FREQ=YEARLY;BYMONTH=9;BYDAY=-1SU
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+1300
+TZOFFSETTO:+1200
+TZNAME:NZST
+DTSTART:19700405T030000
+RRULE:FREQ=YEARLY;BYMONTH=4;BYDAY=1SU
+END:STANDARD
+END:VTIMEZONE
+BEGIN:VEVENT
+UID:ac-cad-sprints@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20261002T173000
+DTEND;TZID=Pacific/Auckland:20261002T200000
+TRANSP:OPAQUE
+SUMMARY:Course - CAD L1 - Sprints / Hurdles
+LOCATION:Old Boys United Athletics Club\, Straven Road\, Christchurch 804
+ 1
+DESCRIPTION:Coaching Athlete Development Level 1 course: Sprints / Hurdle
+ s.\nhttps://athleticscanterbury.org.nz/competition/events/
+CATEGORIES:Coaching
+URL:https://athleticscanterbury.org.nz/events/course-cad-l1-sprints-hurdl
+ es-childrens/
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-cad-shot-discus@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20261003T090000
+DTEND;TZID=Pacific/Auckland:20261003T113000
+TRANSP:OPAQUE
+SUMMARY:Course - CAD L1 - Shot Put and Discus Throw
+LOCATION:Old Boys United Athletics Club\, Straven Road\, Christchurch 804
+ 1
+DESCRIPTION:Coaching Athlete Development Level 1 course: Shot Put and Dis
+ cus Throw.\nhttps://athleticscanterbury.org.nz/competition/events/
+CATEGORIES:Coaching
+URL:https://athleticscanterbury.org.nz/events/course-cad-l1-shot-put-and-
+ discus-throw/
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-cad-hj-lj@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20261003T140000
+DTEND;TZID=Pacific/Auckland:20261003T170000
+TRANSP:OPAQUE
+SUMMARY:Course - CAD L1 - High Jump and Long Jump
+LOCATION:Old Boys United Athletics Club\, Straven Road\, Christchurch 804
+ 1
+DESCRIPTION:Coaching Athlete Development Level 1 course: High Jump and Lo
+ ng Jump.\nhttps://athleticscanterbury.org.nz/competition/events/
+CATEGORIES:Coaching
+URL:https://athleticscanterbury.org.nz/events/course-cad-l1-high-jump-and
+ -long-jump/
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-cad-tj-jt@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20261006T150000
+DTEND;TZID=Pacific/Auckland:20261006T173000
+TRANSP:OPAQUE
+SUMMARY:Course - CAD L1 - Triple Jump and Javelin
+LOCATION:Ngā Puna Wai Training Field\, Augustine Drive\, Christchurch
+DESCRIPTION:Coaching Athlete Development Level 1 course: Triple Jump and 
+ Javelin.\nhttps://athleticscanterbury.org.nz/competition/events/
+CATEGORIES:Coaching
+URL:https://athleticscanterbury.org.nz/events/course-cad-l1-triple-jump-a
+ nd-javelin/
+STATUS:CONFIRMED
+END:VEVENT
+END:VCALENDAR

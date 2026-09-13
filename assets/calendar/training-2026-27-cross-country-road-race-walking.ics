@@ -1,0 +1,43 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//North Canterbury Athletic Club//cross-country-road-race-walking 
+ 2026/27//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:Cross country, road and race walking coaching
+X-WR-TIMEZONE:Pacific/Auckland
+X-WR-CALDESC:Cross country\, road and race walking coaching\, winter seaso
+ n 2026/27. One session per week\, so you can subscribe to just this one.
+BEGIN:VTIMEZONE
+TZID:Pacific/Auckland
+X-LIC-LOCATION:Pacific/Auckland
+BEGI
+ N:DAYLIGHT
+TZOFFSETFROM:+1200
+TZOFFSETTO:+1300
+TZNAME:NZDT
+DTSTART:197009
+ 27T020000
+RRULE:FREQ=YEARLY;BYMONTH=9;BYDAY=-1SU
+END:DAYLIGHT
+BEGIN:STAND
+ ARD
+TZOFFSETFROM:+1300
+TZOFFSETTO:+1200
+TZNAME:NZST
+DTSTART:19700405T0300
+ 00
+RRULE:FREQ=YEARLY;BYMONTH=4;BYDAY=1SU
+END:STANDARD
+END:VTIMEZONE
+BEGIN:VEVENT
+UID:training-2026-27-cross-country-road-race-walking@ncan.nz
+DTSTAMP:20260913T112932Z
+DTSTART;TZID=Pacific/Auckland:20260406T163000
+DTEND;TZID=Pacific/Auckland:20260406T173000
+RRULE:FREQ=WEEKLY;BYDAY=MO;UNTIL=20261001T120000Z
+SUMMARY:Cross country\, road and race walking coaching
+LOCATION:Loburn Domain and Ashgrove Park
+DESCRIPTION:Venue alternates through the winter season.
+END:VEVENT
+END:VCALENDAR

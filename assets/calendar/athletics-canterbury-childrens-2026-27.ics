@@ -1,0 +1,272 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Athletics Canterbury 2026-2027 Season//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:Children's athletics 2026-27
+X-WR-TIMEZONE:Pacific/Auckland
+X-WR-CALDESC:Canterbury Children's Interclub (CCAA) meetings and the Chil
+ dren's Championship Weekend\, 2026-27. Built from the AC 2026-2027 Inter
+ club Event Schedule (Pre-Christmas) and the Athletics Canterbury events 
+ page.
+BEGIN:VTIMEZONE
+TZID:Pacific/Auckland
+X-LIC-LOCATION:Pacific/Auckland
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+1200
+TZOFFSETTO:+1300
+TZNAME:NZDT
+DTSTART:19700927T020000
+RRULE:FREQ=YEARLY;BYMONTH=9;BYDAY=-1SU
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+1300
+TZOFFSETTO:+1200
+TZNAME:NZST
+DTSTART:19700405T030000
+RRULE:FREQ=YEARLY;BYMONTH=4;BYDAY=1SU
+END:STANDARD
+END:VTIMEZONE
+BEGIN:VEVENT
+UID:ac-child-1017@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20261017T090000
+DTEND;TZID=Pacific/Auckland:20261017T130000
+TRANSP:OPAQUE
+SUMMARY:Canterbury Childrens Interclub
+LOCATION:Ngā Puna Wai Sports Hub\, Augustine Drive\, Christchurch
+DESCRIPTION:Canterbury Children's Interclub (CCAA).\nhttps://athleticscan
+ terbury.org.nz/competition/events/
+CATEGORIES:Children's Track and Field
+URL:https://athleticscanterbury.org.nz/events/canterbury-childrens-interc
+ lub-42/
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-child-1024@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20261024T090000
+DTEND;TZID=Pacific/Auckland:20261024T130000
+TRANSP:OPAQUE
+SUMMARY:Canterbury Childrens Interclub
+LOCATION:Ngā Puna Wai Sports Hub\, Augustine Drive\, Christchurch
+DESCRIPTION:Canterbury Children's Interclub (CCAA).\nhttps://athleticscan
+ terbury.org.nz/competition/events/
+CATEGORIES:Children's Track and Field
+URL:https://athleticscanterbury.org.nz/events/canterbury-childrens-interc
+ lub-43/
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-child-1031@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20261031T090000
+DTEND;TZID=Pacific/Auckland:20261031T130000
+TRANSP:OPAQUE
+SUMMARY:Canterbury Childrens Interclub
+LOCATION:Ngā Puna Wai Sports Hub\, Augustine Drive\, Christchurch
+DESCRIPTION:Canterbury Children's Interclub (CCAA).\nhttps://athleticscan
+ terbury.org.nz/competition/events/
+CATEGORIES:Children's Track and Field
+URL:https://athleticscanterbury.org.nz/events/canterbury-childrens-interc
+ lub-44/
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-child-1107@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20261107T090000
+DTEND;TZID=Pacific/Auckland:20261107T130000
+TRANSP:OPAQUE
+SUMMARY:Canterbury Childrens Interclub
+LOCATION:Ngā Puna Wai Sports Hub\, Augustine Drive\, Christchurch
+DESCRIPTION:Canterbury Children's Interclub (CCAA).\nhttps://athleticscan
+ terbury.org.nz/competition/events/
+CATEGORIES:Children's Track and Field
+URL:https://athleticscanterbury.org.nz/events/canterbury-childrens-interc
+ lub-45/
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-child-1114@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20261114T090000
+DTEND;TZID=Pacific/Auckland:20261114T130000
+TRANSP:OPAQUE
+SUMMARY:Canterbury Childrens Interclub
+LOCATION:Ngā Puna Wai Sports Hub\, Augustine Drive\, Christchurch
+DESCRIPTION:Show Weekend — the Children's meeting runs\, but there is n
+ o senior interclub.\n\nCanterbury Children's Interclub (CCAA).\nhttps://
+ athleticscanterbury.org.nz/competition/events/
+CATEGORIES:Children's Track and Field
+URL:https://athleticscanterbury.org.nz/events/canterbury-childrens-interc
+ lub-46/
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-child-1121@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20261121T140000
+DTEND;TZID=Pacific/Auckland:20261121T170000
+TRANSP:OPAQUE
+SUMMARY:Canterbury Childrens Interclub
+LOCATION:Ngā Puna Wai Sports Hub\, Augustine Drive\, Christchurch
+DESCRIPTION:Later start this week — swapped with the AC senior interclu
+ b\, which takes the early slot.\n\nCanterbury Children's Interclub (CCAA
+ ).\nhttps://athleticscanterbury.org.nz/competition/events/
+CATEGORIES:Children's Track and Field
+URL:https://athleticscanterbury.org.nz/events/canterbury-childrens-interc
+ lub-47/
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-child-1128@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20261128T090000
+DTEND;TZID=Pacific/Auckland:20261128T130000
+TRANSP:OPAQUE
+SUMMARY:Canterbury Childrens Interclub
+LOCATION:Ngā Puna Wai Sports Hub\, Augustine Drive\, Christchurch
+DESCRIPTION:Canterbury Children's Interclub (CCAA).\nhttps://athleticscan
+ terbury.org.nz/competition/events/
+CATEGORIES:Children's Track and Field
+URL:https://athleticscanterbury.org.nz/events/canterbury-childrens-interc
+ lub-48/
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-child-1205@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20261205T090000
+DTEND;TZID=Pacific/Auckland:20261205T130000
+TRANSP:OPAQUE
+SUMMARY:Canterbury Childrens Interclub
+LOCATION:Ngā Puna Wai Sports Hub\, Augustine Drive\, Christchurch
+DESCRIPTION:Canterbury Children's Interclub (CCAA).\nhttps://athleticscan
+ terbury.org.nz/competition/events/
+CATEGORIES:Children's Track and Field
+URL:https://athleticscanterbury.org.nz/events/canterbury-childrens-interc
+ lub-49/
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-child-1212@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20261212T090000
+DTEND;TZID=Pacific/Auckland:20261212T130000
+TRANSP:OPAQUE
+SUMMARY:Canterbury Childrens Interclub (TBC)
+LOCATION:Ngā Puna Wai Sports Hub\, Augustine Drive\, Christchurch
+DESCRIPTION:Canterbury Children's Interclub (CCAA).\nhttps://athleticscan
+ terbury.org.nz/competition/events/
+CATEGORIES:Children's Track and Field
+URL:https://athleticscanterbury.org.nz/events/canterbury-childrens-interc
+ lub-tbc/
+STATUS:TENTATIVE
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-child-1219@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20261219T090000
+DTEND;TZID=Pacific/Auckland:20261219T130000
+TRANSP:OPAQUE
+SUMMARY:Canterbury Childrens Interclub - Relay Events
+LOCATION:Ngā Puna Wai Sports Hub\, Augustine Drive\, Christchurch
+DESCRIPTION:Canterbury Children's Interclub (CCAA).\nhttps://athleticscan
+ terbury.org.nz/competition/events/
+CATEGORIES:Children's Track and Field
+URL:https://athleticscanterbury.org.nz/events/canterbury-childrens-interc
+ lub-relay-events/
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-child-0130@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20270130T090000
+DTEND;TZID=Pacific/Auckland:20270130T130000
+TRANSP:OPAQUE
+SUMMARY:Canterbury Childrens Interclub (TBC)
+LOCATION:Ngā Puna Wai Sports Hub\, Augustine Drive\, Christchurch
+DESCRIPTION:Canterbury Children's Interclub (CCAA).\nhttps://athleticscan
+ terbury.org.nz/competition/events/
+CATEGORIES:Children's Track and Field
+URL:https://athleticscanterbury.org.nz/events/canterbury-childrens-interc
+ lub-tbc-2/
+STATUS:TENTATIVE
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-child-0206@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20270206T140000
+DTEND;TZID=Pacific/Auckland:20270206T170000
+TRANSP:OPAQUE
+SUMMARY:Canterbury Childrens Interclub (TBC)
+LOCATION:Ngā Puna Wai Sports Hub\, Augustine Drive\, Christchurch
+DESCRIPTION:Canterbury Children's Interclub (CCAA).\nhttps://athleticscan
+ terbury.org.nz/competition/events/
+CATEGORIES:Children's Track and Field
+URL:https://athleticscanterbury.org.nz/events/canterbury-childrens-interc
+ lub-tbc-3/
+STATUS:TENTATIVE
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-child-0213@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20270213T090000
+DTEND;TZID=Pacific/Auckland:20270213T130000
+TRANSP:OPAQUE
+SUMMARY:Canterbury Childrens Interclub
+LOCATION:Ngā Puna Wai Sports Hub\, Augustine Drive\, Christchurch
+DESCRIPTION:Canterbury Children's Interclub (CCAA).\nhttps://athleticscan
+ terbury.org.nz/competition/events/
+CATEGORIES:Children's Track and Field
+URL:https://athleticscanterbury.org.nz/events/canterbury-childrens-interc
+ lub-50/
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-child-0220@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20270220T090000
+DTEND;TZID=Pacific/Auckland:20270220T130000
+TRANSP:OPAQUE
+SUMMARY:Canterbury Childrens Interclub
+LOCATION:Ngā Puna Wai Sports Hub\, Augustine Drive\, Christchurch
+DESCRIPTION:Canterbury Children's Interclub (CCAA).\nhttps://athleticscan
+ terbury.org.nz/competition/events/
+CATEGORIES:Children's Track and Field
+URL:https://athleticscanterbury.org.nz/events/canterbury-childrens-interc
+ lub-51/
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-child-0227@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20270227T090000
+DTEND;TZID=Pacific/Auckland:20270227T130000
+TRANSP:OPAQUE
+SUMMARY:Canterbury Childrens Interclub
+LOCATION:Ngā Puna Wai Sports Hub\, Augustine Drive\, Christchurch
+DESCRIPTION:Canterbury Children's Interclub (CCAA).\nhttps://athleticscan
+ terbury.org.nz/competition/events/
+CATEGORIES:Children's Track and Field
+URL:https://athleticscanterbury.org.nz/events/canterbury-childrens-interc
+ lub-52/
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-child-champs@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20270306T090000
+DTEND;TZID=Pacific/Auckland:20270306T170000
+TRANSP:OPAQUE
+SUMMARY:Canterbury Childrens Championship Weekend
+LOCATION:Ngā Puna Wai Sports Hub\, Augustine Drive\, Christchurch
+DESCRIPTION:Canterbury Children's Interclub (CCAA).\nhttps://athleticscan
+ terbury.org.nz/competition/events/
+CATEGORIES:Children's Track and Field
+URL:https://athleticscanterbury.org.nz/events/canterbury-childrens-champi
+ onship-weekend/
+STATUS:CONFIRMED
+END:VEVENT
+END:VCALENDAR

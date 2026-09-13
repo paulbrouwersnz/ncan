@@ -1,0 +1,322 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Athletics Canterbury 2026-2027 Season//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:Cross country & road 2026-27
+X-WR-TIMEZONE:Pacific/Auckland
+X-WR-CALDESC:Road\, off-road and long-distance walk events\, 2026-27. Bui
+ lt from the AC 2026-2027 Interclub Event Schedule (Pre-Christmas) and th
+ e Athletics Canterbury events page.
+BEGIN:VTIMEZONE
+TZID:Pacific/Auckland
+X-LIC-LOCATION:Pacific/Auckland
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+1200
+TZOFFSETTO:+1300
+TZNAME:NZDT
+DTSTART:19700927T020000
+RRULE:FREQ=YEARLY;BYMONTH=9;BYDAY=-1SU
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+1300
+TZOFFSETTO:+1200
+TZNAME:NZST
+DTSTART:19700405T030000
+RRULE:FREQ=YEARLY;BYMONTH=4;BYDAY=1SU
+END:STANDARD
+END:VTIMEZONE
+BEGIN:VEVENT
+UID:ac-canty-marathon@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20260412T073000
+DTEND;TZID=Pacific/Auckland:20260412T113000
+TRANSP:OPAQUE
+SUMMARY:Canterbury Marathon and Canterbury Half Marathon Championships
+LOCATION:Armagh Street\, Christchurch
+DESCRIPTION:Canterbury Marathon and Canterbury Half Marathon Championship
+ s.\nhttps://athleticscanterbury.org.nz/competition/events/
+CATEGORIES:Cross Country and Road
+URL:https://athleticscanterbury.org.nz/events/canterbury-marathon-and-can
+ terbury-half-marathon-championships/
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-daniel-reese@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20260425T130000
+DTEND;TZID=Pacific/Auckland:20260425T160000
+TRANSP:OPAQUE
+SUMMARY:Daniel Reese Memorial Relay
+LOCATION:Hagley Park\, 14 Riccarton Avenue\, Christchurch
+DESCRIPTION:Daniel Reese Memorial Relay.\nhttps://athleticscanterbury.org
+ .nz/competition/events/
+CATEGORIES:Cross Country and Road
+URL:https://athleticscanterbury.org.nz/events/daniel-reese-memorial-relay
+ -3/
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-ss-road-race@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20260505T100000
+DTEND;TZID=Pacific/Auckland:20260505T140000
+TRANSP:OPAQUE
+SUMMARY:Canterbury Secondary Schools Road Race Championships
+LOCATION:Hagley Park\, 14 Riccarton Avenue\, Christchurch
+DESCRIPTION:Canterbury Secondary Schools Road Race Championships.\nhttps:
+ //athleticscanterbury.org.nz/competition/events/
+CATEGORIES:Cross Country and Road
+URL:https://athleticscanterbury.org.nz/events/canterbury-secondary-school
+ s-road-race-championships/
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-bottle-lake-hill@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20260509T130000
+DTEND;TZID=Pacific/Auckland:20260509T160000
+TRANSP:OPAQUE
+SUMMARY:Bottle Lake Hill Assault
+LOCATION:Bottle Lake Forest Park\, Waitikiri Drive\, Christchurch
+DESCRIPTION:Bottle Lake Hill Assault.\nhttps://athleticscanterbury.org.nz
+ /competition/events/
+CATEGORIES:Cross Country and Road
+URL:https://athleticscanterbury.org.nz/events/bottle-lake-hill-assault-2/
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-friday-night-lights@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20260522T180000
+DTEND;TZID=Pacific/Auckland:20260522T203000
+TRANSP:OPAQUE
+SUMMARY:Friday Night Lights
+LOCATION:Ilam Fields\, 106 Waimairi Road\, Christchurch
+DESCRIPTION:Friday Night Lights.\nhttps://athleticscanterbury.org.nz/comp
+ etition/events/
+CATEGORIES:Cross Country and Road
+URL:https://athleticscanterbury.org.nz/events/friday-night-lights-3/
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-lionel-fox@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20260613T130000
+DTEND;TZID=Pacific/Auckland:20260613T160000
+TRANSP:OPAQUE
+SUMMARY:Lionel Fox Trail Relay
+LOCATION:Woodend Beach Holiday Park
+DESCRIPTION:Lionel Fox Trail Relay.\nhttps://athleticscanterbury.org.nz/c
+ ompetition/events/
+CATEGORIES:Cross Country and Road
+URL:https://athleticscanterbury.org.nz/events/lionel-fox-trail-relay/
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-canty-xc-champs@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20260704T130000
+DTEND;TZID=Pacific/Auckland:20260704T160000
+TRANSP:OPAQUE
+SUMMARY:Canterbury Cross Country Championships
+LOCATION:Ascot Park\, Ascot Avenue\, New Brighton
+DESCRIPTION:Canterbury Cross Country Championships.\nhttps://athleticscan
+ terbury.org.nz/competition/events/
+CATEGORIES:Cross Country and Road
+URL:https://athleticscanterbury.org.nz/events/canterbury-cross-country-ch
+ ampionships-5/
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-kennett-cup@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20260718T130000
+DTEND;TZID=Pacific/Auckland:20260718T160000
+TRANSP:OPAQUE
+SUMMARY:Kennett Cup Steeples
+LOCATION:Rawhiti Domain\, Shaw Avenue\, New Brighton
+DESCRIPTION:Kennett Cup Steeples.\nhttps://athleticscanterbury.org.nz/com
+ petition/events/
+CATEGORIES:Cross Country and Road
+URL:https://athleticscanterbury.org.nz/events/kennett-cup-steeples/
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-nz-xc-champs@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20260801T130000
+DTEND;TZID=Pacific/Auckland:20260801T160000
+TRANSP:OPAQUE
+SUMMARY:New Zealand Cross Country Championships
+LOCATION:North Hagley Park\, Christchurch
+DESCRIPTION:New Zealand Cross Country Championships.\nhttps://athleticsca
+ nterbury.org.nz/competition/events/
+CATEGORIES:Cross Country and Road
+URL:https://athleticscanterbury.org.nz/events/anz-cross-country-champions
+ hips/
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-canty-5km@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20260814T180000
+DTEND;TZID=Pacific/Auckland:20260814T193000
+TRANSP:OPAQUE
+SUMMARY:Canterbury 5km Road Championships
+LOCATION:North Hagley Park\, Christchurch
+DESCRIPTION:Canterbury 5km Road Championships.\nhttps://athleticscanterbu
+ ry.org.nz/competition/events/
+CATEGORIES:Cross Country and Road
+URL:https://athleticscanterbury.org.nz/events/canterbury-road-championshi
+ ps-4/
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-govbay-lyttelton@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20260829T093000
+DTEND;TZID=Pacific/Auckland:20260829T110000
+TRANSP:OPAQUE
+SUMMARY:Governors Bay to Lyttleton
+LOCATION:Governors Bay to Lyttelton
+DESCRIPTION:Governors Bay to Lyttleton.\nhttps://athleticscanterbury.org.
+ nz/competition/events/
+CATEGORIES:Cross Country and Road
+URL:https://athleticscanterbury.org.nz/events/governors-bay-to-lyttleton-
+ 2/
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-nz-10km@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20260829T100000
+DTEND;TZID=Pacific/Auckland:20260829T150000
+TRANSP:OPAQUE
+SUMMARY:New Zealand 10km Road Championships
+LOCATION:New Plymouth
+DESCRIPTION:New Zealand 10km Road Championships.\nhttps://athleticscanter
+ bury.org.nz/competition/events/
+CATEGORIES:Cross Country and Road
+URL:https://athleticscanterbury.org.nz/events/anz-10km-road-championships
+ /
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-port-hills-u16@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20260829T140000
+DTEND;TZID=Pacific/Auckland:20260829T150000
+TRANSP:OPAQUE
+SUMMARY:Port Hills U16 Cross Country
+LOCATION:Hansen Park\, St Martins\, Christchurch
+DESCRIPTION:Port Hills U16 Cross Country.\nhttps://athleticscanterbury.or
+ g.nz/competition/events/
+CATEGORIES:Cross Country and Road
+URL:https://athleticscanterbury.org.nz/events/port-hills-u16-cross-countr
+ y/
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-road-champs@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20260912T130000
+DTEND;TZID=Pacific/Auckland:20260912T160000
+TRANSP:OPAQUE
+SUMMARY:Canterbury Road Championships
+LOCATION:Bottle Lake Forest Park\, Waitikiri Drive\, Christchurch
+DESCRIPTION:Canterbury Road Championships.\nhttps://athleticscanterbury.o
+ rg.nz/competition/events/
+CATEGORIES:Cross Country and Road
+URL:https://athleticscanterbury.org.nz/events/canterbury-road-championshi
+ ps-5/
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-road-relay@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20260919T090000
+DTEND;TZID=Pacific/Auckland:20260919T150000
+TRANSP:OPAQUE
+SUMMARY:Canterbury Road Relay Championships
+LOCATION:Bottle Lake Forest Park\, Waitikiri Drive\, Christchurch
+DESCRIPTION:Canterbury Road Relay Championships.\nhttps://athleticscanter
+ bury.org.nz/competition/events/
+CATEGORIES:Cross Country and Road
+URL:https://athleticscanterbury.org.nz/events/canterbury-road-relay/
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-nz-road-relay@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20261003T100000
+DTEND;TZID=Pacific/Auckland:20261003T150000
+TRANSP:OPAQUE
+SUMMARY:New Zealand Road Relay Championships
+LOCATION:Feilding
+DESCRIPTION:New Zealand Road Relay Championships.\nhttps://athleticscante
+ rbury.org.nz/competition/events/
+CATEGORIES:National Events
+URL:https://athleticscanterbury.org.nz/events/new-zealand-road-relay-cham
+ pionships/
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-crater-rim@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20261018T100000
+DTEND;TZID=Pacific/Auckland:20261018T150000
+TRANSP:OPAQUE
+SUMMARY:Crater Rim Off Road Challenge
+LOCATION:Hansen Park\, St Martins\, Christchurch
+DESCRIPTION:Crater Rim Off Road Challenge.\nhttps://athleticscanterbury.o
+ rg.nz/competition/events/
+CATEGORIES:Cross Country and Road
+URL:https://athleticscanterbury.org.nz/events/crater-rim-off-road-challen
+ ge-2/
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-timaru-ten@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20261024T100000
+DTEND;TZID=Pacific/Auckland:20261024T150000
+TRANSP:OPAQUE
+SUMMARY:Timaru Ten
+LOCATION:Levels Raceway\, Timaru
+DESCRIPTION:Timaru Ten.\nhttps://athleticscanterbury.org.nz/competition/e
+ vents/
+CATEGORIES:Cross Country and Road
+URL:https://athleticscanterbury.org.nz/events/timaru-ten/
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-nz-100km@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20261101T100000
+DTEND;TZID=Pacific/Auckland:20261101T150000
+TRANSP:OPAQUE
+SUMMARY:New Zealand 100km and Long Distance Walks Championships
+LOCATION:North Hagley Park\, Christchurch
+DESCRIPTION:New Zealand 100km and Long Distance Walks Championships.\nhtt
+ ps://athleticscanterbury.org.nz/competition/events/
+CATEGORIES:National Events
+URL:https://athleticscanterbury.org.nz/events/new-zealand-100km-champions
+ hips/
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-boulder-bay@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20261108T100000
+DTEND;TZID=Pacific/Auckland:20261108T150000
+TRANSP:OPAQUE
+SUMMARY:Boulder Bay Classic
+LOCATION:Taylors Mistake\, Christchurch
+DESCRIPTION:Boulder Bay Classic.\nhttps://athleticscanterbury.org.nz/comp
+ etition/events/
+CATEGORIES:Cross Country and Road
+URL:https://athleticscanterbury.org.nz/events/boulder-bay-classic-4/
+STATUS:CONFIRMED
+END:VEVENT
+END:VCALENDAR

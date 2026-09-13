@@ -1,0 +1,415 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Athletics Canterbury 2026-2027 Season//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:Teens & senior athletics 2026-27
+X-WR-TIMEZONE:Pacific/Auckland
+X-WR-CALDESC:Athletics Canterbury senior interclub and twilight meetings 
+ with their track and field programmes\, plus championship meetings\, 202
+ 6-27. Built from the AC 2026-2027 Interclub Event Schedule (Pre-Christma
+ s) and the Athletics Canterbury events page.
+BEGIN:VTIMEZONE
+TZID:Pacific/Auckland
+X-LIC-LOCATION:Pacific/Auckland
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+1200
+TZOFFSETTO:+1300
+TZNAME:NZDT
+DTSTART:19700927T020000
+RRULE:FREQ=YEARLY;BYMONTH=9;BYDAY=-1SU
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+1300
+TZOFFSETTO:+1200
+TZNAME:NZST
+DTSTART:19700405T030000
+RRULE:FREQ=YEARLY;BYMONTH=4;BYDAY=1SU
+END:STANDARD
+END:VTIMEZONE
+BEGIN:VEVENT
+UID:ac-interclub-01-opening@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20261017T133000
+DTEND;TZID=Pacific/Auckland:20261017T163000
+TRANSP:OPAQUE
+SUMMARY:AC Senior Interclub - OPENING DAY
+LOCATION:Ngā Puna Wai Sports Hub\, Augustine Drive\, Christchurch
+DESCRIPTION:OPENING DAY — odd race distances. 200m hurdles = 10 flights
+ \, 762mm all grades.\nTRACK: 80m\, 135m\, 300m\, 600m\, 1000m\, 2000m\, 
+ Track Walk\, 200m hurdles\nFIELD: Long Jump\, High Jump\, Pole Vault\, S
+ hot Put\, Discus\, Javelin\nSprint format (trialled this half-season\, o
+ ne of three options):\n  i.  60m followed by 100m (as in previous season
+ s)\n  ii. 2 x 100m relay followed by 100m (teams of TWO\, enter on the d
+ ay)\n  iii. 100m heats followed by 100m final (advise if opting out of t
+ he final)\n\nNOTE: the AC website lists the start as "1:30 am" — read 
+ as 1:30 pm (the Children's Interclub runs 9:00am-1:00pm beforehand).\n\n
+ Entries via AthleticNET\; entries close Thursday 11:45pm. Seeded program
+ me and live results on AthleticLIVE.\nFees: all grades $8.50 incl. first
+  event\, $1.50 per additional event (plus AthleticNET fees).\nRelay even
+ ts can be added to any interclub on request by club / school teams.\nPro
+ gramme source: AC 2026-2027 Interclub Event Schedule (Draft September 20
+ 26).\nhttps://athleticscanterbury.org.nz/wp-content/uploads/2026/09/AC-2
+ 026-2027-Interclub-Event-Schedule-Pre-Christmas.pdf
+CATEGORIES:Senior Track and Field
+URL:https://athleticscanterbury.org.nz/events/ac-senior-interclub-opening
+ -day-2/
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-interclub-02@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20261024T133000
+DTEND;TZID=Pacific/Auckland:20261024T163000
+TRANSP:OPAQUE
+SUMMARY:AC Senior Interclub 2
+LOCATION:Ngā Puna Wai Sports Hub\, Augustine Drive\, Christchurch
+DESCRIPTION:TRACK: 60m\, 100m\, 200m\, 800m\, 3000m\, Track Walk\, Short 
+ hurdles\, Long hurdles\nFIELD: Triple Jump\, High Jump\, Pole Vault\, Sh
+ ot Put\, Discus\, Hammer\nSprint format (trialled this half-season\, one
+  of three options):\n  i.  60m followed by 100m (as in previous seasons)
+ \n  ii. 2 x 100m relay followed by 100m (teams of TWO\, enter on the day
+ )\n  iii. 100m heats followed by 100m final (advise if opting out of the
+  final)\n\nEntries via AthleticNET\; entries close Thursday 11:45pm. See
+ ded programme and live results on AthleticLIVE.\nFees: all grades $8.50 
+ incl. first event\, $1.50 per additional event (plus AthleticNET fees).\
+ nRelay events can be added to any interclub on request by club / school 
+ teams.\nProgramme source: AC 2026-2027 Interclub Event Schedule (Draft S
+ eptember 2026).\nhttps://athleticscanterbury.org.nz/wp-content/uploads/2
+ 026/09/AC-2026-2027-Interclub-Event-Schedule-Pre-Christmas.pdf
+CATEGORIES:Senior Track and Field
+URL:https://athleticscanterbury.org.nz/events/ac-senior-interclub-2-4/
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-interclub-03@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20261031T133000
+DTEND;TZID=Pacific/Auckland:20261031T163000
+TRANSP:OPAQUE
+SUMMARY:AC Senior Interclub 3
+LOCATION:Ngā Puna Wai Sports Hub\, Augustine Drive\, Christchurch
+DESCRIPTION:Meeting starts with the 2 x 100m relay. *5000m — U20+ athle
+ tes only.\nTRACK: 2 x 100m relay\, 100m\, 400m\, 1500m\, 5000m*\, Track 
+ Walk\, Short hurdles\nFIELD: Long Jump\, High Jump\, Pole Vault\nSprint 
+ format (trialled this half-season\, one of three options):\n  i.  60m fo
+ llowed by 100m (as in previous seasons)\n  ii. 2 x 100m relay followed b
+ y 100m (teams of TWO\, enter on the day)\n  iii. 100m heats followed by 
+ 100m final (advise if opting out of the final)\n\nEntries via AthleticNE
+ T\; entries close Thursday 11:45pm. Seeded programme and live results on
+  AthleticLIVE.\nFees: all grades $8.50 incl. first event\, $1.50 per add
+ itional event (plus AthleticNET fees).\nRelay events can be added to any
+  interclub on request by club / school teams.\nProgramme source: AC 2026
+ -2027 Interclub Event Schedule (Draft September 2026).\nhttps://athletic
+ scanterbury.org.nz/wp-content/uploads/2026/09/AC-2026-2027-Interclub-Eve
+ nt-Schedule-Pre-Christmas.pdf
+CATEGORIES:Senior Track and Field
+URL:https://athleticscanterbury.org.nz/events/ac-senior-interclub-3-5/
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-interclub-04@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20261107T133000
+DTEND;TZID=Pacific/Auckland:20261107T163000
+TRANSP:OPAQUE
+SUMMARY:AC Senior Interclub 4
+LOCATION:Ngā Puna Wai Sports Hub\, Augustine Drive\, Christchurch
+DESCRIPTION:TRACK: 60m\, 100m\, 200m\, 800m\, 3000m\, Track Walk\, Short 
+ hurdles\, Long hurdles\nFIELD: Triple Jump\, High Jump\, Pole Vault\nSpr
+ int format (trialled this half-season\, one of three options):\n  i.  60
+ m followed by 100m (as in previous seasons)\n  ii. 2 x 100m relay follow
+ ed by 100m (teams of TWO\, enter on the day)\n  iii. 100m heats followed
+  by 100m final (advise if opting out of the final)\n\nEntries via Athlet
+ icNET\; entries close Thursday 11:45pm. Seeded programme and live result
+ s on AthleticLIVE.\nFees: all grades $8.50 incl. first event\, $1.50 per
+  additional event (plus AthleticNET fees).\nRelay events can be added to
+  any interclub on request by club / school teams.\nProgramme source: AC 
+ 2026-2027 Interclub Event Schedule (Draft September 2026).\nhttps://athl
+ eticscanterbury.org.nz/wp-content/uploads/2026/09/AC-2026-2027-Interclub
+ -Event-Schedule-Pre-Christmas.pdf
+CATEGORIES:Senior Track and Field
+URL:https://athleticscanterbury.org.nz/events/ac-senior-interclub-4-4/
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-no-interclub-show@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;VALUE=DATE:20261114
+DTEND;VALUE=DATE:20261115
+TRANSP:TRANSPARENT
+SUMMARY:No AC Senior Interclub - Canterbury Show Weekend
+LOCATION:Ngā Puna Wai Sports Hub\, Augustine Drive\, Christchurch
+DESCRIPTION:NO SENIOR INTERCLUB — Show Weekend.\n\nCanterbury Children'
+ s Interclub still runs 9:00am-1:00pm\, and the schedule keeps the Track 
+ Walk marked for this date (AC track walks run with the Children's walk e
+ vents).\n\nSource: AC 2026-2027 Interclub Event Schedule (Draft Septembe
+ r 2026).\nhttps://athleticscanterbury.org.nz/wp-content/uploads/2026/09/
+ AC-2026-2027-Interclub-Event-Schedule-Pre-Christmas.pdf
+CATEGORIES:Senior Track and Field
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-interclub-05@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;VALUE=DATE:20261121
+DTEND;VALUE=DATE:20261122
+TRANSP:TRANSPARENT
+SUMMARY:AC Senior Interclub 5 - EARLY START
+LOCATION:Ngā Puna Wai Sports Hub\, Augustine Drive\, Christchurch
+DESCRIPTION:EARLY START — the senior meeting is swapped with CCAA\, who
+ se Children's Interclub moves to 2:00pm-5:00pm that day. No senior start
+  time has been published yet\, so this is an all-day placeholder — che
+ ck the AC website.\n2 x 100m relay followed by the 100m. *5000m — U20+
+  athletes only.\nTRACK: 2 x 100m relay\, 100m\, 400m\, 1500m\, 3000m\, 5
+ 000m*\, Track Walk\, Short hurdles\nFIELD: Long Jump\, High Jump\, Pole 
+ Vault\nSprint format (trialled this half-season\, one of three options):
+ \n  i.  60m followed by 100m (as in previous seasons)\n  ii. 2 x 100m re
+ lay followed by 100m (teams of TWO\, enter on the day)\n  iii. 100m heat
+ s followed by 100m final (advise if opting out of the final)\n\nNOTE: me
+ eting number (5) inferred from the AC website's sequence — not yet lis
+ ted there.\n\nEntries via AthleticNET\; entries close Thursday 11:45pm. 
+ Seeded programme and live results on AthleticLIVE.\nFees: all grades $8.
+ 50 incl. first event\, $1.50 per additional event (plus AthleticNET fees
+ ).\nRelay events can be added to any interclub on request by club / scho
+ ol teams.\nProgramme source: AC 2026-2027 Interclub Event Schedule (Draf
+ t September 2026).\nhttps://athleticscanterbury.org.nz/wp-content/upload
+ s/2026/09/AC-2026-2027-Interclub-Event-Schedule-Pre-Christmas.pdf
+CATEGORIES:Senior Track and Field
+STATUS:TENTATIVE
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-interclub-06@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20261128T133000
+DTEND;TZID=Pacific/Auckland:20261128T163000
+TRANSP:OPAQUE
+SUMMARY:AC Senior Interclub 6
+LOCATION:Ngā Puna Wai Sports Hub\, Augustine Drive\, Christchurch
+DESCRIPTION:TRACK: 60m\, 100m\, 200m\, 400m\, 800m\, 3000m\, Track Walk\,
+  Long hurdles\nFIELD: Triple Jump\, High Jump\, Pole Vault\nSprint forma
+ t (trialled this half-season\, one of three options):\n  i.  60m followe
+ d by 100m (as in previous seasons)\n  ii. 2 x 100m relay followed by 100
+ m (teams of TWO\, enter on the day)\n  iii. 100m heats followed by 100m 
+ final (advise if opting out of the final)\n\nNOTE: meeting number (6) an
+ d the 1:30pm start are inferred from the AC website's sequence — this 
+ date is not yet listed there.\n\nEntries via AthleticNET\; entries close
+  Thursday 11:45pm. Seeded programme and live results on AthleticLIVE.\nF
+ ees: all grades $8.50 incl. first event\, $1.50 per additional event (pl
+ us AthleticNET fees).\nRelay events can be added to any interclub on req
+ uest by club / school teams.\nProgramme source: AC 2026-2027 Interclub E
+ vent Schedule (Draft September 2026).\nhttps://athleticscanterbury.org.n
+ z/wp-content/uploads/2026/09/AC-2026-2027-Interclub-Event-Schedule-Pre-C
+ hristmas.pdf
+CATEGORIES:Senior Track and Field
+STATUS:TENTATIVE
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-interclub-07@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20261205T133000
+DTEND;TZID=Pacific/Auckland:20261205T163000
+TRANSP:OPAQUE
+SUMMARY:AC Senior Interclub 7
+LOCATION:Ngā Puna Wai Sports Hub\, Augustine Drive\, Christchurch
+DESCRIPTION:TRACK: 60m\, 100m\, 200m\, 400m\, 800m\, 1500m\, Track Walk\,
+  Short hurdles\nFIELD: Long Jump\, High Jump\, Pole Vault\nSprint format
+  (trialled this half-season\, one of three options):\n  i.  60m followed
+  by 100m (as in previous seasons)\n  ii. 2 x 100m relay followed by 100m
+  (teams of TWO\, enter on the day)\n  iii. 100m heats followed by 100m f
+ inal (advise if opting out of the final)\n\nNOTE: meeting number (7) and
+  the 1:30pm start are inferred from the AC website's sequence — this d
+ ate is not yet listed there.\n\nEntries via AthleticNET\; entries close 
+ Thursday 11:45pm. Seeded programme and live results on AthleticLIVE.\nFe
+ es: all grades $8.50 incl. first event\, $1.50 per additional event (plu
+ s AthleticNET fees).\nRelay events can be added to any interclub on requ
+ est by club / school teams.\nProgramme source: AC 2026-2027 Interclub Ev
+ ent Schedule (Draft September 2026).\nhttps://athleticscanterbury.org.nz
+ /wp-content/uploads/2026/09/AC-2026-2027-Interclub-Event-Schedule-Pre-Ch
+ ristmas.pdf
+CATEGORIES:Senior Track and Field
+STATUS:TENTATIVE
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-no-interclub-nzssaa@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;VALUE=DATE:20261211
+DTEND;VALUE=DATE:20261214
+TRANSP:TRANSPARENT
+SUMMARY:No AC Senior Interclub - NZSSAA Championships\, Whanganui
+LOCATION:Whanganui
+DESCRIPTION:NO SENIOR INTERCLUB — New Zealand Secondary Schools Athleti
+ cs Championships\, Whanganui (Fri 11 - Sun 13 December).\n\nCanterbury C
+ hildren's Interclub at Ngā Puna Wai on Sat 12 Dec is listed as TBC.\n\n
+ Source: AC 2026-2027 Interclub Event Schedule (Draft September 2026).\nh
+ ttps://athleticscanterbury.org.nz/wp-content/uploads/2026/09/AC-2026-202
+ 7-Interclub-Event-Schedule-Pre-Christmas.pdf
+CATEGORIES:Senior Track and Field
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-twilight-01@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20261105T183000
+DTEND;TZID=Pacific/Auckland:20261105T203000
+TRANSP:OPAQUE
+SUMMARY:AC Twilight Meet 1
+LOCATION:Ngā Puna Wai Sports Hub\, Augustine Drive\, Christchurch
+DESCRIPTION:TRACK: 60m\, 100m\, 200m\, 300m\, 800m\, 1500m\, Steeplechase
+ \nFIELD: Added on request — TBC\nNOTE: meeting number (1) and the 6:30
+ pm start are inferred from the AC website's sequence (Twilight Meets 2-4
+  are listed at 6:30pm-8:30pm) — this date is not yet listed there.\n\n
+ Non-club athletes welcome. Relays on request.\nA greater range of events
+  is offered at twilight meetings — Secondary School non-club athletes 
+ are encouraged to attend and entry numbers are lower than on a Saturday.
+ \nField events added on request — TBC.\nProgramme source: AC 2026-2027
+  Interclub Event Schedule (Draft September 2026).\nhttps://athleticscant
+ erbury.org.nz/wp-content/uploads/2026/09/AC-2026-2027-Interclub-Event-Sc
+ hedule-Pre-Christmas.pdf
+CATEGORIES:Senior Track and Field
+STATUS:TENTATIVE
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-twilight-02@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20261112T183000
+DTEND;TZID=Pacific/Auckland:20261112T203000
+TRANSP:OPAQUE
+SUMMARY:AC Twilight Meet 2
+LOCATION:Ngā Puna Wai Sports Hub\, Augustine Drive\, Christchurch
+DESCRIPTION:TRACK: 60m\, 100m\, 200m\, 400m\, 800m\, 1500m\nFIELD: Added 
+ on request — TBC\nNon-club athletes welcome. Relays on request.\nA gre
+ ater range of events is offered at twilight meetings — Secondary Schoo
+ l non-club athletes are encouraged to attend and entry numbers are lower
+  than on a Saturday.\nField events added on request — TBC.\nProgramme 
+ source: AC 2026-2027 Interclub Event Schedule (Draft September 2026).\nh
+ ttps://athleticscanterbury.org.nz/wp-content/uploads/2026/09/AC-2026-202
+ 7-Interclub-Event-Schedule-Pre-Christmas.pdf
+CATEGORIES:Senior Track and Field
+URL:https://athleticscanterbury.org.nz/events/ac-twilight-meet-2-2/
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-twilight-03@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20261119T183000
+DTEND;TZID=Pacific/Auckland:20261119T203000
+TRANSP:OPAQUE
+SUMMARY:AC Twilight Meet 3
+LOCATION:Ngā Puna Wai Sports Hub\, Augustine Drive\, Christchurch
+DESCRIPTION:TRACK: 60m\, 100m\, 200m\, 300m\, 800m\, 1500m\, Steeplechase
+ \nFIELD: Added on request — TBC\nNon-club athletes welcome. Relays on 
+ request.\nA greater range of events is offered at twilight meetings — 
+ Secondary School non-club athletes are encouraged to attend and entry nu
+ mbers are lower than on a Saturday.\nField events added on request — T
+ BC.\nProgramme source: AC 2026-2027 Interclub Event Schedule (Draft Sept
+ ember 2026).\nhttps://athleticscanterbury.org.nz/wp-content/uploads/2026
+ /09/AC-2026-2027-Interclub-Event-Schedule-Pre-Christmas.pdf
+CATEGORIES:Senior Track and Field
+URL:https://athleticscanterbury.org.nz/events/ac-twilight-meet-3/
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-twilight-04@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20261126T183000
+DTEND;TZID=Pacific/Auckland:20261126T203000
+TRANSP:OPAQUE
+SUMMARY:AC Twilight Meet 4
+LOCATION:Ngā Puna Wai Sports Hub\, Augustine Drive\, Christchurch
+DESCRIPTION:TRACK: 60m\, 100m\, 200m\, 400m\, 800m\, 2000m\nFIELD: Added 
+ on request — TBC\nNon-club athletes welcome. Relays on request.\nA gre
+ ater range of events is offered at twilight meetings — Secondary Schoo
+ l non-club athletes are encouraged to attend and entry numbers are lower
+  than on a Saturday.\nField events added on request — TBC.\nProgramme 
+ source: AC 2026-2027 Interclub Event Schedule (Draft September 2026).\nh
+ ttps://athleticscanterbury.org.nz/wp-content/uploads/2026/09/AC-2026-202
+ 7-Interclub-Event-Schedule-Pre-Christmas.pdf
+CATEGORIES:Senior Track and Field
+URL:https://athleticscanterbury.org.nz/events/ac-twilight-meet-4-2/
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-rhythm-jumps@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;VALUE=DATE:20261127
+DTEND;VALUE=DATE:20261128
+TRANSP:TRANSPARENT
+SUMMARY:Rhythm & Jumps
+LOCATION:Old Boys United Athletics Club\, Straven Road\, Christchurch 804
+ 1
+DESCRIPTION:Rhythm & Jumps — the annual invitational High Jump / Long J
+ ump competition to music\, held at COBU (Old Boys United Athletics Club\
+ , Straven Road).\n\nNot yet listed on the AC website\, so no time is con
+ firmed — all-day placeholder. In previous years the programme has star
+ ted around 5:15pm with Long Jump\, followed by High Jump about 6:45pm.\n
+ \nSource: AC 2026-2027 season programme table.
+CATEGORIES:Senior Track and Field
+STATUS:TENTATIVE
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-community-twilight-dec@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;VALUE=DATE:20261227
+DTEND;VALUE=DATE:20261228
+TRANSP:TRANSPARENT
+SUMMARY:Community Twilight (TBC)
+LOCATION:Ngā Puna Wai Sports Hub\, Augustine Drive\, Christchurch
+DESCRIPTION:Community Twilight meeting.\n\nListed in the AC 2026-2027 sea
+ son programme table but not yet on the AC events page\, and no events ar
+ e marked against this date in the interclub schedule — programme and s
+ tart time TBC.\nhttps://athleticscanterbury.org.nz/wp-content/uploads/20
+ 26/09/AC-2026-2027-Interclub-Event-Schedule-Pre-Christmas.pdf
+CATEGORIES:Senior Track and Field
+STATUS:TENTATIVE
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-si-masters@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20261120T160000
+DTEND;TZID=Pacific/Auckland:20261122T130000
+TRANSP:OPAQUE
+SUMMARY:South Island Masters Championships / SI Combined Events Champions
+ hips
+LOCATION:Surrey Park\, Invercargill
+DESCRIPTION:South Island Masters Championships / South Island Combined Ev
+ ents Championships.\nhttps://athleticscanterbury.org.nz/competition/even
+ ts/
+CATEGORIES:National Events
+URL:https://athleticscanterbury.org.nz/events/south-island-masters-champi
+ onships-si-combined-events-championships/
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-oceania-masters@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;VALUE=DATE:20270127
+DTEND;VALUE=DATE:20270201
+TRANSP:TRANSPARENT
+SUMMARY:Oceania Masters Track & Field Championships
+LOCATION:Ngā Puna Wai Sports Hub\, Augustine Drive\, Christchurch
+DESCRIPTION:Oceania Masters Track & Field Championships\, including the N
+ ZMA Championships — Christchurch\, 27-31 January 2027.\n\nCompetition 
+ runs Wednesday through Sunday.\nThe AC 3000m Championships are held on t
+ he Saturday morning (30 Jan).\n\nAthletes are asked to indicate availabi
+ lity and apply online.\nhttps://www.oceania-masters-athletics.org/oma-ch
+ ampionships-2025/oma2027-christchurch/
+CATEGORIES:National Events
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:ac-3000m-champs@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;VALUE=DATE:20270130
+DTEND;VALUE=DATE:20270131
+TRANSP:TRANSPARENT
+SUMMARY:AC 3000m Championships
+LOCATION:Ngā Puna Wai Sports Hub\, Augustine Drive\, Christchurch
+DESCRIPTION:Athletics Canterbury 3000m Championships — held on the Satu
+ rday morning during the Oceania Masters Track & Field Championships week
+ .\n\nExact start time not yet published — all-day placeholder.\n\nSour
+ ce: AC 2026-2027 season programme table.
+CATEGORIES:Senior Track and Field
+STATUS:TENTATIVE
+END:VEVENT
+END:VCALENDAR
