@@ -79,6 +79,21 @@ URL:https://athleticscanterbury.org.nz/events/south-island-club-connect-o
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
+UID:ncan-committee-2026-09-14@ncan.nz
+DTSTAMP:20260914T015652Z
+DTSTART;TZID=Pacific/Auckland:20260914T190000
+DTEND;TZID=Pacific/Auckland:20260914T210000
+TRANSP:OPAQUE
+SUMMARY:NCAN Committee Meeting
+LOCATION:The Brook\, 16 Southbrook Road\, Rangiora\, Waimakariri\, Rangio
+ ra 7400
+DESCRIPTION:Please direct enquiries to the club secretary\, ncanathletics
+ @gmail.com.
+CATEGORIES:North Canterbury Athletic Club
+URL:https://ncan.nz/committee.html
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
 UID:ac-masters-agm@athleticscanterbury.org.nz
 DTSTAMP:20260913T000000Z
 DTSTART;TZID=Pacific/Auckland:20260920T140000
@@ -206,18 +221,3 @@ URL:https://athleticscanterbury.org.nz/events/mid-south-canterbury-meetin
  g-jubilee-cup/
 STATUS:CONFIRMED
 END:VEVENT
-BEGIN:VEVENT
-UID:ac-no-interclub-nzssaa@athleticscanterbury.org.nz
-DTSTAMP:20260913T000000Z
-DTSTART;VALUE=DATE:20261211
-DTEND;VALUE=DATE:20261214
-TRANSP:TRANSPARENT
-SUMMARY:NZSSAA Championships\, Whanganui
-LOCATION:Whanganui
-DESCRIPTION:New Zealand Secondary Schools Athleti
- cs Championships\, Whanganui (Fri 11 - Sun 13 December)
-URL:https://nzssaa.org.nz/Information/nztf2026
-CATEGORIES:Senior Track and Field
-STATUS:CONFIRMED
-END:VEVENT
-END:VCALENDAR
