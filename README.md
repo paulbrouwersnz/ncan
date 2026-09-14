@@ -17,3 +17,9 @@ Formerly hosted at https://www.sporty.co.nz/northcantathletics/
 - Limiting pages to a manageable number, while still providing enough information for members and the public.
 
 Currently changes are made by emailing the request to paul@brouwers.nz
+
+ncan.nz domain registered with https://domains.co.nz/.  Cost is around NZ$40/year.
+
+Hosted on GitHub Pages, which is free for public repositories.
+
+The site is essentially static, with no server-side processing.  Dynamic content is provided by JavaScript, which fetches data from JSON files and renders it in the browser.  This allows for a more interactive experience, while still keeping the site simple and fast.  Tools used to keep the pages in sync are included in the repository.  The facebook sync is currently outside the repository, but I expect to add it as a action in the future.
