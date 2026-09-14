@@ -374,4 +374,19 @@ DESCRIPTION:Athletics Canterbury 3000m Championships — held on the Satu
 CATEGORIES:Senior Track and Field
 STATUS:TENTATIVE
 END:VEVENT
+BEGIN:VEVENT
+UID:ac-no-interclub-nzssaa@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;VALUE=DATE:20261211
+DTEND;VALUE=DATE:20261214
+TRANSP:TRANSPARENT
+SUMMARY:NZSSAA Championships\, Whanganui
+LOCATION:Whanganui
+DESCRIPTION:New Zealand Secondary Schools Athleti
+ cs Championships\, Whanganui (Fri 11 - Sun 13 December)
+URL:https://nzssaa.org.nz/Information/nztf2026
+CATEGORIES:Senior Track and Field
+STATUS:CONFIRMED
+END:VEVENT
+END:VCALENDAR
 END:VCALENDAR
