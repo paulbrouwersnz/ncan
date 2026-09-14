@@ -25,6 +25,9 @@
   --line: rgba(11, 59, 46, .12);
   --line-strong: rgba(11, 59, 46, .22);
 
+  /* arrow-out-of-box, used as a mask so it takes the surrounding text colour */
+  --icon-external: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 4h6v6'/%3E%3Cpath d='M20 4L10 14'/%3E%3Cpath d='M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5'/%3E%3C/svg%3E");
+
   /* Type */
   --font-sans: "Inter", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
   --font-display: "Archivo", "Inter", "Segoe UI", system-ui, sans-serif;
@@ -1843,6 +1846,86 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 
 /* ---------- Calendar agenda ---------- */
 
+/* ---------- Calendar filter ---------- */
+
+.cal-filter { margin-bottom: clamp(1.5rem, 3vw, 2.25rem); }
+.cal-filter__label {
+  margin: 0 0 .7rem;
+  font-family: var(--font-display);
+  font-size: .78rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--green-600);
+}
+.cal-filter__chips { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
+
+.cal-filter__chip {
+  --cal-colour: var(--green-600);
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .45rem .9rem;
+  background: var(--white);
+  border: 2px solid var(--line-strong);
+  border-radius: 999px;
+  font-family: var(--font-display);
+  font-size: .85rem;
+  font-weight: 700;
+  color: var(--green-800);
+  cursor: pointer;
+  transition: border-color .16s var(--ease), background .16s var(--ease),
+              opacity .16s var(--ease);
+}
+.cal-filter__chip[aria-pressed="true"] { border-color: var(--cal-colour); }
+/* switched off: drained of colour, so "on" reads as the normal state */
+.cal-filter__chip[aria-pressed="false"] {
+  opacity: .55;
+  background: transparent;
+  text-decoration: line-through;
+}
+.cal-filter__chip:hover { background: var(--green-050); }
+.cal-filter__chip:focus-visible { outline: 3px solid var(--yellow-500); outline-offset: 2px; }
+
+.cal-filter__dot {
+  width: .6rem;
+  height: .6rem;
+  flex: none;
+  border-radius: 999px;
+  background: var(--cal-colour);
+}
+.cal-filter__chip[aria-pressed="false"] .cal-filter__dot { background: transparent; box-shadow: inset 0 0 0 2px currentColor; }
+.cal-filter__count {
+  font-family: var(--font-sans);
+  font-size: .78rem;
+  font-weight: 500;
+  opacity: .65;
+}
+
+.cal-filter__reset {
+  padding: .45rem .8rem;
+  background: none;
+  border: 0;
+  font-family: var(--font-display);
+  font-size: .82rem;
+  font-weight: 700;
+  color: var(--green-600);
+  text-decoration: underline;
+  cursor: pointer;
+}
+.cal-filter__reset:hover:not(:disabled) { color: var(--green-800); }
+/* disabled means it would change nothing: everything is already on, or off */
+.cal-filter__reset:disabled {
+  opacity: .4;
+  text-decoration: none;
+  cursor: default;
+}
+.cal-filter__reset:focus-visible { outline: 3px solid var(--yellow-500); outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .cal-filter__chip { transition: none; }
+}
+
 .agenda__state { margin: 0; color: var(--text-soft); }
 
 .agenda__month {
@@ -1946,6 +2029,7 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 .agenda__source {
   display: inline-block;
   margin-top: .5rem;
+  margin-right: .35rem;   /* a shared fixture carries one badge per calendar */
   padding: .15rem .55rem;
   border: 1px solid currentColor;
   border-radius: 999px;
@@ -1960,9 +2044,35 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 /* the subscribe list is colour-keyed to match the agenda */
 #calendar-files .doc { border-left-color: var(--cal-colour, var(--green-600)); }
 #calendar-files .doc:hover { border-left-color: var(--cal-colour, var(--green-600)); }
+
+/* the same treatment the agenda gives a linked event title, so a calendar
+   reads as the same thing in both places. Scoped to this list: the .doc
+   component is shared with the document lists on other pages. */
+#calendar-files .doc__title a {
+  color: var(--cal-colour, var(--green-800));
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--line-strong);
+  transition: text-decoration-color .16s var(--ease);
+}
+#calendar-files .doc__title a:hover,
+#calendar-files .doc__title a:focus-visible { text-decoration-color: currentColor; }
+
+/* and the type badge, so each row carries its colour top to bottom */
+#calendar-files .doc__type {
+  color: var(--cal-colour, var(--green-600));
+  border: 1px solid currentColor;
+  background: transparent;
+}
+
 #calendar-files .doc__meta code {
   font-size: .82rem;
   word-break: break-all;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #calendar-files .doc__title a { transition: none; }
 }
 
 .agenda__date { display: block; text-align: center; line-height: 1.1; }
@@ -2029,8 +2139,40 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
   .agenda__save { transition: none; }
 }
 .agenda__title { margin: 0 0 .2rem; font-size: 1.05rem; }
-.agenda__title a { text-decoration: none; }
-.agenda__title a:hover { text-decoration: underline; }
+
+/* Only events that carry a URL get a linked title, so the affordance has to be
+   visible at rest - otherwise a linked title is indistinguishable from a plain
+   one. An underline plus an outbound arrow says both "clickable" and "leaves
+   the site". */
+.agenda__title a {
+  color: var(--cal-colour, var(--green-800));
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--line-strong);
+  transition: text-decoration-color .16s var(--ease);
+}
+.agenda__title a::after {
+  content: "";
+  display: inline-block;
+  width: .62em;
+  height: .62em;
+  margin-left: .35em;
+  vertical-align: baseline;
+  background: currentColor;
+  /* arrow leaving a box, drawn as a mask so it always matches the text colour */
+  -webkit-mask: var(--icon-external) center / contain no-repeat;
+  mask: var(--icon-external) center / contain no-repeat;
+  opacity: .75;
+}
+.agenda__title a:hover,
+.agenda__title a:focus-visible { text-decoration-color: currentColor; }
+.agenda__title a:hover::after { opacity: 1; }
+.agenda__title a:focus-visible { outline: 3px solid var(--yellow-500); outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .agenda__title a { transition: none; }
+}
 .agenda__meta {
   margin: 0;
   font-family: var(--font-display);

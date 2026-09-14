@@ -32,13 +32,17 @@ END:STANDARD
 END:VTIMEZONE
 BEGIN:VEVENT
 UID:training-2026-27-teens-senior-athletics@ncan.nz
-DTSTAMP:20260913T112932Z
+DTSTAMP:20260913T221217Z
+SEQUENCE:1
 DTSTART;TZID=Pacific/Auckland:20261006T181500
 DTEND;TZID=Pacific/Auckland:20261006T191500
 RRULE:FREQ=WEEKLY;BYDAY=TU;UNTIL=20270401T120000Z
+EXDATE;TZID=Pacific/Auckland:20261222T181500,20261229T181500
 SUMMARY:Teens and senior athletics training
 LOCATION:Rangiora New Life School field
-DESCRIPTION:Event-group squads with qualified coaches and individualised t
- raining.
+DESCRIPTION:Equipment and coaching available to support training for
+  athletes high school aged or older.\nPlease direct enquiries to 
+   Head Coach Alex Brown, abrown8472@gmail.com
+URL:https://www.facebook.com/NorthCanterburyAthleticClub/
 END:VEVENT
 END:VCALENDAR

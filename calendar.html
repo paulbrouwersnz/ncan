@@ -19,7 +19,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/styles.css">
+<link rel="stylesheet" href="assets/css/styles.css?v=95692d2d">
 </head>
 <body>
 
@@ -97,6 +97,13 @@
         <div class="section-head__aside">
           <a class="btn btn--ghost" href="index.html#contact">Tell us about an event</a>
         </div>
+      </div>
+
+      <!-- One toggle per calendar, built by the script once it knows what
+           loaded. Stays empty, and hidden, when only one calendar is in play. -->
+      <div class="cal-filter" id="calendar-filter" hidden>
+        <p class="cal-filter__label" id="calendar-filter-label">Show calendars</p>
+        <div class="cal-filter__chips" role="group" aria-labelledby="calendar-filter-label"></div>
       </div>
 
       <!-- The agenda is built by the script below from the .ics named in data-ics.
@@ -214,7 +221,7 @@
         <h3>Get involved</h3>
         <ul>
           <li><a href="index.html#join">Become a member</a></li>
-          <li><a href="calendar.html" aria-current="page">Club calendar</a></li>
+          <li><a href="calendar.html">Club calendar</a></li>
           <li><a href="coaches-officials-volunteers.html#volunteer">Volunteer roles</a></li>
           <li><a href="coaches-officials-volunteers.html#coaching">Coaching development</a></li>
           <li><a href="coaches-officials-volunteers.html#officials">Officials training</a></li>
@@ -227,7 +234,7 @@
         <ul>
           <li><a href="committee.html">Committee and documents</a></li>
           <li><a href="safeguarding.html">Child safeguarding</a></li>
-          <li><a href="history.html">History</a></li>
+          <li><a href="history.html" aria-current="page">History</a></li>
           <li><a href="https://codesport.co.nz/catalog/%20NorthCanterburyAthleticsClub%20-1107550.htmx">Uniform and apparel</a></li>
 <!--           <li><a href="index.html#contact">Club records</a></li> -->
           <li><a href="resources.html">Athletics resources</a></li>
@@ -648,6 +655,47 @@
     '<path d="M12 3v11m0 0l-4-4m4 4l4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/>' +
     '</svg>';
 
+  // http(s) links and bare email addresses. Nothing else is turned into a
+  // link, so an address from a feed cannot become javascript: or data:.
+  // http(s) links and bare email addresses. Nothing else becomes a link,
+  // so an address out of a feed can never be javascript: or data:.
+  var LINK_PATTERN = /https?:\/\/[^\s<>"']+|[\w.+-]+@[\w-]+\.[\w.-]+/g;
+
+  function linkify(text) {
+    var fragment = document.createDocumentFragment();
+    var index = 0;
+
+    String(text).replace(LINK_PATTERN, function (match, offset) {
+      if (offset > index) {
+        fragment.appendChild(document.createTextNode(text.slice(index, offset)));
+      }
+
+      // a full stop or bracket after a link is sentence punctuation, not part
+      // of the address
+      var address = match.replace(/[.,;:!?)\]]+$/, '');
+      var trailing = match.slice(address.length);
+      var isEmail = address.indexOf('@') > -1 && address.indexOf('://') < 0;
+
+      var link = document.createElement('a');
+      link.href = isEmail ? 'mailto:' + address : address;
+      link.textContent = address;
+      if (!isEmail) {
+        link.target = '_blank';
+        link.rel = 'noopener';
+      }
+      fragment.appendChild(link);
+
+      if (trailing) { fragment.appendChild(document.createTextNode(trailing)); }
+      index = offset + match.length;
+      return match;
+    });
+
+    if (index < text.length) {
+      fragment.appendChild(document.createTextNode(text.slice(index)));
+    }
+    return fragment;
+  }
+
   function el(tag, className, text) {
     var node = document.createElement(tag);
     if (className) { node.className = className; }
@@ -722,6 +770,13 @@
     }
   }
 
+  function sameEventKey(summary, start) {
+    // title and start time identify a fixture across calendars; UIDs do not,
+    // because each publisher mints its own
+    return String(summary || '').toLowerCase().replace(/\s+/g, ' ').trim() +
+           '@' + start.getTime();
+  }
+
   function monthKey(date) {
     return date.getFullYear() + '-' + date.getMonth();
   }
@@ -782,7 +837,8 @@
 
   function buildRow(item, showSource) {
       var row = el('li', 'agenda__item');
-      if (item.colour) { row.style.setProperty('--cal-colour', item.colour); }
+      var first = item.sources && item.sources[0];
+      if (first && first.colour) { row.style.setProperty('--cal-colour', first.colour); }
 
       var when = el('div', 'agenda__when');
       var time = el('time', 'agenda__date');
@@ -817,12 +873,20 @@
       if (item.location) { facts.push(item.location); }
       body.appendChild(el('p', 'agenda__meta', facts.join(' \u00b7 ')));
 
-      if (showSource && item.source) {
-        body.appendChild(el('span', 'agenda__source', item.source));
+      if (showSource && item.sources) {
+        item.sources.forEach(function (src) {
+          var badge = el('span', 'agenda__source', src.name);
+          // each badge wears its own calendar's colour, so a shared fixture
+          // shows at a glance which calendars carry it
+          if (src.colour) { badge.style.color = src.colour; }
+          body.appendChild(badge);
+        });
       }
 
       if (item.description) {
-        body.appendChild(el('p', 'agenda__note', item.description));
+        var note = el('p', 'agenda__note');
+        note.appendChild(linkify(item.description));
+        body.appendChild(note);
       }
 
       row.appendChild(body);
@@ -930,6 +994,144 @@
     });
   }
 
+  /* ----------------------------------------------------------- filtering */
+
+  var STORAGE_KEY = 'ncan-calendar-filter';
+  var allItems = [];          // everything in the window, before filtering
+  var hiddenNames = {};       // calendar name -> true when switched off
+  var showSources = false;
+  var todayStart = null;
+  var calendarCount = 0;
+
+  function loadHidden() {
+    try {
+      var saved = window.localStorage.getItem(STORAGE_KEY);
+      if (saved) { hiddenNames = JSON.parse(saved) || {}; }
+    } catch (err) {
+      hiddenNames = {};       // private browsing, or storage disabled
+    }
+  }
+
+  function saveHidden() {
+    try {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(hiddenNames));
+    } catch (err) {
+      /* nothing to do - the filter still works for this visit */
+    }
+  }
+
+  function visibleItems() {
+    return allItems.filter(function (item) {
+      // a shared fixture stays while any of its calendars is still on
+      return (item.sources || []).some(function (src) { return !hiddenNames[src.name]; });
+    });
+  }
+
+  function updateMeta(items) {
+    var meta = document.getElementById('agenda-meta');
+    if (!meta) { return; }
+    var ahead = items.filter(function (i) { return i.start >= todayStart; }).length;
+    var on = calendarCount - Object.keys(hiddenNames).filter(function (n) {
+      return hiddenNames[n];
+    }).length;
+    meta.textContent = items.length
+      ? plural(ahead) + ' from ' + on + ' calendar' + (on === 1 ? '' : 's') +
+        ' over the next ' + MONTHS_AHEAD + ' months. Times shown in New Zealand time.'
+      : 'No events to show - every calendar is switched off.';
+    meta.hidden = false;
+  }
+
+  function refresh() {
+    var items = visibleItems();
+    if (!items.length) {
+      root.innerHTML = '';
+      root.setAttribute('aria-busy', 'false');
+      root.appendChild(el('p', 'agenda__state',
+        'Nothing to show. Switch a calendar back on above.'));
+    } else {
+      render(items, showSources, todayStart);
+    }
+    updateMeta(items);
+  }
+
+  function buildFilter(calendars) {
+    var box = document.getElementById('calendar-filter');
+    if (!box || calendars.length < 2) { return; }
+    var chips = box.querySelector('.cal-filter__chips');
+    chips.innerHTML = '';
+    var painters = [];
+
+    calendars.forEach(function (cal) {
+      var counted = allItems.filter(function (item) {
+        return (item.sources || []).some(function (src) { return src.name === cal.name; });
+      }).length;
+
+      var chip = el('button', 'cal-filter__chip');
+      chip.type = 'button';
+      if (cal.colour) { chip.style.setProperty('--cal-colour', cal.colour); }
+      chip.appendChild(el('span', 'cal-filter__dot'));
+      chip.lastChild.setAttribute('aria-hidden', 'true');
+      chip.appendChild(el('span', 'cal-filter__name', cal.name));
+      chip.appendChild(el('span', 'cal-filter__count', counted));
+
+      function paint() {
+        var on = !hiddenNames[cal.name];
+        chip.setAttribute('aria-pressed', on ? 'true' : 'false');
+        chip.title = (on ? 'Hide ' : 'Show ') + cal.name;
+      }
+      painters.push(paint);
+      paint();
+
+      chip.addEventListener('click', function () {
+        if (hiddenNames[cal.name]) { delete hiddenNames[cal.name]; }
+        else { hiddenNames[cal.name] = true; }
+        paint();
+        saveHidden();
+        paintBulk();
+        refresh();
+      });
+
+      chips.appendChild(chip);
+    });
+
+    function hiddenCount() {
+      return calendars.filter(function (cal) { return hiddenNames[cal.name]; }).length;
+    }
+
+    function applyAll(hide) {
+      hiddenNames = {};
+      if (hide) {
+        calendars.forEach(function (cal) { hiddenNames[cal.name] = true; });
+      }
+      saveHidden();
+      painters.forEach(function (repaint) { repaint(); });
+      paintBulk();
+      refresh();
+    }
+
+    var showAll = el('button', 'cal-filter__reset', 'Show all');
+    showAll.type = 'button';
+    showAll.addEventListener('click', function () { applyAll(false); });
+
+    var hideAll = el('button', 'cal-filter__reset', 'Hide all');
+    hideAll.type = 'button';
+    hideAll.addEventListener('click', function () { applyAll(true); });
+
+    // a button that would change nothing is disabled, so the current state of
+    // the whole set is readable without counting chips
+    function paintBulk() {
+      var hidden = hiddenCount();
+      showAll.disabled = hidden === 0;
+      hideAll.disabled = hidden === calendars.length;
+    }
+    paintBulk();
+
+    chips.appendChild(showAll);
+    chips.appendChild(hideAll);
+
+    box.hidden = false;
+  }
+
   /* ------------------------------------------------------------------- load */
 
   discover().then(function (calendars) {
@@ -976,7 +1178,7 @@
       var windowStart = MONTHS_BACK ? addMonths(startOfToday, -MONTHS_BACK) : startOfToday;
 
       var items = [];
-      var seen = {};
+      var byKey = {};
       var sources = [];
 
       loaded.forEach(function (entry) {
@@ -987,11 +1189,23 @@
         parseEvents(entry.text).forEach(function (ev) {
           occurrences(ev, windowEnd).forEach(function (o) {
             if (o.start < windowStart || o.start > windowEnd) { return; }
-            // the same fixture may appear in more than one calendar
-            var key = (ev.uid || ev.summary || '') + '@' + o.start.getTime();
-            if (seen[key]) { return; }
-            seen[key] = true;
-            items.push({
+
+            var key = sameEventKey(ev.summary, o.start);
+            var already = byKey[key];
+            if (already) {
+              // one card, badged with every calendar that carries it
+              var listed = already.sources.some(function (src) { return src.name === name; });
+              if (!listed) {
+                already.sources.push({ name: name, colour: entry.cal.colour });
+              }
+              // a thinner copy should not lose detail the other one had
+              if (!already.location && ev.location) { already.location = ev.location; }
+              if (!already.description && ev.description) { already.description = ev.description; }
+              if (!already.url && ev.url) { already.url = ev.url; }
+              return;
+            }
+
+            var item = {
               start: o.start,
               duration: o.duration,
               allDay: ev.start.allDay,
@@ -1000,28 +1214,30 @@
               description: ev.description,
               url: ev.url,
               uid: ev.uid,
-              source: name,
-              colour: entry.cal.colour
-            });
+              sources: [{ name: name, colour: entry.cal.colour }]
+            };
+            byKey[key] = item;
+            items.push(item);
           });
         });
       });
 
       items.sort(function (a, b) { return a.start - b.start; });
-      render(items, sources.length > 1, startOfToday);
-      listCalendars(calendars);
 
-      var meta = document.getElementById('agenda-meta');
-      if (meta) {
-        var ahead = items.filter(function (i) { return i.start >= startOfToday; }).length;
-        var used = loaded.length;
-        meta.textContent = items.length
-          ? ahead + ' event' + (ahead === 1 ? '' : 's') +
-            ' from ' + used + ' calendar' + (used === 1 ? '' : 's') +
-            ' over the next ' + MONTHS_AHEAD + ' months. Times shown in New Zealand time.'
-          : '';
-        meta.hidden = !items.length;
-      }
+      allItems = items;
+      showSources = sources.length > 1;
+      todayStart = startOfToday;
+      calendarCount = loaded.length;
+
+      loadHidden();
+      // a calendar that has gone away should not stay switched off for ever
+      Object.keys(hiddenNames).forEach(function (name) {
+        if (!sources.some(function (s) { return s === name; })) { delete hiddenNames[name]; }
+      });
+
+      buildFilter(loaded.map(function (entry) { return entry.cal; }));
+      refresh();
+      listCalendars(calendars);
     });
   }).catch(function (err) {
     fail('The calendar could not be loaded.', err && err.message);
