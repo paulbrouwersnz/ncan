@@ -338,12 +338,10 @@ TRANSP:OPAQUE
 SUMMARY:South Island Masters Championships / SI Combined Events Champions
  hips
 LOCATION:Surrey Park\, Invercargill
-DESCRIPTION:South Island Masters Championships / South Island Combined Ev
- ents Championships.\nhttps://athleticscanterbury.org.nz/competition/even
- ts/
+DESCRIPTION:Schedule and register at https://www.athletic.net/TrackAndField/meet/670589/
+ info
 CATEGORIES:National Events
-URL:https://athleticscanterbury.org.nz/events/south-island-masters-champi
- onships-si-combined-events-championships/
+URL:https://nzmastersathletics.org.nz/event/south-island-masters-track-field-championships/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
@@ -388,5 +386,4 @@ URL:https://nzssaa.org.nz/Information/nztf2026
 CATEGORIES:Senior Track and Field
 STATUS:CONFIRMED
 END:VEVENT
-END:VCALENDAR
 END:VCALENDAR
