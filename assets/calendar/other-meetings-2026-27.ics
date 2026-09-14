@@ -107,6 +107,23 @@ URL:https://athleticscanterbury.org.nz/events/canterbury-master-athletics
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
+UID:halberg-inclusion-training-2026-09-24@athletics.org.nz
+DTSTAMP:20260914T050020Z
+DTSTART;TZID=Pacific/Auckland:20260924T190000
+DTEND;TZID=Pacific/Auckland:20260924T200000
+TRANSP:OPAQUE
+SUMMARY:Halberg Foundation Athletics Inclusion Training (online)
+LOCATION:Online
+DESCRIPTION:Free online training on adapting activity and sport so that e
+ veryone can take part in mainstream events\, activities and programmes. 
+ Open to all Athletics NZ members - officials\, coaches\, volunteers\, at
+ hletes and committee members.\nEnquiries: raylene@athletics.org.nz\nhttp
+ s://events.mygameday.app/event/inclusiontraining
+CATEGORIES:Athletics New Zealand
+URL:https://events.mygameday.app/event/inclusiontraining
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
 UID:ac-club-connect@athleticscanterbury.org.nz
 DTSTAMP:20260913T000000Z
 DTSTART;TZID=Pacific/Auckland:20260927T100000
@@ -221,3 +238,4 @@ URL:https://athleticscanterbury.org.nz/events/mid-south-canterbury-meetin
  g-jubilee-cup/
 STATUS:CONFIRMED
 END:VEVENT
+END:VCALENDAR
