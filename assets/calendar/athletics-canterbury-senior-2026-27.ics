@@ -3,7 +3,7 @@ VERSION:2.0
 PRODID:-//Athletics Canterbury 2026-2027 Season//EN
 CALSCALE:GREGORIAN
 METHOD:PUBLISH
-X-WR-CALNAME:Teens & senior athletics 2026-27
+X-WR-CALNAME:Teens & senior athletics competition
 X-WR-TIMEZONE:Pacific/Auckland
 X-WR-CALDESC:Athletics Canterbury senior interclub and twilight meetings 
  with their track and field programmes\, plus championship meetings\, 202
@@ -133,23 +133,6 @@ URL:https://athleticscanterbury.org.nz/events/ac-senior-interclub-4-4/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:ac-no-interclub-show@athleticscanterbury.org.nz
-DTSTAMP:20260913T000000Z
-DTSTART;VALUE=DATE:20261114
-DTEND;VALUE=DATE:20261115
-TRANSP:TRANSPARENT
-SUMMARY:No AC Senior Interclub - Canterbury Show Weekend
-LOCATION:Ngā Puna Wai Sports Hub\, Augustine Drive\, Christchurch
-DESCRIPTION:NO SENIOR INTERCLUB — Show Weekend.\n\nCanterbury Children'
- s Interclub still runs 9:00am-1:00pm\, and the schedule keeps the Track 
- Walk marked for this date (AC track walks run with the Children's walk e
- vents).\n\nSource: AC 2026-2027 Interclub Event Schedule (Draft Septembe
- r 2026).\nhttps://athleticscanterbury.org.nz/wp-content/uploads/2026/09/
- AC-2026-2027-Interclub-Event-Schedule-Pre-Christmas.pdf
-CATEGORIES:Senior Track and Field
-STATUS:CONFIRMED
-END:VEVENT
-BEGIN:VEVENT
 UID:ac-interclub-05@athleticscanterbury.org.nz
 DTSTAMP:20260913T000000Z
 DTSTART;VALUE=DATE:20261121
@@ -229,23 +212,6 @@ DESCRIPTION:TRACK: 60m\, 100m\, 200m\, 400m\, 800m\, 1500m\, Track Walk\,
  ristmas.pdf
 CATEGORIES:Senior Track and Field
 STATUS:TENTATIVE
-END:VEVENT
-BEGIN:VEVENT
-UID:ac-no-interclub-nzssaa@athleticscanterbury.org.nz
-DTSTAMP:20260913T000000Z
-DTSTART;VALUE=DATE:20261211
-DTEND;VALUE=DATE:20261214
-TRANSP:TRANSPARENT
-SUMMARY:No AC Senior Interclub - NZSSAA Championships\, Whanganui
-LOCATION:Whanganui
-DESCRIPTION:NO SENIOR INTERCLUB — New Zealand Secondary Schools Athleti
- cs Championships\, Whanganui (Fri 11 - Sun 13 December).\n\nCanterbury C
- hildren's Interclub at Ngā Puna Wai on Sat 12 Dec is listed as TBC.\n\n
- Source: AC 2026-2027 Interclub Event Schedule (Draft September 2026).\nh
- ttps://athleticscanterbury.org.nz/wp-content/uploads/2026/09/AC-2026-202
- 7-Interclub-Event-Schedule-Pre-Christmas.pdf
-CATEGORIES:Senior Track and Field
-STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
 UID:ac-twilight-01@athleticscanterbury.org.nz
@@ -388,12 +354,8 @@ DTEND;VALUE=DATE:20270201
 TRANSP:TRANSPARENT
 SUMMARY:Oceania Masters Track & Field Championships
 LOCATION:Ngā Puna Wai Sports Hub\, Augustine Drive\, Christchurch
-DESCRIPTION:Oceania Masters Track & Field Championships\, including the N
- ZMA Championships — Christchurch\, 27-31 January 2027.\n\nCompetition 
- runs Wednesday through Sunday.\nThe AC 3000m Championships are held on t
- he Saturday morning (30 Jan).\n\nAthletes are asked to indicate availabi
- lity and apply online.\nhttps://www.oceania-masters-athletics.org/oma-ch
- ampionships-2025/oma2027-christchurch/
+URL:https://www.oceania-masters-athletics.org/oma-championships-2025/oma
+ 2027-christchurch/
 CATEGORIES:National Events
 STATUS:CONFIRMED
 END:VEVENT
