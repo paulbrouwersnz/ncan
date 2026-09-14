@@ -1,11 +1,11 @@
 BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//North Canterbury Athletic Club//junior-club-night 2026/27//EN
+PRODID:-//North Canterbury Athletic Club//junior-competition-team 2026/27//EN
 CALSCALE:GREGORIAN
 METHOD:PUBLISH
-X-WR-CALNAME:Junior club night (ages 7–14)
+X-WR-CALNAME:Junior competition team training (ages 7–14)
 X-WR-TIMEZONE:Pacific/Auckland
-X-WR-CALDESC:Junior club night (ages 7–14)\, summer season 2026/27. One 
+X-WR-CALDESC:Junior competition training (ages 7–14)\, summer season 2026/27. One 
  session per week\, so you can subscribe to just this one.
 BEGIN:VTIMEZONE
 TZID:Pacific/Auckland
@@ -30,7 +30,7 @@ RRULE:FREQ=YEARLY;BYMONTH=4;BYDAY=1SU
 END:STANDARD
 END:VTIMEZONE
 BEGIN:VEVENT
-UID:training-2026-27-junior-club-night@ncan.nz
+UID:training-2026-27-junior-competition-team@ncan.nz
 DTSTAMP:20260913T112932Z
 DTSTART;TZID=Pacific/Auckland:20261006T171500
 DTEND;TZID=Pacific/Auckland:20261006T183000
@@ -40,6 +40,19 @@ LOCATION:Rangiora New Life School field
 DESCRIPTION:Sprints\, distance\, long jump\, high jump\, shot put\, discus
  \, race walking and hurdles\, taught in a fun evironment. Parent helpers
   always welcome.
+URL:https://www.facebook.com/NorthCanterburyChildrensAthletics/
+END:VEVENT
+BEGIN:VEVENT
+UID:training-2026-27-junior-competition-team-2@ncan.nz
+DTSTAMP:20260913T112932Z
+DTSTART;TZID=Pacific/Auckland:20270105T171500
+DTEND;TZID=Pacific/Auckland:20261006T183000
+RRULE:FREQ=WEEKLY;BYDAY=TU;UNTIL=20270401T120000Z
+SUMMARY:Junior competition team training (ages 7–14)
+LOCATION:Rangiora New Life School field
+DESCRIPTION:Sprints\, distance\, long jump\, high jump\, shot put\, discus
+ \, race walking and hurdles\. Parent helpers always welcome.  Preparation
+  for Colgate Games and Canterbury Championships.
 URL:https://www.facebook.com/NorthCanterburyChildrensAthletics/
 END:VEVENT
 END:VCALENDAR

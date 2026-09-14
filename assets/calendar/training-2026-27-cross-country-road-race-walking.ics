@@ -32,12 +32,26 @@ END:STANDARD
 END:VTIMEZONE
 BEGIN:VEVENT
 UID:training-2026-27-cross-country-road-race-walking@ncan.nz
-DTSTAMP:20260913T112932Z
+DTSTAMP:20260914T003132Z
+SEQUENCE:1
 DTSTART;TZID=Pacific/Auckland:20260406T163000
 DTEND;TZID=Pacific/Auckland:20260406T173000
-RRULE:FREQ=WEEKLY;BYDAY=MO;UNTIL=20261001T120000Z
+RRULE:FREQ=WEEKLY;BYDAY=MO;UNTIL=20260908T120000Z
 SUMMARY:Cross country\, road and race walking coaching
 LOCATION:Loburn Domain and Ashgrove Park
-DESCRIPTION:Venue alternates through the winter season.
+DESCRIPTION:Venue alternates through the winter season.\nPlease direct
+ enquiries to Coach Laura Langley, lauralangley14@gmail.com
+END:VEVENT
+BEGIN:VEVENT
+UID:training-2026-27-cross-country-road-race-walking-final@ncan.nz
+DTSTAMP:20260914T003132Z
+DTSTART;TZID=Pacific/Auckland:20260914T163000
+DTEND;TZID=Pacific/Auckland:20260914T173000
+SUMMARY:Cross country\, road and race walking coaching
+LOCATION:Ashgrove Park\, Rangiora
+DESCRIPTION:Final training night of the winter cross country and road seas
+ on!\nPlease direct enquiries to Coach Laura Langley, lauralangley14@gmail
+ .com
+URL:https://www.facebook.com/NorthCanterburyAthleticClub/
 END:VEVENT
 END:VCALENDAR

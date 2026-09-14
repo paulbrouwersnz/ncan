@@ -38,6 +38,8 @@ DTEND;TZID=Pacific/Auckland:20261005T173000
 RRULE:FREQ=WEEKLY;BYDAY=MO;UNTIL=20270401T120000Z
 SUMMARY:Sprints\, running and race walking coaching
 LOCATION:Ashgrove Park\, Rangiora
-DESCRIPTION:Suitable for ages 10 through to masters athletes.
+DESCRIPTION:Suitable for ages 10 through to masters athletes.\nPlease
+  direct enquiries to Coach Laura Langley, lauralangley14@gmail.com
+URL:https://www.facebook.com/NorthCanterburyAthleticClub/
 END:VEVENT
 END:VCALENDAR

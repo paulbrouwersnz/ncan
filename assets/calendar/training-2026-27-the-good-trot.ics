@@ -37,5 +37,6 @@ DTEND;TZID=Pacific/Auckland:20260402T190000
 RRULE:FREQ=WEEKLY;BYDAY=TH;UNTIL=20270401T120000Z
 SUMMARY:The Good Trot – adult and teen social intervals
 LOCATION:Meet at The Good Drop\, Rangiora
+URL:https://www.facebook.com/thegoodtrot/
 END:VEVENT
 END:VCALENDAR
