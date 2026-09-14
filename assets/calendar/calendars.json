@@ -2,37 +2,37 @@
   "calendars": [
     {
       "file": "athletics-canterbury-childrens-2026-27.ics",
-      "name": "Children's athletics 2026-27",
+      "name": "Children's athletics competitions",
       "colour": "#da404e"
     },
     {
-      "file": "athletics-canterbury-coaching-2026-27.ics",
-      "name": "Coaching & officials courses 2026-27",
+      "file": "training-2026-27-junior-club-night.ics",
+      "name": "Children's club night (ages 7–14)",
       "colour": "#ea6f2f"
     },
     {
-      "file": "athletics-canterbury-road-xc-2026-27.ics",
-      "name": "Cross country & road 2026-27",
+      "file": "training-2026-27-junior-competition-team.ics",
+      "name": "Children's competition team training (ages 7–14)",
       "colour": "#b16f23"
+    },
+    {
+      "file": "athletics-canterbury-coaching-2026-27.ics",
+      "name": "Coaching & officials courses",
+      "colour": "#d0aa13"
+    },
+    {
+      "file": "athletics-canterbury-road-xc-2026-27.ics",
+      "name": "Cross country & road competition",
+      "colour": "#89ae37"
     },
     {
       "file": "training-2026-27-cross-country-road-race-walking.ics",
       "name": "Cross country, road and race walking coaching",
-      "colour": "#d0aa13"
-    },
-    {
-      "file": "training-2026-27-junior-club-night.ics",
-      "name": "Junior club night (ages 7–14)",
-      "colour": "#89ae37"
-    },
-    {
-      "file": "training-2026-27-junior-competition-team.ics",
-      "name": "Junior competition team (ages 7–14)",
       "colour": "#36892f"
     },
     {
       "file": "other-meetings-2026-27.ics",
-      "name": "Other meetings 2026-27",
+      "name": "Other meetings",
       "colour": "#00ad82"
     },
     {
@@ -47,7 +47,7 @@
     },
     {
       "file": "athletics-canterbury-senior-2026-27.ics",
-      "name": "Teens & senior athletics 2026-27",
+      "name": "Teens & senior athletics competition",
       "colour": "#7b57c8"
     },
     {
