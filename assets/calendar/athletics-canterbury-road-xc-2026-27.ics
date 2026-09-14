@@ -287,4 +287,77 @@ CATEGORIES:Cross Country and Road
 URL:https://www.boulderbayclassic.run/
 STATUS:CONFIRMED
 END:VEVENT
+BEGIN:VEVENT
+UID:ac-primary-xc-closed@athleticscanterbury.org.nz
+DTSTAMP:20260913T000000Z
+DTSTART;TZID=Pacific/Auckland:20260617T090000
+DTEND;TZID=Pacific/Auckland:20260617T150000
+TRANSP:OPAQUE
+SUMMARY:Primary Schools Cross Country Finals Day
+LOCATION:Ngā Puna Wai Sports Hub\, Augustine Drive\, Christchurch
+CATEGORIES:Athletics Canterbury Board
+URL:https://athleticscanterbury.org.nz/events/primary-schools-cross-count
+ ry-finals-day-track-closed/
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:nzssaa-si-cross-country-2026@nzssaa.org.nz
+DTSTAMP:20260914T051638Z
+DTSTART;VALUE=DATE:20260524
+DTEND;VALUE=DATE:20260525
+TRANSP:OPAQUE
+SUMMARY:South Island Secondary Schools Cross Country Festival
+LOCATION:Invercargill
+DESCRIPTION:South Island Secondary Schools' Cross Country Festival 2026\,
+  Invercargill (Sunday 24 May).\nhttps://nzssaa.org.nz/Information/sixc20
+ 26
+CATEGORIES:National Events
+URL:https://nzssaa.org.nz/Information/sixc2026
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:css-cross-country-champs-2026@canterbury.schoolsport.org.nz
+DTSTAMP:20260914T051411Z
+DTSTART;VALUE=DATE:20260604
+DTEND;VALUE=DATE:20260605
+TRANSP:OPAQUE
+SUMMARY:Canterbury Secondary Schools Cross Country Championship
+LOCATION:Ascot Park\, Ascot Avenue\, New Brighton
+DESCRIPTION:Canterbury Secondary Schools Cross Country Championship 2026 
+ (School Sport Canterbury). Reserve date Tuesday 9 June 2026.\nhttps://ww
+ w.canterbury.schoolsport.org.nz/sports/cross-country
+CATEGORIES:Cross Country and Road
+URL:https://www.canterbury.schoolsport.org.nz/sports/cross-country
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:nzssaa-cross-country-2026@nzssaa.org.nz
+DTSTAMP:20260914T051541Z
+DTSTART;VALUE=DATE:20260620
+DTEND;VALUE=DATE:20260622
+TRANSP:OPAQUE
+SUMMARY:New Zealand Secondary Schools Cross Country Championships
+LOCATION:Trentham Memorial Park\, Wellington
+DESCRIPTION:52nd New Zealand Secondary Schools' Cross Country Championshi
+ ps\, Trentham Memorial Park\, Wellington (Sat 20 - Sun 21 June).\nhttps:
+ //nzssaa.org.nz/Information/nzxc2026
+CATEGORIES:National Events
+URL:https://nzssaa.org.nz/Information/nzxc2026
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:nzssaa-road-race-relay-2026@nzssaa.org.nz
+DTSTAMP:20260914T051638Z
+DTSTART;VALUE=DATE:20260903
+DTEND;VALUE=DATE:20260905
+TRANSP:OPAQUE
+SUMMARY:New Zealand Secondary Schools Road Race Relay Festival
+LOCATION:Hamilton
+DESCRIPTION:New Zealand Secondary Schools' Road Race Relay Festival 2026\
+ , Hamilton (Thu 3 - Fri 4 September).\nhttps://nzssaa.org.nz/Information
+ /nzrr2026
+CATEGORIES:National Events
+URL:https://nzssaa.org.nz/Information/nzrr2026
+STATUS:CONFIRMED
+END:VEVENT
 END:VCALENDAR
