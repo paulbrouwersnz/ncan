@@ -38,8 +38,9 @@ RRULE:FREQ=WEEKLY;BYDAY=TU;UNTIL=20261216T120000Z
 SUMMARY:Junior club night (ages 7–14)
 LOCATION:Rangiora New Life School field
 DESCRIPTION:Sprints\, distance\, long jump\, high jump\, shot put\, discus
- \, race walking and hurdles\, taught in a fun evironment. Parent helpers
-  always welcome.
+ \, race walking and hurdles\, taught in a fun environment. Parent helpers
+  always welcome.\nPlease direct enquiries to the Children's team manager,
+  ncanchildrensathletics@gmail.com
 URL:https://www.facebook.com/NorthCanterburyChildrensAthletics/
 END:VEVENT
 BEGIN:VEVENT
@@ -52,7 +53,9 @@ SUMMARY:Junior competition team training (ages 7–14)
 LOCATION:Rangiora New Life School field
 DESCRIPTION:Sprints\, distance\, long jump\, high jump\, shot put\, discus
  \, race walking and hurdles\. Parent helpers always welcome.  Preparation
-  for Colgate Games and Canterbury Championships.
+  for Colgate Games and Canterbury Championships.\nPlease direct enquiries 
+  to the Children's team manager, ncanchildrensathletics@gmail.com
+URL:https://www.facebook.com/NorthCanterburyChildrensAthletics/
 URL:https://www.facebook.com/NorthCanterburyChildrensAthletics/
 END:VEVENT
 END:VCALENDAR
