@@ -3,57 +3,62 @@
     {
       "file": "athletics-canterbury-childrens-2026-27.ics",
       "name": "Children's athletics 2026-27",
-      "colour": "#2A5DA8"
+      "colour": "#da404e"
     },
     {
       "file": "athletics-canterbury-coaching-2026-27.ics",
       "name": "Coaching & officials courses 2026-27",
-      "colour": "#7A3E9D"
+      "colour": "#ea6f2f"
     },
     {
       "file": "athletics-canterbury-road-xc-2026-27.ics",
       "name": "Cross country & road 2026-27",
-      "colour": "#4B6157"
+      "colour": "#b16f23"
     },
     {
       "file": "training-2026-27-cross-country-road-race-walking.ics",
       "name": "Cross country, road and race walking coaching",
-      "colour": "#12684D"
+      "colour": "#d0aa13"
     },
     {
       "file": "training-2026-27-junior-club-night.ics",
       "name": "Junior club night (ages 7–14)",
-      "colour": "#B4531A"
+      "colour": "#89ae37"
+    },
+    {
+      "file": "training-2026-27-junior-competition-team.ics",
+      "name": "Junior competition team (ages 7–14)",
+      "colour": "#36892f"
     },
     {
       "file": "other-meetings-2026-27.ics",
       "name": "Other meetings 2026-27",
-      "colour": "#A8123F"
+      "colour": "#00ad82"
     },
     {
       "file": "training-2026-27-race-walks-coaching.ics",
       "name": "Race walks coaching",
-      "colour": "#0E7490"
+      "colour": "#008f9f"
     },
     {
       "file": "training-2026-27-sprints-running-race-walking.ics",
       "name": "Sprints, running and race walking coaching",
-      "colour": "#854D0E"
+      "colour": "#4385e4"
     },
     {
       "file": "athletics-canterbury-senior-2026-27.ics",
       "name": "Teens & senior athletics 2026-27",
-      "colour": "#1E3A8A"
+      "colour": "#7b57c8"
     },
     {
       "file": "training-2026-27-teens-senior-athletics.ics",
       "name": "Teens and senior athletics training",
-      "colour": "#9D174D"
+      "colour": "#aa4ba9"
     },
     {
       "file": "training-2026-27-the-good-trot.ics",
       "name": "The Good Trot – adult and teen social intervals",
-      "colour": "#3F6212"
+      "colour": "#de77ab"
     }
   ]
 }

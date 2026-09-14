@@ -36,6 +36,9 @@ DTSTART;TZID=Pacific/Auckland:20260401T163000
 DTEND;TZID=Pacific/Auckland:20260401T173000
 RRULE:FREQ=WEEKLY;BYDAY=WE;UNTIL=20270401T120000Z
 SUMMARY:Race walks coaching
+DESCRIPTION:Please direct enquiries to Head Coach Alex Brown,
+  abrown8472@gmail.com
 LOCATION:Ashgrove Park and Pegasus
+URL:https://www.facebook.com/NorthCanterburyAthleticClub/
 END:VEVENT
 END:VCALENDAR
