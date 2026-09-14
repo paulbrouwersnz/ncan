@@ -41,19 +41,6 @@ URL:https://athleticscanterbury.org.nz/events/athletics-canterbury-awards
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:ac-primary-xc-closed@athleticscanterbury.org.nz
-DTSTAMP:20260913T000000Z
-DTSTART;TZID=Pacific/Auckland:20260617T090000
-DTEND;TZID=Pacific/Auckland:20260617T150000
-TRANSP:OPAQUE
-SUMMARY:Primary Schools Cross Country Finals Day
-LOCATION:Ngā Puna Wai Sports Hub\, Augustine Drive\, Christchurch
-CATEGORIES:Athletics Canterbury Board
-URL:https://athleticscanterbury.org.nz/events/primary-schools-cross-count
- ry-finals-day-track-closed/
-STATUS:CONFIRMED
-END:VEVENT
-BEGIN:VEVENT
 UID:ac-agm@athleticscanterbury.org.nz
 DTSTAMP:20260913T000000Z
 DTSTART;TZID=Pacific/Auckland:20260723T193000
