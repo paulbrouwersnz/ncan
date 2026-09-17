@@ -18,7 +18,10 @@ jobs:
     environment: ncan-facebook-update
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+          lfs: true
 
       - name: Make scripts executable
         run: |
