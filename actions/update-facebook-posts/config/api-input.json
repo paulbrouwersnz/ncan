@@ -1,0 +1,12 @@
+{
+    "captionText": false,
+    "resultsLimit": 3,
+    "startUrls": [
+        {
+            "url": "https://www.facebook.com/NorthCanterburyAthleticClub/"
+        },
+        {
+            "url": "https://www.facebook.com/NorthCanterburyChildrensAthletics/"
+        }
+    ]
+}
