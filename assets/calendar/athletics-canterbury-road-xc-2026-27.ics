@@ -360,4 +360,20 @@ CATEGORIES:National Events
 URL:https://nzssaa.org.nz/Information/nzrr2026
 STATUS:CONFIRMED
 END:VEVENT
-END:VCALENDAR
+BEGIN:VEVENT
+UID:aims-games-cross-country-2026@nzaimsgames.co.nz
+DTSTAMP:20260914T054948Z
+DTSTART;TZID=Pacific/Auckland:20260906T100000
+DTEND;TZID=Pacific/Auckland:20260906T150000
+TRANSP:OPAQUE
+SUMMARY:Zespri AIMS Games Cross Country
+LOCATION:Waipuna Park\, Welcome Bay\, Tauranga
+DESCRIPTION:Entries close 7.59pm Wednesday 3 June 2026. Races from 10am\
+ , school team relays from 1pm. Year 7-8 (born 2013-2015)\, plus Adapted 
+ Sports Athletes.  See https://www.nzaimsgames.co.nz/register/eligibility
+  for eligibility criteria.
+CATEGORIES:National Events
+URL:https://www.nzaimsgames.co.nz/sports-hakinakina/cross-country-1
+STATUS:CONFIRMED
+END:VEVENT
+END:VCALENDARm
