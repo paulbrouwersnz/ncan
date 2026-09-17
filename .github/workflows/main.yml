@@ -15,6 +15,7 @@ permissions:
 jobs:
   update:
     runs-on: ubuntu-latest
+    environment: ncan-facebook-update
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
