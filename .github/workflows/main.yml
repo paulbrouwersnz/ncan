@@ -1,0 +1,48 @@
+name: Update Facebook posts
+
+on:
+  schedule:
+    - cron: '45 4 * * *'        # 15:45 NZDT daily
+    - cron: '15 11 * * *'       # 22:15 NZDT daily
+    - cron: '30 18 * * 5'       # 07:30 Saturday NZDT (Fri 18:30 UTC)
+    - cron: '0,30 19 * * 5'     # 08:00 & 08:30 Saturday NZDT (Fri 19:00/19:30 UTC)
+    - cron: '0 20 * * 5'        # 09:00 Saturday NZDT (Fri 20:00 UTC)
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3'
+
+      - name: Make scripts executable
+        run: |
+          chmod +x actions/update-facebook-posts/action.sh
+          chmod +x get-ncan-fb.sh
+          chmod +x build-html.py
+
+      - name: Run update script
+        env:
+          FB_API_KEY: ${{ secrets.FB_API_KEY }}
+        run: ./actions/update-facebook-posts/action.sh
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Facebook post updates [automated]"
+            git push
+          fi
