@@ -9,9 +9,6 @@ on:
     - cron: '0 20 * * 5'        # 09:00 Saturday NZDT (Fri 20:00 UTC)
   workflow_dispatch: {}
 
-permissions:
-  contents: write
-
 jobs:
   update:
     runs-on: ubuntu-latest
@@ -20,14 +17,15 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v7
         with:
-          fetch-depth: 1
-          lfs: true
+          sparse-checkout: |
+            actions/update-facebook-posts
+            assets/facebook
 
       - name: Make scripts executable
         run: |
           chmod +x actions/update-facebook-posts/action.sh
-          chmod +x actions/update-facebook-posts/get-ncan-fb.sh
-          chmod +x actions/update-facebook-posts/build-html.py
+          chmod +x get-ncan-fb.sh
+          chmod +x build-html.py
 
       - name: Run update script
         env:
