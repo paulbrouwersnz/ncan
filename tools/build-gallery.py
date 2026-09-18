@@ -66,6 +66,11 @@ except ImportError:
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 GALLERY_DIR = os.path.join(ROOT, 'assets', 'img', 'gallery')
+# The copies in the repo are thumbnails (see tools/shrink-gallery.py). The
+# full-size originals live on a mirror of this same folder layout, and that
+# is what a thumbnail links to - both for the lightbox, which reads the
+# link's href, and for the plain new-tab fallback without <dialog>.
+FULL_BASE = 'https://ncan.brouwers.nz/gallery/'
 PAGE = os.path.join(ROOT, 'gallery.html')
 OPEN, CLOSE = '<!-- @generated:gallery -->', '<!-- /@generated:gallery -->'
 
@@ -642,6 +647,7 @@ def build(order=False):
         items = []
         for f in photos:
             src = 'assets/img/gallery/%s/%s' % (folder, quote(f))
+            full = FULL_BASE + '%s/%s' % (quote(folder), quote(f))
             cap = caption_for(f)
             dims = dimensions(os.path.join(GALLERY_DIR, folder, f))
             size = ' width="%d" height="%d"' % dims if dims else ''
@@ -652,7 +658,7 @@ def build(order=False):
                 '            <a href="%s"%s target="_blank" rel="noopener">\n'
                 '              <img src="%s" alt="%s"%s loading="lazy" decoding="async">\n'
                 '            </a>\n'
-                '          </li>' % (src, data_cap, src, alt, size))
+                '          </li>' % (full, data_cap, src, alt, size))
 
         # Every album starts collapsed. A closed <details> is not rendered, so
         # the browser lays out none of its grid and - because every photo is
