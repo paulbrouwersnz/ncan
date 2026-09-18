@@ -24,8 +24,8 @@ jobs:
       - name: Make scripts executable
         run: |
           chmod +x actions/update-facebook-posts/action.sh
-          chmod +x actions/get-ncan-fb.sh
-          chmod +x actions/build-html.py
+          chmod +x actions/update-facebook-posts/get-ncan-fb.sh
+          chmod +x actions/update-facebook-posts/build-html.py
 
       - name: Run update script
         env:
