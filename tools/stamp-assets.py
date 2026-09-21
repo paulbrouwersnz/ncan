@@ -16,8 +16,11 @@ nothing to remember to bump.
     python tools/stamp-assets.py --check    # report only, change nothing
     python tools/stamp-assets.py --clear    # strip the stamps again
 
-Run it after editing the stylesheet, before publishing. The <link> lives in each
-page's <head>, outside the @partial markers, so sync-partials.py cannot do this.
+Run it after editing the stylesheet, before publishing.
+
+The <link> lives in partials/head.html, which is generated into every page, so
+this stamps the partial as well as the pages. If it only stamped the pages, the
+next sync-partials.py run would copy the partial's stale hash back over them.
 """
 import argparse
 import hashlib
@@ -55,8 +58,18 @@ def content_hash(path):
     return digest.hexdigest()[:HASH_LENGTH]
 
 
-def pages():
-    return [f for f in sorted(os.listdir(ROOT)) if f.endswith('.html')]
+def targets():
+    """Every file that references a stamped asset.
+
+    The pages, plus the head partial they are generated from: both have to
+    carry the same stamp or they will fight each other.
+    """
+    found = [(f, os.path.join(ROOT, f))
+             for f in sorted(os.listdir(ROOT)) if f.endswith('.html')]
+    partial = os.path.join(ROOT, 'partials', 'head.html')
+    if os.path.exists(partial):
+        found.append((os.path.join('partials', 'head.html'), partial))
+    return found
 
 
 def main():
@@ -83,8 +96,7 @@ def main():
         print('%s -> %s' % (reference, digest if digest else '(no stamp)'))
 
     changed = []
-    for page in pages():
-        path = os.path.join(ROOT, page)
+    for page, path in targets():
         before = read(path)
         after = before
 
