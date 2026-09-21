@@ -56,8 +56,9 @@ loading. The markup between the markers is regenerated - do not hand-edit.
 
     <!-- @generated:gallery -->  ...  <!-- /@generated:gallery -->
 """
-import io, os, re, sys
+import io, json, os, re, sys
 from urllib.parse import quote
+from urllib.request import Request, urlopen
 
 try:
     from PIL import Image
@@ -71,6 +72,11 @@ GALLERY_DIR = os.path.join(ROOT, 'assets', 'img', 'gallery')
 # is what a thumbnail links to - both for the lightbox, which reads the
 # link's href, and for the plain new-tab fallback without <dialog>.
 FULL_BASE = 'https://ncan.brouwers.nz/gallery/'
+# Each album is also published as a single zip, at the album's own path with
+# .zip on the end. Which albums actually have one - and how big it is - is
+# recorded by --check-zips, because not every album has been zipped and a
+# link to a missing file is worse than no link.
+ZIP_INDEX = os.path.join(GALLERY_DIR, 'zips.json')
 PAGE = os.path.join(ROOT, 'gallery.html')
 OPEN, CLOSE = '<!-- @generated:gallery -->', '<!-- /@generated:gallery -->'
 
@@ -229,6 +235,72 @@ def intro_for(relpath):
 def album_key(relpath):
     """Folder path in the one shape order.txt is matched on."""
     return relpath.replace('\\', '/').strip().strip('/').lower()
+
+
+def zip_url(folder):
+    return FULL_BASE + quote(folder) + '.zip'
+
+
+def human_size(n):
+    """Bytes as something a reader can judge a download by."""
+    if n >= 1024 ** 3:
+        return '%.1f GB' % (n / float(1024 ** 3))
+    if n >= 1024 ** 2:
+        return '%d MB' % round(n / float(1024 ** 2))
+    return '%d KB' % max(1, round(n / 1024.0))
+
+
+def check_zips(albums):
+    """Ask the mirror which albums have a zip, and record the sizes."""
+    found = {}
+    print('checking %d album zip(s) on %s' % (len(albums), FULL_BASE))
+    for folder in albums:
+        url = zip_url(folder)
+        try:
+            resp = urlopen(Request(url, method='HEAD'), timeout=40)
+            size = int(resp.headers.get('Content-Length') or 0)
+            found[folder] = {'bytes': size}
+            print('   %-42s %s' % (folder[:42], human_size(size)))
+        except Exception as exc:
+            print('   %-42s no zip (%s)' % (folder[:42], getattr(exc, 'code', exc)))
+
+    with io.open(ZIP_INDEX, 'w', encoding='utf-8', newline='') as fh:
+        fh.write(json.dumps(found, indent=2, sort_keys=True,
+                            ensure_ascii=False) + '\n')
+    missing = len(albums) - len(found)
+    print('%d zip(s) found, %d album(s) without one -> %s'
+          % (len(found), missing, os.path.relpath(ZIP_INDEX, ROOT)))
+    return found
+
+
+def read_zips():
+    """The recorded zip index, or None when --check-zips has never run."""
+    if not os.path.exists(ZIP_INDEX):
+        return None
+    try:
+        with io.open(ZIP_INDEX, encoding='utf-8') as fh:
+            return json.load(fh)
+    except ValueError:
+        print('   ! %s is not valid JSON - ignoring it'
+              % os.path.relpath(ZIP_INDEX, ROOT))
+        return None
+
+
+def download_link(folder, zips):
+    """The album's zip link, or '' when the album has no zip."""
+    if zips is None:
+        size = ''                       # never probed: link, but no size
+    elif folder in zips:
+        size = ' <span class="album__dl-size">%s</span>' % human_size(
+            zips[folder].get('bytes') or 0)
+    else:
+        return ''                       # probed, and this album has no zip
+
+    return ('        <p class="album__dl">\n'
+            '          <a class="btn btn--ghost album__dl-link" href="%s" download>\n'
+            '            Download all photos%s\n'
+            '          </a>\n'
+            '        </p>\n' % (zip_url(folder), size))
 
 
 def read_order():
@@ -582,7 +654,7 @@ VIEWER = """      <dialog class="lightbox" id="lightbox" aria-label="Photo viewe
       </script>"""
 
 
-def build(order=False):
+def build(order=False, check=False):
     if not os.path.isdir(GALLERY_DIR):
         print('no gallery directory at %s' % GALLERY_DIR)
         return 1
@@ -632,8 +704,17 @@ def build(order=False):
     if order:
         return write_order(albums)
 
+    if check:
+        check_zips([folder for folder, _, _ in albums])
+
+    zips = read_zips()
+    if zips is None:
+        print('   ! no zips.json - run with --check-zips to size the links '
+              'and drop albums that have no zip')
+
     blocks = []
     intros = 0
+    downloads = 0
     for folder, title, photos in albums:
         intro = intro_for(folder)
         if intro:
@@ -643,6 +724,10 @@ def build(order=False):
                      + '\n        </div>\n')
         else:
             intro = ''
+
+        download = download_link(folder, zips)
+        if download:
+            downloads += 1
 
         items = []
         for f in photos:
@@ -669,19 +754,20 @@ def build(order=False):
             '          <h2 id="album-%s-heading">%s</h2>\n'
             '          <span class="album__count">%d photo%s</span>\n'
             '        </summary>\n'
-            '%s'
+            '%s%s'
             '        <ul class="album__grid" aria-labelledby="album-%s-heading">\n'
             '%s\n'
             '        </ul>\n'
             '      </details>'
             % (slug(folder), slug(folder), esc(title), len(photos),
-               '' if len(photos) == 1 else 's', intro, slug(folder),
+               '' if len(photos) == 1 else 's', intro, download, slug(folder),
                '\n'.join(items)))
 
     write('\n\n'.join(blocks) + '\n\n' + VIEWER)
 
     total = sum(len(p) for _, _, p in albums)
-    print('gallery rebuilt: %d album(s), %d photo(s)' % (len(albums), total))
+    print('gallery rebuilt: %d album(s), %d photo(s), %d zip link(s)'
+          % (len(albums), total, downloads))
     for folder, title, photos in albums:
         print('   %-26s %-24s %d photo(s)' % (folder, title, len(photos)))
     listed = set(album_key(folder) for folder, _, _ in albums)
@@ -743,5 +829,9 @@ if __name__ == '__main__':
     ap.add_argument('--write-order', action='store_true',
                     help='write the current album order to assets/img/gallery/'
                          'order.txt and stop, changing nothing else')
+    ap.add_argument('--check-zips', action='store_true',
+                    help='ask the mirror which albums have a zip and how big '
+                         'it is, refresh assets/img/gallery/zips.json, then '
+                         'rebuild the page')
     args = ap.parse_args()
-    sys.exit(build(order=args.write_order))
+    sys.exit(build(order=args.write_order, check=args.check_zips))
