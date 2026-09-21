@@ -49,6 +49,7 @@
   --line-strong: rgba(11, 59, 46, .22);
 
   /* arrow-out-of-box, used as a mask so it takes the surrounding text colour */
+  --icon-download: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3v12'/%3E%3Cpath d='M7 11l5 5 5-5'/%3E%3Cpath d='M4 20h16'/%3E%3C/svg%3E");
   --icon-external: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 4h6v6'/%3E%3Cpath d='M20 4L10 14'/%3E%3Cpath d='M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5'/%3E%3C/svg%3E");
 
   /* Type */
@@ -1686,6 +1687,32 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 @media (prefers-reduced-motion: reduce) {
   .album__head::after { transition: none; }
 }
+
+/* Download the whole album as a zip. The file lives on the mirror with the
+   full-size originals, so this is a link out, not a local file. */
+.album__dl {
+  margin: 0 0 clamp(1.1rem, 2.4vw, 1.6rem);
+}
+.album__dl-link {
+  display: inline-flex;
+  align-items: center;
+  gap: .55rem;
+}
+.album__dl-link::before {            /* tray-and-arrow, inherits currentColor */
+  content: "";
+  width: 1.05em;
+  height: 1.05em;
+  flex: none;
+  background: currentColor;
+  -webkit-mask: var(--icon-download) center / contain no-repeat;
+  mask: var(--icon-download) center / contain no-repeat;
+}
+.album__dl-size {
+  color: var(--text-soft);
+  font-weight: 500;
+}
+.album__dl-link:hover .album__dl-size,
+.album__dl-link:focus-visible .album__dl-size { color: inherit; }
 
 .album__intro {
   max-width: 68ch;
