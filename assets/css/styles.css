@@ -3,6 +3,29 @@
    Palette: bottle green / sunflower yellow / white
    ========================================================= */
 
+/* ---------------------------------------------------------
+   Self-hosted fonts, built by tools/build-fonts.py.
+
+   Both families are variable, so one file covers every weight
+   the site asks for. They are subsetted to the characters the
+   pages actually use - re-run the tool after adding content
+   with unusual characters, or they will fall back mid-word.
+   --------------------------------------------------------- */
+@font-face {
+  font-family: "Inter";
+  src: url("../fonts/inter-variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Archivo";
+  src: url("../fonts/archivo-variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   /* Brand */
   --green-900: #062A20;

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-"""Sync the shared header and footer into every page.
+"""Sync the shared head, header and footer into every page.
 
-Edit partials/header.html and partials/footer.html, then run:
+Edit partials/head.html, partials/header.html or partials/footer.html, then run:
 
     python tools/sync-partials.py
 
@@ -9,6 +9,15 @@ Each page carries marker comments; everything between them is regenerated, so
 the pages stay plain static HTML with no runtime includes.
 
     <!-- @partial:header -->  ... generated ...  <!-- /@partial:header -->
+
+partials/head.html holds only what every page shares - charset, viewport, the
+icons, the font preloads and the stylesheet. The four things that differ per
+page (title, description, og:title, og:description) stay in the page itself,
+below the markers.
+
+The stylesheet link carries a cache-busting stamp, so partials/head.html is
+stamped too - see tools/stamp-assets.py. Run sync-partials first, then
+stamp-assets, and both end up carrying the same hash.
 
 Links in the partials are written as if from a page other than the home page
 (index.html#training). When writing into index.html those are rewritten to
@@ -18,7 +27,8 @@ matching the page being written gets aria-current="page".
 import io, os, re, sys, time
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-PARTIALS = ('header', 'footer')
+# head first, so a page reads in the order it is written
+PARTIALS = ('head', 'header', 'footer')
 
 
 ATTEMPTS = 5
