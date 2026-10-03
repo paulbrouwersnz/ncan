@@ -1,5 +1,24 @@
 [
   {
+    "url": "https://www.facebook.com/NorthCanterburyAthleticClub/posts/pfbid028oea1FZJMUfKh2ZgpMsH7PAAwNACBFDUHJTkzr3yVBQoQ2yLBWQYdMqZrU3eMGpNl",
+    "topLevelUrl": "https://www.facebook.com/100064227061348/posts/1512222617595293",
+    "facebookUrl": "https://www.facebook.com/NorthCanterburyAthleticClub/",
+    "timestamp": 1791005163,
+    "text": "This is some exciting news!",
+    "user": {
+      "name": "North Canterbury Athletic Club"
+    },
+    "sharedPost": {
+      "url": "https://www.facebook.com/reel/4743975169214552/",
+      "timestamp": 1790996362,
+      "user": {
+        "name": "Athletics New Zealand",
+        "profileUrl": "https://www.facebook.com/AthleticsNZ"
+      },
+      "text": "Takahe 2 Akaroa returns! - 02.10.2027\n\nA massive thank you to Athletics Canterbury for their hard work behind the scenes to bring this event back in 2027. We're bringing the 50th edition of the NZ Road Relay championships to the iconic Canterbury course."
+    }
+  },
+  {
     "url": "https://www.facebook.com/NorthCanterburyAthleticClub/posts/pfbid0Fsd9646K3Xu9jfWL3u73Wyy5tBMFgnoD2Cqhx1qjj27rrkWCWjkSsfbhPgPoacyol",
     "topLevelUrl": "https://www.facebook.com/100064227061348/posts/1503942385089983",
     "facebookUrl": "https://www.facebook.com/NorthCanterburyAthleticClub/",
@@ -29,25 +48,6 @@
     "link": "https://athleticscanterbury.anet.live/meets/77836/events/relay/511633",
     "user": {
       "name": "North Canterbury Athletic Club"
-    }
-  },
-  {
-    "url": "https://www.facebook.com/NorthCanterburyAthleticClub/posts/pfbid036K42GTkRvNpYZFbhG9iP77pQKv414RZac2dGkVpd27vAJyByy1MCDr5EGfL41NiNl",
-    "topLevelUrl": "https://www.facebook.com/100064227061348/posts/1497462095738012",
-    "facebookUrl": "https://www.facebook.com/NorthCanterburyAthleticClub/",
-    "timestamp": 1789686929,
-    "text": "We're preparing for our North Canterbury Children's Athletics open days on Tuesdays October 6th and 13th.  Following these are open athletics training sessions for new and returning teen, senior and masters athletes.  With Canterbury Interclub competition starting 17th October, Secondary Schools Champs on 5th December, Oceania Masters in late January, there is something for everyone.  Pop  down from 6pm, introduce yourself to our coaches and check it out.",
-    "user": {
-      "name": "North Canterbury Athletic Club"
-    },
-    "sharedPost": {
-      "url": "https://www.facebook.com/NorthCanterburyChildrensAthletics/posts/pfbid03rs2o2tC3hnEady4hY17K3ZcfH3gABxkjWrjc8nyNaXwoNKJcwpsB6N9JGPPAnful",
-      "timestamp": 1788943620,
-      "user": {
-        "name": "North Canterbury Children's Athletics",
-        "profileUrl": "https://www.facebook.com/NorthCanterburyChildrensAthletics"
-      },
-      "text": "Open day is coming up! We welcome all new, old and existing members to come and train on our open nights, see if it fits, see if you enjoy it. No sign up required. We ask parents to stick around to learn what its all about and hear the talk from our manager. We also welcome parents to help out, however they can. We look forward to seeing you there!"
     }
   }
 ]
