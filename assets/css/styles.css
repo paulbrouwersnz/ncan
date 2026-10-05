@@ -724,6 +724,116 @@ ul { margin: 0; padding: 0; list-style: none; }
 }
 
 /* ---------- Schedule table ---------- */
+/* ---------------------------------------------------------
+   Children's records (records.html). The tables reuse
+   table.schedule, including its stacked phone layout.
+   --------------------------------------------------------- */
+.records-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: clamp(.8rem, 2vw, 1.4rem);
+  margin: 0 0 clamp(1.2rem, 2.6vw, 1.8rem);
+}
+.records-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: clamp(.8rem, 2vw, 1.2rem);
+  flex: 1 1 22rem;
+}
+.records-actions { flex: 0 0 auto; }
+.records-field { display: grid; gap: .35rem; margin: 0; }
+.records-field--grow { flex: 1 1 14rem; min-width: 0; }
+.records-field label {
+  font-family: var(--font-display);
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--green-700);
+}
+.records-field select,
+.records-field input {
+  font: inherit;
+  font-size: .95rem;
+  padding: .6rem .75rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+  color: inherit;
+  min-width: 10rem;
+  width: 100%;
+}
+.records-field input { min-width: 0; }
+.records-field select:focus-visible,
+.records-field input:focus-visible {
+  outline: 3px solid var(--yellow-500);
+  outline-offset: 1px;
+  border-color: var(--green-600);
+}
+.records-status,
+.records-note { color: var(--text-soft); font-size: .92rem; }
+.records-note { margin-top: clamp(1rem, 2.4vw, 1.5rem); }
+.records-grade { margin: 0 0 clamp(1.6rem, 3.4vw, 2.6rem); }
+.records-grade__head {
+  margin: 0 0 .7rem;
+  font-size: clamp(1.25rem, 2vw, 1.55rem);
+  color: var(--green-800);
+}
+.records-grade .table-wrap + .table-wrap { margin-top: .9rem; }
+.records-table { min-width: 640px; }
+/* Every grade's table shares one column layout, so the eye can run down
+   the page without the columns shifting under it. The three narrow columns
+   never wrap, so they are given a width that fits their longest value
+   (Event "100m Hurdle 33\"", Date "30 November 2024", Result "27.63 (+3.8)");
+   Athlete and Meeting split what is left and wrap as needed. */
+.records-table { table-layout: fixed; min-width: 860px; }
+.records-table > thead > tr > th:nth-child(1),
+.records-table > tbody > tr > :nth-child(1) { width: 10.5rem; }
+.records-table > thead > tr > th:nth-child(2),
+.records-table > tbody > tr > :nth-child(2) { width: 24%; }
+.records-table > thead > tr > th:nth-child(3),
+.records-table > tbody > tr > :nth-child(3) { width: 8.75rem; }
+.records-table > thead > tr > th:nth-child(4),
+.records-table > tbody > tr > :nth-child(4) { width: 11.5rem; }
+/* the band row spans the lot, so it must not take a column width */
+.records-table .schedule__band > th { width: auto; }
+
+.records-perf { font-variant-numeric: tabular-nums; font-weight: 600; }
+.records-team { font-size: .9rem; }
+/* Dates read as one unit - "26 November 2022" breaking across two lines
+   makes the column hard to scan. The table scrolls sideways if it must. */
+.records-date,
+.records-event,
+.records-perf { white-space: nowrap; }
+
+/* a date that links out to the official results */
+.records-source {
+  display: inline-flex;
+  align-items: center;
+  gap: .3rem;
+  white-space: nowrap;
+}
+.records-source::after {
+  content: "";
+  width: .72em;
+  height: .72em;
+  flex: none;
+  background: currentColor;
+  -webkit-mask: var(--icon-external) center / contain no-repeat;
+  mask: var(--icon-external) center / contain no-repeat;
+}
+
+@media (max-width: 760px) {
+  /* stacked: each cell is its own line, so the fixed grid is dropped */
+  .records-table { min-width: 0; table-layout: auto; }
+  .records-table > thead > tr > :nth-child(n),
+  .records-table > tbody > tr > :nth-child(n) { width: auto; }
+  .records-actions { flex: 1 1 100%; }
+  .records-actions .btn { width: 100%; justify-content: center; }
+}
+
 .table-wrap {
   overflow-x: auto;
   border: 1px solid var(--line);
