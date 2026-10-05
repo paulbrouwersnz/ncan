@@ -1,0 +1,292 @@
+{
+  "note": "Results pages supplied by hand, for meetings tools/verify-records.py cannot check itself. It reads the CCAA results PDFs, which do not cover every meeting - Colgate Games, inter-provincial meets and the 2025 and 2026 Canterbury Championships are all missing from that index.\n\n\"by-record\" is preferred: it links one record to the page for that exact event, which is what a reader wants. Each entry carries \"checked\" - true means somebody opened the page and saw the athlete and the mark on it, so the record counts as verified. \"by-date\" is the fallback: a whole-meeting page applied to every record set that day, which locates the results without confirming the mark.",
+  "by-date": {
+    "2024-03-09": {
+      "url": "http://ccaa9-100324.22web.org/?i=1",
+      "label": "Canterbury Children's Championships 2024, Nga Puna Wai (HY-TEK)",
+      "note": "Fallback only. Every record on these dates is already verified against the official CCAA results PDF, which wins."
+    },
+    "2024-03-10": {
+      "url": "http://ccaa9-100324.22web.org/?i=1",
+      "label": "Canterbury Children's Championships 2024, Nga Puna Wai (HY-TEK)",
+      "note": "Fallback only. Every record on these dates is already verified against the official CCAA results PDF, which wins."
+    },
+    "2025-03-01": {
+      "url": "https://athleticscanterbury.anet.live/meets/44656",
+      "label": "Canterbury Children's Championships 2025, Nga Puna Wai"
+    },
+    "2025-03-02": {
+      "url": "https://athleticscanterbury.anet.live/meets/44656",
+      "label": "Canterbury Children's Championships 2025, Nga Puna Wai"
+    },
+    "2026-03-14": {
+      "url": "https://athleticscanterbury.anet.live/meets/63385",
+      "label": "Canterbury Children's Championships 2026, Nga Puna Wai"
+    },
+    "2026-03-15": {
+      "url": "https://athleticscanterbury.anet.live/meets/63385",
+      "label": "Canterbury Children's Championships 2026, Nga Puna Wai"
+    }
+  },
+  "by-record": [
+    {
+      "date": "2014-10-18",
+      "grade": 9,
+      "gender": "girls",
+      "event": "100m",
+      "url": "https://athleticscanterbury.org.nz/wp-content/uploads/2020/05/childrens-18-10-14-2.pdf",
+      "checked": true,
+      "evidence": "1       Hendren, Jessica     9 NCAN                     15.79"
+    },
+    {
+      "date": "2014-11-08",
+      "grade": 9,
+      "gender": "girls",
+      "event": "200m",
+      "url": "https://athleticscanterbury.org.nz/wp-content/uploads/2020/05/childrens-08-11-14-s2.pdf",
+      "checked": true,
+      "evidence": "2       Hendren, Jessica     9 NCAN                     33.46   24"
+    },
+    {
+      "date": "2016-02-27",
+      "grade": 10,
+      "gender": "girls",
+      "event": "High Jump",
+      "url": "https://athleticscanterbury.org.nz/wp-content/uploads/2020/05/childrens-27-02-16.pdf",
+      "checked": true,
+      "evidence": "1   521 Hendren, Jessica    10 NCAN                     1.32m   25"
+    },
+    {
+      "date": "2016-03-12",
+      "grade": 10,
+      "gender": "girls",
+      "event": "100m",
+      "url": "https://athleticscanterbury.org.nz/wp-content/uploads/2020/05/childrens-champs-full-results-2016.pdf",
+      "checked": true,
+      "evidence": "1 Jessica Hendren              North Canterbury         14.43    8"
+    },
+    {
+      "date": "2016-03-12",
+      "grade": 10,
+      "gender": "girls",
+      "event": "Long Jump",
+      "url": "https://athleticscanterbury.org.nz/wp-content/uploads/2020/05/childrens-champs-full-results-2016.pdf",
+      "checked": true,
+      "evidence": "1 Jessica Hendren              North Canterbury         4.39m   1.5   8"
+    },
+    {
+      "date": "2016-10-22",
+      "grade": 12,
+      "gender": "girls",
+      "event": "60m (Grass)",
+      "url": "https://athleticscanterbury.org.nz/wp-content/uploads/2020/05/children-22-10-16.pdf",
+      "checked": true,
+      "evidence": "2   265 Rayner, Lillie      12 NCAN                      9.08"
+    },
+    {
+      "date": "2017-02-25",
+      "grade": 11,
+      "gender": "girls",
+      "event": "High Jump",
+      "url": "https://athleticscanterbury.org.nz/wp-content/uploads/2020/05/childrens-25-2-17.pdf",
+      "checked": true,
+      "evidence": "1   444 Hendren, Jessica    11 NCAN                     1.43m   25"
+    },
+    {
+      "date": "2017-03-04",
+      "grade": 10,
+      "gender": "boys",
+      "event": "1500m",
+      "url": "https://athleticscanterbury.org.nz/wp-content/uploads/2020/05/childrens-champs-2017.pdf",
+      "checked": true,
+      "evidence": "4  3166 Aaron Reavill          North Canterbury       5:16.38    5"
+    },
+    {
+      "date": "2017-03-04",
+      "grade": 10,
+      "gender": "boys",
+      "event": "800m",
+      "url": "https://athleticscanterbury.org.nz/wp-content/uploads/2020/05/childrens-champs-2017.pdf",
+      "checked": true,
+      "evidence": "4  3166 Aaron Reavill          North Canterbury       2:30.70    5"
+    },
+    {
+      "date": "2017-12-16",
+      "grade": 12,
+      "gender": "boys",
+      "event": "80m Hurdle",
+      "url": "https://athleticscanterbury.org.nz/wp-content/uploads/2020/05/children-16-12-17.pdf",
+      "checked": true,
+      "evidence": "1 #  258 Butler, Dylan      12 NCAN                     14.73   22"
+    },
+    {
+      "date": "2018-02-10",
+      "grade": 10,
+      "gender": "boys",
+      "event": "4 x 100m Relay",
+      "url": "https://athleticscanterbury.org.nz/wp-content/uploads/2020/05/children-10-02-18.pdf",
+      "checked": true,
+      "evidence": "3 3 CHAV 1 NCAN  'A'                                  1:07.55"
+    },
+    {
+      "date": "2018-02-10",
+      "grade": 12,
+      "gender": "girls",
+      "event": "High Jump",
+      "url": "https://athleticscanterbury.org.nz/wp-content/uploads/2020/05/children-10-02-18.pdf",
+      "checked": true,
+      "evidence": "1 #  444 Hendren, Jessica   12 NCAN                     1.53m   25"
+    },
+    {
+      "date": "2019-02-16",
+      "grade": 11,
+      "gender": "boys",
+      "event": "200m",
+      "url": "https://athleticscanterbury.org.nz/wp-content/uploads/2020/05/ccaa-quadrathlon-16-february-2019.pdf",
+      "checked": true,
+      "evidence": "4 Finn Pearson 2:27.93 6.05m 15.47m 28.60"
+    },
+    {
+      "date": "2019-03-24",
+      "grade": 10,
+      "gender": "girls",
+      "event": "1500m",
+      "url": "https://athleticscanterbury.org.nz/wp-content/uploads/2020/05/995-meeting-2019.pdf",
+      "checked": true,
+      "evidence": "3 Chelsy Reavill Canterbury 5:33.68"
+    },
+    {
+      "date": "2019-03-24",
+      "grade": 10,
+      "gender": "girls",
+      "event": "800m",
+      "url": "https://athleticscanterbury.org.nz/wp-content/uploads/2020/05/995-meeting-2019.pdf",
+      "checked": true,
+      "evidence": "1 Chelsy Reavill Canterbury 2:40.05"
+    },
+    {
+      "date": "2021-02-20",
+      "grade": 10,
+      "gender": "boys",
+      "event": "Shot Put 2 kg",
+      "url": "https://athleticscanterbury.org.nz/wp-content/uploads/2021/02/20th-February-2020-quadrathlon-childrens.pdf",
+      "checked": true,
+      "evidence": "11 Jake Boyd                       6:35.35             9.63m    16.45   10.35m"
+    },
+    {
+      "date": "2025-01-17",
+      "grade": 14,
+      "gender": "boys",
+      "event": "2000m Walk",
+      "url": "https://athleticscanterbury.anet.live/meets/42831/events/individual/1556657",
+      "checked": true,
+      "evidence": "Alexander Jonathan, North Canterbury Athletic Cl, 12:23.35"
+    },
+    {
+      "date": "2025-01-19",
+      "grade": 12,
+      "gender": "girls",
+      "event": "1200m Walk",
+      "url": "https://athleticscanterbury.anet.live/meets/42831/events/individual/1556721",
+      "checked": true,
+      "evidence": "Miriama Jonathan, North Canterbury Athletic Cl, 7:33.81"
+    },
+    {
+      "date": "2025-03-02",
+      "grade": 7,
+      "gender": "girls",
+      "event": "100m",
+      "url": "https://athleticscanterbury.anet.live/meets/44656/events/individual/1615732",
+      "checked": true,
+      "evidence": "Reiko Keane 16.31"
+    },
+    {
+      "date": "2025-03-02",
+      "grade": 7,
+      "gender": "girls",
+      "event": "200m",
+      "url": "https://athleticscanterbury.anet.live/meets/44656/events/individual/1615693",
+      "checked": true,
+      "evidence": "Reiko Keane 34.35"
+    },
+    {
+      "date": "2025-03-02",
+      "grade": 7,
+      "gender": "girls",
+      "event": "60m",
+      "url": "https://athleticscanterbury.anet.live/meets/44656/events/individual/1615663",
+      "checked": true,
+      "evidence": "Reiko Keane 9.89"
+    },
+    {
+      "date": "2025-03-02",
+      "grade": 7,
+      "gender": "girls",
+      "event": "Long Jump",
+      "url": "https://athleticscanterbury.anet.live/meets/44656/events/individual/1615882",
+      "checked": true,
+      "evidence": "Reiko Keane 3.30"
+    },
+    {
+      "date": "2025-03-02",
+      "grade": 9,
+      "gender": "girls",
+      "event": "60m",
+      "url": "https://athleticscanterbury.anet.live/meets/44656/events/individual/1615769",
+      "checked": true,
+      "evidence": "Molly Macdonald 9.80"
+    },
+    {
+      "date": "2025-03-02",
+      "grade": 9,
+      "gender": "girls",
+      "event": "Long Jump",
+      "url": "https://athleticscanterbury.anet.live/meets/44656/events/individual/1615779",
+      "checked": true,
+      "evidence": "Molly Macdonald 3.60"
+    },
+    {
+      "date": "2025-03-02",
+      "grade": 12,
+      "gender": "boys",
+      "event": "Long Jump",
+      "url": "https://athleticscanterbury.anet.live/meets/44656/events/individual/1615847",
+      "checked": true,
+      "evidence": "Samuel Coker 4.72"
+    },
+    {
+      "date": "2025-03-02",
+      "grade": 14,
+      "gender": "boys",
+      "event": "100m",
+      "url": "https://athleticscanterbury.anet.live/meets/44656/events/individual/1615768",
+      "checked": true,
+      "evidence": "Jake Boyd 12.07"
+    },
+    {
+      "date": "2025-03-02",
+      "grade": 14,
+      "gender": "boys",
+      "event": "100m Hurdle 33\"",
+      "url": "https://athleticscanterbury.anet.live/meets/44656/events/individual/1615839",
+      "checked": true,
+      "evidence": "Jake Boyd 15.55"
+    },
+    {
+      "date": "2025-03-02",
+      "grade": 14,
+      "gender": "boys",
+      "event": "Discus 1.25 kg",
+      "url": "https://athleticscanterbury.anet.live/meets/44656/events/individual/1615824",
+      "checked": true,
+      "evidence": "Jake Boyd 47.65"
+    }
+  ],
+  "gaps": {
+    "2025-01-18": "Grade 8 girls Discus, L Greig 20.08. The SI Colgate Games 2025 results at https://athleticscanterbury.anet.live/meets/42831 only carry grades 10-14: the site answers \"There are no Girls (Grade 8) events\" for that division. The younger grades were not published there, so there is nothing to link to yet."
+  },
+  "archives": {
+    "ccaa-sporty": "https://www.sporty.co.nz/cantychildrensathletics/Results-1/tab1 - every CCAA meeting from October 2018. Read automatically by tools/verify-records.py.",
+    "athletics-canterbury": "https://athleticscanterbury.org.nz/competition/results/ - filter the season and pick the Childrens category. Around 158 childrens meetings, going back to 2012-13, as direct PDFs. This covers the years before the CCAA index starts. It is a POST form, and it rate-limits: space requests out."
+  }
+}

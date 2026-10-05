@@ -1,0 +1,2257 @@
+{
+  "updated": "2026-10-05",
+  "source": "NCAN Records.xlsx",
+  "note": "Club records for the children’s grades. Edit this file directly; add a results URL to a record’s \"source\" to link it for verification.",
+  "grades": [
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14
+  ],
+  "records": [
+    {
+      "grade": 7,
+      "gender": "boys",
+      "event": "100m",
+      "athletes": [
+        "G Beker"
+      ],
+      "performance": "16.61",
+      "date": "2026-03-15",
+      "venue": "Canterbury Champs, Ngā Puna Wai, Christchurch",
+      "source": "https://athleticscanterbury.anet.live/meets/63385",
+      "verified": "supplied"
+    },
+    {
+      "grade": 7,
+      "gender": "boys",
+      "event": "200m",
+      "athletes": [
+        "C Boyd"
+      ],
+      "performance": "34.9",
+      "date": "2021-01-30",
+      "venue": "Interclub, Ngā Puna Wai, Christchurch",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=5e9306ab-9b7a-4e32-8654-4e405f13046d",
+      "verified": "found"
+    },
+    {
+      "grade": 7,
+      "gender": "boys",
+      "event": "60m",
+      "athletes": [
+        "C Boyd"
+      ],
+      "performance": "9.96",
+      "date": "2021-01-30",
+      "venue": "Interclub, Ngā Puna Wai, Christchurch",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=5e9306ab-9b7a-4e32-8654-4e405f13046d",
+      "verified": "found"
+    },
+    {
+      "grade": 7,
+      "gender": "boys",
+      "event": "Discus 500 g",
+      "athletes": [
+        "C Boyd"
+      ],
+      "performance": "17.5",
+      "date": "2021-02-06",
+      "venue": "Interclub, Ngā Puna Wai, Christchurch",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=8ad3ab64-49d1-4164-b498-d33a9aec4fbb",
+      "verified": "found"
+    },
+    {
+      "grade": 7,
+      "gender": "boys",
+      "event": "Long Jump",
+      "athletes": [
+        "J Keane"
+      ],
+      "performance": "3.15",
+      "date": "2024-11-30",
+      "venue": "Interclub P2, Ngā Puna Wai, Christchurch",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=2f602e0f-f535-447d-ad88-a8d42f8373e9",
+      "verified": "found"
+    },
+    {
+      "grade": 7,
+      "gender": "boys",
+      "event": "Shot Put 1 kg",
+      "athletes": [
+        "C Boyd"
+      ],
+      "performance": "8.04",
+      "date": "2021-03-16",
+      "venue": "Canterbury Champs, Ngā Puna Wai, Christchurch",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 7,
+      "gender": "girls",
+      "event": "100m",
+      "athletes": [
+        "R Keane"
+      ],
+      "performance": "16.31",
+      "date": "2025-03-02",
+      "venue": "Canterbury Champs, Ngā Puna Wai, Christchurch",
+      "source": "https://athleticscanterbury.anet.live/meets/44656/events/individual/1615732",
+      "verified": "found"
+    },
+    {
+      "grade": 7,
+      "gender": "girls",
+      "event": "200m",
+      "athletes": [
+        "R Keane"
+      ],
+      "performance": "34.35",
+      "date": "2025-03-02",
+      "venue": "Canterbury Champs, Ngā Puna Wai, Christchurch",
+      "source": "https://athleticscanterbury.anet.live/meets/44656/events/individual/1615693",
+      "verified": "found"
+    },
+    {
+      "grade": 7,
+      "gender": "girls",
+      "event": "60m",
+      "athletes": [
+        "R Keane"
+      ],
+      "performance": "9.89",
+      "date": "2025-03-02",
+      "venue": "Canterbury Champs, Ngā Puna Wai, Christchurch",
+      "source": "https://athleticscanterbury.anet.live/meets/44656/events/individual/1615663",
+      "verified": "found"
+    },
+    {
+      "grade": 7,
+      "gender": "girls",
+      "event": "Discus 500 g",
+      "athletes": [
+        "M McDonald"
+      ],
+      "performance": "11.15m",
+      "date": "2023-03-11",
+      "venue": "Canterbury Champs, Ngā Puna Wai, Christchurch",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=90267eca-6b86-4034-a443-e90f0668a303",
+      "verified": "found"
+    },
+    {
+      "grade": 7,
+      "gender": "girls",
+      "event": "Long Jump",
+      "athletes": [
+        "R Keane"
+      ],
+      "performance": "3.3",
+      "date": "2025-03-02",
+      "venue": "Canterbury Champs, Ngā Puna Wai, Christchurch",
+      "source": "https://athleticscanterbury.anet.live/meets/44656/events/individual/1615882",
+      "verified": "found"
+    },
+    {
+      "grade": 7,
+      "gender": "girls",
+      "event": "Shot Put 1 kg",
+      "athletes": [
+        "B Gamble"
+      ],
+      "performance": "5.31",
+      "date": "2011-02-19",
+      "venue": "QEII Park, Christchurch",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 8,
+      "gender": "boys",
+      "event": "100m",
+      "athletes": [
+        "F Musesengwa"
+      ],
+      "performance": "15.46",
+      "date": "2020-03-14",
+      "venue": "Canterbury Champs, Ngā Puna Wai, Christchurch",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=ce721832-5569-4a98-9396-d92adeacfd24",
+      "verified": "found"
+    },
+    {
+      "grade": 8,
+      "gender": "boys",
+      "event": "200m",
+      "athletes": [
+        "H. George"
+      ],
+      "performance": "33.16",
+      "date": "2026-03-15",
+      "venue": "Canterbury Champs, Ngā Puna Wai, Christchurch",
+      "source": "https://athleticscanterbury.anet.live/meets/63385",
+      "verified": "supplied"
+    },
+    {
+      "grade": 8,
+      "gender": "boys",
+      "event": "60m",
+      "athletes": [
+        "H. George"
+      ],
+      "performance": "9.41",
+      "date": "2026-02-14",
+      "venue": "Interclub P2, Ngā Puna Wai, Christchurch",
+      "source": null,
+      "verified": "unreadable"
+    },
+    {
+      "grade": 8,
+      "gender": "boys",
+      "event": "Discus 500 g",
+      "athletes": [
+        "T Musesengwa"
+      ],
+      "performance": "20.69",
+      "date": "2021-03-13",
+      "venue": "Canterbury Champs, Ngā Puna Wai, Christchurch",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=8ef3bcfe-5657-4178-9ed2-3f89751a93f0",
+      "verified": "found"
+    },
+    {
+      "grade": 8,
+      "gender": "boys",
+      "event": "Long Jump",
+      "athletes": [
+        "F Musesengwa"
+      ],
+      "performance": "3.73",
+      "date": "2020-03-14",
+      "venue": "Canterbury Champs, Ngā Puna Wai, Christchurch",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=ce721832-5569-4a98-9396-d92adeacfd24",
+      "verified": "found"
+    },
+    {
+      "grade": 8,
+      "gender": "boys",
+      "event": "Shot Put 1.5 kg",
+      "athletes": [
+        "F Musesengwa"
+      ],
+      "performance": "6.4",
+      "date": "2019-10-19",
+      "venue": "Interclub, Ngā Puna Wai, Christchurch",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=27f70389-381b-49bb-a98f-28f89b67c9d5",
+      "verified": "found"
+    },
+    {
+      "grade": 8,
+      "gender": "girls",
+      "event": "100m",
+      "athletes": [
+        "R Keane"
+      ],
+      "performance": "15.78",
+      "date": "2026-03-15",
+      "venue": "Canterbury Champs, Ngā Puna Wai, Christchurch",
+      "source": "https://athleticscanterbury.anet.live/meets/63385",
+      "verified": "supplied"
+    },
+    {
+      "grade": 8,
+      "gender": "girls",
+      "event": "200m",
+      "athletes": [
+        "R Keane"
+      ],
+      "performance": "33.71",
+      "date": "2025-11-15",
+      "venue": "Interclub P2, Ngā Puna Wai, Christchurch",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=f8588757-9159-4fc9-ae37-1fdee74f769e",
+      "verified": "found"
+    },
+    {
+      "grade": 8,
+      "gender": "girls",
+      "event": "60m",
+      "athletes": [
+        "R Keane"
+      ],
+      "performance": "9.63",
+      "date": "2026-03-15",
+      "venue": "Canterbury Champs, Ngā Puna Wai, Christchurch",
+      "source": "https://athleticscanterbury.anet.live/meets/63385",
+      "verified": "supplied"
+    },
+    {
+      "grade": 8,
+      "gender": "girls",
+      "event": "Discus 500 g",
+      "athletes": [
+        "L Greig"
+      ],
+      "performance": "20.08",
+      "date": "2025-01-18",
+      "venue": "South Island Colgate Games, Nga Puna Wai, Christchurch",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 8,
+      "gender": "girls",
+      "event": "Long Jump",
+      "athletes": [
+        "R Keane"
+      ],
+      "performance": "3.59",
+      "date": "2026-03-15",
+      "venue": "Canterbury Champs, Ngā Puna Wai, Christchurch",
+      "source": "https://athleticscanterbury.anet.live/meets/63385",
+      "verified": "supplied"
+    },
+    {
+      "grade": 8,
+      "gender": "girls",
+      "event": "Shot Put 1.5 kg",
+      "athletes": [
+        "M MacDonald"
+      ],
+      "performance": "6.25",
+      "date": "2024-03-09",
+      "venue": "Canterbury Champs, Nga Puna Wai, Christchurch",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=996690ba-566e-4a35-8912-c5ca97e50e38",
+      "verified": "found"
+    },
+    {
+      "grade": 9,
+      "gender": "boys",
+      "event": "100m",
+      "athletes": [
+        "F Musesengwa"
+      ],
+      "performance": "14.84",
+      "date": "2020-12-12",
+      "venue": "Interclub, Ngā Puna Wai, Christchurch",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=8e0278b2-715d-4e3f-bcf9-81775f0eaea8",
+      "verified": "found"
+    },
+    {
+      "grade": 9,
+      "gender": "boys",
+      "event": "200m",
+      "athletes": [
+        "F Musesengwa"
+      ],
+      "performance": "30.63",
+      "date": "2020-12-05",
+      "venue": "Interclub, Ngā Puna Wai, Christchurch",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=40cb9b01-be62-4771-81ee-1a8559f39644",
+      "verified": "found"
+    },
+    {
+      "grade": 9,
+      "gender": "boys",
+      "event": "60m",
+      "athletes": [
+        "F Musesengwa"
+      ],
+      "performance": "9.09",
+      "date": "2020-12-12",
+      "venue": "Interclub, Ngā Puna Wai, Christchurch",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=8e0278b2-715d-4e3f-bcf9-81775f0eaea8",
+      "verified": "found"
+    },
+    {
+      "grade": 9,
+      "gender": "boys",
+      "event": "Discus 500 g",
+      "athletes": [
+        "C Gamble"
+      ],
+      "performance": "23.14",
+      "date": "2011-02-19",
+      "venue": "QEII Park, Christchurch",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 9,
+      "gender": "boys",
+      "event": "Long Jump",
+      "athletes": [
+        "F Musesengwa"
+      ],
+      "performance": "4.18",
+      "date": "2021-02-27",
+      "venue": "Interclub, Ngā Puna Wai, Christchurch",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=9b5574f5-15e2-44c8-bbb8-8a1d7510ab80",
+      "verified": "found"
+    },
+    {
+      "grade": 9,
+      "gender": "boys",
+      "event": "Shot Put 1.5 kg",
+      "athletes": [
+        "N McMaster"
+      ],
+      "performance": "8.2",
+      "date": "2024-03-09",
+      "venue": "Canterbury Champs, Nga Puna Wai, Christchurch",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=996690ba-566e-4a35-8912-c5ca97e50e38",
+      "verified": "found"
+    },
+    {
+      "grade": 9,
+      "gender": "girls",
+      "event": "100m",
+      "athletes": [
+        "J Hendren"
+      ],
+      "performance": "15.79",
+      "date": "2014-10-18",
+      "venue": "Rawhiti Domain, Christchurch",
+      "source": "https://athleticscanterbury.org.nz/wp-content/uploads/2020/05/childrens-18-10-14-2.pdf",
+      "verified": "found"
+    },
+    {
+      "grade": 9,
+      "gender": "girls",
+      "event": "200m",
+      "athletes": [
+        "J Hendren"
+      ],
+      "performance": "33.46",
+      "date": "2014-11-08",
+      "venue": "Rawhiti Domain, Christchurch",
+      "source": "https://athleticscanterbury.org.nz/wp-content/uploads/2020/05/childrens-08-11-14-s2.pdf",
+      "verified": "found"
+    },
+    {
+      "grade": 9,
+      "gender": "girls",
+      "event": "4 x 100m Relay",
+      "athletes": [
+        "E Rayner",
+        "C Reavill",
+        "K Turner",
+        "E Barnes"
+      ],
+      "performance": "1:06.65",
+      "date": "2017-03-05",
+      "venue": "Canterbury Champs, Aorangi Stadium, Timaru",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 9,
+      "gender": "girls",
+      "event": "60m",
+      "athletes": [
+        "M MacDonald"
+      ],
+      "performance": "9.80 (-1.7)",
+      "date": "2025-03-02",
+      "venue": "Canterbury Champs, Nga Puna Wai, Christchurch",
+      "source": "https://athleticscanterbury.anet.live/meets/44656/events/individual/1615769",
+      "verified": "found"
+    },
+    {
+      "grade": 9,
+      "gender": "girls",
+      "event": "Discus 500 g",
+      "athletes": [
+        "L. Greig"
+      ],
+      "performance": "20.02",
+      "date": "2026-03-14",
+      "venue": "Canterbury Champs, Ngā Puna Wai, Christchurch",
+      "source": "https://athleticscanterbury.anet.live/meets/63385",
+      "verified": "supplied"
+    },
+    {
+      "grade": 9,
+      "gender": "girls",
+      "event": "Long Jump",
+      "athletes": [
+        "M MacDonald"
+      ],
+      "performance": "3.60 (0.4)",
+      "date": "2025-03-02",
+      "venue": "Canterbury Champs, Nga Puna Wai, Christchurch",
+      "source": "https://athleticscanterbury.anet.live/meets/44656/events/individual/1615779",
+      "verified": "found"
+    },
+    {
+      "grade": 9,
+      "gender": "girls",
+      "event": "Shot Put 1.5 kg",
+      "athletes": [
+        "M Philips"
+      ],
+      "performance": "7.05",
+      "date": "2016-02-27",
+      "venue": "Rawhiti Domain, Christchurch",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 10,
+      "gender": "boys",
+      "event": "100m",
+      "athletes": [
+        "F Musesengwa"
+      ],
+      "performance": "14.58",
+      "date": "2022-01-14",
+      "venue": "Colgate Games, Invercargill",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 10,
+      "gender": "boys",
+      "event": "1200m Walk",
+      "athletes": [
+        "A Jonathan"
+      ],
+      "performance": "8:26.36",
+      "date": "2021-03-13",
+      "venue": "Canterbury Champs, Ngā Puna Wai, Christchurch",
+      "source": null,
+      "verified": "namesake-only"
+    },
+    {
+      "grade": 10,
+      "gender": "boys",
+      "event": "1500m",
+      "athletes": [
+        "A Reavill"
+      ],
+      "performance": "5:16.38",
+      "date": "2017-03-04",
+      "venue": "Canterbury Champs, Aorangi, Timaru",
+      "source": "https://athleticscanterbury.org.nz/wp-content/uploads/2020/05/childrens-champs-2017.pdf",
+      "verified": "found"
+    },
+    {
+      "grade": 10,
+      "gender": "boys",
+      "event": "200m",
+      "athletes": [
+        "F Musesengwa"
+      ],
+      "performance": "29.82",
+      "date": "2021-11-27",
+      "venue": "Interclub, Ngā Puna Wai, Christchurch",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=58bc925a-d1bc-4c7d-9a74-931e2ce81adb",
+      "verified": "found"
+    },
+    {
+      "grade": 10,
+      "gender": "boys",
+      "event": "4 x 100m Relay",
+      "athletes": [
+        "NCAN"
+      ],
+      "performance": "1:07.55",
+      "date": "2018-02-10",
+      "venue": "Rawhiti Domain, Christchurch",
+      "source": "https://athleticscanterbury.org.nz/wp-content/uploads/2020/05/children-10-02-18.pdf",
+      "verified": "found"
+    },
+    {
+      "grade": 10,
+      "gender": "boys",
+      "event": "400m",
+      "athletes": [
+        "A Reavill"
+      ],
+      "performance": "1:10.20",
+      "date": "2017-01-13",
+      "venue": "South Island Colgate Games, Invercargill",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 10,
+      "gender": "boys",
+      "event": "60m",
+      "athletes": [
+        "F Musesengwa"
+      ],
+      "performance": "9.03",
+      "date": "2021-11-27",
+      "venue": "Interclub, Ngā Puna Wai, Christchurch",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=58bc925a-d1bc-4c7d-9a74-931e2ce81adb",
+      "verified": "found"
+    },
+    {
+      "grade": 10,
+      "gender": "boys",
+      "event": "800m",
+      "athletes": [
+        "A Reavill"
+      ],
+      "performance": "2:30.70",
+      "date": "2017-03-04",
+      "venue": "Canterbury Champs, Aorangi, Timaru",
+      "source": "https://athleticscanterbury.org.nz/wp-content/uploads/2020/05/childrens-champs-2017.pdf",
+      "verified": "found"
+    },
+    {
+      "grade": 10,
+      "gender": "boys",
+      "event": "Discus 750 g",
+      "athletes": [
+        "J Boyd"
+      ],
+      "performance": "29.68",
+      "date": "2021-03-13",
+      "venue": "Canterbury Champs, Aorangi Stadium, Timaru",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=8ef3bcfe-5657-4178-9ed2-3f89751a93f0",
+      "verified": "found"
+    },
+    {
+      "grade": 10,
+      "gender": "boys",
+      "event": "High Jump",
+      "athletes": [
+        "S Coker"
+      ],
+      "performance": "1.3",
+      "date": "2023-03-11",
+      "venue": "Canterbury Champs, Ngā Puna Wai, Christchurch",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=90267eca-6b86-4034-a443-e90f0668a303",
+      "verified": "found"
+    },
+    {
+      "grade": 10,
+      "gender": "boys",
+      "event": "High Jump",
+      "athletes": [
+        "A Druce"
+      ],
+      "performance": "1.3",
+      "date": "2026-03-02",
+      "venue": "Canterbury Champs, Ngā Puna Wai, Christchurch",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 10,
+      "gender": "boys",
+      "event": "Long Jump",
+      "athletes": [
+        "F Musesengwa"
+      ],
+      "performance": "4.24",
+      "date": "2022-02-12",
+      "venue": "Interclub, Ngā Puna Wai, Christchurch",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=e6745c2e-5a51-4474-a106-ebeb0cdd9810",
+      "verified": "found"
+    },
+    {
+      "grade": 10,
+      "gender": "boys",
+      "event": "Shot Put 2 kg",
+      "athletes": [
+        "J Boyd"
+      ],
+      "performance": "10.35",
+      "date": "2021-02-20",
+      "venue": "Quadrathon,Ngā Puna Wai, Christchurch",
+      "source": "https://athleticscanterbury.org.nz/wp-content/uploads/2021/02/20th-February-2020-quadrathlon-childrens.pdf",
+      "verified": "found"
+    },
+    {
+      "grade": 10,
+      "gender": "girls",
+      "event": "100m",
+      "athletes": [
+        "J Hendren"
+      ],
+      "performance": "14.43",
+      "date": "2016-03-12",
+      "venue": "Canterbury Champs, Aorangi Stadium, Timaru",
+      "source": "https://athleticscanterbury.org.nz/wp-content/uploads/2020/05/childrens-champs-full-results-2016.pdf",
+      "verified": "found"
+    },
+    {
+      "grade": 10,
+      "gender": "girls",
+      "event": "1200m Walk",
+      "athletes": [
+        "J Brandts-Giesen"
+      ],
+      "performance": "8:07.51",
+      "date": "2025-02-08",
+      "venue": "Interclub P1, Ngā Puna Wai, Christchurch",
+      "source": null,
+      "verified": "unreadable"
+    },
+    {
+      "grade": 10,
+      "gender": "girls",
+      "event": "1500m",
+      "athletes": [
+        "C Reavill"
+      ],
+      "performance": "5.33.68",
+      "date": "2019-03-24",
+      "venue": "995 Meeting, Ngā Puna Wai, Christchurch",
+      "source": "https://athleticscanterbury.org.nz/wp-content/uploads/2020/05/995-meeting-2019.pdf",
+      "verified": "found"
+    },
+    {
+      "grade": 10,
+      "gender": "girls",
+      "event": "200m",
+      "athletes": [
+        "J Hendren"
+      ],
+      "performance": "30.42",
+      "date": "2016-01-15",
+      "venue": "South Island Colgate Games, Nelson",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 10,
+      "gender": "girls",
+      "event": "4 x 100m Relay",
+      "athletes": [
+        "S George",
+        "M Barnes",
+        "C Reavill",
+        "E Barnes"
+      ],
+      "performance": "1:07.31",
+      "date": "2018-03-04",
+      "venue": "Canterbury Champs, Aorangi Stadium, Timaru",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 10,
+      "gender": "girls",
+      "event": "400m",
+      "athletes": [
+        "T Duffy"
+      ],
+      "performance": "1:09.73",
+      "date": "2011-01-14",
+      "venue": "South Island Colgate Games, Caledonian Ground, Dunedin",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 10,
+      "gender": "girls",
+      "event": "60m",
+      "athletes": [
+        "T Duffy"
+      ],
+      "performance": "9.3",
+      "date": "2011-02-19",
+      "venue": "QEII Park, Christchurch",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 10,
+      "gender": "girls",
+      "event": "800m",
+      "athletes": [
+        "C Reavill"
+      ],
+      "performance": "2.40.05",
+      "date": "2019-03-24",
+      "venue": "995 Meeting, Ngā Puna Wai, Christchurch",
+      "source": "https://athleticscanterbury.org.nz/wp-content/uploads/2020/05/995-meeting-2019.pdf",
+      "verified": "found"
+    },
+    {
+      "grade": 10,
+      "gender": "girls",
+      "event": "Discus 750 g",
+      "athletes": [
+        "M Philips"
+      ],
+      "performance": "18.11",
+      "date": "2017-02-04",
+      "venue": "Rawhiti Domain, Christchurch",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 10,
+      "gender": "girls",
+      "event": "High Jump",
+      "athletes": [
+        "J Hendren"
+      ],
+      "performance": "1.32",
+      "date": "2016-02-27",
+      "venue": "Rawhiti Domain, Christchurch",
+      "source": "https://athleticscanterbury.org.nz/wp-content/uploads/2020/05/childrens-27-02-16.pdf",
+      "verified": "found"
+    },
+    {
+      "grade": 10,
+      "gender": "girls",
+      "event": "Long Jump",
+      "athletes": [
+        "J Hendren"
+      ],
+      "performance": "4.39",
+      "date": "2016-03-12",
+      "venue": "Canterbury Champs, Aorangi Stadium, Timaru",
+      "source": "https://athleticscanterbury.org.nz/wp-content/uploads/2020/05/childrens-champs-full-results-2016.pdf",
+      "verified": "found"
+    },
+    {
+      "grade": 10,
+      "gender": "girls",
+      "event": "Shot Put 2 kg",
+      "athletes": [
+        "M Philips"
+      ],
+      "performance": "8.88",
+      "date": "2017-03-04",
+      "venue": "Canterbury Champs, Aorangi Stadium, Timaru",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 11,
+      "gender": "boys",
+      "event": "100m",
+      "athletes": [
+        "F Musesengwa"
+      ],
+      "performance": "14.09",
+      "date": "2023-03-11",
+      "venue": "Canterbury Champs, Ngā Puna Wai, Christchurch",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=90267eca-6b86-4034-a443-e90f0668a303",
+      "verified": "found"
+    },
+    {
+      "grade": 11,
+      "gender": "boys",
+      "event": "1200m Walk",
+      "athletes": [
+        "A Jonathan"
+      ],
+      "performance": "8.19.7",
+      "date": "2022-03-12",
+      "venue": "Canterbury Champs, Ngā Puna Wai, Christchurch",
+      "source": null,
+      "verified": "namesake-only"
+    },
+    {
+      "grade": 11,
+      "gender": "boys",
+      "event": "1500m",
+      "athletes": [
+        "A Reavill"
+      ],
+      "performance": "4:53.61",
+      "date": "2018-03-04",
+      "venue": "Canterbury Champs, Aorangi Stadium, Timaru",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 11,
+      "gender": "boys",
+      "event": "200m",
+      "athletes": [
+        "F Pearson"
+      ],
+      "performance": "28.6",
+      "date": "2019-02-16",
+      "venue": "Quadrathon, Ngā Puna Wai, Christchurch",
+      "source": "https://athleticscanterbury.org.nz/wp-content/uploads/2020/05/ccaa-quadrathlon-16-february-2019.pdf",
+      "verified": "found"
+    },
+    {
+      "grade": 11,
+      "gender": "boys",
+      "event": "4 x 100m Relay",
+      "athletes": [
+        "NCAN"
+      ],
+      "performance": "1:01.13",
+      "date": "2017-02-12",
+      "venue": "Rawhiti Domain, Christchurch",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 11,
+      "gender": "boys",
+      "event": "400m",
+      "athletes": [
+        "A Reavill"
+      ],
+      "performance": "1:04.41",
+      "date": "2018-01-11",
+      "venue": "South Island Colgate Games, Aorangi Stadium, Timaru",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 11,
+      "gender": "boys",
+      "event": "60m",
+      "athletes": [
+        "J. Forrester"
+      ],
+      "performance": "8.72",
+      "date": "2025-11-08",
+      "venue": "Interclub P1, Ngā Puna Wai, Christchurch",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=a30da986-deea-4db2-9c59-3a73a37457b1",
+      "verified": "found"
+    },
+    {
+      "grade": 11,
+      "gender": "boys",
+      "event": "800m",
+      "athletes": [
+        "A Reavill"
+      ],
+      "performance": "2:25.33",
+      "date": "2018-03-03",
+      "venue": "Canterbury Champs, Aorangi Stadium, Timaru",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 11,
+      "gender": "boys",
+      "event": "Discus 750 g",
+      "athletes": [
+        "C Boyd"
+      ],
+      "performance": "33.38m",
+      "date": "2024-11-09",
+      "venue": "Interclub P3, Ngā Puna Wai, Christchurch",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=ab069c94-9420-4b4c-84d8-aca3aefa704d",
+      "verified": "found"
+    },
+    {
+      "grade": 11,
+      "gender": "boys",
+      "event": "High Jump",
+      "athletes": [
+        "W Bint"
+      ],
+      "performance": "1.41",
+      "date": "2019-02-09",
+      "venue": "Interclub, Ngā Puna Wai, Christchurch",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=52aaeb11-5dea-48d3-9c2e-da85e3c616d4",
+      "verified": "found"
+    },
+    {
+      "grade": 11,
+      "gender": "boys",
+      "event": "Long Jump",
+      "athletes": [
+        "F Musesengwa"
+      ],
+      "performance": "4.61m",
+      "date": "2023-03-12",
+      "venue": "Canterbury Champs, Ngā Puna Wai, Christchurch",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=90267eca-6b86-4034-a443-e90f0668a303",
+      "verified": "found"
+    },
+    {
+      "grade": 11,
+      "gender": "boys",
+      "event": "Shot Put 3 kg",
+      "athletes": [
+        "B Philips"
+      ],
+      "performance": "10.07",
+      "date": "2016-03-30",
+      "venue": "995 Meeting, Aorangi Stadium, Timaru",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 11,
+      "gender": "girls",
+      "event": "100m",
+      "athletes": [
+        "L Rayner"
+      ],
+      "performance": "13.89",
+      "date": "2016-03-12",
+      "venue": "South Island Colgate Games, Nelson",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 11,
+      "gender": "girls",
+      "event": "1200m Walk",
+      "athletes": [
+        "R Cartwright"
+      ],
+      "performance": "7:50.82",
+      "date": "2025-02-22",
+      "venue": "Interclub P3, Ngā Puna Wai, Christchurch",
+      "source": null,
+      "verified": "unreadable"
+    },
+    {
+      "grade": 11,
+      "gender": "girls",
+      "event": "1500m",
+      "athletes": [
+        "X Jane"
+      ],
+      "performance": "5:13.57",
+      "date": "2018-03-04",
+      "venue": "Canterbury Champs, Aorangi Stadium, Timaru",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 11,
+      "gender": "girls",
+      "event": "200m",
+      "athletes": [
+        "L Rayner"
+      ],
+      "performance": "28.93",
+      "date": "2016-01-15",
+      "venue": "South Island Colgate Games, Nelson",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 11,
+      "gender": "girls",
+      "event": "4 x 100m Relay",
+      "athletes": [
+        "E Pawsey",
+        "J Hendren",
+        "K Feather",
+        "L Rayner"
+      ],
+      "performance": "1:07.31",
+      "date": "2016-03-12",
+      "venue": "Canterbury Champs, Aorangi Stadium, Timaru",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 11,
+      "gender": "girls",
+      "event": "400m",
+      "athletes": [
+        "X Jane"
+      ],
+      "performance": "1:05.41",
+      "date": "2018-03-04",
+      "venue": "Canterbury Champs, Aorangi Stadium, Timaru",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 11,
+      "gender": "girls",
+      "event": "60m",
+      "athletes": [
+        "L Morrison"
+      ],
+      "performance": "8.85",
+      "date": "2021-02-27",
+      "venue": "Ngā Puna Wai, Christchurch",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=9b5574f5-15e2-44c8-bbb8-8a1d7510ab80",
+      "verified": "found"
+    },
+    {
+      "grade": 11,
+      "gender": "girls",
+      "event": "60m (Grass)",
+      "athletes": [
+        "L Rayner"
+      ],
+      "performance": "9.07",
+      "date": "2016-02-19",
+      "venue": "Rawhiti Domain, Christchurch",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 11,
+      "gender": "girls",
+      "event": "800m",
+      "athletes": [
+        "X Jane"
+      ],
+      "performance": "2:32.19",
+      "date": "2018-03-04",
+      "venue": "Canterbury Champs, Aorangi Stadium, Timaru",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 11,
+      "gender": "girls",
+      "event": "Discus 750 g",
+      "athletes": [
+        "M Philips"
+      ],
+      "performance": "28.88",
+      "date": "2018-02-17",
+      "venue": "Rawhiti Domain, Christchurch",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 11,
+      "gender": "girls",
+      "event": "High Jump",
+      "athletes": [
+        "J Hendren"
+      ],
+      "performance": "1.43",
+      "date": "2017-02-25",
+      "venue": "Rawhiti Domain, Christchurch",
+      "source": "https://athleticscanterbury.org.nz/wp-content/uploads/2020/05/childrens-25-2-17.pdf",
+      "verified": "found"
+    },
+    {
+      "grade": 11,
+      "gender": "girls",
+      "event": "Long Jump",
+      "athletes": [
+        "J Hendren"
+      ],
+      "performance": "4.39",
+      "date": "2017-03-04",
+      "venue": "Canterbury Champs, Aorangi Stadium, Timaru",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 11,
+      "gender": "girls",
+      "event": "Shot Put 2 kg",
+      "athletes": [
+        "M Philips"
+      ],
+      "performance": "10.71",
+      "date": "2018-02-17",
+      "venue": "Rawhiti Domain, Christchurch",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 12,
+      "gender": "boys",
+      "event": "100m",
+      "athletes": [
+        "C Broderson"
+      ],
+      "performance": "13.11",
+      "date": "2023-03-11",
+      "venue": "Canterbury Champs, Christchurch",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=90267eca-6b86-4034-a443-e90f0668a303",
+      "verified": "found"
+    },
+    {
+      "grade": 12,
+      "gender": "boys",
+      "event": "1200m Walk",
+      "athletes": [
+        "A Jonathan"
+      ],
+      "performance": "7.27.61",
+      "date": "2023-01-13",
+      "venue": "South Island Colgate Games, Aorangi Stadium, Timaru",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 12,
+      "gender": "boys",
+      "event": "1500m",
+      "athletes": [
+        "F Eglesfield"
+      ],
+      "performance": "4:51.02",
+      "date": "2011-02-15",
+      "venue": "South Island Colgate Games, Caledonian Ground, Dunedin",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 12,
+      "gender": "boys",
+      "event": "200m",
+      "athletes": [
+        "C Broderson"
+      ],
+      "performance": "27.29",
+      "date": "2023-03-11",
+      "venue": "Canterbury Champs, Christchurch",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=90267eca-6b86-4034-a443-e90f0668a303",
+      "verified": "found"
+    },
+    {
+      "grade": 12,
+      "gender": "boys",
+      "event": "4 x 100m Relay",
+      "athletes": [
+        "NCAN A",
+        "F Musesengwa",
+        "I Lyon",
+        "A Jonathan",
+        "C Broderson"
+      ],
+      "performance": "57.08",
+      "date": "2023-02-04",
+      "venue": "Ngā Puna Wai, Christchurch",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=0506f321-c89b-4986-b2d3-335607e27690",
+      "verified": "found"
+    },
+    {
+      "grade": 12,
+      "gender": "boys",
+      "event": "400m",
+      "athletes": [
+        "C Broderson"
+      ],
+      "performance": "1:02.31",
+      "date": "2023-03-11",
+      "venue": "Canterbury Champs, Christchurch",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=90267eca-6b86-4034-a443-e90f0668a303",
+      "verified": "found"
+    },
+    {
+      "grade": 12,
+      "gender": "boys",
+      "event": "60m",
+      "athletes": [
+        "C Broderson"
+      ],
+      "performance": "8.42",
+      "date": "2023-01-28",
+      "venue": "Ngā Puna Wai, Christchurch",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=0a0c1b9e-f0bc-45d6-aa71-0666e075695b",
+      "verified": "found"
+    },
+    {
+      "grade": 12,
+      "gender": "boys",
+      "event": "800m",
+      "athletes": [
+        "A Reavill"
+      ],
+      "performance": "2.20.67",
+      "date": "2019-01-11",
+      "venue": "Colgate Games, Dunedin",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 12,
+      "gender": "boys",
+      "event": "80m Hurdle",
+      "athletes": [
+        "D Butler"
+      ],
+      "performance": "14.73",
+      "date": "2017-12-16",
+      "venue": "Rawhiti Domain, Christchurch",
+      "source": "https://athleticscanterbury.org.nz/wp-content/uploads/2020/05/children-16-12-17.pdf",
+      "verified": "found"
+    },
+    {
+      "grade": 12,
+      "gender": "boys",
+      "event": "Discus 1 kg",
+      "athletes": [
+        "B Philips"
+      ],
+      "performance": "31.81",
+      "date": "2017-01-12",
+      "venue": "South Island Colgate Games, Invercargill",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 12,
+      "gender": "boys",
+      "event": "High Jump",
+      "athletes": [
+        "S Coker"
+      ],
+      "performance": "1.48",
+      "date": "2024-11-23",
+      "venue": "Interclub Nga Puna Wai, Christchurch",
+      "source": null,
+      "verified": "no-athlete"
+    },
+    {
+      "grade": 12,
+      "gender": "boys",
+      "event": "Long Jump",
+      "athletes": [
+        "S Coker"
+      ],
+      "performance": "4.72 (-0.3)",
+      "date": "2025-03-02",
+      "venue": "Canterbury Champs, Nga Puna Wai, Christchurch",
+      "source": "https://athleticscanterbury.anet.live/meets/44656/events/individual/1615847",
+      "verified": "found"
+    },
+    {
+      "grade": 12,
+      "gender": "boys",
+      "event": "Shot Put 3 kg",
+      "athletes": [
+        "B Philips"
+      ],
+      "performance": "12.65",
+      "date": "2017-01-12",
+      "venue": "South Island Colgate Games, Invercargill",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 12,
+      "gender": "girls",
+      "event": "100m",
+      "athletes": [
+        "L Rayner"
+      ],
+      "performance": "13.35",
+      "date": "2017-04-15",
+      "venue": "Inter-Provincial Meet, Masterton",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 12,
+      "gender": "girls",
+      "event": "1200m Walk",
+      "athletes": [
+        "M Jonathan"
+      ],
+      "performance": "7:33.81",
+      "date": "2025-01-19",
+      "venue": "South Island Colgate Games, Christchurch",
+      "source": "https://athleticscanterbury.anet.live/meets/42831/events/individual/1556721",
+      "verified": "found"
+    },
+    {
+      "grade": 12,
+      "gender": "girls",
+      "event": "1500m",
+      "athletes": [
+        "X Jane"
+      ],
+      "performance": "5.08.01",
+      "date": "2019-01-11",
+      "venue": "Colgate Games, Dunedin",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 12,
+      "gender": "girls",
+      "event": "200m",
+      "athletes": [
+        "L Rayner"
+      ],
+      "performance": "27.63?",
+      "date": "2017-01-13",
+      "venue": "South Island Colgate Games, Invercargill",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 12,
+      "gender": "girls",
+      "event": "4 x 100m Relay",
+      "athletes": [
+        "NC 'A'",
+        "E Pawsey",
+        "K Feather",
+        "L Rayner",
+        "J Hendren"
+      ],
+      "performance": "56.48",
+      "date": "2017-03-05",
+      "venue": "Canterbury Champs, Aorangi Stadium, Timaru",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 12,
+      "gender": "girls",
+      "event": "400m",
+      "athletes": [
+        "X Jane"
+      ],
+      "performance": "1.05.41",
+      "date": "2019-01-11",
+      "venue": "Colgate Games, Dunedin",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 12,
+      "gender": "girls",
+      "event": "60m",
+      "athletes": [
+        "L Morrison"
+      ],
+      "performance": "8.6",
+      "date": "2021-12-11",
+      "venue": "Ngā Puna Wai, Christchurch",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=5cd2467c-5022-41ea-8b7b-55c68d7b9904",
+      "verified": "found"
+    },
+    {
+      "grade": 12,
+      "gender": "girls",
+      "event": "60m (Grass)",
+      "athletes": [
+        "L Rayner"
+      ],
+      "performance": "9.08",
+      "date": "2016-10-22",
+      "venue": "Rawhiti Domain, Christchurch",
+      "source": "https://athleticscanterbury.org.nz/wp-content/uploads/2020/05/children-22-10-16.pdf",
+      "verified": "found"
+    },
+    {
+      "grade": 12,
+      "gender": "girls",
+      "event": "800m",
+      "athletes": [
+        "X Jane"
+      ],
+      "performance": "2.27.45",
+      "date": "2019-03-16",
+      "venue": "Canterbury Championships, Christchurch",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=85b15c17-8daf-4637-bb06-e11756f402bb",
+      "verified": "found"
+    },
+    {
+      "grade": 12,
+      "gender": "girls",
+      "event": "80m Hurdle",
+      "athletes": [
+        "K Feather"
+      ],
+      "performance": "13.63",
+      "date": "2017-04-15",
+      "venue": "Inter-Provincial Meet, Masterton",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 12,
+      "gender": "girls",
+      "event": "Discus 750 g",
+      "athletes": [
+        "M Phillips"
+      ],
+      "performance": "33.38",
+      "date": "2018-12-08",
+      "venue": "Interclub, Nga Puna Wai, Christchurch",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=e7db55ae-8601-4ed9-920b-9878e7625279",
+      "verified": "found"
+    },
+    {
+      "grade": 12,
+      "gender": "girls",
+      "event": "High Jump",
+      "athletes": [
+        "J Hendren"
+      ],
+      "performance": "1.53",
+      "date": "2018-02-10",
+      "venue": "Rawhiti Domain, Christchurch",
+      "source": "https://athleticscanterbury.org.nz/wp-content/uploads/2020/05/children-10-02-18.pdf",
+      "verified": "found"
+    },
+    {
+      "grade": 12,
+      "gender": "girls",
+      "event": "Long Jump",
+      "athletes": [
+        "L Rayner"
+      ],
+      "performance": "4.68",
+      "date": "2017-04-15",
+      "venue": "Inter-Provincial Meet, Masterton",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 12,
+      "gender": "girls",
+      "event": "Long Jump",
+      "athletes": [
+        "J Hendren"
+      ],
+      "performance": "4.68",
+      "date": "2018-03-03",
+      "venue": "Canterbury Champs, Aorangi Stadium, Timaru",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 12,
+      "gender": "girls",
+      "event": "Shot Put 3 kg",
+      "athletes": [
+        "M Phillips"
+      ],
+      "performance": "9.79",
+      "date": "2019-02-02",
+      "venue": "Interclub, Nga Puna Wai, Christchurch",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=685e599b-32da-4637-8ddd-989292737d80",
+      "verified": "found"
+    },
+    {
+      "grade": 13,
+      "gender": "boys",
+      "event": "100m",
+      "athletes": [
+        "C Broderson"
+      ],
+      "performance": "12.07",
+      "date": "2024-03-09",
+      "venue": "Canterbury Champs, Nga Puna Wai, Christchurch",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=996690ba-566e-4a35-8912-c5ca97e50e38",
+      "verified": "found"
+    },
+    {
+      "grade": 13,
+      "gender": "boys",
+      "event": "1500m",
+      "athletes": [
+        "A Reavill"
+      ],
+      "performance": "4.35.39",
+      "date": "2020-01-17",
+      "venue": "Colgate Games, Christchurch",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=22d6b107-c7bf-47e7-bcaf-1842b9b82da0",
+      "verified": "found"
+    },
+    {
+      "grade": 13,
+      "gender": "boys",
+      "event": "1600m Walk",
+      "athletes": [
+        "A Jonathan"
+      ],
+      "performance": "9:46.04",
+      "date": "2024-01-13",
+      "venue": "South Island Colgate Games, Caledonian Grounds Dunedin",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 13,
+      "gender": "boys",
+      "event": "200m",
+      "athletes": [
+        "C Broderson"
+      ],
+      "performance": "25.71",
+      "date": "2024-03-02",
+      "venue": "Interclub Nga Puna Wai, Christchurch",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=a3d3aa61-9468-4ea5-b079-d48697db183a",
+      "verified": "found"
+    },
+    {
+      "grade": 13,
+      "gender": "boys",
+      "event": "4 x 100m Relay",
+      "athletes": [
+        "F Musesengwa",
+        "I Lyon",
+        "A Jonathan",
+        "C Broderson"
+      ],
+      "performance": "52.79",
+      "date": "2024-10-02",
+      "venue": "Interclub Nga Puna Wai, Christchurch",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 13,
+      "gender": "boys",
+      "event": "400m",
+      "athletes": [
+        "C Troon"
+      ],
+      "performance": "56.72",
+      "date": "2019-02-02",
+      "venue": "Interclub, Nga Puna Wai, Christchurch",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=685e599b-32da-4637-8ddd-989292737d80",
+      "verified": "found"
+    },
+    {
+      "grade": 13,
+      "gender": "boys",
+      "event": "60m",
+      "athletes": [
+        "C Broderson"
+      ],
+      "performance": "7.94",
+      "date": "2024-11-11",
+      "venue": "Interclub Nga Puna Wai, Christchurch",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 13,
+      "gender": "boys",
+      "event": "800m",
+      "athletes": [
+        "A Reavill"
+      ],
+      "performance": "2.13.93",
+      "date": "2020-01-17",
+      "venue": "Colgate Games, Christchurch",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=22d6b107-c7bf-47e7-bcaf-1842b9b82da0",
+      "verified": "found"
+    },
+    {
+      "grade": 13,
+      "gender": "boys",
+      "event": "80m Hurdle",
+      "athletes": [
+        "D Butler"
+      ],
+      "performance": "14.76",
+      "date": "2019-03-16",
+      "venue": "Canterbury Champs, Nga Puna Wai, Christchurch",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=85b15c17-8daf-4637-bb06-e11756f402bb",
+      "verified": "found"
+    },
+    {
+      "grade": 13,
+      "gender": "boys",
+      "event": "Discus 1 kg",
+      "athletes": [
+        "B Philips"
+      ],
+      "performance": "39.93",
+      "date": "2017-12-02",
+      "venue": "Rawhiti Domain, Christchurch",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 13,
+      "gender": "boys",
+      "event": "High Jump",
+      "athletes": [
+        "C Broderson"
+      ],
+      "performance": "1.67",
+      "date": "2024-03-10",
+      "venue": "Canterbury Champs, Nga Puna Wai, Christchurch",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=996690ba-566e-4a35-8912-c5ca97e50e38",
+      "verified": "found"
+    },
+    {
+      "grade": 13,
+      "gender": "boys",
+      "event": "Long Jump",
+      "athletes": [
+        "C Broderson"
+      ],
+      "performance": "5.29 (2.7)",
+      "date": "2024-01-27",
+      "venue": "Interclub Nga Puna Wai Christchurch",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=8104bf6c-97ee-4bca-b7de-708ed0ed3732",
+      "verified": "found"
+    },
+    {
+      "grade": 13,
+      "gender": "boys",
+      "event": "Shot Put 4 kg",
+      "athletes": [
+        "B Philips"
+      ],
+      "performance": "12.73",
+      "date": "2018-01-06",
+      "venue": "North Island Colgate Games, Mt Smart Stadium, Auckland",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 13,
+      "gender": "girls",
+      "event": "100m",
+      "athletes": [
+        "L Morrison"
+      ],
+      "performance": "12.95",
+      "date": "2023-01-14",
+      "venue": "South Island Colgate Games, Aorangi Stadium, Timaru",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 13,
+      "gender": "girls",
+      "event": "1500m",
+      "athletes": [
+        "I Bayliss"
+      ],
+      "performance": "5:06.99",
+      "date": "2010-01-17",
+      "venue": "South Island Colgate Games, Aorangi Stadium, Timaru",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 13,
+      "gender": "girls",
+      "event": "1600m Walk",
+      "athletes": [
+        "V Davey"
+      ],
+      "performance": "9:38.39",
+      "date": "2025-03-02",
+      "venue": "Canterbury Champs, Nga Puna Wai, Christchurch",
+      "source": "https://athleticscanterbury.anet.live/meets/44656",
+      "verified": "supplied"
+    },
+    {
+      "grade": 13,
+      "gender": "girls",
+      "event": "200m",
+      "athletes": [
+        "L Rayner"
+      ],
+      "performance": "27.28",
+      "date": "2018-03-03",
+      "venue": "Canterbury Champs, Aorangi Stadium, Timaru",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 13,
+      "gender": "girls",
+      "event": "4 x 100m Relay",
+      "athletes": [
+        "NCAN A",
+        "S Galilee",
+        "S Paterson",
+        "L Morrison",
+        "C Johnston"
+      ],
+      "performance": "53.32",
+      "date": "2023-02-19",
+      "venue": "International Track Meet, Ngā Puna Wai",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 13,
+      "gender": "girls",
+      "event": "400m",
+      "athletes": [
+        "L Rayner"
+      ],
+      "performance": "1:01.72",
+      "date": "2018-03-04",
+      "venue": "Canterbury Champs, Aorangi Stadium, Timaru",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 13,
+      "gender": "girls",
+      "event": "60m",
+      "athletes": [
+        "L Morrison"
+      ],
+      "performance": "8.3",
+      "date": "2022-11-26",
+      "venue": "Ngā Puni Wai, Christchurch",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=973cbbcd-9bf2-4ab0-b9a2-8cc97c158977",
+      "verified": "found"
+    },
+    {
+      "grade": 13,
+      "gender": "girls",
+      "event": "60m (Grass)",
+      "athletes": [
+        "L Rayner"
+      ],
+      "performance": "8.65",
+      "date": "2017-02-12",
+      "venue": "Rawhiti Domain, Christchurch",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 13,
+      "gender": "girls",
+      "event": "800m",
+      "athletes": [
+        "I Bayliss"
+      ],
+      "performance": "2:27.35",
+      "date": "2010-01-16",
+      "venue": "South Island Colgate Games, Aorangi Stadium, Timaru",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 13,
+      "gender": "girls",
+      "event": "80m Hurdle",
+      "athletes": [
+        "J Hendren"
+      ],
+      "performance": "13.18",
+      "date": "2019-03-16",
+      "venue": "Canterbury Champs, Nga Puna Wai, Christchurch",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=85b15c17-8daf-4637-bb06-e11756f402bb",
+      "verified": "found"
+    },
+    {
+      "grade": 13,
+      "gender": "girls",
+      "event": "Discus 1 kg",
+      "athletes": [
+        "M Phillips"
+      ],
+      "performance": "29.36",
+      "date": "2020-03-14",
+      "venue": "Canterbury Champs, Nga Puna Wai, Christchurch",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=ce721832-5569-4a98-9396-d92adeacfd24",
+      "verified": "found"
+    },
+    {
+      "grade": 13,
+      "gender": "girls",
+      "event": "High Jump",
+      "athletes": [
+        "J Hendren"
+      ],
+      "performance": "1.64",
+      "date": "2019-01-11",
+      "venue": "Colgate Games, Dunedin",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 13,
+      "gender": "girls",
+      "event": "Long Jump",
+      "athletes": [
+        "L Morrison"
+      ],
+      "performance": "4.97",
+      "date": "2022-12-03",
+      "venue": "Ngā Puni Wai, Christchurch",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=197ff132-44df-4e29-85ba-27765654b158",
+      "verified": "found"
+    },
+    {
+      "grade": 13,
+      "gender": "girls",
+      "event": "Shot Put 3 kg",
+      "athletes": [
+        "M Phillips"
+      ],
+      "performance": "10.58",
+      "date": "2020-01-17",
+      "venue": "Colgate Games, Christchurch",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=22d6b107-c7bf-47e7-bcaf-1842b9b82da0",
+      "verified": "found"
+    },
+    {
+      "grade": 14,
+      "gender": "boys",
+      "event": "100m",
+      "athletes": [
+        "J Boyd"
+      ],
+      "performance": "12.07 (2.0)",
+      "date": "2025-03-02",
+      "venue": "Canterbury Champs, Nga Puna Wai, Christchurch",
+      "source": "https://athleticscanterbury.anet.live/meets/44656/events/individual/1615768",
+      "verified": "found"
+    },
+    {
+      "grade": 14,
+      "gender": "boys",
+      "event": "100m Hurdle 33\"",
+      "athletes": [
+        "J Boyd"
+      ],
+      "performance": "15.55 (0.3)",
+      "date": "2025-03-02",
+      "venue": "Canterbury Champs, Nga Puna Wai, Christchurch",
+      "source": "https://athleticscanterbury.anet.live/meets/44656/events/individual/1615839",
+      "verified": "found"
+    },
+    {
+      "grade": 14,
+      "gender": "boys",
+      "event": "1500m",
+      "athletes": [
+        "A Reavill"
+      ],
+      "performance": "4.37.31",
+      "date": "2021-01-15",
+      "venue": "Colgate Games, Nelson",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 14,
+      "gender": "boys",
+      "event": "2000m Walk",
+      "athletes": [
+        "A Jonathan"
+      ],
+      "performance": "12:23.35",
+      "date": "2025-01-17",
+      "venue": "South Island Colgate Games, Nga Puna Wai, Christchurch",
+      "source": "https://athleticscanterbury.anet.live/meets/42831/events/individual/1556657",
+      "verified": "found"
+    },
+    {
+      "grade": 14,
+      "gender": "boys",
+      "event": "200m",
+      "athletes": [
+        "M Tiweka"
+      ],
+      "performance": "25.15",
+      "date": "2011-01-16",
+      "venue": "South Island Colgate Games, Caledonian Ground, Dunedin",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 14,
+      "gender": "boys",
+      "event": "200m",
+      "athletes": [
+        "C Troon"
+      ],
+      "performance": "25.15",
+      "date": "2019-10-19",
+      "venue": "Interclub, Nga Puna Wai, Christchurch",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=27f70389-381b-49bb-a98f-28f89b67c9d5",
+      "verified": "found"
+    },
+    {
+      "grade": 14,
+      "gender": "boys",
+      "event": "4 x 100m Relay",
+      "athletes": [
+        "S Howarth",
+        "E Mataki Rolleston",
+        "A Jonathan",
+        "C Broderson"
+      ],
+      "performance": "54.41",
+      "date": "2024-11-18",
+      "venue": "Interclub, Nga Puna Wai, Christchurch",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 14,
+      "gender": "boys",
+      "event": "400m",
+      "athletes": [
+        "C Troon"
+      ],
+      "performance": "56.08",
+      "date": "2020-03-14",
+      "venue": "Canterbury Champs, Nga Puna Wai, Christchurch",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=ce721832-5569-4a98-9396-d92adeacfd24",
+      "verified": "found"
+    },
+    {
+      "grade": 14,
+      "gender": "boys",
+      "event": "60m",
+      "athletes": [
+        "J Boyd"
+      ],
+      "performance": "7.74 (1.7)",
+      "date": "2025-02-08",
+      "venue": "Interclub P3",
+      "source": null,
+      "verified": "unreadable"
+    },
+    {
+      "grade": 14,
+      "gender": "boys",
+      "event": "800m",
+      "athletes": [
+        "A Reavill"
+      ],
+      "performance": "2.12.25",
+      "date": "2021-03-13",
+      "venue": "Canterbury Champs, Nga Puna Wai, Christchurch",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=8ef3bcfe-5657-4178-9ed2-3f89751a93f0",
+      "verified": "found"
+    },
+    {
+      "grade": 14,
+      "gender": "boys",
+      "event": "Discus 1.25 kg",
+      "athletes": [
+        "J Boyd"
+      ],
+      "performance": "47.65",
+      "date": "2025-03-02",
+      "venue": "Canterbury Champs, Nga Puna Wai, Christchurch",
+      "source": "https://athleticscanterbury.anet.live/meets/44656/events/individual/1615824",
+      "verified": "found"
+    },
+    {
+      "grade": 14,
+      "gender": "boys",
+      "event": "High Jump",
+      "athletes": [
+        "M Tiweka"
+      ],
+      "performance": "1.6",
+      "date": "2011-01-17",
+      "venue": "South Island Colgate Games, Caledonian Ground, Dunedin",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 14,
+      "gender": "boys",
+      "event": "High Jump",
+      "athletes": [
+        "M Planner"
+      ],
+      "performance": "1.6",
+      "date": "2020-03-14",
+      "venue": "Canterbury Champs, Nga Puna Wai, Christchurch",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=ce721832-5569-4a98-9396-d92adeacfd24",
+      "verified": "found"
+    },
+    {
+      "grade": 14,
+      "gender": "boys",
+      "event": "High Jump",
+      "athletes": [
+        "Z Greig"
+      ],
+      "performance": "1.6",
+      "date": "2026-03-15",
+      "venue": "Canterbury Champs, Nga Puna Wai, Christchurch",
+      "source": "https://athleticscanterbury.anet.live/meets/63385",
+      "verified": "supplied"
+    },
+    {
+      "grade": 14,
+      "gender": "boys",
+      "event": "Long Jump",
+      "athletes": [
+        "A Frew"
+      ],
+      "performance": "5.46",
+      "date": "2011-02-19",
+      "venue": "QEII Park, Christchurch",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 14,
+      "gender": "boys",
+      "event": "Shot Put 5 kg",
+      "athletes": [
+        "C Gamble"
+      ],
+      "performance": "13.95",
+      "date": "2011-01-15",
+      "venue": "South Island Colgate Games, Caledonian Ground, Dunedin",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 14,
+      "gender": "girls",
+      "event": "100m",
+      "athletes": [
+        "L Morrison"
+      ],
+      "performance": "12.24",
+      "date": "2024-03-14",
+      "venue": "Canterbury Champs, Ngā Puna Wai, Christchurch",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 14,
+      "gender": "girls",
+      "event": "1500m",
+      "athletes": [
+        "X Jane"
+      ],
+      "performance": "5.10.48",
+      "date": "2021-01-15",
+      "venue": "Colgate Games, Nelson",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 14,
+      "gender": "girls",
+      "event": "200m",
+      "athletes": [
+        "L Morrison"
+      ],
+      "performance": "25.75",
+      "date": "2024-02-17",
+      "venue": "Interclub Quadrathon, Nga Puna Wai, Christchurch",
+      "source": null,
+      "verified": "no-athlete"
+    },
+    {
+      "grade": 14,
+      "gender": "girls",
+      "event": "4 x 100m Relay",
+      "athletes": [
+        "S Galilee",
+        "S Paterson",
+        "L Morrison",
+        "C Johnston"
+      ],
+      "performance": "52.65",
+      "date": "2024-03-09",
+      "venue": "Canterbury Champs, Ngā Puni Wai, Christchurch",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=996690ba-566e-4a35-8912-c5ca97e50e38",
+      "verified": "found"
+    },
+    {
+      "grade": 14,
+      "gender": "girls",
+      "event": "400m",
+      "athletes": [
+        "X Jane"
+      ],
+      "performance": "1.00.64",
+      "date": "2021-01-15",
+      "venue": "Colgate Games, Nelson",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 14,
+      "gender": "girls",
+      "event": "60m",
+      "athletes": [
+        "L Morrison"
+      ],
+      "performance": "7.83",
+      "date": "2024-03-03",
+      "venue": "Interclub, Ngā Puni Wai, Christchurch",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 14,
+      "gender": "girls",
+      "event": "800m",
+      "athletes": [
+        "A Smit"
+      ],
+      "performance": "2:10.30",
+      "date": "2005-11-30",
+      "venue": "-",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 14,
+      "gender": "girls",
+      "event": "80m Hurdle",
+      "athletes": [
+        "J Hendren"
+      ],
+      "performance": "13.65",
+      "date": "2020-01-17",
+      "venue": "Colgate Games, Christchurch",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=22d6b107-c7bf-47e7-bcaf-1842b9b82da0",
+      "verified": "found"
+    },
+    {
+      "grade": 14,
+      "gender": "girls",
+      "event": "Discus 1 kg",
+      "athletes": [
+        "Siniva Ma'u"
+      ],
+      "performance": "32.49",
+      "date": "2020-01-17",
+      "venue": "Colgate Games, Christchurch",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=22d6b107-c7bf-47e7-bcaf-1842b9b82da0",
+      "verified": "found"
+    },
+    {
+      "grade": 14,
+      "gender": "girls",
+      "event": "High Jump",
+      "athletes": [
+        "J Hendren"
+      ],
+      "performance": "1.64",
+      "date": "2020-02-29",
+      "venue": "Interclub, Ngā Puni Wai, Christchurch",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=c5948778-e574-4186-9f89-35f30011dc7b",
+      "verified": "found"
+    },
+    {
+      "grade": 14,
+      "gender": "girls",
+      "event": "Long Jump",
+      "athletes": [
+        "L Morrison"
+      ],
+      "performance": "5.2",
+      "date": "2024-12-08",
+      "venue": "Canterbury Champs, Ngā Puna Wai, Christchurch",
+      "source": null,
+      "verified": "no-results"
+    },
+    {
+      "grade": 14,
+      "gender": "girls",
+      "event": "Shot Put 3 kg",
+      "athletes": [
+        "Siniva Ma'u"
+      ],
+      "performance": "10.43",
+      "date": "2019-12-14",
+      "venue": "Interclub, Ngā Puni Wai, Christchurch",
+      "source": "https://www.sporty.co.nz/asset/downloadasset?id=2b0d6ca3-1430-4be9-a7c7-388101b1985e",
+      "verified": "found"
+    }
+  ]
+}

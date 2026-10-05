@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en-NZ">
+
+<head>
+<!-- @partial:head -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0B3B2E">
+
+<meta property="og:type" content="website">
+<meta property="og:image" content="assets/img/logo.svg">
+<meta property="og:image:alt" content="North Canterbury Athletic Club">
+<meta property="og:locale" content="en_NZ">
+
+<link rel="icon" href="assets/img/logo.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/img/logo.png">
+<link rel="preload" href="assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/archivo-variable.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/css/styles.css?v=60009158">
+<!-- /@partial:head -->
+
+<title>Children&rsquo;s Club Records &mdash; North Canterbury Athletic Club</title>
+<meta name="description" content="North Canterbury Athletic Club children's records, grades 7 to 14, for track, field and race walking. Filter by grade, gender and event, and download the full set as a spreadsheet.">
+<meta property="og:title" content="Children&rsquo;s Club Records &mdash; North Canterbury Athletic Club">
+<meta property="og:description" content="Club records for grades 7 to 14 across track, field and race walking.">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<!-- @partial:header -->
+<!-- ================= Header ================= -->
+<header class="site-header" id="site-header">
+  <div class="wrap site-header__bar">
+    <a class="brand" href="index.html" aria-label="North Canterbury Athletic Club — home">
+      <img src="assets/img/logo.svg" alt="" width="888" height="508">
+      <span class="brand__name">
+        North Canterbury<br>Athletic Club
+      </span>
+    </a>
+
+    <button class="nav-toggle" type="button" id="nav-toggle" aria-expanded="false" aria-controls="primary-nav">
+      <span class="nav-toggle__bars" aria-hidden="true"><i></i></span>
+      Menu
+    </button>
+
+    <nav class="nav" id="primary-nav" aria-label="Primary">
+      <ul>
+        <li><a href="index.html#why">Why NCAN</a></li>
+        <li><a href="index.html#programmes">Programmes</a></li>
+        <li><a href="index.html#training">Training</a></li>
+        <li><a href="calendar.html">Calendar</a></li>
+        <li><a href="index.html#news">Community</a></li>
+        <li><a href="gallery.html">Gallery</a></li>
+        <li><a href="index.html#contact">Contact</a></li>
+        <li class="nav__cta"><a class="btn btn--accent" href="index.html#join">Join the club</a></li>
+      </ul>
+    </nav>
+
+    <div class="site-header__cta">
+      <a class="btn btn--accent btn--sm" href="index.html#join">Join the club</a>
+    </div>
+  </div>
+</header>
+<!-- /@partial:header -->
+
+  <main id="main">
+    <span id="top"></span>
+
+    <!-- ================= Page head ================= -->
+    <section class="page-head" aria-labelledby="page-heading">
+      <div class="wrap">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="index.html">Home</a> <span aria-hidden="true">/</span> <span>Children&rsquo;s records</span>
+        </nav>
+        <p class="eyebrow eyebrow--light">Grades 7 to 14</p>
+        <h1 id="page-heading">Children&rsquo;s club records</h1>
+        <p class="lede">
+          The best performance by a North Canterbury athlete in each event, at each grade.
+          Where we hold a link to the official results, the date links to it so the record
+          can be checked.
+        </p>
+        <div class="btn-row">
+          <a class="btn btn--accent" href="#records">See the records</a>
+          <a class="btn btn--ghost-light" href="index.html#contact">Report a correction</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="records" aria-labelledby="records-heading">
+      <div class="wrap">
+        <div class="section-head section-head--split" data-reveal>
+          <p class="eyebrow">The record book</p>
+          <h2 id="records-heading">Records by grade</h2>
+          <div>
+            <p class="lede">
+              Grade is the athlete&rsquo;s age on 31 December. A record stands until it is
+              beaten, so where two athletes share a mark both are listed. Records are
+              generally updated at the end of each season, in late March or early April.
+            </p>
+          </div>
+        </div>
+
+        <div class="records-bar" data-reveal>
+          <div class="records-filters">
+            <p class="records-field">
+              <label for="filter-grade">Grade</label>
+              <select id="filter-grade"><option value="">All grades</option></select>
+            </p>
+            <p class="records-field">
+              <label for="filter-gender">Girls or boys</label>
+              <select id="filter-gender">
+                <option value="">Both</option>
+                <option value="girls">Girls</option>
+                <option value="boys">Boys</option>
+              </select>
+            </p>
+            <p class="records-field records-field--grow">
+              <label for="filter-text">Search</label>
+              <input type="search" id="filter-text" placeholder="event, athlete or venue"
+                     autocomplete="off">
+            </p>
+          </div>
+          <div class="records-actions">
+            <button type="button" class="btn btn--ghost" id="export-csv"
+                    title="Downloads whatever the filters are showing, as a CSV file.">
+              Download as a spreadsheet
+            </button>
+          </div>
+        </div>
+
+        <p class="records-status" id="records-status" role="status">Loading the records&hellip;</p>
+
+        <div id="records-out"></div>
+
+        <p class="records-note" id="records-updated"></p>
+      </div>
+    </section>
+
+    <section class="section section--tint" aria-labelledby="correction-heading">
+      <div class="wrap">
+        <div class="section-head section-head--wide" data-reveal>
+          <p class="eyebrow">Keep it accurate</p>
+          <h2 id="correction-heading">Spotted something wrong?</h2>
+          <p class="lede">
+            These go back to 2005 and some of the older entries came from paper. If you know
+            a record is out of date, misspelled, or you can point us at the official results
+            for one, please tell us and we will fix it.
+          </p>
+          <div class="btn-row">
+            <a class="btn" href="index.html#contact">Contact the club</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- @partial:footer -->
+<!-- ================= Footer ================= -->
+<footer class="site-footer" aria-labelledby="footer-heading">
+  <div class="wrap">
+    <h2 class="visually-hidden" id="footer-heading">Site footer</h2>
+
+    <div class="site-footer__grid">
+      <div>
+        <div class="footer-brand">
+          <img src="assets/img/logo.svg" alt="" width="888" height="508">
+          <div>
+            <strong><a href="index.html">North Canterbury<br>Athletic Club</a></strong>
+            <span>Rangiora, New Zealand</span>
+          </div>
+        </div>
+        <p>A volunteer-run club affiliated with <a href="https://athletics.org.nz/">Athletics New Zealand</a> and <a href="https://athleticscanterbury.org.nz/">Athletics Canterbury</a>, welcoming athletes of every age and ability since 1978.</p>
+
+        <div class="socials">
+          <a href="https://www.facebook.com/NorthCanterburyAthleticClub" aria-label="North Canterbury Athletic Club on Facebook">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 22v-8h2.8l.4-3.2h-3.2V8.7c0-.9.3-1.5 1.6-1.5h1.7V4.1A22 22 0 0 0 14.4 4C12 4 10.3 5.5 10.3 8.3v2.5H7.6V14h2.7v8Z"/></svg>
+            <span>Club</span>
+          </a>
+          <a href="https://www.facebook.com/NorthCanterburyChildrensAthletics" aria-label="Children's Athletics on Facebook">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 22v-8h2.8l.4-3.2h-3.2V8.7c0-.9.3-1.5 1.6-1.5h1.7V4.1A22 22 0 0 0 14.4 4C12 4 10.3 5.5 10.3 8.3v2.5H7.6V14h2.7v8Z"/></svg>
+            <span>Children&rsquo;s</span>
+          </a>
+        </div>
+      </div>
+      <div>
+        <h3>Quick links</h3>
+        <ul>
+          <li><a href="index.html#programmes">Our programmes</a></li>
+          <li><a href="index.html#training">Training times</a></li>
+          <li><a href="index.html#join">Register &amp; fees</a></li>
+          <li><a href="index.html#news">News &amp; results</a></li>
+          <li><a href="gallery.html">Photo gallery</a></li>
+          <li><a href="index.html#contact">Contact the club</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3>Get involved</h3>
+        <ul>
+          <li><a href="index.html#join">Become a member</a></li>
+          <li><a href="calendar.html">Club calendar</a></li>
+          <li><a href="coaches-officials-volunteers.html#volunteer">Volunteer roles</a></li>
+          <li><a href="coaches-officials-volunteers.html#coaching">Coaching development</a></li>
+          <li><a href="coaches-officials-volunteers.html#officials">Officials training</a></li>
+          <li><a href="index.html#sponsors">Sponsor the club</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3>Club information</h3>
+        <ul>
+          <li><a href="committee.html">Committee and documents</a></li>
+          <li><a href="safeguarding.html">Child safeguarding</a></li>
+          <li><a href="records.html" aria-current="page">Children&rsquo;s records</a></li>
+          <li><a href="history.html">History</a></li>
+          <li><a href="https://codesport.co.nz/catalog/%20NorthCanterburyAthleticsClub%20-1107550.htmx">Uniform and apparel</a></li>
+<!--           <li><a href="index.html#contact">Club records</a></li> -->
+          <li><a href="resources.html">Athletics resources</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="site-footer__base">
+      <p>&copy; 2026 <a href="index.html">North Canterbury Athletic Club Incorporated</a>. All rights reserved.</p>
+      <ul>
+        <li><a href="index.html">Back to top</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+<!-- /@partial:footer -->
+
+  <script>
+    (function () {
+      'use strict';
+
+      /* Mobile navigation ------------------------------------------------ */
+      var toggle = document.getElementById('nav-toggle');
+      var nav = document.getElementById('primary-nav');
+
+      function closeNav() {
+        nav.removeAttribute('data-open');
+        toggle.setAttribute('aria-expanded', 'false');
+      }
+
+      toggle.addEventListener('click', function () {
+        if (nav.getAttribute('data-open') === 'true') {
+          closeNav();
+        } else {
+          nav.setAttribute('data-open', 'true');
+          toggle.setAttribute('aria-expanded', 'true');
+        }
+      });
+
+      nav.addEventListener('click', function (event) {
+        if (event.target.closest('a')) { closeNav(); }
+      });
+
+      document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && nav.getAttribute('data-open') === 'true') {
+          closeNav();
+          toggle.focus();
+        }
+      });
+
+      /* Header shadow once scrolled ------------------------------------- */
+      var header = document.getElementById('site-header');
+      var onScroll = function () {
+        header.classList.toggle('is-stuck', window.scrollY > 8);
+      };
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+
+      /* Reveal on scroll ------------------------------------------------- */
+      var targets = document.querySelectorAll('[data-reveal]');
+
+      if (!('IntersectionObserver' in window) ||
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        Array.prototype.forEach.call(targets, function (el) { el.classList.add('is-visible'); });
+        return;
+      }
+
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { rootMargin: '0px 0px -8% 0px', threshold: 0.12 });
+
+      Array.prototype.forEach.call(targets, function (el) { observer.observe(el); });
+    }());
+  </script>
+
+  <script>
+    (function () {
+      'use strict';
+
+      /* The record book ---------------------------------------------------
+         Everything is read from assets/data/records.json, which is the only
+         place the records live. Edit that file to change what appears here;
+         nothing is duplicated into this page. */
+
+      var DATA_URL = 'assets/data/records.json';
+      var out = document.getElementById('records-out');
+      var status = document.getElementById('records-status');
+      var updated = document.getElementById('records-updated');
+      var gradeSel = document.getElementById('filter-grade');
+      var genderSel = document.getElementById('filter-gender');
+      var textInput = document.getElementById('filter-text');
+      var exportBtn = document.getElementById('export-csv');
+
+      var all = [];
+      var shown = [];
+
+      /* Event order -------------------------------------------------------
+         Events are grouped, and the groups run in a fixed sequence, so every
+         grade reads the same way. Within a group, running events sort by
+         distance and field events by discipline then implement weight -
+         numerically, so 800m comes before 1500m and Shot Put 1 kg before
+         1.5 kg, which alphabetical sorting gets wrong.
+
+         To change the running order, reorder GROUPS. To change the order of
+         disciplines inside Throws or Jumps, reorder SUB_ORDER. */
+      var GROUPS = ['Sprints', 'Hurdles', 'Relays', 'Distance', 'Walks',
+                    'Throws', 'Jumps', 'Other'];
+
+      var SUB_ORDER = {
+        Throws: ['discus', 'shot put', 'javelin', 'hammer'],
+        Jumps: ['long jump', 'high jump', 'triple jump', 'pole vault']
+      };
+
+      // the longest sprint; anything further is a distance event
+      var SPRINT_LIMIT = 400;
+
+      function groupOf(event) {
+        var e = event.toLowerCase();
+        // order matters: "1200m Walk" and "80m Hurdle" both start with a
+        // distance, so they have to be claimed before the numeric test
+        if (e.indexOf('relay') !== -1) { return 'Relays'; }
+        if (e.indexOf('hurdle') !== -1) { return 'Hurdles'; }
+        if (e.indexOf('walk') !== -1) { return 'Walks'; }
+        if (e.indexOf('steeple') !== -1) { return 'Distance'; }
+        if (/jump|vault/.test(e)) { return 'Jumps'; }
+        if (/discus|shot put|javelin|hammer/.test(e)) { return 'Throws'; }
+        var m = /^(\d+(?:\.\d+)?)\s*m\b/.exec(e);
+        if (m) { return Number(m[1]) <= SPRINT_LIMIT ? 'Sprints' : 'Distance'; }
+        return 'Other';
+      }
+
+      function distanceOf(event) {
+        var m = /(\d+(?:\.\d+)?)\s*m\b/.exec(event.toLowerCase());
+        return m ? Number(m[1]) : 0;
+      }
+
+      /* "Shot Put 1.5 kg" -> 1500, "Discus 500 g" -> 500, so the implements
+         sort lightest first instead of by the text of the number. */
+      function weightOf(event) {
+        var m = /(\d+(?:\.\d+)?)\s*(kg|g)\b/i.exec(event);
+        if (!m) { return 0; }
+        return Number(m[1]) * (m[2].toLowerCase() === 'kg' ? 1000 : 1);
+      }
+
+      function subIndex(group, event) {
+        var list = SUB_ORDER[group];
+        if (!list) { return 0; }
+        var e = event.toLowerCase();
+        for (var i = 0; i < list.length; i += 1) {
+          if (e.indexOf(list[i]) !== -1) { return i; }
+        }
+        return list.length;
+      }
+
+      function compareEvents(a, b) {
+        var ga = groupOf(a), gb = groupOf(b);
+        if (ga !== gb) { return GROUPS.indexOf(ga) - GROUPS.indexOf(gb); }
+        var sa = subIndex(ga, a), sb = subIndex(gb, b);
+        if (sa !== sb) { return sa - sb; }
+        var da = distanceOf(a), db = distanceOf(b);
+        if (da !== db) { return da - db; }
+        var wa = weightOf(a), wb = weightOf(b);
+        if (wa !== wb) { return wa - wb; }
+        return a.localeCompare(b);
+      }
+
+      /* Two athletes sharing a record stay together, oldest mark first. */
+      function compareRecords(a, b) {
+        return compareEvents(a.event, b.event)
+            || (a.date || '').localeCompare(b.date || '');
+      }
+
+      function text(tag, cls, value) {
+        var el = document.createElement(tag);
+        if (cls) { el.className = cls; }
+        if (value !== undefined && value !== null) { el.textContent = value; }
+        return el;
+      }
+
+      /* 2025-03-02 -> 2 March 2025. Built from the parts rather than parsed
+         as a Date, so a browser cannot shift it by a timezone. */
+      var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July',
+                    'August', 'September', 'October', 'November', 'December'];
+
+      function prettyDate(iso) {
+        if (!iso) { return ''; }
+        var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
+        if (!m) { return iso; }
+        return Number(m[3]) + ' ' + MONTHS[Number(m[2]) - 1] + ' ' + m[1];
+      }
+
+      function athleteText(record) {
+        var names = record.athletes || [];
+        if (names.length <= 1) { return names[0] || ''; }
+        return names.join(', ');
+      }
+
+      function matches(record, grade, gender, needle) {
+        if (grade && String(record.grade) !== grade) { return false; }
+        if (gender && record.gender !== gender) { return false; }
+        if (!needle) { return true; }
+        var hay = [record.event, athleteText(record), record.venue,
+                   record.performance, prettyDate(record.date)]
+                  .join(' ').toLowerCase();
+        return hay.indexOf(needle) !== -1;
+      }
+
+      function buildRow(record) {
+        var tr = document.createElement('tr');
+
+        var th = text('th', 'records-event', record.event);
+        th.setAttribute('scope', 'row');
+        tr.appendChild(th);
+
+        var who = text('td', null, athleteText(record));
+        who.setAttribute('data-label', 'Athlete');
+        if ((record.athletes || []).length > 1) { who.className = 'records-team'; }
+        tr.appendChild(who);
+
+        var perf = text('td', 'records-perf', record.performance);
+        perf.setAttribute('data-label', 'Result');
+        tr.appendChild(perf);
+
+        // the date carries the link to the official results, when we have one
+        var when = text('td', 'records-date');
+        when.setAttribute('data-label', 'Date');
+        if (record.source) {
+          var a = document.createElement('a');
+          a.className = 'records-source';
+          a.href = record.source;
+          a.target = '_blank';
+          a.rel = 'noopener';
+          a.textContent = prettyDate(record.date);
+          a.title = 'Official results for this record';
+          when.appendChild(a);
+        } else {
+          when.textContent = prettyDate(record.date);
+        }
+        tr.appendChild(when);
+
+        var where = text('td', null, record.venue);
+        where.setAttribute('data-label', 'Meeting');
+        tr.appendChild(where);
+
+        return tr;
+      }
+
+      function buildTable(caption, rows) {
+        var wrap = text('div', 'table-wrap');
+        var table = text('table', 'schedule records-table');
+
+        var cap = text('caption', null, caption);
+        table.appendChild(cap);
+
+        var thead = document.createElement('thead');
+        var hr = document.createElement('tr');
+        ['Event', 'Athlete', 'Result', 'Date', 'Meeting'].forEach(function (label) {
+          var th = text('th', null, label);
+          th.setAttribute('scope', 'col');
+          hr.appendChild(th);
+        });
+        thead.appendChild(hr);
+        table.appendChild(thead);
+
+        var tbody = document.createElement('tbody');
+        var lastGroup = null;
+        rows.forEach(function (r) {
+          var group = groupOf(r.event);
+          if (group !== lastGroup) {
+            // reuses the banding the training table already uses
+            var band = text('tr', 'schedule__band');
+            var bth = text('th', null, group);
+            bth.setAttribute('scope', 'colgroup');
+            bth.colSpan = 5;
+            band.appendChild(bth);
+            tbody.appendChild(band);
+            lastGroup = group;
+          }
+          tbody.appendChild(buildRow(r));
+        });
+        table.appendChild(tbody);
+
+        wrap.appendChild(table);
+        return wrap;
+      }
+
+      /* The button says what will come out, because the export follows the
+         filter rather than always writing the whole book. */
+      function updateExportLabel() {
+        if (!shown.length) {
+          exportBtn.textContent = 'Nothing to download';
+          exportBtn.disabled = true;
+          return;
+        }
+        exportBtn.disabled = false;
+        exportBtn.textContent = shown.length === all.length
+          ? 'Download all ' + all.length + ' records'
+          : 'Download these ' + shown.length + ' records';
+      }
+
+      function render() {
+        var grade = gradeSel.value;
+        var gender = genderSel.value;
+        var needle = textInput.value.trim().toLowerCase();
+
+        shown = all.filter(function (r) { return matches(r, grade, gender, needle); });
+
+        out.textContent = '';
+        updateExportLabel();
+
+        if (!shown.length) {
+          status.textContent = 'No records match that. Try a different grade or search.';
+          return;
+        }
+
+        var grades = [];
+        shown.forEach(function (r) {
+          if (grades.indexOf(r.grade) === -1) { grades.push(r.grade); }
+        });
+        grades.sort(function (a, b) { return a - b; });
+
+        grades.forEach(function (g) {
+          var block = text('div', 'records-grade');
+          var heading = text('h3', 'records-grade__head', 'Grade ' + g);
+          block.appendChild(heading);
+
+          ['girls', 'boys'].forEach(function (gen) {
+            var rows = shown.filter(function (r) {
+              return r.grade === g && r.gender === gen;
+            });
+            if (!rows.length) { return; }
+            rows.sort(compareRecords);
+            var label = gen === 'girls' ? 'Girls' : 'Boys';
+            block.appendChild(buildTable(label + ' — grade ' + g, rows));
+          });
+
+          out.appendChild(block);
+        });
+
+        status.textContent = shown.length === all.length
+          ? 'Showing all ' + all.length + ' records.'
+          : 'Showing ' + shown.length + ' of ' + all.length + ' records.';
+      }
+
+      /* Spreadsheet export ------------------------------------------------
+         CSV rather than .xlsx: it opens in Excel, Numbers and Sheets alike,
+         and needs no library. The leading BOM is what makes Excel read it as
+         UTF-8 - without it, Ngā Puna Wai arrives mangled. */
+      function csvCell(value) {
+        var s = value === null || value === undefined ? '' : String(value);
+        if (/[",\r\n]/.test(s)) { return '"' + s.replace(/"/g, '""') + '"'; }
+        return s;
+      }
+
+      function exportCsv() {
+        var rows = [['Grade', 'Girls/Boys', 'Group', 'Event', 'Athlete', 'Result',
+                     'Date', 'Meeting', 'Results link']];
+
+        // same order as the page, so the spreadsheet reads the same way
+        shown.slice().sort(function (a, b) {
+          return a.grade - b.grade
+              || b.gender.localeCompare(a.gender)   // girls before boys
+              || compareRecords(a, b);
+        }).forEach(function (r) {
+          rows.push([r.grade, r.gender === 'girls' ? 'Girls' : 'Boys',
+                     groupOf(r.event), r.event,
+                     athleteText(r), r.performance, r.date || '', r.venue || '',
+                     r.source || '']);
+        });
+
+        var csv = rows.map(function (row) {
+          return row.map(csvCell).join(',');
+        }).join('\r\n');
+
+        var stamp = new Date().toISOString().slice(0, 10);
+        var bits = ['ncan-childrens-records'];
+        if (gradeSel.value) { bits.push('grade-' + gradeSel.value); }
+        if (genderSel.value) { bits.push(genderSel.value); }
+        var needle = textInput.value.trim().toLowerCase()
+                       .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+        if (needle) { bits.push(needle.slice(0, 24)); }
+        bits.push(stamp);
+        var blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = bits.join('-') + '.csv';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+      }
+
+      if (!window.fetch) {
+        status.textContent = 'This browser cannot load the records. '
+          + 'The data is at ' + DATA_URL + '.';
+        return;
+      }
+
+      fetch(DATA_URL, { cache: 'no-cache' })
+        .then(function (res) {
+          if (!res.ok) { throw new Error('HTTP ' + res.status); }
+          return res.json();
+        })
+        .then(function (data) {
+          all = data.records || [];
+          if (!all.length) { throw new Error('no records in the file'); }
+
+          (data.grades || []).forEach(function (g) {
+            var opt = document.createElement('option');
+            opt.value = String(g);
+            opt.textContent = 'Grade ' + g;
+            gradeSel.appendChild(opt);
+          });
+
+          if (data.updated) {
+            updated.textContent = 'Records last updated ' + prettyDate(data.updated) + '.';
+          }
+
+          [gradeSel, genderSel].forEach(function (el) {
+            el.addEventListener('change', render);
+          });
+          textInput.addEventListener('input', render);
+          exportBtn.addEventListener('click', exportCsv);
+
+          render();
+        })
+        .catch(function (err) {
+          status.textContent = 'Sorry, the records could not be loaded (' + err.message
+            + '). Please try again, or contact the club.';
+          exportBtn.disabled = true;
+        });
+    }());
+  </script>
+
+</body>
+
+</html>
