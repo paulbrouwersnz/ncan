@@ -1534,6 +1534,12 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 
 /* ---------- Document lists ---------- */
 .doc-list { display: grid; gap: .75rem; }
+/* A doc list under a heading already sits below that heading's own bottom
+   margin. Following anything else - a card grid, a paragraph - it has
+   nothing to space it, so give it its own. */
+:not(.section-head):not(.subhead) + .doc-list {
+  margin-top: clamp(1.2rem, 2.6vw, 1.9rem);
+}
 .doc {
   display: flex;
   align-items: center;
