@@ -30,6 +30,69 @@
   },
   "by-record": [
     {
+      "date": "2010-01-16",
+      "grade": 13,
+      "gender": "girls",
+      "event": "800m",
+      "url": "https://nzchildrensathletics.co.nz/assets/console/document/documents/20150723021156SI_Colgate_Results_2010.pdf",
+      "checked": true,
+      "evidence": "4 Indiana Bayliss North Canterbury 2:27.35"
+    },
+    {
+      "date": "2010-01-17",
+      "grade": 13,
+      "gender": "girls",
+      "event": "1500m",
+      "url": "https://nzchildrensathletics.co.nz/assets/console/document/documents/20150723021156SI_Colgate_Results_2010.pdf",
+      "checked": true,
+      "evidence": "3 Indiana Bayliss North Canterbury 5:06.99"
+    },
+    {
+      "date": "2011-01-14",
+      "grade": 10,
+      "gender": "girls",
+      "event": "400m",
+      "url": "https://nzchildrensathletics.co.nz/assets/console/document/documents/201507230213092011_SI_colgate_dunedin_results.pdf",
+      "checked": true,
+      "evidence": "3 Tegan Duffy NCAN 1:09.73q 1"
+    },
+    {
+      "date": "2011-01-15",
+      "grade": 14,
+      "gender": "boys",
+      "event": "Shot Put 5 kg",
+      "url": "https://nzchildrensathletics.co.nz/assets/console/document/documents/201507230213092011_SI_colgate_dunedin_results.pdf",
+      "checked": true,
+      "evidence": "1 Charlie Gamble NCAN 13.95m"
+    },
+    {
+      "date": "2011-01-16",
+      "grade": 14,
+      "gender": "boys",
+      "event": "200m",
+      "url": "https://nzchildrensathletics.co.nz/assets/console/document/documents/201507230213092011_SI_colgate_dunedin_results.pdf",
+      "checked": true,
+      "evidence": "6 Max Tiweka NCAN 25.31 25.15 1.5"
+    },
+    {
+      "date": "2011-01-17",
+      "grade": 14,
+      "gender": "boys",
+      "event": "High Jump",
+      "url": "https://nzchildrensathletics.co.nz/assets/console/document/documents/201507230213092011_SI_colgate_dunedin_results.pdf",
+      "checked": true,
+      "evidence": "6 Max Tiweka NCAN J1.60m"
+    },
+    {
+      "date": "2011-02-15",
+      "grade": 12,
+      "gender": "boys",
+      "event": "1500m",
+      "url": "https://nzchildrensathletics.co.nz/assets/console/document/documents/201507230213092011_SI_colgate_dunedin_results.pdf",
+      "checked": true,
+      "evidence": "1 Fergus Eglesfield NCAN 4:51.02"
+    },
+    {
       "date": "2014-10-18",
       "grade": 9,
       "gender": "girls",
@@ -46,6 +109,24 @@
       "url": "https://athleticscanterbury.org.nz/wp-content/uploads/2020/05/childrens-08-11-14-s2.pdf",
       "checked": true,
       "evidence": "2       Hendren, Jessica     9 NCAN                     33.46   24"
+    },
+    {
+      "date": "2016-01-15",
+      "grade": 10,
+      "gender": "girls",
+      "event": "200m",
+      "url": "https://nzchildrensathletics.co.nz/assets/console/document/documents/20160117033000all_results3.pdf",
+      "checked": true,
+      "evidence": "1 Jessica Hendren 10 North Canter 30.42q +0.0 1"
+    },
+    {
+      "date": "2016-01-15",
+      "grade": 11,
+      "gender": "girls",
+      "event": "200m",
+      "url": "https://nzchildrensathletics.co.nz/assets/console/document/documents/20160117033000all_results3.pdf",
+      "checked": true,
+      "evidence": "1 Lillie Rayner 11 North Canter 29.26 28.93q 1.8 1"
     },
     {
       "date": "2016-02-27",
@@ -75,6 +156,15 @@
       "evidence": "1 Jessica Hendren              North Canterbury         4.39m   1.5   8"
     },
     {
+      "date": "2016-03-12",
+      "grade": 11,
+      "gender": "girls",
+      "event": "100m",
+      "url": "https://nzchildrensathletics.co.nz/assets/console/document/documents/20160117033000all_results3.pdf",
+      "checked": true,
+      "evidence": "1 Lillie Rayner 11 North Canter 14.06 13.89 0.1"
+    },
+    {
       "date": "2016-10-22",
       "grade": 12,
       "gender": "girls",
@@ -82,6 +172,42 @@
       "url": "https://athleticscanterbury.org.nz/wp-content/uploads/2020/05/children-22-10-16.pdf",
       "checked": true,
       "evidence": "2   265 Rayner, Lillie      12 NCAN                      9.08"
+    },
+    {
+      "date": "2017-01-12",
+      "grade": 12,
+      "gender": "boys",
+      "event": "Discus 1 kg",
+      "url": "https://nzchildrensathletics.co.nz/assets/siteDesq/24809/documents/full%20results.pdf",
+      "checked": true,
+      "evidence": "1 Ben Phillips 12 NCAN 31.81m"
+    },
+    {
+      "date": "2017-01-12",
+      "grade": 12,
+      "gender": "boys",
+      "event": "Shot Put 3 kg",
+      "url": "https://nzchildrensathletics.co.nz/assets/siteDesq/24809/documents/full%20results.pdf",
+      "checked": true,
+      "evidence": "1 Ben Phillips 12 NCAN 12.65m"
+    },
+    {
+      "date": "2017-01-13",
+      "grade": 10,
+      "gender": "boys",
+      "event": "400m",
+      "url": "https://nzchildrensathletics.co.nz/assets/siteDesq/24809/documents/full%20results.pdf",
+      "checked": true,
+      "evidence": "4 Aaron Reavill 10 NCAN 1:10.20q 3"
+    },
+    {
+      "date": "2017-01-13",
+      "grade": 12,
+      "gender": "girls",
+      "event": "200m",
+      "url": "https://nzchildrensathletics.co.nz/assets/siteDesq/24809/documents/full%20results.pdf",
+      "checked": true,
+      "evidence": "1 Lillie Rayner 12 NCAN 27.63 3.8"
     },
     {
       "date": "2017-02-25",
@@ -287,6 +413,7 @@
   },
   "archives": {
     "ccaa-sporty": "https://www.sporty.co.nz/cantychildrensathletics/Results-1/tab1 - every CCAA meeting from October 2018. Read automatically by tools/verify-records.py.",
-    "athletics-canterbury": "https://athleticscanterbury.org.nz/competition/results/ - filter the season and pick the Childrens category. Around 158 childrens meetings, going back to 2012-13, as direct PDFs. This covers the years before the CCAA index starts. It is a POST form, and it rate-limits: space requests out."
+    "athletics-canterbury": "https://athleticscanterbury.org.nz/competition/results/ - filter the season and pick the Childrens category. Around 158 childrens meetings, going back to 2012-13, as direct PDFs. This covers the years before the CCAA index starts. It is a POST form, and it rate-limits: space requests out.",
+    "si-colgate-games": "https://nzchildrensathletics.co.nz/index-fuseaction-Page-pageID-10240-OrgID-24809.html - South Island Colgate Games results, one PDF per year, 2008 to 2017. The only online source found for those years."
   }
 }

@@ -17,6 +17,10 @@ in the official results, not merely that a meeting happened that day.
 
 Each record ends up in one of these states, written to "verified":
 
+    "confirmed"  a person has checked this record against the results and
+                 said so, by putting their name in "checked_by". This is the
+                 strongest state there is: a human eye beats a text match,
+                 and nothing the tool does will overwrite or clear it.
     "found"      the surname and the mark appear together - linked
     "mark-differs"  the athlete is in the results, but with another mark.
                     Worth a human look: usually a typo in the record book.
@@ -47,6 +51,33 @@ Matching notes
     Marks: 3.3 and "3.30m" are the same jump, and 2.40.05, 2:40.05 and
     "2:40.05" are the same time, so marks are parsed to a number of seconds
     or metres rather than compared as text. Wind readings are ignored.
+
+ADDING A SOURCE BY HAND
+    Two places, both safe across runs:
+
+    1. assets/data/record-sources.json, under "by-record". Matched on date,
+       grade, gender and event. "checked": true means somebody read the
+       athlete and the mark off that page, so the record counts as verified.
+       Preferred: it keeps the evidence beside the link.
+
+    2. records.json itself. Put the URL in "source" and add
+       "source_by": "hand" to the same record. Anything whose "source_by"
+       is not "verify-records" is left exactly as it is - the run still
+       checks the record and still reports what it found, but it will not
+       touch the link or replace it with one of its own.
+
+    To say you have checked a record yourself, add "checked_by" to it:
+
+        "checked_by": "PB"
+
+    That sets "verified": "confirmed" and survives every run. Use it for
+    the records this tool cannot reach - results on paper, a meeting whose
+    file is a scan, anything you have seen with your own eyes. Add a
+    "checked_note" alongside it if the evidence is worth recording.
+
+    A source this tool wrote is stamped "source_by": "verify-records", and
+    only those are cleared and rebuilt. Without the stamp a hand-added link
+    would be indistinguishable from a stale one.
 
 Usage:
     python tools/verify-records.py --report
@@ -184,7 +215,11 @@ def normalise(word):
     apostrophes and hyphens ("Ma'u", "Brandts-Giesen").
     """
     word = re.sub(r"[^a-z]", '', (word or '').lower())
-    return re.sub(r'^mac', 'mc', word)
+    word = re.sub(r'^mac', 'mc', word)
+    # "B Philips" in the record book is "Ben Phillips" in the results, and the
+    # book itself spells the family both ways, so a doubled letter is not a
+    # different person
+    return re.sub(r'(.)\1+', r'\1', word)
 
 
 def surname(name):
@@ -308,6 +343,31 @@ def main():
     data = json.load(io.open(RECORDS, encoding='utf-8'))
     records = data['records']
 
+    # Clear only what this tool wrote. A run used to keep every source it
+    # found, so a link could outlive the evidence for it; clearing the lot
+    # fixed that but then threw away links a person had added by hand.
+    # The stamp tells them apart.
+    kept_by_hand = confirmed_by_hand = 0
+    for r in records:
+        if r.get('checked_by'):
+            confirmed_by_hand += 1
+        if r.get('source') and r.get('source_by') not in (None, 'verify-records'):
+            kept_by_hand += 1
+            r.pop('verified', None)
+            continue
+        if r.get('source') and r.get('source_by') is None:
+            # written before the stamp existed, and reproducible below
+            pass
+        r['source'] = None
+        r['source_by'] = None
+        r.pop('verified', None)
+    if kept_by_hand:
+        say('keeping %d hand-added source(s) - "source_by" is not '
+            '"verify-records"' % kept_by_hand)
+    if confirmed_by_hand:
+        say('%d record(s) carry "checked_by" and are left alone'
+            % confirmed_by_hand)
+
     todo = [r for r in records if (r.get('date') or '') in by_date]
     if args.limit:
         todo = todo[:args.limit]
@@ -354,8 +414,9 @@ def main():
         state, evidence = check(text, r)
         r['verified'] = state
         counts[state] += 1
-        if state == 'found':
+        if state == 'found' and not r.get('source'):
             r['source'] = href
+            r['source_by'] = 'verify-records'
         elif state == 'mark-differs':
             differs.append((r, evidence))
         if i % 10 == 0:
@@ -382,8 +443,10 @@ def main():
                                 r.get('gender'), r.get('event')))
         if not entry or not entry.get('url'):
             continue
-        r['source'] = entry['url']
         r['verified'] = 'found' if entry.get('checked') else 'supplied'
+        if not r.get('source'):
+            r['source'] = entry['url']
+            r['source_by'] = 'verify-records'
         counts['per-event'] += 1
 
     for r in records:
@@ -391,21 +454,32 @@ def main():
             continue
         entry = supplied.get(r.get('date') or '')
         if entry and entry.get('url'):
-            r['source'] = entry['url']
             r['verified'] = 'supplied'
+            if not r.get('source'):
+                r['source'] = entry['url']
+                r['source_by'] = 'verify-records'
             counts['supplied'] += 1
 
     for r in records:
-        if 'verified' not in r:
-            r['verified'] = 'no-results'
+        if 'verified' in r:
+            continue
+        # a hand-added link that nothing else accounted for: the person
+        # asserting it is the evidence, same standing as "by-date"
+        r['verified'] = 'supplied' if r.get('source') else 'no-results'
+
+    # Last word: somebody says they checked it. Set after everything else so
+    # no earlier rule can talk over a human.
+    for r in records:
+        if r.get('checked_by'):
+            r['verified'] = 'confirmed'
 
     # counted off the records, not the running tally - the hand-supplied
     # links are applied after the PDF pass, so a tally taken during it is
     # already out of date by the time this prints
     final = collections.Counter(r.get('verified') for r in records)
     say('\nresults:')
-    for state in ('found', 'supplied', 'mark-differs', 'namesake-only',
-                  'no-athlete', 'unreadable', 'no-results'):
+    for state in ('confirmed', 'found', 'supplied', 'mark-differs',
+                  'namesake-only', 'no-athlete', 'unreadable', 'no-results'):
         say('   %-13s %d' % (state, final[state]))
     direct = sum(1 for r in records
                  if '/events/individual/' in (r.get('source') or ''))

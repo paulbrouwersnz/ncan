@@ -786,7 +786,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 /* Every grade's table shares one column layout, so the eye can run down
    the page without the columns shifting under it. The three narrow columns
    never wrap, so they are given a width that fits their longest value
-   (Event "100m Hurdle 33\"", Date "30 November 2024", Result "4.72 (-0.3)");
+   (Event "100m Hurdle 33\"", Date "30 November 2024", Result "27.63 (+3.8)");
    Athlete and Meeting split what is left and wrap as needed. */
 .records-table { table-layout: fixed; min-width: 860px; }
 .records-table > thead > tr > th:nth-child(1),
@@ -794,7 +794,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 .records-table > thead > tr > th:nth-child(2),
 .records-table > tbody > tr > :nth-child(2) { width: 24%; }
 .records-table > thead > tr > th:nth-child(3),
-.records-table > tbody > tr > :nth-child(3) { width: 7.5rem; }
+.records-table > tbody > tr > :nth-child(3) { width: 8.75rem; }
 .records-table > thead > tr > th:nth-child(4),
 .records-table > tbody > tr > :nth-child(4) { width: 11.5rem; }
 /* the band row spans the lot, so it must not take a column width */
@@ -805,7 +805,8 @@ ul { margin: 0; padding: 0; list-style: none; }
 /* Dates read as one unit - "26 November 2022" breaking across two lines
    makes the column hard to scan. The table scrolls sideways if it must. */
 .records-date,
-.records-event { white-space: nowrap; }
+.records-event,
+.records-perf { white-space: nowrap; }
 
 /* a date that links out to the official results */
 .records-source {
