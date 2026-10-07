@@ -15,7 +15,7 @@
 <link rel="apple-touch-icon" href="assets/img/logo.png">
 <link rel="preload" href="assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/archivo-variable.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/styles.css?v=3714db49">
+<link rel="stylesheet" href="assets/css/styles.css?v=7edb1932">
 <!-- /@partial:head -->
 
 <title>Club Calendar — North Canterbury Athletic Club</title>
@@ -98,6 +98,18 @@
         </div>
         <div class="section-head__aside">
           <a class="btn btn--ghost" href="index.html#contact">Tell us about an event</a>
+        </div>
+      </div>
+
+      <!-- Search across every event's name, place and detail. Hidden
+           until the agenda has loaded, so it never offers to search nothing. -->
+      <div class="cal-search" id="calendar-search" hidden>
+        <label class="cal-search__label" for="calendar-search-input">Search events</label>
+        <div class="cal-search__row">
+          <input type="search" id="calendar-search-input" class="cal-search__input"
+                 placeholder="event, place or detail" autocomplete="off">
+          <button type="button" class="btn btn--ghost btn--sm" id="calendar-search-clear"
+                  hidden>Clear</button>
         </div>
       </div>
 
@@ -746,12 +758,23 @@
     // what the open agenda shows - the yardstick for a split month's label
     var shownCounts = countByMonth(near);
 
+    // A search counts matches wherever they fall, so a hit folded away in
+    // "already held" or "further ahead" would be reported but not shown.
+    // While searching, those sections open and say how many they hold.
+    var searching = !!searchText;
+
     // Events that have already happened are folded away, oldest first inside,
     // so the list still reads as one timeline running into today.
     if (past.length) {
-      var earlier = disclosure('Show events already held',
-        plural(past.length) + ' in the last ' + MONTHS_BACK + ' months');
+      var earlier = disclosure(
+        searching ? 'Matches already held' : 'Show events already held',
+        searching ? plural(past.length) + ' already held'
+                  : plural(past.length) + ' in the last ' + MONTHS_BACK + ' months');
       appendMonths(earlier.body, past, showSource, totals, shownCounts, 'past');
+      // Only fall back to the past when the search turns up nothing ahead:
+      // what someone searches for is almost always still to come, and
+      // opening both buries the upcoming matches under months of history.
+      if (searching && !upcoming.length) { earlier.box.open = true; }
       root.appendChild(earlier.box);
     }
 
@@ -764,10 +787,13 @@
     appendMonths(root, near, showSource, totals, shownCounts, 'shown');
 
     if (far.length) {
-      var later = disclosure('Show events further ahead',
-        plural(far.length) + ' more than ' + MONTHS_NEAR + ' months away');
+      var later = disclosure(
+        searching ? 'Matches further ahead' : 'Show events further ahead',
+        searching ? plural(far.length) + ' further ahead'
+                  : plural(far.length) + ' more than ' + MONTHS_NEAR + ' months away');
       appendMonths(later.body, far, showSource, totals, shownCounts, 'later');
       later.box.className = 'agenda-past agenda-later';
+      if (searching) { later.box.open = true; }
       root.appendChild(later.box);
     }
   }
@@ -1004,6 +1030,7 @@
   var showSources = false;
   var todayStart = null;
   var calendarCount = 0;
+  var searchText = '';        // lower-cased; '' means no search
 
   function loadHidden() {
     try {
@@ -1022,10 +1049,37 @@
     }
   }
 
+  /* Everything a reader might reasonably type: what it is called, where
+     it is, what the entry says, and the calendar it came from. */
+  function haystack(item) {
+    if (item._hay === undefined) {
+      item._hay = [
+        item.summary || '',
+        item.location || '',
+        item.description || '',
+        (item.sources || []).map(function (s) { return s.name; }).join(' ')
+      ].join(' ').toLowerCase();
+    }
+    return item._hay;
+  }
+
+  function matchesSearch(item) {
+    if (!searchText) { return true; }
+    // every word must appear somewhere, so "walk rangiora" narrows rather
+    // than widens
+    var hay = haystack(item);
+    return searchText.split(/\s+/).every(function (word) {
+      return !word || hay.indexOf(word) !== -1;
+    });
+  }
+
   function visibleItems() {
     return allItems.filter(function (item) {
       // a shared fixture stays while any of its calendars is still on
-      return (item.sources || []).some(function (src) { return !hiddenNames[src.name]; });
+      var onCalendar = (item.sources || []).some(function (src) {
+        return !hiddenNames[src.name];
+      });
+      return onCalendar && matchesSearch(item);
     });
   }
 
@@ -1036,10 +1090,19 @@
     var on = calendarCount - Object.keys(hiddenNames).filter(function (n) {
       return hiddenNames[n];
     }).length;
-    meta.textContent = items.length
-      ? plural(ahead) + ' from ' + on + ' calendar' + (on === 1 ? '' : 's') +
-        ' over the next ' + MONTHS_AHEAD + ' months. Times shown in New Zealand time.'
-      : 'No events to show - every calendar is switched off.';
+    if (!items.length) {
+      meta.textContent = searchText
+        ? 'No events match that search.'
+        : 'No events to show - every calendar is switched off.';
+    } else if (searchText) {
+      meta.textContent = plural(ahead) + ' matching \u201c'
+        + searchInput.value.trim() + '\u201d, from ' + on + ' calendar'
+        + (on === 1 ? '' : 's') + '. Times shown in New Zealand time.';
+    } else {
+      meta.textContent = plural(ahead) + ' from ' + on + ' calendar'
+        + (on === 1 ? '' : 's') + ' over the next ' + MONTHS_AHEAD
+        + ' months. Times shown in New Zealand time.';
+    }
     meta.hidden = false;
   }
 
@@ -1048,12 +1111,45 @@
     if (!items.length) {
       root.innerHTML = '';
       root.setAttribute('aria-busy', 'false');
-      root.appendChild(el('p', 'agenda__state',
-        'Nothing to show. Switch a calendar back on above.'));
+      // say which control is hiding everything, rather than a generic blank
+      root.appendChild(el('p', 'agenda__state', searchText
+        ? 'Nothing matches \u201c' + searchInput.value.trim() + '\u201d. '
+          + 'Try fewer words, or clear the search.'
+        : 'Nothing to show. Switch a calendar back on above.'));
     } else {
       render(items, showSources, todayStart);
     }
     updateMeta(items);
+  }
+
+  var searchInput = document.getElementById('calendar-search-input');
+  var searchClear = document.getElementById('calendar-search-clear');
+
+  function applySearch() {
+    searchText = searchInput.value.trim().toLowerCase();
+    searchClear.hidden = !searchText;
+    refresh();
+  }
+
+  function buildSearch() {
+    var box = document.getElementById('calendar-search');
+    if (!box || !searchInput) { return; }
+    box.hidden = false;
+
+    searchInput.addEventListener('input', applySearch);
+    // Esc clears, which is what a search field is expected to do
+    searchInput.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && searchInput.value) {
+        event.preventDefault();
+        searchInput.value = '';
+        applySearch();
+      }
+    });
+    searchClear.addEventListener('click', function () {
+      searchInput.value = '';
+      applySearch();
+      searchInput.focus();
+    });
   }
 
   function buildFilter(calendars) {
@@ -1238,6 +1334,7 @@
       });
 
       buildFilter(loaded.map(function (entry) { return entry.cal; }));
+      buildSearch();
       refresh();
       listCalendars(calendars);
     });

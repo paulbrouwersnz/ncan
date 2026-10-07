@@ -2122,6 +2122,37 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 
 /* ---------- Calendar filter ---------- */
 
+/* Search across the agenda. Sits above the calendar chips: narrow the
+   events by words first, then by which calendar they came from. */
+.cal-search { margin-bottom: clamp(.9rem, 2vw, 1.3rem); }
+.cal-search__label {
+  display: block;
+  margin: 0 0 .35rem;
+  font-family: var(--font-display);
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--green-700);
+}
+.cal-search__row { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
+.cal-search__input {
+  font: inherit;
+  font-size: .95rem;
+  padding: .6rem .75rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+  color: inherit;
+  flex: 1 1 18rem;
+  min-width: 0;
+}
+.cal-search__input:focus-visible {
+  outline: 3px solid var(--yellow-500);
+  outline-offset: 1px;
+  border-color: var(--green-600);
+}
+
 .cal-filter { margin-bottom: clamp(1.5rem, 3vw, 2.25rem); }
 .cal-filter__label {
   margin: 0 0 .7rem;

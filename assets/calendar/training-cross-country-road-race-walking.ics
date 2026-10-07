@@ -4,9 +4,9 @@ PRODID:-//North Canterbury Athletic Club//cross-country-road-race-walking
  2026/27//EN
 CALSCALE:GREGORIAN
 METHOD:PUBLISH
-X-WR-CALNAME:Cross country, road and race walking coaching
+X-WR-CALNAME:Cross country, road and race walking training
 X-WR-TIMEZONE:Pacific/Auckland
-X-WR-CALDESC:Cross country\, road and race walking coaching\, winter seaso
+X-WR-CALDESC:Cross country\, road and race walking training\, winter seaso
  n 2026/27. One session per week\, so you can subscribe to just this one.
 BEGIN:VTIMEZONE
 TZID:Pacific/Auckland
@@ -37,7 +37,7 @@ SEQUENCE:1
 DTSTART;TZID=Pacific/Auckland:20260406T163000
 DTEND;TZID=Pacific/Auckland:20260406T173000
 RRULE:FREQ=WEEKLY;BYDAY=MO;UNTIL=20260908T120000Z
-SUMMARY:Cross country\, road and race walking coaching
+SUMMARY:Cross country\, road and race walking training
 LOCATION:Loburn Domain and Ashgrove Park
 DESCRIPTION:Venue alternates through the winter season.\nPlease direct
  enquiries to Coach Laura Langley, lauralangley14@gmail.com
@@ -47,7 +47,7 @@ UID:training-2026-27-cross-country-road-race-walking-final@ncan.nz
 DTSTAMP:20260914T003132Z
 DTSTART;TZID=Pacific/Auckland:20260914T163000
 DTEND;TZID=Pacific/Auckland:20260914T173000
-SUMMARY:Cross country\, road and race walking coaching
+SUMMARY:Cross country\, road and race walking training
 LOCATION:Ashgrove Park\, Rangiora
 DESCRIPTION:Final training night of the winter cross country and road seas
  on!\nPlease direct enquiries to Coach Laura Langley, lauralangley14@gmail

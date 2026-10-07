@@ -279,7 +279,7 @@ def rebuild(known, dry_run=False, rainbow=False):
 
     # The subscribe list on the page renders in manifest order, so order the
     # manifest by the name a reader actually sees rather than by filename -
-    # otherwise the list sorts on prefixes like "athletics-canterbury-".
+    # otherwise the list sorts on shared prefixes like "athletics-".
     # This must happen before the file is written, not after.
     entries.sort(key=lambda e: (e['name'] or e['file']).lower())
 
