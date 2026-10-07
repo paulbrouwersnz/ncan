@@ -11,8 +11,15 @@ already reach the site through the Athletics Canterbury calendar.
     python tools/build-training-calendar.py --list          # show the dates
 
 A season runs April to March, winter first then summer, so "2026" means the
-2026/27 season: winter Apr-Sep 2026, summer Oct 2026 - Mar 2027. After
-generating, refresh the manifest:
+2026/27 season: winter Apr-Sep 2026, summer Oct 2026 - Mar 2027.
+
+Each session is written to training-<slug>.ics, with no season in the name,
+so the address people subscribe to stays the same year after year and this
+run simply replaces last season's dates. Files from the older naming
+(training-<season>-<slug>.ics) are deleted when found, because leaving them
+would publish last season's dates alongside this season's.
+
+After generating, refresh the manifest:
 
     python tools/build-calendar-list.py
 """
@@ -20,12 +27,18 @@ import argparse
 import datetime
 import io
 import os
+import re
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CAL_DIR = os.path.join(ROOT, 'assets', 'calendar')
 
 MON, TUE, WED, THU, FRI, SAT, SUN = range(7)
+
+# training-2026-27.ics and training-2026-27-the-good-trot.ics, but never
+# training-the-good-trot.ics - a slug cannot start with four digits
+LEGACY_NAME = re.compile(
+    r'^training-20\d{2}-(?:\d{2}|20\d{2})(?:-.+)?\.ics$', re.I)
 
 # (weekday, start, end, summary, location, description, season)
 #   season: 'summer' Oct-Mar, 'winter' Apr-Sep, 'all' the whole year
@@ -218,7 +231,10 @@ def main():
         if not built:
             continue
         text, report = built
-        name = 'training-%s-%s.ics' % (tag, session['slug'])
+        # no season in the filename: the URL people subscribe to stays
+        # the same from one season to the next, and this run replaces
+        # last season's dates in place
+        name = 'training-%s.ics' % session['slug']
         path = os.path.join(CAL_DIR, name)
         tmp = path + '.tmp'
         with io.open(tmp, 'w', encoding='utf-8', newline='') as fh:
@@ -226,11 +242,19 @@ def main():
         os.replace(tmp, path)
         written.append((name, report))
 
-    # a previous run may have produced the single combined calendar
-    combined = os.path.join(CAL_DIR, 'training-%s.ics' % tag)
-    if os.path.exists(combined):
-        os.remove(combined)
-        print('removed the old combined %s' % os.path.basename(combined))
+    # Older runs named these files after the season: one combined
+    # training-<season>.ics, and later one per session as
+    # training-<season>-<slug>.ics. Both are left stranded by the current
+    # naming, and build-calendar-list.py would happily list them next to the
+    # real ones - the same sessions twice, with last season's dates.
+    stale = [f for f in sorted(os.listdir(CAL_DIR)) if LEGACY_NAME.match(f)]
+    for f in stale:
+        os.remove(os.path.join(CAL_DIR, f))
+    if stale:
+        print('removed %d calendar(s) left by the old season-stamped naming:'
+              % len(stale))
+        for f in stale:
+            print('   %s' % f)
 
     print('wrote %d calendar(s) for the %s season:' % (len(written), season))
     for name, (session, first, last, weeks) in written:

@@ -1,11 +1,11 @@
 BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//North Canterbury Athletic Club//race-walks-coaching 2026/27//EN
+PRODID:-//North Canterbury Athletic Club//race-walks-coaching//EN
 CALSCALE:GREGORIAN
 METHOD:PUBLISH
 X-WR-CALNAME:Race walks coaching
 X-WR-TIMEZONE:Pacific/Auckland
-X-WR-CALDESC:Race walks coaching\, all season 2026/27. One session per wee
+X-WR-CALDESC:Race walks coaching\, all season. One session per wee
  k\, so you can subscribe to just this one.
 BEGIN:VTIMEZONE
 TZID:Pacific/Auckland

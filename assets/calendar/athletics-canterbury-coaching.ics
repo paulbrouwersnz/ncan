@@ -1,12 +1,12 @@
 BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//Athletics Canterbury 2026-2027 Season//EN
+PRODID:-//Athletics Canterbury Coaching Opportunities//EN
 CALSCALE:GREGORIAN
 METHOD:PUBLISH
 X-WR-CALNAME:Coaching & officials courses
 X-WR-TIMEZONE:Pacific/Auckland
-X-WR-CALDESC:Coaching Athlete Development (CAD) Level 1 courses\, 2026-27
- . Built from the AC 2026-2027 Interclub Event Schedule (Pre-Christmas) a
+X-WR-CALDESC:Coaching Athlete Development (CAD) Level 1 courses. Built 
+  from the AC 2026-2027 Interclub Event Schedule (Pre-Christmas) a
  nd the Athletics Canterbury events page.
 BEGIN:VTIMEZONE
 TZID:Pacific/Auckland

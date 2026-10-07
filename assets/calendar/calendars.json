@@ -1,62 +1,62 @@
 {
   "calendars": [
     {
-      "file": "athletics-canterbury-childrens-2026-27.ics",
+      "file": "athletics-canterbury-childrens.ics",
       "name": "Children's athletics competitions",
       "colour": "#da404e"
     },
     {
-      "file": "training-2026-27-junior-club-night.ics",
+      "file": "training-junior-club-night.ics",
       "name": "Children's club night (ages 7–14)",
       "colour": "#ea6f2f"
     },
     {
-      "file": "training-2026-27-junior-competition-team.ics",
+      "file": "training-junior-competition-team.ics",
       "name": "Children's competition team training (ages 7–14)",
       "colour": "#b16f23"
     },
     {
-      "file": "athletics-canterbury-coaching-2026-27.ics",
+      "file": "athletics-canterbury-coaching.ics",
       "name": "Coaching & officials courses",
       "colour": "#d0aa13"
     },
     {
-      "file": "athletics-canterbury-road-xc-2026-27.ics",
+      "file": "athletics-canterbury-road-xc.ics",
       "name": "Cross country & road competition",
       "colour": "#89ae37"
     },
     {
-      "file": "training-2026-27-cross-country-road-race-walking.ics",
+      "file": "training-cross-country-road-race-walking.ics",
       "name": "Cross country, road and race walking coaching",
       "colour": "#36892f"
     },
     {
-      "file": "other-meetings-2026-27.ics",
+      "file": "other-meetings.ics",
       "name": "Other meetings",
       "colour": "#00ad82"
     },
     {
-      "file": "training-2026-27-race-walks-coaching.ics",
+      "file": "training-race-walks-coaching.ics",
       "name": "Race walks coaching",
       "colour": "#008f9f"
     },
     {
-      "file": "training-2026-27-sprints-running-race-walking.ics",
+      "file": "training-sprints-running-race-walking.ics",
       "name": "Sprints, running and race walking coaching",
       "colour": "#4385e4"
     },
     {
-      "file": "athletics-canterbury-senior-2026-27.ics",
+      "file": "athletics-canterbury-senior.ics",
       "name": "Teens & senior athletics competition",
       "colour": "#7b57c8"
     },
     {
-      "file": "training-2026-27-teens-senior-athletics.ics",
+      "file": "training-teens-senior-athletics.ics",
       "name": "Teens and senior athletics training",
       "colour": "#aa4ba9"
     },
     {
-      "file": "training-2026-27-the-good-trot.ics",
+      "file": "training-the-good-trot.ics",
       "name": "The Good Trot – adult and teen social intervals",
       "colour": "#de77ab"
     }

@@ -1,7 +1,6 @@
 BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//North Canterbury Athletic Club//sprints-running-race-walking 202
- 6/27//EN
+PRODID:-//North Canterbury Athletic Club//sprints-running-race-walking//EN
 CALSCALE:GREGORIAN
 METHOD:PUBLISH
 X-WR-CALNAME:Sprints, running and race walking coaching

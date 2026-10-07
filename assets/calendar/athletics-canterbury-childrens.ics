@@ -1,14 +1,13 @@
 BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//Athletics Canterbury 2026-2027 Season//EN
+PRODID:-//Athletics Canterbury Children's Athletics Meets//EN
 CALSCALE:GREGORIAN
 METHOD:PUBLISH
 X-WR-CALNAME:Children's athletics competitions
 X-WR-TIMEZONE:Pacific/Auckland
 X-WR-CALDESC:Canterbury Children's Interclub (CCAA) meetings and the Chil
- dren's Championship Weekend\, 2026-27. Built from the AC 2026-2027 Inter
- club Event Schedule (Pre-Christmas) and the Athletics Canterbury events 
- page.
+ dren's Championship Weekend\. Built from the AC Interclub Event Schedule
+  (Pre-Christmas) and the Athletics Canterbury events page.
 BEGIN:VTIMEZONE
 TZID:Pacific/Auckland
 X-LIC-LOCATION:Pacific/Auckland

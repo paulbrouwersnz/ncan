@@ -1,11 +1,11 @@
 BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//North Canterbury Athletic Club//junior-competition-team 2026/27//EN
+PRODID:-//North Canterbury Athletic Club//junior-competition-team//EN
 CALSCALE:GREGORIAN
 METHOD:PUBLISH
 X-WR-CALNAME:Children's competition team training (ages 7–14)
 X-WR-TIMEZONE:Pacific/Auckland
-X-WR-CALDESC:Junior competition training (ages 7–14)\, summer season 2026/27. One 
+X-WR-CALDESC:Junior competition training (ages 7–14)\, summer season. One 
  session per week\, so you can subscribe to just this one.
 BEGIN:VTIMEZONE
 TZID:Pacific/Auckland

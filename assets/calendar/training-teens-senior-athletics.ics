@@ -1,12 +1,12 @@
 BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//North Canterbury Athletic Club//teens-senior-athletics 2026/27//
+PRODID:-//North Canterbury Athletic Club//teens-senior-athletics//
  EN
 CALSCALE:GREGORIAN
 METHOD:PUBLISH
 X-WR-CALNAME:Teens and senior athletics training
 X-WR-TIMEZONE:Pacific/Auckland
-X-WR-CALDESC:Teens and senior athletics training\, summer season 2026/27. 
+X-WR-CALDESC:Teens and senior athletics training\, summer season. 
  One session per week\, so you can subscribe to just this one.
 BEGIN:VTIMEZONE
 TZID:Pacific/Auckland

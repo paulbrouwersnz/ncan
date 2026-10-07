@@ -1,12 +1,12 @@
 BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//North Canterbury Athletic Club//the-good-trot 2026/27//EN
+PRODID:-//North Canterbury Athletic Club//the-good-trot//EN
 CALSCALE:GREGORIAN
 METHOD:PUBLISH
 X-WR-CALNAME:The Good Trot – adult and teen social intervals
 X-WR-TIMEZONE:Pacific/Auckland
 X-WR-CALDESC:The Good Trot – adult and teen social intervals\, all seaso
- n 2026/27. One session per week\, so you can subscribe to just this one.
+ n. One session per week\, so you can subscribe to just this one.
 BEGIN:VTIMEZONE
 TZID:Pacific/Auckland
 X-LIC-LOCATION:Pacific/Auckland

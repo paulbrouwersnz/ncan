@@ -1,13 +1,13 @@
 BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//Athletics Canterbury 2026-2027 Season//EN
+PRODID:-//Other meetingsEN
 CALSCALE:GREGORIAN
 METHOD:PUBLISH
 X-WR-CALNAME:Other meetings
 X-WR-TIMEZONE:Pacific/Auckland
 X-WR-CALDESC:Administration\, venue notices and Mid South Canterbury meet
- ings\, 2026-27. Built from the AC 2026-2027 Interclub Event Schedule (Pr
- e-Christmas) and the Athletics Canterbury events page.
+ ings. Built from the AC Interclub Event Schedule (Pre-Christmas) and the
+  Athletics Canterbury events page.
 BEGIN:VTIMEZONE
 TZID:Pacific/Auckland
 X-LIC-LOCATION:Pacific/Auckland
