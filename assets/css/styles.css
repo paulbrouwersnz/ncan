@@ -49,6 +49,8 @@
   --line-strong: rgba(11, 59, 46, .22);
 
   /* arrow-out-of-box, used as a mask so it takes the surrounding text colour */
+  --icon-folder: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z'/%3E%3C/svg%3E");
+  --icon-folder-open: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2'/%3E%3Cpath d='M3 7l1.6 10a2 2 0 0 0 2 1.7h10.8a2 2 0 0 0 2-1.7L21 9H6.5a2 2 0 0 0-2 1.6'/%3E%3C/svg%3E");
   --icon-download: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3v12'/%3E%3Cpath d='M7 11l5 5 5-5'/%3E%3Cpath d='M4 20h16'/%3E%3C/svg%3E");
   --icon-external: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 4h6v6'/%3E%3Cpath d='M20 4L10 14'/%3E%3Cpath d='M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5'/%3E%3C/svg%3E");
 
@@ -724,6 +726,112 @@ ul { margin: 0; padding: 0; list-style: none; }
 }
 
 /* ---------- Schedule table ---------- */
+/* ---------------------------------------------------------
+   Athletics NZ library index (athletics-nz-library-inventory.html).
+   A tree of <details> folders holding .doc-list file rows.
+   --------------------------------------------------------- */
+.lib-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: clamp(.8rem, 2vw, 1.4rem);
+  margin: 0 0 clamp(1.2rem, 2.6vw, 1.8rem);
+}
+.lib-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: clamp(.8rem, 2vw, 1.2rem);
+  flex: 1 1 24rem;
+}
+.lib-actions { display: flex; gap: .5rem; flex: 0 0 auto; }
+
+/* folders ------------------------------------------------- */
+.lib-folder {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--white);
+  margin: 0 0 .6rem;
+  overflow: hidden;
+}
+.lib-folder__head {
+  display: flex;
+  align-items: center;
+  gap: .7rem;
+  padding: .85rem 1.1rem;
+  cursor: pointer;
+  list-style: none;
+  font-family: var(--font-display);
+  color: var(--green-800);
+}
+.lib-folder__head::-webkit-details-marker { display: none; }
+.lib-folder__head::before {        /* folder glyph, rotates when open */
+  content: "";
+  width: 1.05em;
+  height: 1.05em;
+  flex: none;
+  background: currentColor;
+  -webkit-mask: var(--icon-folder) center / contain no-repeat;
+  mask: var(--icon-folder) center / contain no-repeat;
+  opacity: .72;
+}
+.lib-folder[open] > .lib-folder__head::before {
+  -webkit-mask-image: var(--icon-folder-open);
+  mask-image: var(--icon-folder-open);
+  opacity: 1;
+}
+.lib-folder__head:hover { background: var(--green-050); }
+.lib-folder__head:focus-visible {
+  outline: 3px solid var(--yellow-500);
+  outline-offset: -3px;
+}
+.lib-folder__name { font-weight: 700; flex: 1 1 auto; min-width: 0; }
+.lib-folder__count {
+  flex: none;
+  font-family: var(--font-sans);
+  font-size: .8rem;
+  font-weight: 600;
+  color: var(--text-soft);
+  white-space: nowrap;
+}
+.lib-folder__body { padding: 0 1.1rem 1rem; }
+/* a nested folder sits inside its parent's padding, so soften it */
+.lib-folder .lib-folder {
+  background: transparent;
+  border-color: transparent;
+  border-left: 2px solid var(--line);
+  border-radius: 0;
+  margin: .3rem 0 .3rem .2rem;
+}
+.lib-folder .lib-folder > .lib-folder__head { padding-left: .8rem; }
+.lib-folder .lib-folder > .lib-folder__body { padding-right: 0; padding-bottom: .4rem; }
+
+/* files ---------------------------------------------------- */
+.lib-list { margin-top: .6rem; }
+.lib-file .doc__title { font-size: 1rem; }
+.lib-file .doc__meta { margin-top: .2rem; }
+.lib-type {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: .04em;
+}
+/* Coloured by family, not by extension, so a format we have not seen
+   before still lands in a sensible bucket. */
+.lib-type--pdf { background: #fdeaea; color: #8c2f2f; }
+.lib-type--doc { background: #e9eefb; color: #2b4a8b; }
+.lib-type--sheet { background: #e8f3ec; color: #1f6b43; }
+.lib-type--slides { background: #fdf0e3; color: #8a5120; }
+.lib-type--video { background: var(--green-100); color: var(--green-700); }
+.lib-type--image { background: #f3ecfa; color: #5b3a8c; }
+.lib-type--archive,
+.lib-type--other { background: var(--green-050); color: var(--text-soft); }
+.lib-partial { display: block; margin-top: .35rem; color: #8c2f2f; }
+
+@media (max-width: 760px) {
+  .lib-actions { flex: 1 1 100%; }
+  .lib-actions .btn { flex: 1 1 0; justify-content: center; }
+  .lib-folder__body { padding-left: .7rem; padding-right: .7rem; }
+}
+
 /* ---------------------------------------------------------
    Children's records (records.html). The tables reuse
    table.schedule, including its stacked phone layout.

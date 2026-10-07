@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en-NZ">
+
+<head>
+<!-- @partial:head -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0B3B2E">
+
+<meta property="og:type" content="website">
+<meta property="og:image" content="assets/img/logo.svg">
+<meta property="og:image:alt" content="North Canterbury Athletic Club">
+<meta property="og:locale" content="en_NZ">
+
+<link rel="icon" href="assets/img/logo.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/img/logo.png">
+<link rel="preload" href="assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/archivo-variable.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/css/styles.css?v=3714db49">
+<!-- /@partial:head -->
+
+<title>Athletics NZ eLearning Library &mdash; North Canterbury Athletic Club</title>
+<meta name="description" content="An index of the Athletics New Zealand eLearning library: club toolkit, officials and coaching resources, safeguarding, health and safety, and newsletters. Browse the folders, search by name and open the files directly.">
+<meta property="og:title" content="Athletics NZ eLearning Library &mdash; North Canterbury Athletic Club">
+<meta property="og:description" content="An index of the Athletics New Zealand eLearning library, folder by folder.">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<!-- @partial:header -->
+<!-- ================= Header ================= -->
+<header class="site-header" id="site-header">
+  <div class="wrap site-header__bar">
+    <a class="brand" href="index.html" aria-label="North Canterbury Athletic Club — home">
+      <img src="assets/img/logo.svg" alt="" width="888" height="508">
+      <span class="brand__name">
+        North Canterbury<br>Athletic Club
+      </span>
+    </a>
+
+    <button class="nav-toggle" type="button" id="nav-toggle" aria-expanded="false" aria-controls="primary-nav">
+      <span class="nav-toggle__bars" aria-hidden="true"><i></i></span>
+      Menu
+    </button>
+
+    <nav class="nav" id="primary-nav" aria-label="Primary">
+      <ul>
+        <li><a href="index.html#why">Why NCAN</a></li>
+        <li><a href="index.html#programmes">Programmes</a></li>
+        <li><a href="index.html#training">Training</a></li>
+        <li><a href="calendar.html">Calendar</a></li>
+        <li><a href="index.html#news">Community</a></li>
+        <li><a href="gallery.html">Gallery</a></li>
+        <li><a href="index.html#contact">Contact</a></li>
+        <li class="nav__cta"><a class="btn btn--accent" href="index.html#join">Join the club</a></li>
+      </ul>
+    </nav>
+
+    <div class="site-header__cta">
+      <a class="btn btn--accent btn--sm" href="index.html#join">Join the club</a>
+    </div>
+  </div>
+</header>
+<!-- /@partial:header -->
+
+  <main id="main">
+    <span id="top"></span>
+
+    <!-- ================= Page head ================= -->
+    <section class="page-head" aria-labelledby="page-heading">
+      <div class="wrap">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="index.html">Home</a> <span aria-hidden="true">/</span>
+          <a href="resources.html">Resources</a> <span aria-hidden="true">/</span>
+          <span>Athletics NZ library</span>
+        </nav>
+        <p class="eyebrow eyebrow--light">What is in the eLearning library</p>
+        <h1 id="page-heading">Athletics NZ eLearning Library</h1>
+        <p class="lede">
+          Athletics New Zealand keeps a large library of club, coaching and officiating
+          material behind its eLearning portal, and it is not easy to see what is in
+          there. This is an index of the lot &mdash; every folder, every file, with a
+          link straight to it.
+        </p>
+        <div class="btn-row">
+          <a class="btn btn--accent" href="#library">Browse the library</a>
+          <a class="btn btn--ghost-light" href="https://athleticsnz.elearning.worldathletics.org/library"
+             target="_blank" rel="noopener">Open the portal</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="library" aria-labelledby="library-heading">
+      <div class="wrap">
+        <div class="section-head section-head--split" data-reveal>
+          <p class="eyebrow">The index</p>
+          <h2 id="library-heading">Browse by folder</h2>
+          <div>
+            <p class="lede">
+              Open a folder to see what is inside. Most files open straight from the
+              portal&rsquo;s storage and need no login; the rest are videos that only
+              the portal can serve, and those are marked.
+            </p>
+          </div>
+        </div>
+
+        <div class="lib-bar" data-reveal>
+          <div class="lib-filters">
+            <p class="records-field records-field--grow">
+              <label for="lib-search">Search</label>
+              <input type="search" id="lib-search" placeholder="file or folder name"
+                     autocomplete="off">
+            </p>
+            <p class="records-field">
+              <label for="lib-folder">Section</label>
+              <select id="lib-folder"><option value="">All sections</option></select>
+            </p>
+            <p class="records-field">
+              <label for="lib-type">File type</label>
+              <select id="lib-type"><option value="">Any type</option></select>
+            </p>
+          </div>
+          <div class="lib-actions">
+            <button type="button" class="btn btn--ghost btn--sm" id="lib-expand">Expand all</button>
+            <button type="button" class="btn btn--ghost btn--sm" id="lib-collapse">Collapse all</button>
+          </div>
+        </div>
+
+        <p class="records-status" id="lib-status" role="status">Loading the library&hellip;</p>
+
+        <div id="lib-out"></div>
+
+        <p class="records-note" id="lib-meta"></p>
+      </div>
+    </section>
+
+    <section class="section section--tint" aria-labelledby="about-heading">
+      <div class="wrap">
+        <div class="section-head section-head--wide" data-reveal>
+          <p class="eyebrow">About this list</p>
+          <h2 id="about-heading">Where this comes from</h2>
+          <p class="lede">
+            This is a snapshot of the Athletics NZ eLearning library taken on the date
+            shown above, kept here so you can see what exists without hunting through
+            the portal. Athletics NZ owns the material and may add to or change it at
+            any time, so check the portal if something looks out of date.
+          </p>
+          <div class="btn-row">
+            <a class="btn" href="https://athleticsnz.elearning.worldathletics.org/library"
+               target="_blank" rel="noopener">Athletics NZ eLearning portal</a>
+            <a class="btn btn--ghost" href="resources.html">Our other resources</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- @partial:footer -->
+<!-- ================= Footer ================= -->
+<footer class="site-footer" aria-labelledby="footer-heading">
+  <div class="wrap">
+    <h2 class="visually-hidden" id="footer-heading">Site footer</h2>
+
+    <div class="site-footer__grid">
+      <div>
+        <div class="footer-brand">
+          <img src="assets/img/logo.svg" alt="" width="888" height="508">
+          <div>
+            <strong><a href="index.html">North Canterbury<br>Athletic Club</a></strong>
+            <span>Rangiora, New Zealand</span>
+          </div>
+        </div>
+        <p>A volunteer-run club affiliated with <a href="https://athletics.org.nz/">Athletics New Zealand</a> and <a href="https://athleticscanterbury.org.nz/">Athletics Canterbury</a>, welcoming athletes of every age and ability since 1978.</p>
+
+        <div class="socials">
+          <a href="https://www.facebook.com/NorthCanterburyAthleticClub" aria-label="North Canterbury Athletic Club on Facebook">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 22v-8h2.8l.4-3.2h-3.2V8.7c0-.9.3-1.5 1.6-1.5h1.7V4.1A22 22 0 0 0 14.4 4C12 4 10.3 5.5 10.3 8.3v2.5H7.6V14h2.7v8Z"/></svg>
+            <span>Club</span>
+          </a>
+          <a href="https://www.facebook.com/NorthCanterburyChildrensAthletics" aria-label="Children's Athletics on Facebook">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 22v-8h2.8l.4-3.2h-3.2V8.7c0-.9.3-1.5 1.6-1.5h1.7V4.1A22 22 0 0 0 14.4 4C12 4 10.3 5.5 10.3 8.3v2.5H7.6V14h2.7v8Z"/></svg>
+            <span>Children&rsquo;s</span>
+          </a>
+        </div>
+      </div>
+      <div>
+        <h3>Quick links</h3>
+        <ul>
+          <li><a href="index.html#programmes">Our programmes</a></li>
+          <li><a href="index.html#training">Training times</a></li>
+          <li><a href="index.html#join">Register &amp; fees</a></li>
+          <li><a href="index.html#news">News &amp; results</a></li>
+          <li><a href="gallery.html">Photo gallery</a></li>
+          <li><a href="index.html#contact">Contact the club</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3>Get involved</h3>
+        <ul>
+          <li><a href="index.html#join">Become a member</a></li>
+          <li><a href="calendar.html">Club calendar</a></li>
+          <li><a href="coaches-officials-volunteers.html#volunteer">Volunteer roles</a></li>
+          <li><a href="coaches-officials-volunteers.html#coaching">Coaching development</a></li>
+          <li><a href="coaches-officials-volunteers.html#officials">Officials training</a></li>
+          <li><a href="index.html#sponsors">Sponsor the club</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3>Club information</h3>
+        <ul>
+          <li><a href="committee.html">Committee and documents</a></li>
+          <li><a href="safeguarding.html">Child safeguarding</a></li>
+          <li><a href="records.html">Children&rsquo;s records</a></li>
+          <li><a href="history.html">History</a></li>
+          <li><a href="https://codesport.co.nz/catalog/%20NorthCanterburyAthleticsClub%20-1107550.htmx">Uniform and apparel</a></li>
+          <li><a href="resources.html">Athletics resources</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="site-footer__base">
+      <p>&copy; 2026 <a href="index.html">North Canterbury Athletic Club Incorporated</a>. All rights reserved.</p>
+      <ul>
+        <li><a href="index.html">Back to top</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+<!-- /@partial:footer -->
+
+  <script>
+    (function () {
+      'use strict';
+
+      /* Mobile navigation ------------------------------------------------ */
+      var toggle = document.getElementById('nav-toggle');
+      var nav = document.getElementById('primary-nav');
+
+      function closeNav() {
+        nav.removeAttribute('data-open');
+        toggle.setAttribute('aria-expanded', 'false');
+      }
+
+      toggle.addEventListener('click', function () {
+        if (nav.getAttribute('data-open') === 'true') {
+          closeNav();
+        } else {
+          nav.setAttribute('data-open', 'true');
+          toggle.setAttribute('aria-expanded', 'true');
+        }
+      });
+
+      nav.addEventListener('click', function (event) {
+        if (event.target.closest('a')) { closeNav(); }
+      });
+
+      document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && nav.getAttribute('data-open') === 'true') {
+          closeNav();
+          toggle.focus();
+        }
+      });
+
+      /* Header shadow once scrolled ------------------------------------- */
+      var header = document.getElementById('site-header');
+      var onScroll = function () {
+        header.classList.toggle('is-stuck', window.scrollY > 8);
+      };
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+
+      /* Reveal on scroll ------------------------------------------------- */
+      var targets = document.querySelectorAll('[data-reveal]');
+
+      if (!('IntersectionObserver' in window) ||
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        Array.prototype.forEach.call(targets, function (el) { el.classList.add('is-visible'); });
+        return;
+      }
+
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { rootMargin: '0px 0px -8% 0px', threshold: 0.12 });
+
+      Array.prototype.forEach.call(targets, function (el) { observer.observe(el); });
+    }());
+  </script>
+
+  <script>
+    (function () {
+      'use strict';
+
+      /* The library index -------------------------------------------------
+         Everything is read from assets/data/athletics-nz-library-inventory.json.
+         The file is a flat list of folders whose "path" carries the nesting
+         ("A / B / C"), so the tree is rebuilt here rather than stored twice. */
+
+      var DATA_URL = 'assets/data/athletics-nz-library-inventory.json';
+      var SEP = ' / ';
+
+      var out = document.getElementById('lib-out');
+      var status = document.getElementById('lib-status');
+      var meta = document.getElementById('lib-meta');
+      var searchInput = document.getElementById('lib-search');
+      var folderSel = document.getElementById('lib-folder');
+      var typeSel = document.getElementById('lib-type');
+      var expandBtn = document.getElementById('lib-expand');
+      var collapseBtn = document.getElementById('lib-collapse');
+
+      var tree = null;
+      var allFiles = [];
+
+      /* The inventory reports the real extension (pdf, docx, mp4, png).
+         Badges are coloured by family rather than by extension, so a
+         format we have not seen before still lands somewhere sensible. */
+      var FAMILIES = {
+        pdf: ['pdf'],
+        doc: ['doc', 'docx', 'odt', 'rtf'],
+        sheet: ['xls', 'xlsx', 'csv', 'ods'],
+        slides: ['ppt', 'pptx', 'odp'],
+        video: ['mp4', 'mov', 'webm', 'avi', 'mkv', 'video'],
+        image: ['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg'],
+        archive: ['zip', 'rar', '7z']
+      };
+
+      function familyOf(type) {
+        var t = (type || '').toLowerCase();
+        for (var name in FAMILIES) {
+          if (FAMILIES[name].indexOf(t) !== -1) { return name; }
+        }
+        return 'other';
+      }
+
+      function el(tag, cls, text) {
+        var node = document.createElement(tag);
+        if (cls) { node.className = cls; }
+        if (text !== undefined && text !== null) { node.textContent = text; }
+        return node;
+      }
+
+      /* 120607 -> "118 KB". The portal's own "size" string is kept for the
+         title attribute; this is the short form for the badge. */
+      function humanSize(bytes) {
+        if (!bytes) { return ''; }
+        if (bytes >= 1024 * 1024 * 1024) { return (bytes / 1073741824).toFixed(1) + ' GB'; }
+        if (bytes >= 1024 * 1024) { return Math.round(bytes / 1048576) + ' MB'; }
+        return Math.max(1, Math.round(bytes / 1024)) + ' KB';
+      }
+
+      var MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+      function prettyDate(iso) {
+        var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || '');
+        if (!m) { return iso || ''; }
+        return Number(m[3]) + ' ' + MONTHS[Number(m[2]) - 1] + ' ' + m[1];
+      }
+
+      /* Build a nested tree from the flat folder list. A folder may be listed
+         without ever appearing as somebody's parent, and a parent may hold no
+         files of its own, so nodes are created on demand. */
+      function buildTree(folders) {
+        var root = { name: '', path: '', children: [], files: [], index: {} };
+
+        function nodeFor(path) {
+          if (!path) { return root; }
+          var parts = path.split(SEP);
+          var node = root;
+          var sofar = [];
+          parts.forEach(function (part) {
+            sofar.push(part);
+            var key = sofar.join(SEP);
+            if (!node.index[key]) {
+              var child = { name: part, path: key, children: [], files: [], index: node.index };
+              child.index = {};
+              node.index[key] = child;
+              node.children.push(child);
+            }
+            node = node.index[key];
+          });
+          return node;
+        }
+
+        folders.forEach(function (folder) {
+          var node = nodeFor(folder.path);
+          node.url = folder.url;
+          node.folderId = folder.folder_id;
+          (folder.files || []).forEach(function (f) {
+            var copy = {
+              name: f.name,
+              type: (f.file_type || 'file').toLowerCase(),
+              size: f.size,
+              // the capture renamed this field; accept either so an
+              // older inventory still renders
+              bytes: f.size_bytes || f.size_bytes_approx || 0,
+              modified: f.last_modified,
+              link: f.url,
+              direct: f.link_type === 'direct',
+              folderPath: folder.path
+            };
+            node.files.push(copy);
+            allFiles.push(copy);
+          });
+        });
+
+        return root;
+      }
+
+      /* Totals for a node and everything beneath it. */
+      function summarise(node) {
+        var files = node.files.length;
+        var bytes = node.files.reduce(function (s, f) { return s + f.bytes; }, 0);
+        node.children.forEach(function (c) {
+          var sub = summarise(c);
+          files += sub.files;
+          bytes += sub.bytes;
+        });
+        node.totalFiles = files;
+        node.totalBytes = bytes;
+        return { files: files, bytes: bytes };
+      }
+
+      function matches(file, needle, type) {
+        if (type && file.type !== type) { return false; }
+        if (!needle) { return true; }
+        return (file.name + ' ' + file.folderPath).toLowerCase().indexOf(needle) !== -1;
+      }
+
+      function buildFile(file) {
+        var li = el('li', 'doc lib-file');
+
+        var body = el('div', 'doc__body');
+        var h = el('h3', 'doc__title');
+
+        var a = document.createElement('a');
+        a.href = file.link;
+        a.target = '_blank';
+        a.rel = 'noopener';
+        a.textContent = file.name;
+        if (!file.direct) {
+          a.title = 'Opens the portal folder - this one needs a login';
+        }
+        h.appendChild(a);
+        body.appendChild(h);
+
+        var bits = [];
+        if (file.size) { bits.push(file.size); }
+        if (file.modified) { bits.push('updated ' + prettyDate(file.modified)); }
+        if (!file.direct) { bits.push('portal login needed'); }
+        var p = el('p', 'doc__meta', bits.join(' · '));
+        body.appendChild(p);
+
+        li.appendChild(body);
+
+        var label = file.type && file.type !== 'unknown'
+          ? file.type.toUpperCase() : 'FILE';
+        var badge = el('span', 'doc__type lib-type lib-type--' + familyOf(file.type),
+                       label);
+        badge.title = label + ' file';
+        li.appendChild(badge);
+
+        return li;
+      }
+
+      /* One folder, as a disclosure. Folders start closed so the page opens
+         as an outline rather than 252 rows. */
+      function buildFolder(node, needle, type, depth) {
+        var files = node.files.filter(function (f) { return matches(f, needle, type); });
+        var kids = node.children
+          .map(function (c) { return buildFolder(c, needle, type, depth + 1); })
+          .filter(Boolean);
+
+        if (!files.length && !kids.length) { return null; }
+
+        var shown = files.length + kids.reduce(function (s, k) { return s + k.shown; }, 0);
+
+        var details = el('details', 'lib-folder lib-folder--depth' + Math.min(depth, 3));
+        if (needle || type) { details.open = true; }       // a search shows its hits
+
+        var summary = el('summary', 'lib-folder__head');
+        var label = el('span', 'lib-folder__name', node.name);
+        summary.appendChild(label);
+
+        var count = el('span', 'lib-folder__count',
+                       shown + (shown === 1 ? ' file' : ' files'));
+        summary.appendChild(count);
+        details.appendChild(summary);
+
+        var inner = el('div', 'lib-folder__body');
+
+        if (files.length) {
+          var ul = el('ul', 'doc-list lib-list');
+          files.forEach(function (f) { ul.appendChild(buildFile(f)); });
+          inner.appendChild(ul);
+        }
+        kids.forEach(function (k) { inner.appendChild(k.node); });
+
+        details.appendChild(inner);
+        return { node: details, shown: shown };
+      }
+
+      function render() {
+        var needle = searchInput.value.trim().toLowerCase();
+        var section = folderSel.value;
+        var type = typeSel.value;
+
+        out.textContent = '';
+
+        var roots = tree.children.filter(function (c) {
+          return !section || c.name === section;
+        });
+
+        var total = 0;
+        roots.forEach(function (root) {
+          var built = buildFolder(root, needle, type, 0);
+          if (!built) { return; }
+          total += built.shown;
+          out.appendChild(built.node);
+        });
+
+        if (!total) {
+          status.textContent = 'Nothing matches that. Try a different search or section.';
+          return;
+        }
+        status.textContent = total === allFiles.length
+          ? 'Showing all ' + allFiles.length + ' files.'
+          : 'Showing ' + total + ' of ' + allFiles.length + ' files.';
+      }
+
+      function setAll(open) {
+        Array.prototype.forEach.call(out.querySelectorAll('details.lib-folder'),
+          function (d) { d.open = open; });
+      }
+
+      if (!window.fetch) {
+        status.textContent = 'This browser cannot load the library index. '
+          + 'The data is at ' + DATA_URL + '.';
+        return;
+      }
+
+      fetch(DATA_URL, { cache: 'no-cache' })
+        .then(function (res) {
+          if (!res.ok) { throw new Error('HTTP ' + res.status); }
+          return res.json();
+        })
+        .then(function (data) {
+          tree = buildTree(data.folders || []);
+          if (!allFiles.length) { throw new Error('no files in the index'); }
+          summarise(tree);
+
+          tree.children.forEach(function (c) {
+            var opt = document.createElement('option');
+            opt.value = c.name;
+            opt.textContent = c.name + ' (' + c.totalFiles + ')';
+            folderSel.appendChild(opt);
+          });
+
+          var types = {};
+          allFiles.forEach(function (f) { types[f.type] = (types[f.type] || 0) + 1; });
+          Object.keys(types).sort().forEach(function (t) {
+            var opt = document.createElement('option');
+            opt.value = t;
+            opt.textContent = (t === 'unknown' ? 'other' : t) + ' (' + types[t] + ')';
+            typeSel.appendChild(opt);
+          });
+
+          var parts = [];
+          if (data.captured) { parts.push('Captured ' + prettyDate(data.captured)); }
+          parts.push(allFiles.length + ' files in ' + (data.folders || []).length + ' folders');
+          if (tree.totalBytes) { parts.push(humanSize(tree.totalBytes) + ' in total'); }
+          meta.textContent = parts.join(' · ') + '.';
+
+          // the capture says whether it walked the whole library; a
+          // partial one must not read as the complete picture
+          if (data.complete === false) {
+            meta.appendChild(el('strong', 'lib-partial',
+              'This capture did not finish, so some folders may be missing.'));
+          }
+
+          [folderSel, typeSel].forEach(function (s) {
+            s.addEventListener('change', render);
+          });
+          searchInput.addEventListener('input', render);
+          expandBtn.addEventListener('click', function () { setAll(true); });
+          collapseBtn.addEventListener('click', function () { setAll(false); });
+
+          render();
+        })
+        .catch(function (err) {
+          status.textContent = 'Sorry, the library index could not be loaded ('
+            + err.message + ').';
+          expandBtn.disabled = true;
+          collapseBtn.disabled = true;
+        });
+    }());
+  </script>
+
+</body>
+
+</html>
