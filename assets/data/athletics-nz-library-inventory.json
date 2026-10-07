@@ -1,0 +1,2695 @@
+{
+  "title": "Athletics NZ eLearning Library inventory",
+  "source": "https://athleticsnz.elearning.worldathletics.org/library",
+  "captured": "2026-10-07",
+  "complete": true,
+  "notes": [
+    "Dates are the portal's last-modified values (NZ time).",
+    "link_type 'direct' URLs open the file from the portal's storage and appear to work without a login, so treat them as public.",
+    "link_type 'folder' files are on a video host that only issues expiring links; their url is the folder page, which requires a login.",
+    "Folder URLs require a portal login."
+  ],
+  "totals": {
+    "files": 252,
+    "folders_including_root": 46,
+    "direct_links": 222,
+    "folder_links_only": 30,
+    "by_top_level_folder": {
+      "Club Resources": 112,
+      "Coaching Resources": 38,
+      "Officials Resources": 94,
+      "Club Newsletters": 8
+    },
+    "requests_made": 91
+  },
+  "folders": [
+    {
+      "path": "Club Resources",
+      "top_level_folder": "Club Resources",
+      "folder_id": "d9aa1ed3-d4ac-4269-9731-7db1544c6bf4",
+      "url": "https://athleticsnz.elearning.worldathletics.org/library/d9aa1ed3-d4ac-4269-9731-7db1544c6bf4",
+      "file_count": 1,
+      "files": [
+        {
+          "name": "Colgate Games Entries 2026",
+          "last_modified": "2026-05-20",
+          "size": "117.78 KB",
+          "size_bytes": 120608,
+          "file_type": "xlsx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/71b9fc5e-0079-45ed-a8ab-1aeb0332ef3b/3230323620436f6c676174652047616d6573202d20536f7574682049736c616e642032313131323032352e6373762d323032.xlsx"
+        }
+      ]
+    },
+    {
+      "path": "Club Resources / GameDay",
+      "top_level_folder": "Club Resources",
+      "folder_id": "f55c334f-6b72-4566-b107-a1b9b2d06665",
+      "url": "https://athleticsnz.elearning.worldathletics.org/library/f55c334f-6b72-4566-b107-a1b9b2d06665",
+      "file_count": 3,
+      "files": [
+        {
+          "name": "How to Guide - Test a Membership Form",
+          "last_modified": "2026-05-20",
+          "size": "665.19 KB",
+          "size_bytes": 681151,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/7afc4307-62ac-4fbd-be2f-a0432bfcd4e3/486f7720746f20746573742061206d656d6265727368697020666f726d.pdf"
+        },
+        {
+          "name": "How to Guide - Create a Membership Renewal Campaign",
+          "last_modified": "2026-05-20",
+          "size": "659.97 KB",
+          "size_bytes": 675814,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/154dc2ad-c45d-431f-95da-e88baeec68cf/486f7720746f20736574207570206d656d626572736869702072656e6577616c2063616d706169676e73.pdf"
+        },
+        {
+          "name": "2024/25 Athletics New Zealand Fee Structure",
+          "last_modified": "2026-05-20",
+          "size": "490.54 KB",
+          "size_bytes": 502317,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/93a87fa7-5eef-4053-a7de-8f3f6436fae3/4174686c6574696373204e5a204d656d62657273686970204665657320323032342d32303235.pdf"
+        }
+      ]
+    },
+    {
+      "path": "Club Resources / Club Toolkit",
+      "top_level_folder": "Club Resources",
+      "folder_id": "64961e78-8740-495a-9d8f-83bd8d8cb180",
+      "url": "https://athleticsnz.elearning.worldathletics.org/library/64961e78-8740-495a-9d8f-83bd8d8cb180",
+      "file_count": 0,
+      "files": []
+    },
+    {
+      "path": "Club Resources / Club Toolkit / Committees",
+      "top_level_folder": "Club Resources",
+      "folder_id": "0f1b9c45-7957-437f-8c7a-22ee577c31d9",
+      "url": "https://athleticsnz.elearning.worldathletics.org/library/0f1b9c45-7957-437f-8c7a-22ee577c31d9",
+      "file_count": 2,
+      "files": [
+        {
+          "name": "Tips for recruiting volunteers",
+          "last_modified": "2026-05-20",
+          "size": "358.9 KB",
+          "size_bytes": 367509,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/c2733539-644f-435d-8d0d-0d8913d5e107/546970732d666f722d52656372756974696e672d566f6c756e7465657273.pdf"
+        },
+        {
+          "name": "A-Z guide for operating an athletics club",
+          "last_modified": "2026-09-22",
+          "size": "3.2 MB",
+          "size_bytes": 3355022,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/bc563f14-eb29-4ed1-abb8-5db8717865f1/412d5a20477569646520666f72204f7065726174696e6720616e204174686c657469637320436c75622028616666696c6961.pdf"
+        }
+      ]
+    },
+    {
+      "path": "Club Resources / Club Toolkit / Committees / Role Descriptions",
+      "top_level_folder": "Club Resources",
+      "folder_id": "50012db4-8641-4d99-bd45-dfad7263ba3b",
+      "url": "https://athleticsnz.elearning.worldathletics.org/library/50012db4-8641-4d99-bd45-dfad7263ba3b",
+      "file_count": 8,
+      "files": [
+        {
+          "name": "Club Chair/President",
+          "last_modified": "2026-05-20",
+          "size": "1.02 MB",
+          "size_bytes": 1073885,
+          "file_type": "docx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/3a4e4b0e-f234-42fb-8664-7d09cf9f4b3b/4174686c657469637320436c7562204a6f622d4465736372697074696f6e2d507265736964656e745f757064617465642053.docx"
+        },
+        {
+          "name": "Club Secretary",
+          "last_modified": "2026-05-20",
+          "size": "1.02 MB",
+          "size_bytes": 1073419,
+          "file_type": "docx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/d7a2eafc-dcb4-4201-a488-a46812976aa8/4174686c657469637320436c7562204a6f622d4465736372697074696f6e2d5365637265746172795f757064617465642053.docx"
+        },
+        {
+          "name": "Club Treasurer",
+          "last_modified": "2026-05-20",
+          "size": "1.02 MB",
+          "size_bytes": 1072745,
+          "file_type": "docx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/376d28ce-5127-4bcf-b31d-66437dbc715c/4174686c657469637320436c7562204a6f622d4465736372697074696f6e2d54726561737572657220757064617465642053.docx"
+        },
+        {
+          "name": "Club Coach",
+          "last_modified": "2026-05-20",
+          "size": "1.02 MB",
+          "size_bytes": 1073870,
+          "file_type": "docx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/bfb43fbd-47ea-47b1-b772-40dd70fda762/4174686c657469637320436c7562204a6f622d4465736372697074696f6e2d436c75622d436f6163685f7570646174656420.docx"
+        },
+        {
+          "name": "Club Get Set Go Coordinator",
+          "last_modified": "2026-05-20",
+          "size": "1.02 MB",
+          "size_bytes": 1072943,
+          "file_type": "docx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/6e8750a6-a65a-45d2-b393-1a31bfd3b920/4174686c657469637320436c7562204a6f622d4465736372697074696f6e2d4765742d5365742d476f2d436f6f7264696e61.docx"
+        },
+        {
+          "name": "Club Sponsorship & Funding Coordinator",
+          "last_modified": "2026-05-20",
+          "size": "1.02 MB",
+          "size_bytes": 1072381,
+          "file_type": "docx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/e3d8ead9-76f4-493f-9674-9501ffd1f003/4174686c657469637320436c7562204a6f622d4465736372697074696f6e2d53706f6e736f72736869702d46756e64696e67.docx"
+        },
+        {
+          "name": "Club Health & Safety Officer",
+          "last_modified": "2026-05-20",
+          "size": "1.03 MB",
+          "size_bytes": 1075683,
+          "file_type": "docx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/dafa0cd4-17cc-4111-a8af-e4a13d13ea34/4174686c657469637320436c7562204a6f622d4465736372697074696f6e2d4865616c74682d616e642d5361666574792d43.docx"
+        },
+        {
+          "name": "Club Volunteer Coordinator",
+          "last_modified": "2026-05-20",
+          "size": "1.02 MB",
+          "size_bytes": 1072613,
+          "file_type": "docx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/66b7425b-f766-48ff-95db-5f39c46b456f/4174686c657469637320436c7562204a6f622d4465736372697074696f6e2d566f6c756e746565722d436f6f7264696e6174.docx"
+        }
+      ]
+    },
+    {
+      "path": "Club Resources / Club Toolkit / Policies",
+      "top_level_folder": "Club Resources",
+      "folder_id": "6bc1ca86-323d-474c-904d-80236ce03167",
+      "url": "https://athleticsnz.elearning.worldathletics.org/library/6bc1ca86-323d-474c-904d-80236ce03167",
+      "file_count": 1,
+      "files": [
+        {
+          "name": "Athletics NZ Code of Conduct",
+          "last_modified": "2026-05-20",
+          "size": "187.34 KB",
+          "size_bytes": 191839,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/5b07b334-fc69-4497-a91d-fafc996ddb1d/4174686c65746963732d4e5a2d436f64652d6f662d436f6e6475637420283230313829.pdf"
+        }
+      ]
+    },
+    {
+      "path": "Club Resources / Club Toolkit / Governance",
+      "top_level_folder": "Club Resources",
+      "folder_id": "4ae92e92-7fd2-4f22-ba9a-0d1dc2a27bfb",
+      "url": "https://athleticsnz.elearning.worldathletics.org/library/4ae92e92-7fd2-4f22-ba9a-0d1dc2a27bfb",
+      "file_count": 3,
+      "files": [
+        {
+          "name": "Incorporated vs Unincorporated",
+          "last_modified": "2026-05-20",
+          "size": "94.38 KB",
+          "size_bytes": 96643,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/cc260607-d55f-4d8c-a156-6321657f3ccd/70726f732d616e642d636f6e732d6f662d696e636f72706f726174696f6e.pdf"
+        },
+        {
+          "name": "Club Committee Member 4 Week Onboarding Checklist",
+          "last_modified": "2026-05-20",
+          "size": "799.86 KB",
+          "size_bytes": 819058,
+          "file_type": "docx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/c72d6cbc-b703-4b57-bf68-6486357c59c0/436c756220436f6d6d6974746565204d656d626572202d2034207765656b206f6e626f617264696e6720636865636b6c6973.docx"
+        },
+        {
+          "name": "Club Committee Member 3 Month Onboarding Checklist",
+          "last_modified": "2026-05-20",
+          "size": "797.82 KB",
+          "size_bytes": 816966,
+          "file_type": "docx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/19fec62f-813b-49bd-9c22-cb5bc46ed648/436c75622041646d696e6973747261746f72202d2033206d6f6e7468206f6e626f617264696e6720636865636b6c697374.docx"
+        }
+      ]
+    },
+    {
+      "path": "Club Resources / Club Toolkit / Health and Safety",
+      "top_level_folder": "Club Resources",
+      "folder_id": "45796c4b-5a39-4440-88db-9b0443a08c8e",
+      "url": "https://athleticsnz.elearning.worldathletics.org/library/45796c4b-5a39-4440-88db-9b0443a08c8e",
+      "file_count": 13,
+      "files": [
+        {
+          "name": "Hazard Register",
+          "last_modified": "2026-05-20",
+          "size": "22.39 KB",
+          "size_bytes": 22924,
+          "file_type": "docx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/fa30475b-a18a-4a32-a868-e8b3f2ca5919/68617a6172642d7265676973746572.docx"
+        },
+        {
+          "name": "Accident Investigation Report Form",
+          "last_modified": "2026-05-20",
+          "size": "21.9 KB",
+          "size_bytes": 22429,
+          "file_type": "docx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/fcdde087-5a2c-4eba-848c-14dde7bb1102/6163636964656e742d696e7665737469676174696f6e2d666f726d2048265320726571756972656d656e74.docx"
+        },
+        {
+          "name": "First Aid Register",
+          "last_modified": "2026-05-20",
+          "size": "20.72 KB",
+          "size_bytes": 21220,
+          "file_type": "docx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/8eedbe5a-2be0-4ddb-abe4-781a31b10b2e/66697273742d6169642d7265676973746572.docx"
+        },
+        {
+          "name": "Health and Safety Contacts and Information",
+          "last_modified": "2026-05-20",
+          "size": "19.38 KB",
+          "size_bytes": 19848,
+          "file_type": "docx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/12036460-a723-4f12-8af5-91bcf78b902f/6865616c74682d616e642d7361666574792d636f6e74616374732d616e642d696e666f726d6174696f6e.docx"
+        },
+        {
+          "name": "Hazard notification form",
+          "last_modified": "2026-05-20",
+          "size": "22.93 KB",
+          "size_bytes": 23476,
+          "file_type": "docx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/34c5a295-e03b-413e-a6ae-a2480a8e164c/68617a6172642d6e6f74696669636174696f6e2d666f726d.docx"
+        },
+        {
+          "name": "Club Health & Safety Checklist",
+          "last_modified": "2026-05-20",
+          "size": "135.79 KB",
+          "size_bytes": 139045,
+          "file_type": "docx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/e1b7ee41-79da-43a8-bd29-30bc3ebdbe71/436c7562204865616c746820616e642053616665747920436865636b6c697374.docx"
+        },
+        {
+          "name": "Club Night Health & Safety Checklist",
+          "last_modified": "2026-05-20",
+          "size": "110.25 KB",
+          "size_bytes": 112894,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/52c32a35-66c9-4fa1-98fb-ae5ce650cf2e/436c7562204e69676874204865616c746820616e642053616665747920436865636b6c697374.pdf"
+        },
+        {
+          "name": "Club Risk Register Template",
+          "last_modified": "2026-05-20",
+          "size": "80.5 KB",
+          "size_bytes": 82432,
+          "file_type": "doc",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/db762acc-9913-4768-98ad-b6c025570f5c/436c7562205269736b2052656769737465722054656d706c617465.doc"
+        },
+        {
+          "name": "H & S Plan - ANZ Programme Delivery (GSG/RJT)",
+          "last_modified": "2026-05-20",
+          "size": "154 KB",
+          "size_bytes": 157696,
+          "file_type": "doc",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/4607fa62-8b23-4c91-a1e6-d69db322e5fa/4865616c746820616e6420536166657479202d20414e5a20436c75622044656c6976657279.doc"
+        },
+        {
+          "name": "Health & Safety in Clubs & Schools",
+          "last_modified": "2026-05-20",
+          "size": "24.99 KB",
+          "size_bytes": 25585,
+          "file_type": "docx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/91c73eba-f7a6-461e-96fa-199a75409142/4865616c746820616e6420536166657479202d2070726f6772616d6d652070726f636573736573.docx"
+        },
+        {
+          "name": "Health and Safety Guide for Clubs",
+          "last_modified": "2026-05-20",
+          "size": "173.67 KB",
+          "size_bytes": 177840,
+          "file_type": "docx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/e7631ba3-d101-440a-b68d-57db709ebbb4/4865616c746820616e642053616665747920477569646520666f7220436c756273.docx"
+        },
+        {
+          "name": "Club H&S Policy Template",
+          "last_modified": "2026-05-20",
+          "size": "23.46 KB",
+          "size_bytes": 24018,
+          "file_type": "docx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/79e60e0c-6053-4d68-aaeb-5c574ea39bfe/4865616c746820616e642053616665747920506f6c696379.docx"
+        },
+        {
+          "name": "Club H&S Presentation - 2017",
+          "last_modified": "2026-05-20",
+          "size": "9.14 MB",
+          "size_bytes": 9584895,
+          "file_type": "pptx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/bab150b4-5765-48f8-ac56-c1ca30350418/4865616c746820616e64205361666574792050726573656e746174696f6e20436c756220436f6e6e6563742032303137.pptx"
+        }
+      ]
+    },
+    {
+      "path": "Club Resources / Club Toolkit / Safeguarding",
+      "top_level_folder": "Club Resources",
+      "folder_id": "9f5bbe5f-46c5-4d49-ac5f-b2a61868527e",
+      "url": "https://athleticsnz.elearning.worldathletics.org/library/9f5bbe5f-46c5-4d49-ac5f-b2a61868527e",
+      "file_count": 20,
+      "files": [
+        {
+          "name": "Regsiter template for tracking issues and complaints",
+          "last_modified": "2026-05-20",
+          "size": "17.26 KB",
+          "size_bytes": 17671,
+          "file_type": "xlsx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/3fa7d55a-6bdc-4402-a997-8b57ce81e5d5/536166656775617264696e6720616e6420636f6d706c61696e74732073707265616473686565742074656d706c617465.xlsx"
+        },
+        {
+          "name": "Responding to issues of disclosed or suspected abuse",
+          "last_modified": "2026-05-20",
+          "size": "1.23 MB",
+          "size_bytes": 1285592,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/06f8cb66-a734-4658-b5fd-c9875c5c44e0/526573706f6e64696e672d746f2d6973737565732d6f662d646973636c6f7365642d6f722d7375737065637465642d616275.pdf"
+        },
+        {
+          "name": "Practical guidelines for volunteers working with children",
+          "last_modified": "2026-05-20",
+          "size": "1.26 MB",
+          "size_bytes": 1317832,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/251b88b4-4263-40bf-8a89-c71774c66a77/50726163746963616c2d47756964656c696e65732d666f722d766f6c756e74656572732d776f726b696e672d776974682d63.pdf"
+        },
+        {
+          "name": "Guidelines for Team Managers - Safesport for children",
+          "last_modified": "2026-05-20",
+          "size": "2.03 MB",
+          "size_bytes": 2124425,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/70977b20-b129-42aa-9a06-9079b86d5be5/47756964656c696e65732d666f722d5465616d2d4d616e61676572732d536166652d53706f72742d666f722d4368696c6472.pdf"
+        },
+        {
+          "name": "Safe Sport for Children Guidelines",
+          "last_modified": "2026-05-20",
+          "size": "470.3 KB",
+          "size_bytes": 481585,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/17e0f6b4-b5be-4fba-9842-6429ce3b09ce/536166652053706f727420666f72204368696c6472656e2047756964656c696e6573.pdf"
+        },
+        {
+          "name": "Guidance for use of images (photos/videography)",
+          "last_modified": "2026-05-20",
+          "size": "193.84 KB",
+          "size_bytes": 198490,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/a72adad3-64f3-49f9-8216-cb936bea7291/536166656775617264696e67204368696c6472656e202d2050686f746f7320616e6420566964656f73205265736f75726365.pdf"
+        },
+        {
+          "name": "Guide on safeguarding lead responsibilities",
+          "last_modified": "2026-05-20",
+          "size": "43.39 KB",
+          "size_bytes": 44434,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/0fe4f97e-5b20-453e-bc8e-210d95fbfda5/67756964652d736166656775617264696e672d6c65616420726573706f6e736962696c69746965732053706f727420496e74.pdf"
+        },
+        {
+          "name": "Raise a Concern template form",
+          "last_modified": "2026-05-20",
+          "size": "25.75 KB",
+          "size_bytes": 26370,
+          "file_type": "docx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/7ec9cfd4-dae5-4db1-9bc8-f6cbe08eadfd/5261697365206120436f6e6365726e20666f726d2074656d706c61746520666f7220636c756273206f722043656e74726573.docx"
+        },
+        {
+          "name": "Taking & Storing Images - Checklist",
+          "last_modified": "2026-05-20",
+          "size": "51.38 KB",
+          "size_bytes": 52611,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/cdb96689-7fb0-45b4-9e57-ae6cacf6e3d4/636865636b6c6973742d736166652d7072616374696365732d74616b696e672d73686172696e672d73746f72696e672d696d.pdf"
+        },
+        {
+          "name": "Safe online communications",
+          "last_modified": "2026-05-20",
+          "size": "39.3 KB",
+          "size_bytes": 40243,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/fe79d709-0b06-441d-a974-44d6b94d52ae/67756964652d736166652d6f6e6c696e652d636f6d6d756e69636174696f6e2053706f727420496e7465677269747920436f.pdf"
+        },
+        {
+          "name": "Report of Concern (ROC)",
+          "last_modified": "2026-05-20",
+          "size": "213.96 KB",
+          "size_bytes": 219096,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/fd9a0dbe-93d1-482f-8e59-a0bb90543dc1/332e362e315f5265706f72742d6f662d436f6e6365726e.pdf"
+        },
+        {
+          "name": "Body Map (to submit with ROC)",
+          "last_modified": "2026-05-20",
+          "size": "154.42 KB",
+          "size_bytes": 158130,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/60ba15ec-a0ad-49f3-85e7-688dfa992326/426f64792d4d6170.pdf"
+        },
+        {
+          "name": "Chronolgoies",
+          "last_modified": "2026-05-20",
+          "size": "78.95 KB",
+          "size_bytes": 80840,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/4800d6af-cff7-41bc-ab09-ae177c7946d4/4368726f6e6f6c6f67696573.pdf"
+        },
+        {
+          "name": "Club's Responsibilities After a Report is Made",
+          "last_modified": "2026-05-20",
+          "size": "617.59 KB",
+          "size_bytes": 632415,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/c31b0a5c-3fb4-4aa1-9d35-92936d343588/436c7562277320726573706f6e7369626c696c69746965732061667465722061207265706f7274206973206d616465.pdf"
+        },
+        {
+          "name": "Safe online communications resource",
+          "last_modified": "2026-05-20",
+          "size": "39.3 KB",
+          "size_bytes": 40243,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/f4e59b33-6eb3-43fb-8690-3a6ca7f6a163/67756964652d736166652d6f6e6c696e652d636f6d6d756e69636174696f6e2053706f727420496e7465677269747920436f.pdf"
+        },
+        {
+          "name": "Taking, Sharing, Storing Images",
+          "last_modified": "2026-05-20",
+          "size": "51.38 KB",
+          "size_bytes": 52611,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/801b9f25-9135-4d83-b739-1324c6b07e0c/636865636b6c6973742d736166652d7072616374696365732d74616b696e672d73686172696e672d73746f72696e672d696d.pdf"
+        },
+        {
+          "name": "Information sharing and confidentiality",
+          "last_modified": "2026-05-20",
+          "size": "570.47 KB",
+          "size_bytes": 584157,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/4870246a-3b9f-4e82-ad29-921ec4ed7de8/536166656775617264696e67202d20534e5a20696e666f726d6174696f6e2d73686172696e672d616e642d636f6e66696465.pdf"
+        },
+        {
+          "name": "Guidance for creating club photography and videography policy",
+          "last_modified": "2026-05-20",
+          "size": "786.99 KB",
+          "size_bytes": 805876,
+          "file_type": "docx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/59c4fe94-d835-4505-bd44-ef7efdf5cf49/50686f746f67726170687920616e6420766964656f20706f6c6963792074656d706c6174652067756964616e636520666f72.docx"
+        },
+        {
+          "name": "Safeguarding Reporting Form",
+          "last_modified": "2026-09-18",
+          "size": "31.12 KB",
+          "size_bytes": 31868,
+          "file_type": "docx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/9b10821d-0105-4c53-84fb-1a84836d5957/576f726c64204174686c65746963732054656d706c61746520536166656775617264696e6720436f6e6365726e205265706f.docx"
+        },
+        {
+          "name": "Safeguarding Policy template for Clubs",
+          "last_modified": "2026-09-18",
+          "size": "70.92 KB",
+          "size_bytes": 72626,
+          "file_type": "docx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/0983a144-b7fc-4d92-ad10-52a6b1eaf217/576f726c64204174686c65746963732054656d706c61746520536166656775617264696e6720506f6c69637920666f722043.docx"
+        }
+      ]
+    },
+    {
+      "path": "Club Resources / Club Toolkit / Club Nights",
+      "top_level_folder": "Club Resources",
+      "folder_id": "e317d106-619a-40c2-ba68-bb46946df187",
+      "url": "https://athleticsnz.elearning.worldathletics.org/library/e317d106-619a-40c2-ba68-bb46946df187",
+      "file_count": 3,
+      "files": [
+        {
+          "name": "Get Set Go overview for parents",
+          "last_modified": "2026-05-20",
+          "size": "190.39 KB",
+          "size_bytes": 194955,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/7080995a-c01a-4daa-b634-fd1a0b746d2a/475347204f6e65205061676572.pdf"
+        },
+        {
+          "name": "ANZ Club Night Guide - 7 to 9 year olds",
+          "last_modified": "2026-05-20",
+          "size": "794.08 KB",
+          "size_bytes": 813138,
+          "file_type": "docx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/56ef7b91-6220-4433-a5ff-533cb3121d1e/4174686c6574696373204e5a20436c7562204e6967687420677569646520372d392079656172206f6c6473.docx"
+        },
+        {
+          "name": "ANZ Club Night Guide - 10 to 14 year olds",
+          "last_modified": "2026-05-20",
+          "size": "793.95 KB",
+          "size_bytes": 813008,
+          "file_type": "docx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/be5a136e-0f75-43af-94cd-f3279308358c/4174686c6574696373204e5a20436c7562204e696768742067756964652031302d31342079656172206f6c6473.docx"
+        }
+      ]
+    },
+    {
+      "path": "Club Resources / Club Toolkit / Coaching",
+      "top_level_folder": "Club Resources",
+      "folder_id": "b68af07c-0602-4100-abde-b30916690acc",
+      "url": "https://athleticsnz.elearning.worldathletics.org/library/b68af07c-0602-4100-abde-b30916690acc",
+      "file_count": 2,
+      "files": [
+        {
+          "name": "Club Coaching Roles",
+          "last_modified": "2026-05-20",
+          "size": "53 KB",
+          "size_bytes": 54272,
+          "file_type": "doc",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/1055f94b-174a-47c0-a963-88d5c1d12a0e/436c756220436f616368696e6720526f6c6573.doc"
+        },
+        {
+          "name": "Avoiding overtraining of children and youth athletes",
+          "last_modified": "2026-05-20",
+          "size": "431.08 KB",
+          "size_bytes": 441423,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/929b5231-0df0-415d-8ab3-4d573fe38f5b/41766f6964696e67206f766572747261696e696e67206f66206368696c6472656e20616e6420796f757468206174686c6574.pdf"
+        }
+      ]
+    },
+    {
+      "path": "Club Resources / Club Toolkit / Funding",
+      "top_level_folder": "Club Resources",
+      "folder_id": "b6780e15-8207-401f-bcb8-4ab92413e02f",
+      "url": "https://athleticsnz.elearning.worldathletics.org/library/b6780e15-8207-401f-bcb8-4ab92413e02f",
+      "file_count": 4,
+      "files": [
+        {
+          "name": "Funding Application Checklist",
+          "last_modified": "2026-05-20",
+          "size": "120.25 KB",
+          "size_bytes": 123141,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/a12c7167-39cc-4973-9e17-e1d5c62003ba/46756e64696e67204170706c69636174696f6e20436865636b6c697374.pdf"
+        },
+        {
+          "name": "Grant Funding Plan Template",
+          "last_modified": "2026-05-20",
+          "size": "55.5 KB",
+          "size_bytes": 56832,
+          "file_type": "xls",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/44b0c55e-fcf4-439e-a456-67aa4a411975/4772616e742046756e64696e6720506c616e2054656d706c617465.xls"
+        },
+        {
+          "name": "Grant Funding - How to Guide",
+          "last_modified": "2026-05-20",
+          "size": "314.08 KB",
+          "size_bytes": 321620,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/119c2494-4b38-431e-b31e-31e726a2066d/4772616e742066756e64696e6720486f7720746f204775696465202d2075706461746564204175672032303235.pdf"
+        },
+        {
+          "name": "Grant funding options",
+          "last_modified": "2026-05-20",
+          "size": "162.67 KB",
+          "size_bytes": 166578,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/39bf3f01-886b-4214-99fa-cf511b302b91/46756e64696e67206c616e6473636170652061727469636c65.pdf"
+        }
+      ]
+    },
+    {
+      "path": "Club Resources / Club Toolkit / Marketing Resources",
+      "top_level_folder": "Club Resources",
+      "folder_id": "dfa65fa3-8f72-4fa1-ad68-eb1aa4df6580",
+      "url": "https://athleticsnz.elearning.worldathletics.org/library/dfa65fa3-8f72-4fa1-ad68-eb1aa4df6580",
+      "file_count": 2,
+      "files": [
+        {
+          "name": "Marketing & Promoting your Club",
+          "last_modified": "2026-05-20",
+          "size": "188.54 KB",
+          "size_bytes": 193065,
+          "file_type": "docx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/4298b950-b0e4-4031-b138-c9c7a96e893d/4d61726b6574696e6720616e642050726f6d6f74696e6720796f757220436c7562.docx"
+        },
+        {
+          "name": "Social Media Advice",
+          "last_modified": "2026-05-20",
+          "size": "383.33 KB",
+          "size_bytes": 392528,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/24f78994-f2cb-45fb-beff-f2ecdc51f132/536f6369616c204d6564696120416476696365.pdf"
+        }
+      ]
+    },
+    {
+      "path": "Club Resources / Club Toolkit / Planning Documents",
+      "top_level_folder": "Club Resources",
+      "folder_id": "151bcc9a-b1f2-4398-9d4b-e8a3ee230208",
+      "url": "https://athleticsnz.elearning.worldathletics.org/library/151bcc9a-b1f2-4398-9d4b-e8a3ee230208",
+      "file_count": 13,
+      "files": [
+        {
+          "name": "Action Plan Template",
+          "last_modified": "2026-05-20",
+          "size": "20.49 KB",
+          "size_bytes": 20982,
+          "file_type": "docx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/3e81d53c-5043-47ad-895f-8584820c21de/416374696f6e20506c616e2054656d706c617465.docx"
+        },
+        {
+          "name": "Club Development Plan - People",
+          "last_modified": "2026-05-20",
+          "size": "43.79 KB",
+          "size_bytes": 44841,
+          "file_type": "docx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/3b6df2ea-3db5-4970-a0e3-b40fffbe71f0/4174686c6574696373204e6577205a65616c616e6420436c756220706c616e6e696e6720646f63756d656e74.docx"
+        },
+        {
+          "name": "Club Action Plan - People",
+          "last_modified": "2026-05-20",
+          "size": "133.5 KB",
+          "size_bytes": 136704,
+          "file_type": "doc",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/099e7854-4b77-4d76-8b3e-33e352b99414/4174686c6574696373204e5a20436c756220416374696f6e20506c616e2074656d706c617465.doc"
+        },
+        {
+          "name": "ANZ Club Planning Tool",
+          "last_modified": "2026-05-20",
+          "size": "375.15 KB",
+          "size_bytes": 384156,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/fca54649-eb11-47b3-bd36-3b538cc92e3c/4174686c6574696373204e5a20436c756220506c616e6e696e6720546f6f6c.pdf"
+        },
+        {
+          "name": "Core Value List",
+          "last_modified": "2026-05-20",
+          "size": "107.33 KB",
+          "size_bytes": 109910,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/22c6de0f-4dc3-4f80-9f61-8daead2b14a5/436f72652056616c7565204c697374.pdf"
+        },
+        {
+          "name": "Strategic Plan Template",
+          "last_modified": "2026-05-20",
+          "size": "35.77 KB",
+          "size_bytes": 36630,
+          "file_type": "docx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/0802bc47-0a5f-466f-a4cc-2275224f8e81/53747261746567696320506c616e2054656d706c617465.docx"
+        },
+        {
+          "name": "SWOT Worksheets",
+          "last_modified": "2026-05-20",
+          "size": "118.05 KB",
+          "size_bytes": 120880,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/adcc2a36-87ad-4bf3-b83f-b9bc9b724786/53574f5420776f726b736865657473.pdf"
+        },
+        {
+          "name": "Succession Planning for Clubs",
+          "last_modified": "2026-08-11",
+          "size": "2.36 MB",
+          "size_bytes": 2473799,
+          "file_type": "pptx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/f26e0fda-43bc-4340-b8b0-79b1c1525c2d/53756363657373696f6e20506c616e6e696e6720666f7220436c75627320287570646174656420332041756729.pptx"
+        },
+        {
+          "name": "Succession Planning Snapshot Tool",
+          "last_modified": "2026-08-11",
+          "size": "20.13 KB",
+          "size_bytes": 20614,
+          "file_type": "xlsx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/e80ad7b5-823d-4655-a6fd-c24a22bbaa07/536e617073686f74206f6620436c756227732053756363657373696f6e20506c616e6e696e67204e656564732054656d706c.xlsx"
+        },
+        {
+          "name": "Succession Plan template for clubs",
+          "last_modified": "2026-08-11",
+          "size": "294.19 KB",
+          "size_bytes": 301255,
+          "file_type": "docx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/29e23c47-2fb2-4dca-8dca-47917b957778/436c75625f53756363657373696f6e5f506c616e5f54656d706c617465.docx"
+        },
+        {
+          "name": "Volunteer Exit Checklist",
+          "last_modified": "2026-08-11",
+          "size": "27.96 KB",
+          "size_bytes": 28629,
+          "file_type": "docx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/c78b92e7-17d8-4764-9d20-1099b7754e11/566f6c756e74656572204578697420436865636b6c697374.docx"
+        },
+        {
+          "name": "Exit Interview Template",
+          "last_modified": "2026-08-11",
+          "size": "29.15 KB",
+          "size_bytes": 29847,
+          "file_type": "docx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/d37b7cba-f730-4064-aad6-008616038e75/4578697420696e746572766965772074656d706c617465.docx"
+        },
+        {
+          "name": "Volunteer Handover Report Template",
+          "last_modified": "2026-08-11",
+          "size": "24.13 KB",
+          "size_bytes": 24711,
+          "file_type": "docx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/464e037e-1c41-45ed-a7fc-cce61ce1e943/48616e646f766572207265706f72742074656d706c617465.docx"
+        }
+      ]
+    },
+    {
+      "path": "Club Resources / Club Toolkit / Volunteers",
+      "top_level_folder": "Club Resources",
+      "folder_id": "b8a81d80-f540-4e5e-87a2-e30c10b1252f",
+      "url": "https://athleticsnz.elearning.worldathletics.org/library/b8a81d80-f540-4e5e-87a2-e30c10b1252f",
+      "file_count": 5,
+      "files": [
+        {
+          "name": "27 Best Practices of High Performing Volunteer Organisations",
+          "last_modified": "2026-05-20",
+          "size": "22.28 KB",
+          "size_bytes": 22810,
+          "file_type": "docx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/bb0584d1-368a-474b-adef-bcdd41a17efa/3237204265737420507261637469636573206f66204869676820506572666f726d696e6720566f6c756e74656572204f7267.docx"
+        },
+        {
+          "name": "Athletics England Volunteer Tool Kit",
+          "last_modified": "2026-05-20",
+          "size": "1.45 MB",
+          "size_bytes": 1521352,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/594eb37a-36e8-4a39-83dd-d61d5c97a145/4174686c657469637320456e676c616e6420636f6d70726568656e7369766520766f6c756e746565722d746f6f6c6b6974.pdf"
+        },
+        {
+          "name": "Volunteer Management Checklist",
+          "last_modified": "2026-05-20",
+          "size": "48 KB",
+          "size_bytes": 49152,
+          "file_type": "doc",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/1df65a26-8eab-4093-bae9-307b1eac2872/766f6c756e74656572206d616e6167656d656e7420636865636b6c697374.doc"
+        },
+        {
+          "name": "Volunteer Management Plan",
+          "last_modified": "2026-05-20",
+          "size": "44 KB",
+          "size_bytes": 45056,
+          "file_type": "doc",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/ed210099-2ed0-4dd6-ba23-9b852f2c5234/566f6c756e74656572204d616e6167656d656e7420506c616e.doc"
+        },
+        {
+          "name": "Athletics Club Volunteer Recruitment Guide",
+          "last_modified": "2026-05-20",
+          "size": "372.85 KB",
+          "size_bytes": 381799,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/1a5ba71b-f232-42eb-bc36-377c807dfece/4174686c657469637320436c756220566f6c756e7465657220526563727569746d656e74204775696465207632.pdf"
+        }
+      ]
+    },
+    {
+      "path": "Club Resources / Club Toolkit / Operations",
+      "top_level_folder": "Club Resources",
+      "folder_id": "01377d9c-8f99-4438-8c54-5a236d20fbce",
+      "url": "https://athleticsnz.elearning.worldathletics.org/library/01377d9c-8f99-4438-8c54-5a236d20fbce",
+      "file_count": 1,
+      "files": [
+        {
+          "name": "Contractor template for coaching services at club",
+          "last_modified": "2026-05-20",
+          "size": "50.2 KB",
+          "size_bytes": 51405,
+          "file_type": "docx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/6b3069ca-934c-40e3-acdc-86c17a67e679/436f61636820436f6e747261637420666f72205365727669636573202854656d706c6174652920.docx"
+        }
+      ]
+    },
+    {
+      "path": "Club Resources / Athletics NZ Documents",
+      "top_level_folder": "Club Resources",
+      "folder_id": "2efbb2a8-2621-4c7b-b185-3122c2dfd000",
+      "url": "https://athleticsnz.elearning.worldathletics.org/library/2efbb2a8-2621-4c7b-b185-3122c2dfd000",
+      "file_count": 8,
+      "files": [
+        {
+          "name": "Why should clubs affiliate with Athletics NZ?",
+          "last_modified": "2026-05-20",
+          "size": "927.35 KB",
+          "size_bytes": 949611,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/ba3caf6d-c1ce-4d35-89e3-02a1662b7a27/436c75622056616c75652050726f706f736974696f6e2028323032342d323529.pdf"
+        },
+        {
+          "name": "Athletics NZ Constitution",
+          "last_modified": "2026-05-20",
+          "size": "645.71 KB",
+          "size_bytes": 661210,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/90c1386c-27f1-4ab3-abf2-f5b5775d046b/436f6e737469747574696f6e.pdf"
+        },
+        {
+          "name": "Athletics NZ Membership and Database Regulations",
+          "last_modified": "2026-05-20",
+          "size": "908.86 KB",
+          "size_bytes": 930677,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/9d232651-3586-4a53-98ba-e5457c0ebb12/4d656d626572736869702d616e642d44617461626173652d526567756c6174696f6e2d536570742d323031385f4a756c792d.pdf"
+        },
+        {
+          "name": "Athletics NZ Code of Conduct",
+          "last_modified": "2026-05-20",
+          "size": "187.34 KB",
+          "size_bytes": 191839,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/d990d5fb-dfc3-4d50-8b7e-9b34d02557ad/4174686c65746963732d4e5a2d436f64652d6f662d436f6e64756374.pdf"
+        },
+        {
+          "name": "Athletics NZ Public & Products Liability Insurance Certificate",
+          "last_modified": "2026-05-20",
+          "size": "85.67 KB",
+          "size_bytes": 87724,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/f3885421-0e69-4acb-91bd-fe2e5cd484dc/4174686c6574696373204e6577205a65616c616e6420496e636f72706f7261746564202d20474c204365727473202d203230.pdf"
+        },
+        {
+          "name": "ANZ Privacy Policy (2021)",
+          "last_modified": "2026-05-20",
+          "size": "207.41 KB",
+          "size_bytes": 212391,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/c34b0c47-9c63-4f9b-accf-9bcc1a975a1b/4174686c65746963732d4e5a2d496e666f726d6174696f6e2d507269766163792d506f6c6963792d32303231.pdf"
+        },
+        {
+          "name": "Athletics NZ Affiliated Club Handbook 2026-27 season",
+          "last_modified": "2026-05-20",
+          "size": "11.27 MB",
+          "size_bytes": 11822546,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/8a975178-2d02-4434-9dfd-f3e507162c24/4174686c6574696373204e5a20416666696c696174656420436c75622048616e64626f6f6b20323032362d32303237202875.pdf"
+        },
+        {
+          "name": "Athletics NZ Para Handbook (updated 2026)",
+          "last_modified": "2026-05-20",
+          "size": "4.03 MB",
+          "size_bytes": 4220719,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/c8c28a65-dfb7-4abe-8c37-9359e8a6e236/4174686c6574696373204e5a2050617261204174686c65746963732048616e64626f6f6b203230323620557064617465.pdf"
+        }
+      ]
+    },
+    {
+      "path": "Club Resources / Incorporated Societies Act 2022",
+      "top_level_folder": "Club Resources",
+      "folder_id": "d364d857-3e4c-420b-8e74-2a5d42d67369",
+      "url": "https://athleticsnz.elearning.worldathletics.org/library/d364d857-3e4c-420b-8e74-2a5d42d67369",
+      "file_count": 23,
+      "files": [
+        {
+          "name": "ANZ Club Constitution Template",
+          "last_modified": "2026-05-20",
+          "size": "125.41 KB",
+          "size_bytes": 128422,
+          "file_type": "docx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/164db911-3410-48b3-8552-83f339c0cc27/414e5a2d436c75622d436f6e737469747574696f6e2d54656d706c6174652d46494e414c2d76657273696f6e2d61732d6f66.docx"
+        },
+        {
+          "name": "Athletics NZ Step by Step Guide to re-registering",
+          "last_modified": "2026-05-20",
+          "size": "32.69 KB",
+          "size_bytes": 33479,
+          "file_type": "docx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/51808a78-ba12-4923-82f1-494499be1878/537465702062792073746570206c697374206f662070726f6365737320666f7220636c75627320746f207265726567697374.docx"
+        },
+        {
+          "name": "Income Tax Guide for Clubs - NZASA",
+          "last_modified": "2026-05-20",
+          "size": "4.72 MB",
+          "size_bytes": 4944448,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/f2f8e3f3-6d3d-4357-a7c0-f718d1987056/494e434f4d452d5441582d475549444520666f7220636c756273204e5a4153412d46494e444558204f63742032303233.pdf"
+        },
+        {
+          "name": "Sport NZ FAQs relating to the Incorporated Societies Act changes",
+          "last_modified": "2026-05-20",
+          "size": "156.72 KB",
+          "size_bytes": 160484,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/29deb6a6-ead0-4566-a53a-949a2367079d/666171732d696e636f72706f72617465642d736f636965746965732d6163742d757064617465642d6e6f76656d6265722d32.pdf"
+        },
+        {
+          "name": "Officer consent form",
+          "last_modified": "2026-05-20",
+          "size": "107.03 KB",
+          "size_bytes": 109596,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/75cc8fd4-3db0-4fb3-b284-f8ab835f58a5/4953412d6f6666696365722d636f6e73656e742d616e642d6365727469666963617465.pdf"
+        },
+        {
+          "name": "AGM script template for Chair",
+          "last_modified": "2026-05-20",
+          "size": "39.79 KB",
+          "size_bytes": 40743,
+          "file_type": "docx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/f85708e2-8619-46f2-8324-520a0a228861/41474d5f4368616972706572736f6e5f53637269707420283229.docx"
+        },
+        {
+          "name": "AGM Minutes template",
+          "last_modified": "2026-05-20",
+          "size": "27.81 KB",
+          "size_bytes": 28477,
+          "file_type": "docx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/b8d3225f-192f-4a23-8e53-bee5d313a36d/41474d204d696e757465732074656d706c617465.docx"
+        },
+        {
+          "name": "AGM Attendance Register",
+          "last_modified": "2026-05-20",
+          "size": "37.95 KB",
+          "size_bytes": 38860,
+          "file_type": "docx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/a7ee59c6-ffee-404c-b8b4-9cfa60c56d27/41474d5f417474656e64616e63655f526567697374657220283129.docx"
+        },
+        {
+          "name": "Conflict of Interest (active) Register",
+          "last_modified": "2026-05-20",
+          "size": "34.49 KB",
+          "size_bytes": 35321,
+          "file_type": "docx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/b5e7bec4-37a6-44ad-b217-11ca17e45eba/436f6e666c6963742d6f662d696e7465726573742072656769737465722028616374697665292074656d706c617465.docx"
+        },
+        {
+          "name": "Conflict of Interest (resolved) Register",
+          "last_modified": "2026-05-20",
+          "size": "34.22 KB",
+          "size_bytes": 35044,
+          "file_type": "docx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/22a5a158-479f-4c3b-a419-5842e26c7829/436f6e666c6963742d6f662d696e74657265737420726567697374657220287265736f6c766564292074656d706c617465.docx"
+        },
+        {
+          "name": "Declaring a Conflict of Interest (minutes template)",
+          "last_modified": "2026-05-20",
+          "size": "37.61 KB",
+          "size_bytes": 38515,
+          "file_type": "docx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/76b18284-e7f8-4431-b592-9eee31c17c88/4465636c6172696e67206120636f6e666c6963742d6f662d696e7465726573742074656d706c617465.docx"
+        },
+        {
+          "name": "FAQs for Clubs on Incorporating",
+          "last_modified": "2026-05-20",
+          "size": "469.3 KB",
+          "size_bytes": 480568,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/f97e996a-a1f3-4392-80e6-6829034b9ccd/496e636f72706f726174656420536f6369657469657320464151277320666f7220436c756273202875706461746564204175.pdf"
+        },
+        {
+          "name": "NZ Companies Office Incorporation checklist",
+          "last_modified": "2026-05-20",
+          "size": "138.58 KB",
+          "size_bytes": 141904,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/8a39f836-07d4-4246-be70-6fc1468cba57/49534120636865636b6c69737420287072657061726564206279204e5a20436f6d70616e696573204f666669636520417072.pdf"
+        },
+        {
+          "name": "Signature page for amended constitution",
+          "last_modified": "2026-05-20",
+          "size": "33.56 KB",
+          "size_bytes": 34362,
+          "file_type": "docx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/56f543f8-fd8d-4b63-a788-932918cb6895/7369676e61747572655f706167655f74656d706c61746520756e64657220313930382041637420666f722075706461746564.docx"
+        },
+        {
+          "name": "Tracking changes to your constitution",
+          "last_modified": "2026-05-20",
+          "size": "33.61 KB",
+          "size_bytes": 34417,
+          "file_type": "docx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/7559d2fd-6fa9-42da-8061-bc3677e2db19/547261636b696e6720636f6e737469747574696f6e206368616e6765732074656d706c617465.docx"
+        },
+        {
+          "name": "Overview on what Inc Society changes means",
+          "last_modified": "2026-05-20",
+          "size": "28.51 KB",
+          "size_bytes": 29194,
+          "file_type": "docx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/513b5820-83c4-4c5d-930a-b517c426274c/4f76657276696577206f6e20496e6320536f6369657479206368616e67657320616e642077686174206974206d65616e73.docx"
+        },
+        {
+          "name": "Remaining Incorporated (under 2022 Act)",
+          "last_modified": "2026-05-20",
+          "size": "784.44 KB",
+          "size_bytes": 803271,
+          "file_type": "docx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/82262eb4-347e-4108-af31-f4b48cf58001/526571756972656d656e747320666f722072656d61696e696e6720616e20496e636f72706f726174656420536f6369657479.docx"
+        },
+        {
+          "name": "Having authority to reregister",
+          "last_modified": "2026-05-20",
+          "size": "26.89 KB",
+          "size_bytes": 27534,
+          "file_type": "docx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/e16c2160-e445-42f0-9824-954c53b5fabb/52657265676973746572696e67202d20686176696e6720617574686f7269747920616e6420757064617465642066696e616e.docx"
+        },
+        {
+          "name": "Governance acknowledgement template (Boards)",
+          "last_modified": "2026-05-20",
+          "size": "33.89 KB",
+          "size_bytes": 34707,
+          "file_type": "docx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/5f1c1196-9534-461d-9962-3afb81895168/476f7665726e616e63655f41636b6e6f776c656467656d656e745f54656d706c61746520283129.docx"
+        },
+        {
+          "name": "Board/Committee code of conduct template",
+          "last_modified": "2026-05-20",
+          "size": "34.18 KB",
+          "size_bytes": 34996,
+          "file_type": "docx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/c15d29e7-9c66-42c6-ba26-58a762a0c5e3/426f6172645f436f64655f6f665f436f6e647563745f54656d706c61746520283129.docx"
+        },
+        {
+          "name": "Becoming Incorporated - steps to follow",
+          "last_modified": "2026-05-20",
+          "size": "48.45 KB",
+          "size_bytes": 49616,
+          "file_type": "docx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/1b4d3905-086c-4877-ac5b-9384b017bf87/4265636f6d696e6720696e636f72706f7261746564202d20737465707320746f20666f6c6c6f77.docx"
+        },
+        {
+          "name": "Filing with Registrar",
+          "last_modified": "2026-05-20",
+          "size": "25.95 KB",
+          "size_bytes": 26569,
+          "file_type": "docx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/3b2aa705-cf29-4a81-8ae0-17f935648df9/5265726567697374726174696f6e207374657073202d2066696c696e6720776974682074686520436f6d70616e696573204f.docx"
+        },
+        {
+          "name": "Financial Reporting for Inc Societies and Registered Charities",
+          "last_modified": "2026-09-02",
+          "size": "106.22 KB",
+          "size_bytes": 108770,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/dad9b7af-18ae-462d-af34-ed00d1eb17a5/46696e616e6369616c207265706f7274696e6720666f7220496e636f72706f726174656420536f6369657469657320286173.pdf"
+        }
+      ]
+    },
+    {
+      "path": "Coaching Resources",
+      "top_level_folder": "Coaching Resources",
+      "folder_id": "d7b1f886-b048-4681-a9c2-0b996ac9f954",
+      "url": "https://athleticsnz.elearning.worldathletics.org/library/d7b1f886-b048-4681-a9c2-0b996ac9f954",
+      "file_count": 0,
+      "files": []
+    },
+    {
+      "path": "Coaching Resources / Overview",
+      "top_level_folder": "Coaching Resources",
+      "folder_id": "aebd6a36-2f42-4c23-86da-59be2f4a69c4",
+      "url": "https://athleticsnz.elearning.worldathletics.org/library/aebd6a36-2f42-4c23-86da-59be2f4a69c4",
+      "file_count": 2,
+      "files": [
+        {
+          "name": "ANZ Coach Pathway",
+          "last_modified": "2026-05-20",
+          "size": "2.21 MB",
+          "size_bytes": 2317536,
+          "file_type": "png",
+          "link_type": "folder",
+          "url": "https://athleticsnz.elearning.worldathletics.org/library/aebd6a36-2f42-4c23-86da-59be2f4a69c4"
+        },
+        {
+          "name": "ANZ Coaching Resources",
+          "last_modified": "2026-05-20",
+          "size": "403.38 KB",
+          "size_bytes": 413058,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/b53808a7-433a-4111-8313-eca213b4cfb9/436f61636820616e64204f6666696369616c7320456475636174696f6e2050726f6772616d6d65204f766572766965772032.pdf"
+        }
+      ]
+    },
+    {
+      "path": "Coaching Resources / Development Coaching",
+      "top_level_folder": "Coaching Resources",
+      "folder_id": "c28df53d-f6ba-48ad-b95e-89501825ce14",
+      "url": "https://athleticsnz.elearning.worldathletics.org/library/c28df53d-f6ba-48ad-b95e-89501825ce14",
+      "file_count": 0,
+      "files": []
+    },
+    {
+      "path": "Coaching Resources / Development Coaching / CAD Drills Videos",
+      "top_level_folder": "Coaching Resources",
+      "folder_id": "82d49c31-00b7-481b-912f-a2064bd1554a",
+      "url": "https://athleticsnz.elearning.worldathletics.org/library/82d49c31-00b7-481b-912f-a2064bd1554a",
+      "file_count": 0,
+      "files": []
+    },
+    {
+      "path": "Coaching Resources / Development Coaching / CAD Drills Videos / Hurdles",
+      "top_level_folder": "Coaching Resources",
+      "folder_id": "2939bf73-6127-4a39-9926-2715397f726c",
+      "url": "https://athleticsnz.elearning.worldathletics.org/library/2939bf73-6127-4a39-9926-2715397f726c",
+      "file_count": 5,
+      "files": [
+        {
+          "name": "CAD L1 Hurdles - Lead leg walking",
+          "last_modified": "2026-05-20",
+          "size": "11.88 MB",
+          "size_bytes": 12460485,
+          "file_type": "mp4",
+          "link_type": "folder",
+          "url": "https://athleticsnz.elearning.worldathletics.org/library/2939bf73-6127-4a39-9926-2715397f726c"
+        },
+        {
+          "name": "CAD L1 Hurdles - Running over hurdles",
+          "last_modified": "2026-05-20",
+          "size": "10.44 MB",
+          "size_bytes": 10945584,
+          "file_type": "mp4",
+          "link_type": "folder",
+          "url": "https://athleticsnz.elearning.worldathletics.org/library/2939bf73-6127-4a39-9926-2715397f726c"
+        },
+        {
+          "name": "CAD L1 Hurdles - Skipping over hurdles",
+          "last_modified": "2026-05-20",
+          "size": "12 MB",
+          "size_bytes": 12587269,
+          "file_type": "mp4",
+          "link_type": "folder",
+          "url": "https://athleticsnz.elearning.worldathletics.org/library/2939bf73-6127-4a39-9926-2715397f726c"
+        },
+        {
+          "name": "CAD L1 Hurdles - Trail leg walking",
+          "last_modified": "2026-05-20",
+          "size": "10.2 MB",
+          "size_bytes": 10693348,
+          "file_type": "mp4",
+          "link_type": "folder",
+          "url": "https://athleticsnz.elearning.worldathletics.org/library/2939bf73-6127-4a39-9926-2715397f726c"
+        },
+        {
+          "name": "CAD L1 Hurdles - Walking over hurdles",
+          "last_modified": "2026-05-20",
+          "size": "11.88 MB",
+          "size_bytes": 12455093,
+          "file_type": "mp4",
+          "link_type": "folder",
+          "url": "https://athleticsnz.elearning.worldathletics.org/library/2939bf73-6127-4a39-9926-2715397f726c"
+        }
+      ]
+    },
+    {
+      "path": "Coaching Resources / Development Coaching / CAD Drills Videos / High Jump",
+      "top_level_folder": "Coaching Resources",
+      "folder_id": "972af331-2e23-40d8-9a85-d890b624f0a7",
+      "url": "https://athleticsnz.elearning.worldathletics.org/library/972af331-2e23-40d8-9a85-d890b624f0a7",
+      "file_count": 3,
+      "files": [
+        {
+          "name": "CAD L1 High Jump - Running on a curve",
+          "last_modified": "2026-05-20",
+          "size": "10.85 MB",
+          "size_bytes": 11373517,
+          "file_type": "mp4",
+          "link_type": "folder",
+          "url": "https://athleticsnz.elearning.worldathletics.org/library/972af331-2e23-40d8-9a85-d890b624f0a7"
+        },
+        {
+          "name": "CAD L1 High Jump - Scissor Jump",
+          "last_modified": "2026-05-20",
+          "size": "11.15 MB",
+          "size_bytes": 11694115,
+          "file_type": "mp4",
+          "link_type": "folder",
+          "url": "https://athleticsnz.elearning.worldathletics.org/library/972af331-2e23-40d8-9a85-d890b624f0a7"
+        },
+        {
+          "name": "CAD L1 High Jump - Standing HJ",
+          "last_modified": "2026-05-20",
+          "size": "8.73 MB",
+          "size_bytes": 9152990,
+          "file_type": "mp4",
+          "link_type": "folder",
+          "url": "https://athleticsnz.elearning.worldathletics.org/library/972af331-2e23-40d8-9a85-d890b624f0a7"
+        }
+      ]
+    },
+    {
+      "path": "Coaching Resources / Development Coaching / CAD Drills Videos / Javelin",
+      "top_level_folder": "Coaching Resources",
+      "folder_id": "61862563-af3e-4917-a5ad-991f2a74143b",
+      "url": "https://athleticsnz.elearning.worldathletics.org/library/61862563-af3e-4917-a5ad-991f2a74143b",
+      "file_count": 5,
+      "files": [
+        {
+          "name": "CAD L1 Javelin - Carry",
+          "last_modified": "2026-05-20",
+          "size": "12.07 MB",
+          "size_bytes": 12653165,
+          "file_type": "mp4",
+          "link_type": "folder",
+          "url": "https://athleticsnz.elearning.worldathletics.org/library/61862563-af3e-4917-a5ad-991f2a74143b"
+        },
+        {
+          "name": "CAD L1 Javelin - Cross Steps",
+          "last_modified": "2026-05-20",
+          "size": "14.87 MB",
+          "size_bytes": 15595179,
+          "file_type": "mp4",
+          "link_type": "folder",
+          "url": "https://athleticsnz.elearning.worldathletics.org/library/61862563-af3e-4917-a5ad-991f2a74143b"
+        },
+        {
+          "name": "CAD L1 Javelin - Full throw",
+          "last_modified": "2026-05-20",
+          "size": "19.06 MB",
+          "size_bytes": 19982080,
+          "file_type": "mp4",
+          "link_type": "folder",
+          "url": "https://athleticsnz.elearning.worldathletics.org/library/61862563-af3e-4917-a5ad-991f2a74143b"
+        },
+        {
+          "name": "CAD L1 Javelin - Standing Throw",
+          "last_modified": "2026-05-20",
+          "size": "8.31 MB",
+          "size_bytes": 8716805,
+          "file_type": "mp4",
+          "link_type": "folder",
+          "url": "https://athleticsnz.elearning.worldathletics.org/library/61862563-af3e-4917-a5ad-991f2a74143b"
+        },
+        {
+          "name": "CAD L1 Javlelin - The Grip",
+          "last_modified": "2026-05-20",
+          "size": "9.44 MB",
+          "size_bytes": 9903526,
+          "file_type": "mp4",
+          "link_type": "folder",
+          "url": "https://athleticsnz.elearning.worldathletics.org/library/61862563-af3e-4917-a5ad-991f2a74143b"
+        }
+      ]
+    },
+    {
+      "path": "Coaching Resources / Development Coaching / CAD Drills Videos / Long Jump",
+      "top_level_folder": "Coaching Resources",
+      "folder_id": "2d9133b7-070a-4bc3-bfb7-dc472319889d",
+      "url": "https://athleticsnz.elearning.worldathletics.org/library/2d9133b7-070a-4bc3-bfb7-dc472319889d",
+      "file_count": 4,
+      "files": [
+        {
+          "name": "CAD L1 Long Jump - Full jump",
+          "last_modified": "2026-05-20",
+          "size": "11.82 MB",
+          "size_bytes": 12392622,
+          "file_type": "mp4",
+          "link_type": "folder",
+          "url": "https://athleticsnz.elearning.worldathletics.org/library/2d9133b7-070a-4bc3-bfb7-dc472319889d"
+        },
+        {
+          "name": "CAD L1 Long Jump - High skips",
+          "last_modified": "2026-05-20",
+          "size": "13.16 MB",
+          "size_bytes": 13796469,
+          "file_type": "mp4",
+          "link_type": "folder",
+          "url": "https://athleticsnz.elearning.worldathletics.org/library/2d9133b7-070a-4bc3-bfb7-dc472319889d"
+        },
+        {
+          "name": "CAD L1 Long Jump - Jumping onto a mat",
+          "last_modified": "2026-05-20",
+          "size": "8.12 MB",
+          "size_bytes": 8510700,
+          "file_type": "mp4",
+          "link_type": "folder",
+          "url": "https://athleticsnz.elearning.worldathletics.org/library/2d9133b7-070a-4bc3-bfb7-dc472319889d"
+        },
+        {
+          "name": "CAD L1 Long Jump - Standing",
+          "last_modified": "2026-05-20",
+          "size": "11.98 MB",
+          "size_bytes": 12566149,
+          "file_type": "mp4",
+          "link_type": "folder",
+          "url": "https://athleticsnz.elearning.worldathletics.org/library/2d9133b7-070a-4bc3-bfb7-dc472319889d"
+        }
+      ]
+    },
+    {
+      "path": "Coaching Resources / Development Coaching / CAD Drills Videos / Sprints",
+      "top_level_folder": "Coaching Resources",
+      "folder_id": "e89fee87-3d10-4341-afd8-535de264d0cd",
+      "url": "https://athleticsnz.elearning.worldathletics.org/library/e89fee87-3d10-4341-afd8-535de264d0cd",
+      "file_count": 6,
+      "files": [
+        {
+          "name": "CAD L1 - Sprints - A march",
+          "last_modified": "2026-05-20",
+          "size": "10.1 MB",
+          "size_bytes": 10591697,
+          "file_type": "mp4",
+          "link_type": "folder",
+          "url": "https://athleticsnz.elearning.worldathletics.org/library/e89fee87-3d10-4341-afd8-535de264d0cd"
+        },
+        {
+          "name": "CAD L1 Sprints - A skip",
+          "last_modified": "2026-05-20",
+          "size": "11.42 MB",
+          "size_bytes": 11979176,
+          "file_type": "mp4",
+          "link_type": "folder",
+          "url": "https://athleticsnz.elearning.worldathletics.org/library/e89fee87-3d10-4341-afd8-535de264d0cd"
+        },
+        {
+          "name": "CAD L1 Sprints - Ankling",
+          "last_modified": "2026-05-20",
+          "size": "10.08 MB",
+          "size_bytes": 10574438,
+          "file_type": "mp4",
+          "link_type": "folder",
+          "url": "https://athleticsnz.elearning.worldathletics.org/library/e89fee87-3d10-4341-afd8-535de264d0cd"
+        },
+        {
+          "name": "CAD L1 Sprints - B skip",
+          "last_modified": "2026-05-20",
+          "size": "10.78 MB",
+          "size_bytes": 11305144,
+          "file_type": "mp4",
+          "link_type": "folder",
+          "url": "https://athleticsnz.elearning.worldathletics.org/library/e89fee87-3d10-4341-afd8-535de264d0cd"
+        },
+        {
+          "name": "CAD L1 Sprints - Setting up blocks",
+          "last_modified": "2026-05-20",
+          "size": "19.73 MB",
+          "size_bytes": 20686332,
+          "file_type": "mp4",
+          "link_type": "folder",
+          "url": "https://athleticsnz.elearning.worldathletics.org/library/e89fee87-3d10-4341-afd8-535de264d0cd"
+        },
+        {
+          "name": "CAD L1 Sprints - Sprinting technique",
+          "last_modified": "2026-05-20",
+          "size": "8.79 MB",
+          "size_bytes": 9215657,
+          "file_type": "mp4",
+          "link_type": "folder",
+          "url": "https://athleticsnz.elearning.worldathletics.org/library/e89fee87-3d10-4341-afd8-535de264d0cd"
+        }
+      ]
+    },
+    {
+      "path": "Coaching Resources / Development Coaching / CAD Drills Videos / Triple Jump",
+      "top_level_folder": "Coaching Resources",
+      "folder_id": "f7c4ab15-64f1-4618-b19e-dc998d4d495a",
+      "url": "https://athleticsnz.elearning.worldathletics.org/library/f7c4ab15-64f1-4618-b19e-dc998d4d495a",
+      "file_count": 4,
+      "files": [
+        {
+          "name": "CAD L1 Triple Jump - Bounding",
+          "last_modified": "2026-05-20",
+          "size": "12.31 MB",
+          "size_bytes": 12906681,
+          "file_type": "mp4",
+          "link_type": "folder",
+          "url": "https://athleticsnz.elearning.worldathletics.org/library/f7c4ab15-64f1-4618-b19e-dc998d4d495a"
+        },
+        {
+          "name": "CAD L1 Triple Jump - Hop Step",
+          "last_modified": "2026-05-20",
+          "size": "12.81 MB",
+          "size_bytes": 13434065,
+          "file_type": "mp4",
+          "link_type": "folder",
+          "url": "https://athleticsnz.elearning.worldathletics.org/library/f7c4ab15-64f1-4618-b19e-dc998d4d495a"
+        },
+        {
+          "name": "CAD L1 Triple Jump - Single leg hopping",
+          "last_modified": "2026-05-20",
+          "size": "8.03 MB",
+          "size_bytes": 8419460,
+          "file_type": "mp4",
+          "link_type": "folder",
+          "url": "https://athleticsnz.elearning.worldathletics.org/library/f7c4ab15-64f1-4618-b19e-dc998d4d495a"
+        },
+        {
+          "name": "CAD L1 Triple Jump - Standing Triple",
+          "last_modified": "2026-05-20",
+          "size": "9.85 MB",
+          "size_bytes": 10325642,
+          "file_type": "mp4",
+          "link_type": "folder",
+          "url": "https://athleticsnz.elearning.worldathletics.org/library/f7c4ab15-64f1-4618-b19e-dc998d4d495a"
+        }
+      ]
+    },
+    {
+      "path": "Coaching Resources / Coach Education",
+      "top_level_folder": "Coaching Resources",
+      "folder_id": "66910188-509a-464c-b765-c34d15712329",
+      "url": "https://athleticsnz.elearning.worldathletics.org/library/66910188-509a-464c-b765-c34d15712329",
+      "file_count": 0,
+      "files": []
+    },
+    {
+      "path": "Coaching Resources / Coach Education / Coach Education Officials Cards",
+      "top_level_folder": "Coaching Resources",
+      "folder_id": "e81e9c8a-f2e7-4a82-bceb-47c036c65b43",
+      "url": "https://athleticsnz.elearning.worldathletics.org/library/e81e9c8a-f2e7-4a82-bceb-47c036c65b43",
+      "file_count": 9,
+      "files": [
+        {
+          "name": "Discus guide for officials",
+          "last_modified": "2026-05-20",
+          "size": "762.55 KB",
+          "size_bytes": 780853,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/6174dcfa-3b3e-4498-9647-8c05e5d9ee98/44697363757320477569646520666f72204f6666696369616c73.pdf"
+        },
+        {
+          "name": "HIgh Jump guide for officials",
+          "last_modified": "2026-05-20",
+          "size": "686.6 KB",
+          "size_bytes": 703078,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/0480c02a-380c-4886-9de8-dd771f5029b8/48696768204a756d7020477569646520666f72204f6666696369616c73.pdf"
+        },
+        {
+          "name": "Hurdles guide for officials",
+          "last_modified": "2026-05-20",
+          "size": "703.47 KB",
+          "size_bytes": 720357,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/5ab9c33f-c09f-439b-8a62-0483f349a174/487572646c657320477569646520666f72204f6666696369616c73.pdf"
+        },
+        {
+          "name": "Long Jump guide for officials",
+          "last_modified": "2026-05-20",
+          "size": "876.91 KB",
+          "size_bytes": 897959,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/84f70c20-c764-4c6d-9f18-9c20fa6ef40b/4c6f6e67204a756d7020477569646520666f72204f6666696369616c73.pdf"
+        },
+        {
+          "name": "Race Guide for officials",
+          "last_modified": "2026-05-20",
+          "size": "1.23 MB",
+          "size_bytes": 1287791,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/8cdc99ca-413a-4eb9-b988-c74fff41c6bd/5261636520477569646520666f72204f6666696369616c73.pdf"
+        },
+        {
+          "name": "Relay guide for officials",
+          "last_modified": "2026-05-20",
+          "size": "1.13 MB",
+          "size_bytes": 1179959,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/c341394e-ec00-4b0d-a4f9-8df022ef064b/52656c617920477569646520666f72204f6666696369616c73.pdf"
+        },
+        {
+          "name": "Shot Put guide for officials",
+          "last_modified": "2026-05-20",
+          "size": "868.76 KB",
+          "size_bytes": 889615,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/333ed48c-5506-4458-b0ce-998cf5b64f0a/53686f742050757420477569646520666f72204f6666696369616c73.pdf"
+        },
+        {
+          "name": "Starts guide for officials",
+          "last_modified": "2026-05-20",
+          "size": "1.25 MB",
+          "size_bytes": 1308281,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/dd83315f-9059-4199-85a2-5897b56037ad/53746172747320477569646520666f72204f6666696369616c73.pdf"
+        },
+        {
+          "name": "Triple Jump guide for officials",
+          "last_modified": "2026-05-20",
+          "size": "818.18 KB",
+          "size_bytes": 837812,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/d30d68f4-2264-4222-99a2-dfc554389801/547269706c65204a756d7020477569646520666f72204f6666696369616c73.pdf"
+        }
+      ]
+    },
+    {
+      "path": "Officials Resources",
+      "top_level_folder": "Officials Resources",
+      "folder_id": "acd06d5a-a788-4115-b69c-dfdd11bf749d",
+      "url": "https://athleticsnz.elearning.worldathletics.org/library/acd06d5a-a788-4115-b69c-dfdd11bf749d",
+      "file_count": 1,
+      "files": [
+        {
+          "name": "Private-Implement-Certification-Discus",
+          "last_modified": "2026-05-20",
+          "size": "53.52 KB",
+          "size_bytes": 54803,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/ef825d06-360c-4a03-af6f-663768ed4930/507269766174652d496d706c656d656e742d43657274696669636174696f6e2d446973637573.pdf"
+        }
+      ]
+    },
+    {
+      "path": "Officials Resources / Introduction to Officiating",
+      "top_level_folder": "Officials Resources",
+      "folder_id": "9080b445-a625-4397-8eff-1fb4f37a7df4",
+      "url": "https://athleticsnz.elearning.worldathletics.org/library/9080b445-a625-4397-8eff-1fb4f37a7df4",
+      "file_count": 4,
+      "files": [
+        {
+          "name": "Basic Officiating",
+          "last_modified": "2026-05-20",
+          "size": "3.46 MB",
+          "size_bytes": 3629741,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/20533e8c-d43e-4a6e-8d48-99e817234cde/4f6666696369616c735f5634.pdf"
+        },
+        {
+          "name": "Athletics New Zealand Officials Education Scheme (ANZOES)",
+          "last_modified": "2026-05-20",
+          "size": "539.93 KB",
+          "size_bytes": 552885,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/16ed0096-a011-451f-a88e-c9a403cb624a/414e5a4f4553203138203033203235.pdf"
+        },
+        {
+          "name": "ANZOES Scheme Webinar",
+          "last_modified": "2026-05-20",
+          "size": "199.21 MB",
+          "size_bytes": 208881699,
+          "file_type": "mp4",
+          "link_type": "folder",
+          "url": "https://athleticsnz.elearning.worldathletics.org/library/9080b445-a625-4397-8eff-1fb4f37a7df4"
+        },
+        {
+          "name": "ANZOES Scheme (Slides)",
+          "last_modified": "2026-05-20",
+          "size": "444.61 KB",
+          "size_bytes": 455284,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/f3788bef-e6a2-41c9-9596-cb8c93922553/414e5a454f535f6e65775f736368656d655f70726573656e746174696f6e5f313330353235.pdf"
+        }
+      ]
+    },
+    {
+      "path": "Officials Resources / Rules, Records and Interpretations",
+      "top_level_folder": "Officials Resources",
+      "folder_id": "6ba5df61-a611-48fc-b9ed-139137784a95",
+      "url": "https://athleticsnz.elearning.worldathletics.org/library/6ba5df61-a611-48fc-b9ed-139137784a95",
+      "file_count": 7,
+      "files": [
+        {
+          "name": "Officials Required for National Records",
+          "last_modified": "2026-05-20",
+          "size": "116.7 KB",
+          "size_bytes": 119501,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/18dfd0df-60a3-4451-882d-fd4d8473f557/4a75646765732d72657175697265642d666f722d7265636f726473.pdf"
+        },
+        {
+          "name": "Athletics NZ Competition Regulations",
+          "last_modified": "2026-05-20",
+          "size": "816.91 KB",
+          "size_bytes": 836518,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/6ef69717-3d7c-4ba9-91bb-51e5af74e475/436f6d7065746974696f6e2d526567756c6174696f6e2d31362d4a756c792d32303234.pdf"
+        },
+        {
+          "name": "Ammendments to World Athletics Rules (effective 1st October, 2021)",
+          "last_modified": "2026-05-20",
+          "size": "378.56 KB",
+          "size_bytes": 387648,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/e0cb7824-0f74-48eb-8dd5-351ad49b6c40/417070726f7665645f416d656e646d656e74735f746f5f436f6d705465636852756c65735f436f6e736f6c6964617465642d.pdf"
+        },
+        {
+          "name": "World Athletics Rules",
+          "last_modified": "2026-05-20",
+          "size": "301.89 KB",
+          "size_bytes": 309138,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/db882c2c-2b3c-4642-b350-0c1c861a17a2/576f726c64204174686c6574696373204f6666696369616c73204c696e6b73.pdf"
+        },
+        {
+          "name": "World Para Athletics Rules",
+          "last_modified": "2026-05-20",
+          "size": "298.35 KB",
+          "size_bytes": 305507,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/5582851e-a595-4d76-9461-0b5d932287b7/576f726c642050617261204174686c65746963732052756c6573.pdf"
+        },
+        {
+          "name": "WPA Approved Amendments May 2026",
+          "last_modified": "2026-08-31",
+          "size": "775.79 KB",
+          "size_bytes": 794406,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/aca3f617-e7a8-4908-b6a6-abb04ccd97a5/57504120417070726f76656420416d656e646d656e74735f4d61792032303236.pdf"
+        },
+        {
+          "name": "World Para Athletics Rules and Regulations September 2026",
+          "last_modified": "2026-08-31",
+          "size": "13.55 MB",
+          "size_bytes": 14205203,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/38caccf4-03f5-4d90-a424-3bbdc1d59222/576f726c642050617261204174686c65746963732052756c657320616e6420526567756c6174696f6e732053657074656d62.pdf"
+        }
+      ]
+    },
+    {
+      "path": "Officials Resources / Rules, Records and Interpretations / New Zealand Record Application Forms",
+      "top_level_folder": "Officials Resources",
+      "folder_id": "e585db1a-31c9-4e55-ae44-4cdb8af1cd07",
+      "url": "https://athleticsnz.elearning.worldathletics.org/library/e585db1a-31c9-4e55-ae44-4cdb8af1cd07",
+      "file_count": 4,
+      "files": [
+        {
+          "name": "Track Form",
+          "last_modified": "2026-05-20",
+          "size": "227.76 KB",
+          "size_bytes": 233226,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/343b790a-f946-4e86-b42b-812fd014b40c/545241434b5f5265636f7264417070.pdf"
+        },
+        {
+          "name": "Field Form",
+          "last_modified": "2026-05-20",
+          "size": "227.94 KB",
+          "size_bytes": 233415,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/150e1af8-103b-49ea-b0e1-131fcf372592/4649454c445f5265636f7264417070.pdf"
+        },
+        {
+          "name": "Combined Event Form",
+          "last_modified": "2026-05-20",
+          "size": "215.08 KB",
+          "size_bytes": 220244,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/4de6117d-de5e-41ab-8edc-4a86c8a7b816/434f4d42494e45445f5265636f7264417070.pdf"
+        },
+        {
+          "name": "Road Form",
+          "last_modified": "2026-05-20",
+          "size": "239.27 KB",
+          "size_bytes": 245011,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/7d392adc-d279-4cff-b69c-e2bdc6c9af39/524f41445f5265636f7264417070.pdf"
+        }
+      ]
+    },
+    {
+      "path": "Officials Resources / General Resources",
+      "top_level_folder": "Officials Resources",
+      "folder_id": "66bc9745-d8e4-428d-bfe9-31ba12724527",
+      "url": "https://athleticsnz.elearning.worldathletics.org/library/66bc9745-d8e4-428d-bfe9-31ba12724527",
+      "file_count": 12,
+      "files": [
+        {
+          "name": "Accident Report",
+          "last_modified": "2026-05-20",
+          "size": "440.23 KB",
+          "size_bytes": 450798,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/e52f085d-bdbf-4890-a2f1-cc9b13b77c12/312e2d4163636964656e742d5265706f7274.pdf"
+        },
+        {
+          "name": "Jury of Appeal Form",
+          "last_modified": "2026-05-20",
+          "size": "149.52 KB",
+          "size_bytes": 153110,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/8d7611ef-7a9b-47d3-874a-c1e8dee7ae29/322e2d4a7572792d6f662d41707065616c2d466f726d.pdf"
+        },
+        {
+          "name": "Incident Report",
+          "last_modified": "2026-05-20",
+          "size": "660.13 KB",
+          "size_bytes": 675974,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/e68da5c2-4afe-4798-ae09-0bcca25cdacb/332e2d496e636964656e742d5265706f72742d30372d3230323020283129.pdf"
+        },
+        {
+          "name": "Referee Incidents Notes",
+          "last_modified": "2026-05-20",
+          "size": "488.06 KB",
+          "size_bytes": 499772,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/89a7f60d-8c4a-456b-b818-917fd075cd74/352e2d526566657265652d496e636964656e742d4e6f7465732d30372d3230323020283129.pdf"
+        },
+        {
+          "name": "Protest to the Referee and appeal to the Jury guidelines",
+          "last_modified": "2026-05-20",
+          "size": "412.47 KB",
+          "size_bytes": 422374,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/d69f4a21-819e-48c1-99f0-334a8afcb200/362e2d50726f74657374732d616e642d41707065616c732d47756964656c696e6573.pdf"
+        },
+        {
+          "name": "Radio List",
+          "last_modified": "2026-05-20",
+          "size": "672.12 KB",
+          "size_bytes": 688247,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/faa91811-8967-428a-9102-962da679c337/372e2d414e5a2d526164696f2d4c6973742d30372d32303230.pdf"
+        },
+        {
+          "name": "Officials Protocols",
+          "last_modified": "2026-05-20",
+          "size": "178.72 KB",
+          "size_bytes": 183007,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/e33e2a0e-0282-4d2b-932e-a842ff4abd78/4f6666696369616c732050726f746f636f6c73.pdf"
+        },
+        {
+          "name": "Seven qualities of a good official",
+          "last_modified": "2026-05-20",
+          "size": "84.32 KB",
+          "size_bytes": 86346,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/aa9abf09-0399-4cac-b15c-97ebeee6eb19/392e2d536576656e2d5175616c69746965732d6f662d612d476f6f642d4f6666696369616c.pdf"
+        },
+        {
+          "name": "Practical Experience Card",
+          "last_modified": "2026-05-20",
+          "size": "565.7 KB",
+          "size_bytes": 579273,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/3d9c2514-efa9-4bc0-988f-eaf7faa7ac19/31302e2d50726163746963616c2d50726f66696369656e63792d526571756972656d656e74732d30372d3230323020283129.pdf"
+        },
+        {
+          "name": "Notes for Guidance - Track & Field Events",
+          "last_modified": "2026-05-20",
+          "size": "4.79 MB",
+          "size_bytes": 5019931,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/4e890df0-aaca-4d8c-b706-c1b7609cbb39/31312e2d4174686c65746963732d4e5a2d4e6f7465732d466f722d47756964616e63652d5374616469756d2d4a616e756172.pdf"
+        },
+        {
+          "name": "ANZ Practical Guidelines for Officials Working with Children",
+          "last_modified": "2026-05-20",
+          "size": "207.54 KB",
+          "size_bytes": 212517,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/51cc361f-9484-4ed3-9ec8-6d17afa7e85c/414e5a2d50726163746963616c2d47756964656c696e65732d666f722d6f6666696369616c732d776f726b696e672d776974.pdf"
+        },
+        {
+          "name": "Verbal Protest form 01/25",
+          "last_modified": "2026-05-20",
+          "size": "167.04 KB",
+          "size_bytes": 171050,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/6f46f5a7-a90c-43c7-b9b8-25e221cffd12/56657262616c2050726f74657374204e6f74696669636174696f6e20466f726d2032303235.pdf"
+        }
+      ]
+    },
+    {
+      "path": "Officials Resources / Track Resources",
+      "top_level_folder": "Officials Resources",
+      "folder_id": "40078014-a552-45a9-ac42-1d1a36740ee8",
+      "url": "https://athleticsnz.elearning.worldathletics.org/library/40078014-a552-45a9-ac42-1d1a36740ee8",
+      "file_count": 19,
+      "files": [
+        {
+          "name": "Track Umpires (TEAM)",
+          "last_modified": "2026-05-20",
+          "size": "1.99 MB",
+          "size_bytes": 2083215,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/ec6131eb-680a-46f2-82d2-06fcb8581e00/312e2d547261636b2d556d70697265732d5465616d2d6f662d4f6666696369616c732d30372d32303230.pdf"
+        },
+        {
+          "name": "Track Umpires (POSITIONS)",
+          "last_modified": "2026-05-20",
+          "size": "905.64 KB",
+          "size_bytes": 927379,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/93aae324-d42f-4949-b920-305e17f6c188/322e2d547261636b2d556d70697265732d506f736974696f6e2d416c6c6f636174696f6e732d30372d32303230.pdf"
+        },
+        {
+          "name": "2000m - Outside Steeple Lap scoring",
+          "last_modified": "2026-05-20",
+          "size": "361.22 KB",
+          "size_bytes": 369886,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/da3f32fe-31e5-4359-b374-f0adce84ca01/352e2d323030306d2d53746565706c652d4c61702d53636f72696e672d53686565742d6f7574736964652d6a756d702d3037.pdf"
+        },
+        {
+          "name": "2000m - Inside Steeple Lap scoring",
+          "last_modified": "2026-05-20",
+          "size": "363.01 KB",
+          "size_bytes": 371720,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/09ae0cbb-1869-4b2a-bdb9-ef2f36ab0b44/362e2d323030306d2d53746565706c652d4c61702d53636f72696e672d53686565742d496e736964652d6a756d702d30372d.pdf"
+        },
+        {
+          "name": "3000m - Lap scoring sheet",
+          "last_modified": "2026-05-20",
+          "size": "364.88 KB",
+          "size_bytes": 373641,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/aef38c3c-0a1f-4281-b983-9d6dac221ceb/372e2d333030306d2d4c61702d53636f72696e672d53686565742d30372d32303230.pdf"
+        },
+        {
+          "name": "3000m Steeple lap scoring",
+          "last_modified": "2026-05-20",
+          "size": "365.07 KB",
+          "size_bytes": 373833,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/7fd84ee6-d724-4c75-9132-e979d0d6bf4a/382e2d333030306d2d53746565706c652d4c61702d5363636f72696e672d53686565742d30372d32303230.pdf"
+        },
+        {
+          "name": "5000m - Lap scoring sheet",
+          "last_modified": "2026-05-20",
+          "size": "370.62 KB",
+          "size_bytes": 379516,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/7c3fc639-2ee2-4554-b018-d97e6b9edf5e/392e2d353030306d2d4c61702d53636f72696e672d73686565742d30372d32303230.pdf"
+        },
+        {
+          "name": "Steeplechase information",
+          "last_modified": "2026-05-20",
+          "size": "276.03 KB",
+          "size_bytes": 282658,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/c6583241-594f-41d0-98f1-11d290e474a3/53746565706c6563686173652d496e666f726d6174696f6e.pdf"
+        },
+        {
+          "name": "10000m - Lap scoring sheet",
+          "last_modified": "2026-05-20",
+          "size": "374.75 KB",
+          "size_bytes": 383746,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/3b2b5daa-0575-4506-bc4a-6ac3a18cdd37/31312e2d31303030306d2d4c61702d53636f72696e672d73686565742d30372d32303230.pdf"
+        },
+        {
+          "name": "Multiple distance lap scoring sheet",
+          "last_modified": "2026-05-20",
+          "size": "375.54 KB",
+          "size_bytes": 384551,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/20555393-9414-4450-bf41-ca7f0d8297a1/31322e2d4c61702d53636f72696e672d5368656574732d4d756c74692d30372d32303230.pdf"
+        },
+        {
+          "name": "Chief Timekeeper Records",
+          "last_modified": "2026-05-20",
+          "size": "539.21 KB",
+          "size_bytes": 552154,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/0c0e8719-80db-4946-8e8f-a39b050e1a3d/31332e2d43686965662d54696d656b6565706572732d5265636f72642d30372d32303230.pdf"
+        },
+        {
+          "name": "4 x 400m - Relay Tracking Form",
+          "last_modified": "2026-05-20",
+          "size": "779.76 KB",
+          "size_bytes": 798477,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/81d9a73e-019a-449e-a903-a379eda4c548/31342e2d342d782d3430306d2d52656c61792d547261636b696e672d466f726d2d30372d32303230.pdf"
+        },
+        {
+          "name": "4x100m - Relay Guidelines",
+          "last_modified": "2026-05-20",
+          "size": "579.19 KB",
+          "size_bytes": 593089,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/30f0201c-13d7-4d5b-b54a-49af5d3f7420/31352e2d342d782d3130306d2d52656c61792d50726f636573732d30372d32303230.pdf"
+        },
+        {
+          "name": "4 x 400m - Relay Guidelines",
+          "last_modified": "2026-05-20",
+          "size": "512.73 KB",
+          "size_bytes": 525037,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/9030137a-bda6-43ba-9152-ff963ea63370/31362e2d342d782d3430306d2d52656c6179732d50726f636573732d30372d32303230.pdf"
+        },
+        {
+          "name": "Track Implement Layout",
+          "last_modified": "2026-05-20",
+          "size": "45.22 KB",
+          "size_bytes": 46305,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/e5b4e210-8336-4c5b-b26f-baeb43222492/547261636b2d496d706c656d656e742d4c61796f7574.pdf"
+        },
+        {
+          "name": "Track Umpire Report WPA Relay 01/25",
+          "last_modified": "2026-05-20",
+          "size": "238.32 KB",
+          "size_bytes": 244038,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/88b3bfde-991b-411c-a033-3709bb5f6c8c/756d70697265735265706f7274466f726d5f52656c61797328575041295f4d61792032303234.pdf"
+        },
+        {
+          "name": "Umpire Report WPA Individual 01/25",
+          "last_modified": "2026-05-20",
+          "size": "211.38 KB",
+          "size_bytes": 216449,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/edda9478-1be9-48fa-82bc-8c8cf92d0579/756d70697265735265706f7274466f726d5f496e646976696475616c28575041295f4174686c65746963734e6577205a6561.pdf"
+        },
+        {
+          "name": "WA Umpire Report Form Relay ANZ Jan 26",
+          "last_modified": "2026-05-20",
+          "size": "154.5 KB",
+          "size_bytes": 158208,
+          "file_type": "doc",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/39aaa5f6-1de7-4ae9-a918-cffcd1512215/574120556d70697265735265706f7274466f726d5f52656c61795f204174686c6574696373204e6577205a65616c616e6420.doc"
+        },
+        {
+          "name": "WA Umpires Report Form ANZ Jan 26",
+          "last_modified": "2026-05-20",
+          "size": "156 KB",
+          "size_bytes": 159744,
+          "file_type": "doc",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/e9c0b605-61bd-477c-ae5d-a6e9307aab44/574120556d70697265735265706f7274466f726d5f496e646976696475616c5f204174686c6574696373204e6577205a6561.doc"
+        }
+      ]
+    },
+    {
+      "path": "Officials Resources / Race Walking",
+      "top_level_folder": "Officials Resources",
+      "folder_id": "ca207b07-b8fd-4375-b986-2490bd16e7cc",
+      "url": "https://athleticsnz.elearning.worldathletics.org/library/ca207b07-b8fd-4375-b986-2490bd16e7cc",
+      "file_count": 9,
+      "files": [
+        {
+          "name": "Race Walking Judges Card",
+          "last_modified": "2026-05-20",
+          "size": "683.58 KB",
+          "size_bytes": 699986,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/15d883db-de76-4d7e-bbc4-8514da49297c/312e2d524143452d57414c4b494e472d4a55444745532d5245434f52442d434152442d30372d32303230.pdf"
+        },
+        {
+          "name": "Race Walking Judges Red Card",
+          "last_modified": "2026-05-20",
+          "size": "1.01 MB",
+          "size_bytes": 1057552,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/8cdc0f69-3a32-41f1-a881-6cde8996f4f0/332e2d524143452d57414c4b494e472d5245442d434152442d32303230.pdf"
+        },
+        {
+          "name": "Race Walking Judges Summary",
+          "last_modified": "2026-05-20",
+          "size": "945.22 KB",
+          "size_bytes": 967905,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/387be17d-2fc8-4771-b3ba-4d091f406ec9/526163652d57616c6b696e672d4a75646765732d53756d6d6172792d53686565742d4133.pdf"
+        },
+        {
+          "name": "Penalty Zone Recording Sheet",
+          "last_modified": "2026-05-20",
+          "size": "101.89 KB",
+          "size_bytes": 104334,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/1ada38b9-c924-4455-8b1b-ab6b5bb5adb9/50656e616c74792d5a6f6e652d5265636f7264696e672d7368656574.pdf"
+        },
+        {
+          "name": "Chief Judge DQ - Rule 54.4.1",
+          "last_modified": "2026-05-20",
+          "size": "98.97 KB",
+          "size_bytes": 101350,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/b44ba03d-ce70-4841-8642-7c4d5ed9b21f/43686965662d4a756467652d44512d35342e342e31.pdf"
+        },
+        {
+          "name": "Penalty Zone",
+          "last_modified": "2026-05-20",
+          "size": "181.89 KB",
+          "size_bytes": 186260,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/515eff10-35d9-4486-add7-434cd25cdb49/50656e616c74792d5a6f6e65.pdf"
+        },
+        {
+          "name": "10KM - Race Walk Lap Scoring Sheet",
+          "last_modified": "2026-05-20",
+          "size": "327.25 KB",
+          "size_bytes": 335106,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/103a07ec-eb4a-4e4c-97b2-656906178b31/352e2d31304b6d2d57616c6b2d4c61702d53636f72696e672d73686565742d314b6d2d6c6f6f702d30372d32303230.pdf"
+        },
+        {
+          "name": "20KM - Race Walk Lap Scoring Sheet",
+          "last_modified": "2026-05-20",
+          "size": "373.74 KB",
+          "size_bytes": 382707,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/ab597439-5eea-459b-b367-da1858da1365/362e2d32304b6d2d57616c6b2d4c61702d53636f72696e672d73686565742d314b6d2d6c6f6f702d30372d32303230.pdf"
+        },
+        {
+          "name": "50KM - Race Walk Lap Scoring Sheet",
+          "last_modified": "2026-05-20",
+          "size": "374.7 KB",
+          "size_bytes": 383694,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/5af1ca5b-3d3a-45b6-bb4c-5046d36cb01f/372e2d35304b6d2d57616c6b2d4c61702d53636f72696e672d73686565742d314b6d2d6c6f6f702d30372d32303230.pdf"
+        }
+      ]
+    },
+    {
+      "path": "Officials Resources / Field Events",
+      "top_level_folder": "Officials Resources",
+      "folder_id": "13efeb32-fa1d-45c1-b87f-0102847bb834",
+      "url": "https://athleticsnz.elearning.worldathletics.org/library/13efeb32-fa1d-45c1-b87f-0102847bb834",
+      "file_count": 21,
+      "files": [
+        {
+          "name": "Chief Judges Procedures",
+          "last_modified": "2026-05-20",
+          "size": "166.66 KB",
+          "size_bytes": 170662,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/91bdcf39-cc41-4a8b-93ca-ec6d022b7373/312e2d43686965662d4a75646765732d50726f63656475726573.pdf"
+        },
+        {
+          "name": "Resolving ties",
+          "last_modified": "2026-05-20",
+          "size": "166.86 KB",
+          "size_bytes": 170860,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/db34f54d-10b0-4114-a39d-2644093317a8/322e2d5265736f6c76696e672d546965732d696e2d4669656c642d4576656e7473.pdf"
+        },
+        {
+          "name": "Chief judges briefing - High Jump",
+          "last_modified": "2026-05-20",
+          "size": "153.35 KB",
+          "size_bytes": 157033,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/af1fa30e-9813-4d2d-b867-b29c56eb5195/43686965662d4a756467652d4272696566696e672d484947482d4a554d50763231.pdf"
+        },
+        {
+          "name": "Chief judges briefing - Pole Vault",
+          "last_modified": "2026-05-20",
+          "size": "155.82 KB",
+          "size_bytes": 159561,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/04c06c2f-2fc6-4318-bb99-1805d929371e/43686965662d4a756467652d4272696566696e672d504f4c452d5641554c542d763231.pdf"
+        },
+        {
+          "name": "Chief judges briefing - Horizontal Jumps",
+          "last_modified": "2026-05-20",
+          "size": "166.43 KB",
+          "size_bytes": 170421,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/c9f12dec-1218-44c8-94c5-643c19629e69/43686965662d4a756467652d4272696566696e672d484f52495a4f4e54414c2d4a554d5053763231.pdf"
+        },
+        {
+          "name": "Cheif judges briefing - Throws",
+          "last_modified": "2026-05-20",
+          "size": "163.82 KB",
+          "size_bytes": 167747,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/ec7e80c3-fc1c-417a-b5b6-64df6741408f/43686965662d4a756467652d4272696566696e672d5448524f57532d763231.pdf"
+        },
+        {
+          "name": "Vertical Jumps Recording Sheet",
+          "last_modified": "2026-05-20",
+          "size": "324.01 KB",
+          "size_bytes": 331786,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/937ed313-d721-48fe-beb9-99ca01f833b8/372e2d566572746963616c2d4a756d70732d5265636f7264696e672d536865657420283129.pdf"
+        },
+        {
+          "name": "Field Recording Sheet",
+          "last_modified": "2026-05-20",
+          "size": "113.26 KB",
+          "size_bytes": 115978,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/9c74a5c0-60ea-49b5-a207-99b2ddcba49d/47656e657269632d5265636f7264696e672d53686565742d5468726f77732d486f72697a6f6e74616c2d4a756d7073202831.pdf"
+        },
+        {
+          "name": "Shotput Team of Officials",
+          "last_modified": "2026-05-20",
+          "size": "164.05 KB",
+          "size_bytes": 167992,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/b2224658-2ba7-4a72-9498-fb686482de8e/4669656c642d4a75646765732d5465616d2d6f662d4f6666696369616c732d53686f742d507574.pdf"
+        },
+        {
+          "name": "Discus Team of Officials",
+          "last_modified": "2026-05-20",
+          "size": "649.36 KB",
+          "size_bytes": 664945,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/1f127cfa-6a51-4884-9f67-ac88c9c3bce6/392e2d4469736375732d5465616d2d6f662d4f6666696369616c73.pdf"
+        },
+        {
+          "name": "Hammer Team of Officials",
+          "last_modified": "2026-05-20",
+          "size": "683.08 KB",
+          "size_bytes": 699474,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/d0d35ea9-de66-4a07-89ed-ea2dcc19029c/31302e2d48616d6d65722d5465616d2d6f662d4f6666696369616c73.pdf"
+        },
+        {
+          "name": "High Jump Team of Officials",
+          "last_modified": "2026-05-20",
+          "size": "164.27 KB",
+          "size_bytes": 168209,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/6f41a2d4-3ae5-4dac-9249-edc875f44312/31312e2d486967682d4a756d702d5465616d2d6f662d4f6666696369616c73.pdf"
+        },
+        {
+          "name": "Javelin Team of Officials",
+          "last_modified": "2026-05-20",
+          "size": "283.63 KB",
+          "size_bytes": 290433,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/59b8c328-7cb6-443e-bc5d-d8083bb56bac/31322e2d4a6176656c696e2d5465616d2d6f662d4f6666696369616c73.pdf"
+        },
+        {
+          "name": "Long Jump Team of Officials",
+          "last_modified": "2026-05-20",
+          "size": "314.41 KB",
+          "size_bytes": 321959,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/65c69349-4241-43ef-a060-c1acffb63dba/31332e2d4c6f6e672d4a756d702d5465616d2d6f662d4f6666696369616c73.pdf"
+        },
+        {
+          "name": "Pole Vault - Team of Officials",
+          "last_modified": "2026-05-20",
+          "size": "395.78 KB",
+          "size_bytes": 405279,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/0d143fa4-d858-4ce2-95ce-9be774f223c6/31342e2d506f6c652d5661756c742d5465616d2d6f662d4f6666696369616c73.pdf"
+        },
+        {
+          "name": "Triple Jump Team of Officials",
+          "last_modified": "2026-05-20",
+          "size": "319.95 KB",
+          "size_bytes": 327625,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/5dd5d662-253b-4d81-b533-f180f7be10c4/31352e2d547269706c652d4a756d702d5465616d2d6f662d4f6666696369616c73.pdf"
+        },
+        {
+          "name": "Field Recording Tips",
+          "last_modified": "2026-05-20",
+          "size": "484.45 KB",
+          "size_bytes": 496072,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/286b95e8-5e32-4ffa-8177-625d7189add3/4669656c642d5265636f7264696e672d54697073.pdf"
+        },
+        {
+          "name": "Private Implement Certification - Javelin 11 - 2025",
+          "last_modified": "2026-05-20",
+          "size": "131 KB",
+          "size_bytes": 134142,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/d58b2ee2-ad18-456c-bd77-0e50b1b9ed1a/5072697661746520496d706c656d656e742043657274696669636174696f6e202d204a6176656c696e2031312d32303235.pdf"
+        },
+        {
+          "name": "Private-Implement-Certification-Shot-Put",
+          "last_modified": "2026-05-20",
+          "size": "52.97 KB",
+          "size_bytes": 54243,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/960af899-0234-490a-971e-67be9e962b85/507269766174652d496d706c656d656e742d43657274696669636174696f6e2d53686f742d507574.pdf"
+        },
+        {
+          "name": "Private-Implement-Certification-Discus.",
+          "last_modified": "2026-05-20",
+          "size": "53.52 KB",
+          "size_bytes": 54803,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/a5f09e34-cdfe-4348-917f-1aa6a8a7d572/507269766174652d496d706c656d656e742d43657274696669636174696f6e2d446973637573.pdf"
+        },
+        {
+          "name": "Private-Implement-Certification-Hammer",
+          "last_modified": "2026-05-20",
+          "size": "54.45 KB",
+          "size_bytes": 55759,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/ead7bbbf-d606-4606-87bf-b82d8f624410/507269766174652d496d706c656d656e742d43657274696669636174696f6e2d48616d6d6572.pdf"
+        }
+      ]
+    },
+    {
+      "path": "Officials Resources / Out of Stadia",
+      "top_level_folder": "Officials Resources",
+      "folder_id": "5e03c763-b6f7-4426-975f-9b45886c25d9",
+      "url": "https://athleticsnz.elearning.worldathletics.org/library/5e03c763-b6f7-4426-975f-9b45886c25d9",
+      "file_count": 2,
+      "files": [
+        {
+          "name": "Out of Stadia Umpire Report Form 01/25",
+          "last_modified": "2026-05-20",
+          "size": "188.92 KB",
+          "size_bytes": 193458,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/14b33d53-f11a-4a3c-a966-5995cd5aabfe/756d70697265735265706f7274466f726d5f4f75744f665374616469615f4d61792032303234.pdf"
+        },
+        {
+          "name": "Out of Stadia Notes for Guidance",
+          "last_modified": "2026-05-20",
+          "size": "4.14 MB",
+          "size_bytes": 4336879,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/9c2b6b10-6eee-47f7-bc3b-740b57a35b6f/31322e2d4174686c65746963732d4e5a2d4e6f7465732d666f722d47756964616e63652d4e6f6e2d5374616469612d4a616e.pdf"
+        }
+      ]
+    },
+    {
+      "path": "Officials Resources / Equipment",
+      "top_level_folder": "Officials Resources",
+      "folder_id": "2fd10b36-b602-40b2-ac98-dbb9fb8877e1",
+      "url": "https://athleticsnz.elearning.worldathletics.org/library/2fd10b36-b602-40b2-ac98-dbb9fb8877e1",
+      "file_count": 9,
+      "files": [
+        {
+          "name": "Childrens Hurdles, Implements",
+          "last_modified": "2026-05-20",
+          "size": "165.28 KB",
+          "size_bytes": 169250,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/62831f1a-58f3-48b2-9fb2-05955a19648f/312e2d4368696c6472656e732d487572646c65732d496d706c656d656e742d576569676874732d5265666572656e6365.pdf"
+        },
+        {
+          "name": "Equipment specifications 02/25",
+          "last_modified": "2026-05-20",
+          "size": "210.28 KB",
+          "size_bytes": 215329,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/234a2c36-f90d-4791-8b37-68a239236948/45717569706d656e742d73706563696669636174696f6e732d46656272756172792032303235.pdf"
+        },
+        {
+          "name": "NI & SI Schools Hurdles nad Implements Specifications",
+          "last_modified": "2026-05-20",
+          "size": "194.31 KB",
+          "size_bytes": 198970,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/78d2e4df-7eb8-4ded-b750-5bc40892e091/4e6f7274682d536f7574682d49736c616e642d4e5a535341412d487572646c65732d53746565706c6563686173652d496d70.pdf"
+        },
+        {
+          "name": "NI & SI Schools Para Implements",
+          "last_modified": "2026-05-20",
+          "size": "174.22 KB",
+          "size_bytes": 178397,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/0e6bcadf-9e48-44df-9859-cf18a47b5393/4e6f7274682d536f7574682d49736c616e642d4e5a535341412d506172612d4174686c6574652d496d706c656d656e742d57.pdf"
+        },
+        {
+          "name": "NZSSAA Hurdles and Implements Specifications",
+          "last_modified": "2026-05-20",
+          "size": "179.52 KB",
+          "size_bytes": 183827,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/39b5c5c3-19b9-42b5-b581-c350a1dca5e2/4e5a535341412d487572646c65732d53746565706c6563686173652d496d706c656d656e742d576569676874732d52656665.pdf"
+        },
+        {
+          "name": "NZSSAA Para Implements Specifications",
+          "last_modified": "2026-05-20",
+          "size": "173.62 KB",
+          "size_bytes": 177786,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/d629b064-6d0c-479d-b118-dfb16efffc2e/4e5a535341412d506172612d4174686c6574652d496d706c656d656e742d576569676874732d5265666572656e6365.pdf"
+        },
+        {
+          "name": "Non Stadia Equipment Checklist",
+          "last_modified": "2026-05-20",
+          "size": "133.02 KB",
+          "size_bytes": 136215,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/3e136041-24ef-4762-972e-37185a26bc57/4e6f6e2d5374616469612d546563686e6963616c2d466163696c69746965732d616e642d45717569706d656e742d43686563.pdf"
+        },
+        {
+          "name": "Technical Implement check form",
+          "last_modified": "2026-05-20",
+          "size": "191.96 KB",
+          "size_bytes": 196571,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/554fbdb0-9695-453c-a5bc-51feb9811753/546563686e6963616c2d496d706c656d656e74732d5265706f7274.pdf"
+        },
+        {
+          "name": "Private Implement Lodgement Sheet",
+          "last_modified": "2026-05-20",
+          "size": "32.48 KB",
+          "size_bytes": 33263,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/9403c23d-5264-475a-abee-baf0565799fb/507269766174652d496d706c656d656e742d4c6f6467656d656e742d5368656574.pdf"
+        }
+      ]
+    },
+    {
+      "path": "Officials Resources / Call Room",
+      "top_level_folder": "Officials Resources",
+      "folder_id": "59c4f520-c5dd-457e-86e3-fb1818741515",
+      "url": "https://athleticsnz.elearning.worldathletics.org/library/59c4f520-c5dd-457e-86e3-fb1818741515",
+      "file_count": 5,
+      "files": [
+        {
+          "name": "Athlete Only Sign",
+          "last_modified": "2026-05-20",
+          "size": "139.74 KB",
+          "size_bytes": 143090,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/dadc3efa-acf1-45cc-8269-0788bb328d2f/312e2d4174686c6574652d456e7472792d4f6e6c79.pdf"
+        },
+        {
+          "name": "Banned Items Sign",
+          "last_modified": "2026-05-20",
+          "size": "933.51 KB",
+          "size_bytes": 955913,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/f5336e0a-e9df-43fc-96c9-f292fca60879/322e2d42616e6e65642d4974656d73.pdf"
+        },
+        {
+          "name": "Bay Signs",
+          "last_modified": "2026-05-20",
+          "size": "130.73 KB",
+          "size_bytes": 133863,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/1803a4d0-ca06-4d0c-b260-212596b1bade/332e2d43616c6c2d4261792d312d322d332d342d352d36.pdf"
+        },
+        {
+          "name": "Call Room Receipts",
+          "last_modified": "2026-05-20",
+          "size": "286.03 KB",
+          "size_bytes": 292894,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/bf2df39b-f334-48e3-90a0-4e992846ca65/342e2d43616c6c2d526f6f6d2d4174686c6574652d52656365697074732d312d322d332d342d352d36.pdf"
+        },
+        {
+          "name": "Entering Field of Play",
+          "last_modified": "2026-05-20",
+          "size": "135.77 KB",
+          "size_bytes": 139033,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/c5fe1410-8243-482e-ade8-61b2bea83bb3/352e2d456e746572696e672d4669656c642d6f662d506c6179.pdf"
+        }
+      ]
+    },
+    {
+      "path": "Officials Resources / Nationals 26 Briefing",
+      "top_level_folder": "Officials Resources",
+      "folder_id": "794ec85d-3cfb-4026-8304-7f446f5793d8",
+      "url": "https://athleticsnz.elearning.worldathletics.org/library/794ec85d-3cfb-4026-8304-7f446f5793d8",
+      "file_count": 1,
+      "files": [
+        {
+          "name": "Officials Briefing 3rd March 2026",
+          "last_modified": "2026-05-20",
+          "size": "186.93 MB",
+          "size_bytes": 196007334,
+          "file_type": "mp4",
+          "link_type": "folder",
+          "url": "https://athleticsnz.elearning.worldathletics.org/library/794ec85d-3cfb-4026-8304-7f446f5793d8"
+        }
+      ]
+    },
+    {
+      "path": "Club Newsletters",
+      "top_level_folder": "Club Newsletters",
+      "folder_id": "6b42127d-fe8c-42d7-bdeb-c43a99c888c4",
+      "url": "https://athleticsnz.elearning.worldathletics.org/library/6b42127d-fe8c-42d7-bdeb-c43a99c888c4",
+      "file_count": 2,
+      "files": [
+        {
+          "name": "April Club Newsletter 2025",
+          "last_modified": "2026-05-20",
+          "size": "5.16 MB",
+          "size_bytes": 5410947,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/70e26fa5-d67a-4730-b553-c87318975116/436c7562204e6577736c6574746572202d20417072696c.pdf"
+        },
+        {
+          "name": "May Club Newsletter 2025",
+          "last_modified": "2026-05-20",
+          "size": "9.18 MB",
+          "size_bytes": 9630184,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/ab79e2c0-462d-47b1-9c5d-376d49954195/436c7562204e6577736c6574746572202d204d6179.pdf"
+        }
+      ]
+    },
+    {
+      "path": "Club Newsletters / Articles linked in newsletters",
+      "top_level_folder": "Club Newsletters",
+      "folder_id": "34c3b796-c8ff-4b30-82e4-8ff045f1644d",
+      "url": "https://athleticsnz.elearning.worldathletics.org/library/34c3b796-c8ff-4b30-82e4-8ff045f1644d",
+      "file_count": 3,
+      "files": [
+        {
+          "name": "The State of Youth Sport Research Infographic",
+          "last_modified": "2026-06-23",
+          "size": "426.3 KB",
+          "size_bytes": 436528,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/a52620c7-c4da-45af-be2e-c06ef62b059f/546865205374617465206f6620596f7574682053706f727420526573656172636820496e666f67726170686963.pdf"
+        },
+        {
+          "name": "What First Time Participants Are Telling Us",
+          "last_modified": "2026-06-24",
+          "size": "4.02 MB",
+          "size_bytes": 4211564,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/32231570-08b4-40a5-9780-8889efee1839/564f50203230323620536e617073686f7473206f6620496e736967687473202d20576861742046697273742054696d652050.pdf"
+        },
+        {
+          "name": "Shifting Motivations of Participants",
+          "last_modified": "2026-06-24",
+          "size": "320.84 KB",
+          "size_bytes": 328542,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/67fcbcea-281c-4493-b2f9-7fe0eb58a500/564f50203230323620536e617073686f7473206f6620496e736967687473202d205368696674696e67204d6f746976617469.pdf"
+        }
+      ]
+    },
+    {
+      "path": "Club Newsletters / Articles linked in newsletters / Club Case Studies",
+      "top_level_folder": "Club Newsletters",
+      "folder_id": "4abe81dc-d99e-48b2-8324-784984ab6d87",
+      "url": "https://athleticsnz.elearning.worldathletics.org/library/4abe81dc-d99e-48b2-8324-784984ab6d87",
+      "file_count": 3,
+      "files": [
+        {
+          "name": "Papamoa Athletics Club",
+          "last_modified": "2026-09-22",
+          "size": "12.24 MB",
+          "size_bytes": 12836795,
+          "file_type": "pptx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/57bf209c-de19-4e4e-b97a-34f5b4735040/506170616d6f61204174686c657469637320436c7562202d2050726573656e746174696f6e20536c69646573204175672032.pptx"
+        },
+        {
+          "name": "Papamoa Athletics Committee Member Manual",
+          "last_modified": "2026-09-22",
+          "size": "2.13 MB",
+          "size_bytes": 2230815,
+          "file_type": "docx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/9812afa1-9997-4b6d-9d62-4ea7c382196b/436f6d6d6974746565204d656d62657220537570706f7274204d616e75616c20323032365f32375f546f207368617265.docx"
+        },
+        {
+          "name": "Papamoa Athletics Health & Safety manual",
+          "last_modified": "2026-09-22",
+          "size": "549.98 KB",
+          "size_bytes": 563179,
+          "file_type": "docx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/e4a2d8d3-762e-417d-a4ef-c2cd790f7efc/50c48170c4816d6f61204174686c6574696320436c7562204865616c746820616e6420536166657479204d616e75616c.docx"
+        }
+      ]
+    }
+  ]
+}
