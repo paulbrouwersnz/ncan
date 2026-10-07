@@ -1,6 +1,6 @@
 BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//Athletics Canterbury Senior Athletics Meets//EN
+PRODID:-//Senior Athletics Meets//EN
 CALSCALE:GREGORIAN
 METHOD:PUBLISH
 X-WR-CALNAME:Teens & senior athletics competition
@@ -384,6 +384,46 @@ DESCRIPTION:New Zealand Secondary Schools Athleti
  cs Championships\, Whanganui (Fri 11 - Sun 13 December)
 URL:https://nzssaa.org.nz/Information/nztf2026
 CATEGORIES:Senior Track and Field
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:porritt-classic-2027@athleticsevents.co.nz
+DTSTAMP:20261007T022531Z
+DTSTART;VALUE=DATE:20270213
+DTEND;VALUE=DATE:20270214
+TRANSP:TRANSPARENT
+SUMMARY:2027 Porritt Classic & NZ U20 3000m Championships
+LOCATION:Porritt Stadium\, 78 Crosby Road\, Chartwell\, Hamilton
+DESCRIPTION:Entries close 11.59pm Sunday 7 February 2027\n\n
+ One of New Zealand’s largest one-day track and field meetin
+ gs\, with a full programme in Hamilton. A World Athletics E Permit meet\
+ , and host of the NZ U20 3000m Championships.\n\nSpectators: adults $10\
+ , under 18 $5\, under 12 free.\n\nStart times were not published when th
+ is was added\, so it is an all-day entry.\n\nMeet website: https://porri
+ ttclassic.co.nz/home
+URL:https://porrittclassic.co.nz/
+CATEGORIES:National Events
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:nz-track-field-champs-2027@athleticsevents.co.nz
+DTSTAMP:20261007T022531Z
+DTSTART;VALUE=DATE:20270311
+DTEND;VALUE=DATE:20270315
+TRANSP:TRANSPARENT
+SUMMARY:2027 NZ Track and Field Championships
+LOCATION:Douglas Track and Field\, The Trusts Arena\, 65 Central Park Dri
+ ve\, Henderson\, Auckland
+DESCRIPTION:The national track and field championships\, 11–14 March 20
+ 27\, at the Douglas Track and Field\, The Trusts Arena\, Waitakere.\n\nT
+ rack Stars returns on 13 March\, pairing national title races with celeb
+ rity events\, music and a festival atmosphere.\n\nEntry information\, en
+ try standards\, the draft programme and spectator tickets were all still
+  to come when this was added.\n\nEvent page: https://athletics.org.nz/ev
+ ent/2027-nz-track-and-field-championships/
+URL:https://athleticsevents.co.nz/event/2027-nz-track-and-field-champions
+ hips/
+CATEGORIES:National Events
 STATUS:CONFIRMED
 END:VEVENT
 END:VCALENDAR

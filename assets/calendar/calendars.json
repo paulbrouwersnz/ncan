@@ -2,7 +2,7 @@
   "calendars": [
     {
       "file": "events-childrens.ics",
-      "name": "Children's athletics competitions",
+      "name": "Children's athletics events",
       "colour": "#da404e"
     },
     {
@@ -22,12 +22,12 @@
     },
     {
       "file": "events-road-xc.ics",
-      "name": "Cross country & road competition",
+      "name": "Cross country & road events",
       "colour": "#89ae37"
     },
     {
       "file": "training-cross-country-road-race-walking.ics",
-      "name": "Cross country, road and race walking coaching",
+      "name": "Cross country, road and race walking training",
       "colour": "#36892f"
     },
     {
@@ -37,17 +37,17 @@
     },
     {
       "file": "training-race-walks-coaching.ics",
-      "name": "Race walks coaching",
+      "name": "Race walks training",
       "colour": "#008f9f"
     },
     {
       "file": "training-sprints-running-race-walking.ics",
-      "name": "Sprints, running and race walking coaching",
+      "name": "Sprints, running and race walking training",
       "colour": "#4385e4"
     },
     {
       "file": "events-senior.ics",
-      "name": "Teens & senior athletics competition",
+      "name": "Teens & senior athletics events",
       "colour": "#7b57c8"
     },
     {
@@ -57,7 +57,7 @@
     },
     {
       "file": "training-the-good-trot.ics",
-      "name": "The Good Trot – adult and teen social intervals",
+      "name": "The Good Trot – adult and teen social training",
       "colour": "#de77ab"
     }
   ]

@@ -3,9 +3,9 @@ VERSION:2.0
 PRODID:-//North Canterbury Athletic Club//sprints-running-race-walking//EN
 CALSCALE:GREGORIAN
 METHOD:PUBLISH
-X-WR-CALNAME:Sprints, running and race walking coaching
+X-WR-CALNAME:Sprints, running and race walking training
 X-WR-TIMEZONE:Pacific/Auckland
-X-WR-CALDESC:Sprints\, running and race walking coaching\, summer season 2
+X-WR-CALDESC:Sprints\, running and race walking training\, summer season 2
  026/27. One session per week\, so you can subscribe to just this one.
 BEGIN:VTIMEZONE
 TZID:Pacific/Auckland
@@ -35,7 +35,7 @@ DTSTAMP:20260913T112932Z
 DTSTART;TZID=Pacific/Auckland:20261005T163000
 DTEND;TZID=Pacific/Auckland:20261005T173000
 RRULE:FREQ=WEEKLY;BYDAY=MO;UNTIL=20270401T120000Z
-SUMMARY:Sprints\, running and race walking coaching
+SUMMARY:Sprints\, running and race walking training
 LOCATION:Ashgrove Park\, Rangiora
 DESCRIPTION:Suitable for ages 10 through to masters athletes.\nPlease
   direct enquiries to Coach Laura Langley, lauralangley14@gmail.com
