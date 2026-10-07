@@ -1,7 +1,7 @@
 {
   "calendars": [
     {
-      "file": "athletics-canterbury-childrens.ics",
+      "file": "events-childrens.ics",
       "name": "Children's athletics competitions",
       "colour": "#da404e"
     },
@@ -16,12 +16,12 @@
       "colour": "#b16f23"
     },
     {
-      "file": "athletics-canterbury-coaching.ics",
+      "file": "events-coaching.ics",
       "name": "Coaching & officials courses",
       "colour": "#d0aa13"
     },
     {
-      "file": "athletics-canterbury-road-xc.ics",
+      "file": "events-road-xc.ics",
       "name": "Cross country & road competition",
       "colour": "#89ae37"
     },
@@ -46,7 +46,7 @@
       "colour": "#4385e4"
     },
     {
-      "file": "athletics-canterbury-senior.ics",
+      "file": "events-senior.ics",
       "name": "Teens & senior athletics competition",
       "colour": "#7b57c8"
     },
