@@ -1,11 +1,11 @@
 BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//North Canterbury Athletic Club//junior-club-night 2026/27//EN
+PRODID:-//North Canterbury Athletic Club//junior-competition-team//EN
 CALSCALE:GREGORIAN
 METHOD:PUBLISH
-X-WR-CALNAME:Children's club night (ages 7–14)
+X-WR-CALNAME:Children's competition team training (ages 7–14)
 X-WR-TIMEZONE:Pacific/Auckland
-X-WR-CALDESC:Junior club night (ages 7–14)\, summer season 2026/27. One 
+X-WR-CALDESC:Junior competition training (ages 7–14)\, summer season. One 
  session per week\, so you can subscribe to just this one.
 BEGIN:VTIMEZONE
 TZID:Pacific/Auckland
@@ -30,7 +30,7 @@ RRULE:FREQ=YEARLY;BYMONTH=4;BYDAY=1SU
 END:STANDARD
 END:VTIMEZONE
 BEGIN:VEVENT
-UID:training-2026-27-junior-club-night@ncan.nz
+UID:training-2026-27-junior-competition-team@ncan.nz
 DTSTAMP:20260913T112932Z
 DTSTART;TZID=Pacific/Auckland:20261006T170000
 DTEND;TZID=Pacific/Auckland:20261006T181500
@@ -41,6 +41,21 @@ DESCRIPTION:Sprints\, distance\, long jump\, high jump\, shot put\, discus
  \, race walking and hurdles\, taught in a fun environment. Parent helpers
   always welcome.\nPlease direct enquiries to the Children's team manager,
   ncanchildrensathletics@gmail.com
+URL:https://www.facebook.com/NorthCanterburyChildrensAthletics/
+END:VEVENT
+BEGIN:VEVENT
+UID:training-2026-27-junior-competition-team-2@ncan.nz
+DTSTAMP:20260913T112932Z
+DTSTART;TZID=Pacific/Auckland:20270105T170000
+DTEND;TZID=Pacific/Auckland:20261006T181500
+RRULE:FREQ=WEEKLY;BYDAY=TU;UNTIL=20270401T120000Z
+SUMMARY:Junior competition team training (ages 7–14)
+LOCATION:Rangiora New Life School field
+DESCRIPTION:Sprints\, distance\, long jump\, high jump\, shot put\, discus
+ \, race walking and hurdles\. Parent helpers always welcome.  Preparation
+  for Colgate Games and Canterbury Championships.\nPlease direct enquiries 
+  to the Children's team manager, ncanchildrensathletics@gmail.com
+URL:https://www.facebook.com/NorthCanterburyChildrensAthletics/
 URL:https://www.facebook.com/NorthCanterburyChildrensAthletics/
 END:VEVENT
 END:VCALENDAR

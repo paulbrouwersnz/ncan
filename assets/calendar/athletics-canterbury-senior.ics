@@ -1,13 +1,13 @@
 BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//Athletics Canterbury 2026-2027 Season//EN
+PRODID:-//Athletics Canterbury Senior Athletics Meets//EN
 CALSCALE:GREGORIAN
 METHOD:PUBLISH
 X-WR-CALNAME:Teens & senior athletics competition
 X-WR-TIMEZONE:Pacific/Auckland
 X-WR-CALDESC:Athletics Canterbury senior interclub and twilight meetings 
- with their track and field programmes\, plus championship meetings\, 202
- 6-27. Built from the AC 2026-2027 Interclub Event Schedule (Pre-Christma
+ with their track and field programmes\, plus championship meetings\, . 
+  Built from the AC Interclub Event Schedule (Pre-Christma
  s) and the Athletics Canterbury events page.
 BEGIN:VTIMEZONE
 TZID:Pacific/Auckland
