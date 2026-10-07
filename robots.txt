@@ -1,0 +1,5 @@
+# https://ncan.nz
+User-agent: *
+Allow: /
+
+Sitemap: https://ncan.nz/sitemap.xml
