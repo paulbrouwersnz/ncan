@@ -225,4 +225,20 @@ URL:https://athleticscanterbury.org.nz/events/mid-south-canterbury-meetin
  g-jubilee-cup/
 STATUS:CONFIRMED
 END:VEVENT
+BEGIN:VEVENT
+UID:ac-winter-prize-giving-2026@athleticscanterbury.org.nz
+DTSTAMP:20261009T000000Z
+DTSTART;TZID=Pacific/Auckland:20261014T193000
+DTEND;TZID=Pacific/Auckland:20261014T210000
+TRANSP:OPAQUE
+SUMMARY:Winter Prize Giving
+LOCATION:Hotel Elms\, 456 Papanui Road\, Christchurch
+DESCRIPTION:Athletics Canterbury celebration of the 2026 cross country an
+ d road season\, with trophies presented and a social evening. Starts 7:3
+ 0pm.
+CATEGORIES:Athletics Canterbury Board
+URL:https://athleticscanterbury.org.nz/events/cross-country-and-road-wint
+ er-prize-giving/
+STATUS:CONFIRMED
+END:VEVENT
 END:VCALENDAR
