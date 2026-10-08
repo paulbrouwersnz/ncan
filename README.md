@@ -1,7 +1,7 @@
 # [North Canterbury Athletic Club Incorporated website](https://ncan.nz/)
 Replacement site for the North Canterbury Athletic Club Incorporated, a track and field and cross country running club based in Rangiora, New Zealand.
 
-Formerly hosted at https://www.sporty.co.nz/northcantathletics/
+Formerly hosted at www.sporty.co.nz/northcantathletics/
 
 ## Intent
 - Modernise the website and make it more mobile-friendly.
