@@ -1,0 +1,25 @@
+{
+    "cSpell.words": [
+        "BYDAY",
+        "BYMONTH",
+        "CALDESC",
+        "CALNAME",
+        "CALSCALE",
+        "CCAA",
+        "DTEND",
+        "DTSTAMP",
+        "DTSTART",
+        "Interclub",
+        "NZDT",
+        "NZST",
+        "PRODID",
+        "RRULE",
+        "TIMEZONE",
+        "TZNAME",
+        "TZOFFSETFROM",
+        "TZOFFSETTO",
+        "VCALENDAR",
+        "VEVENT",
+        "VTIMEZONE"
+    ]
+}
