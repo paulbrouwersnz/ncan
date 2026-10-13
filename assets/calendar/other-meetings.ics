@@ -241,4 +241,15 @@ URL:https://athleticscanterbury.org.nz/events/cross-country-and-road-wint
  er-prize-giving/
 STATUS:CONFIRMED
 END:VEVENT
+BEGIN:VEVENT
+UID:ncan-committee-20261013@ncan.nz
+DTSTAMP:20261011T000000Z
+DTSTART;TZID=Pacific/Auckland:20261013T190000
+DTEND;TZID=Pacific/Auckland:20261013T210000
+TRANSP:OPAQUE
+SUMMARY:NCAN Committee Meeting
+LOCATION:The Brook Bar\, 16 Southbrook Road\, Rangiora
+CATEGORIES:North Canterbury Athletic Club
+STATUS:CONFIRMED
+END:VEVENT
 END:VCALENDAR
