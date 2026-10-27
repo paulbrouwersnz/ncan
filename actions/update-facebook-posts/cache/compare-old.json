@@ -1,5 +1,24 @@
 [
   {
+    "url": "https://www.facebook.com/NorthCanterburyAthleticClub/posts/pfbid0oZkczgWHJN7ssYngDvShSbZc9Sff1k8UVDf66VEb2fCwH6RvoDevEUNc42N69DP3l",
+    "topLevelUrl": "https://www.facebook.com/100064227061348/posts/1535471235270431",
+    "facebookUrl": "https://www.facebook.com/NorthCanterburyAthleticClub/",
+    "timestamp": 1793066541,
+    "text": "Training canceled today due to weather.",
+    "user": {
+      "name": "North Canterbury Athletic Club"
+    },
+    "sharedPost": {
+      "url": "https://www.facebook.com/NorthCanterburyChildrensAthletics/posts/pfbid02u5dRCJs6uCP7cYe1tWticbWXBKqyubYBDJwYm4hhEXJTQ9edBp1K3PFaNZcYfmZnl",
+      "timestamp": 1793066314,
+      "user": {
+        "name": "North Canterbury Children's Athletics",
+        "profileUrl": "https://www.facebook.com/NorthCanterburyChildrensAthletics"
+      },
+      "text": "TRAINING CANCELLED \n\nHi all, due to the rain and wet grounds, our Training for tonight (Tuesday) has been cancelled. Stay dry and keep warm!!"
+    }
+  },
+  {
     "url": "https://www.facebook.com/NorthCanterburyChildrensAthletics/posts/pfbid02u5dRCJs6uCP7cYe1tWticbWXBKqyubYBDJwYm4hhEXJTQ9edBp1K3PFaNZcYfmZnl",
     "topLevelUrl": "https://www.facebook.com/100070118231763/posts/1460866672927260",
     "facebookUrl": "https://www.facebook.com/NorthCanterburyChildrensAthletics/",
@@ -10,32 +29,13 @@
     }
   },
   {
-    "url": "https://www.facebook.com/NorthCanterburyChildrensAthletics/posts/pfbid09HQHCEzLcuJHik9DXNBKeahmk2XvV7GUBsvA1YnzFskPkmeztKTJCuYUUvsmEHF1l",
+    "url": "https://www.facebook.com/NorthCanterburyChildrensAthletics/posts/pfbid02D8qzNuvAUJgdP2binNiApL2PNqqWWaqHtxweMaPcLMRKc9AFNnirfntVJFdDJcNsl",
     "topLevelUrl": "https://www.facebook.com/100070118231763/posts/1460820036265257",
     "facebookUrl": "https://www.facebook.com/NorthCanterburyChildrensAthletics/",
     "timestamp": 1793061790,
     "text": "We are keeping an eye on the weather, watch this space for updates. A decision will be made at 3pm and posted here 🌥☁️🌦",
     "user": {
       "name": "North Canterbury Children's Athletics"
-    }
-  },
-  {
-    "url": "https://www.facebook.com/NorthCanterburyAthleticClub/posts/pfbid0278nwP1aRkn7dbR4m6RYiVNHZaDR2iZD3f9fBdAtMmkudGc8rXqpin1BtDaFxN1gkl",
-    "topLevelUrl": "https://www.facebook.com/100064227061348/posts/1533810865436468",
-    "facebookUrl": "https://www.facebook.com/NorthCanterburyAthleticClub/",
-    "timestamp": 1792924298,
-    "text": "NZ out of stadia championship locations have been updated and now includes 2027, 2028 and 2029.",
-    "user": {
-      "name": "North Canterbury Athletic Club"
-    },
-    "sharedPost": {
-      "url": "https://www.facebook.com/AthleticsNZ/posts/pfbid03VufDeSgfd4xmudrorKhrxD6xKFxVHg8gTciyTHdgZU3Rs9NXzgiR9cqfiSBv3TVl",
-      "timestamp": 1792639890,
-      "user": {
-        "name": "Athletics New Zealand",
-        "profileUrl": "https://www.facebook.com/AthleticsNZ"
-      },
-      "text": "Meet your 2027 New Zealand out of stadia championship venues 🇳🇿 \n\nWe also continue our three year rolling calendar, with the announcement of the host regions for the 2029. \n\nSecure your spot on the start lines in 2027!"
     }
   }
 ]
