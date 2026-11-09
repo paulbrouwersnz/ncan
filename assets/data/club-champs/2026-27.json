@@ -9,8 +9,9 @@
     "place is the athlete's finishing order among North Canterbury athletes in their grade only, not their place in the whole race. Two athletes can share a place.",
     "athlete is the athlete's full name, first name then surname, for example \"Jane Smith\". Spell it the same way every time: points are added up by name, so \"Jane Smith\" and \"Jayne Smith\" count as two different athletes. Capitals and extra spaces do not matter.",
     "mark is optional. Points are worked out by the page from place, using the points list: 1st 10, 2nd 7, 3rd 5, 4th 3, 5th 2, 6th or beyond 1.",
-    "source is the link to that event's official results, for example \"https://athleticscanterbury.anet.live/meets/80064/events/individual/2940361\". Every result should have one. A meeting can also have \"results\", the link to the whole meeting.",
+    "source is the link to that event's official results, for example \"https://athleticscanterbury.anet.live/meets/80064/events/individual/2940361\". Every result should have one. A meeting can also have \"results\", the link to the whole meeting, and \"ncan\", the link to North Canterbury's page for that meeting (the meeting's address + /teams, then North Canterbury).",
     "An athlete who competed but has no mark (ND, NM, DNF) still gets a place: the next North Canterbury place after everyone with a mark, so the only NCAN athlete without a mark behind one placed athlete is 2nd (7 points). Two athletes without marks share that place.",
+    "grades lists athletes whose year on AthleticLIVE is wrong, with their real grade, e.g. \"Stella Brown\": 9. tools/club-champs-results.py uses it in place of AthleticLIVE's year.",
     "If an interclub is cancelled, change that meeting's date to the new one and add a \"note\", for example \"Postponed from 14 November\"."
   ],
   "points": [
@@ -21,6 +22,9 @@
     2,
     1
   ],
+  "grades": {
+    "Stella Brown": 9
+  },
   "meetings": [
     {
       "date": "2026-10-31",
@@ -42,7 +46,8 @@
           "Shot Put"
         ]
       },
-      "results": "https://athleticscanterbury.anet.live/meets/80064"
+      "results": "https://athleticscanterbury.anet.live/meets/80064",
+      "ncan": "https://athleticscanterbury.anet.live/meets/80064/teams/1847208"
     },
     {
       "date": "2026-11-07",
@@ -64,7 +69,8 @@
           "Discus"
         ]
       },
-      "results": "https://athleticscanterbury.anet.live/meets/80234"
+      "results": "https://athleticscanterbury.anet.live/meets/80234",
+      "ncan": "https://athleticscanterbury.anet.live/meets/80234/teams/1855906"
     },
     {
       "date": "2026-11-14",

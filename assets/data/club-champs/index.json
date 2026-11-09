@@ -2,7 +2,8 @@
   "how_to_edit": [
     "The seasons club-champs.html can show, newest first. With no season in the address, the page opens on the newest season whose programme has been entered (at least one Saturday with an event).",
     "To start a new season: copy last season's file (e.g. 2026-27.json) to the new name (e.g. 2027-28.json), change its \"season\" and \"updated\", set \"meetings\" to [] and \"results\" to [], then add the season to the top of the list below. It can go in as early as you like: until its programme is entered in \"meetings\", the page keeps opening on the previous season.",
-    "id is the file name without .json, and what appears in the page address: club-champs.html?season=2026-27. label is how the season is shown on the page."
+    "id is the file name without .json, and what appears in the page address: club-champs.html?season=2026-27. label is how the season is shown on the page.",
+    "To fill in a Saturday's results from AthleticLIVE, run tools/club-champs-results.py with the Saturday and North Canterbury's team page for that meeting (the meeting's address + /teams, then North Canterbury). The top of that file explains it."
   ],
   "seasons": [
     {

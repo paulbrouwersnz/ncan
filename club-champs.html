@@ -889,6 +889,15 @@
             all.title = 'The full meeting on AthleticLIVE';
             head.appendChild(all);
           }
+          if (m.ncan) {
+            // every North Canterbury result that day, championship events or not
+            var ours = text('a', 'records-source champs-day__all', 'NCAN results');
+            ours.href = m.ncan;
+            ours.target = '_blank';
+            ours.rel = 'noopener';
+            ours.title = 'All of North Canterbury’s results at this meeting, on AthleticLIVE. Places there are overall, not among NCAN athletes.';
+            head.appendChild(ours);
+          }
           block.appendChild(head);
           var body = text('div', 'champs-day__body');
           body.appendChild(wrap);
