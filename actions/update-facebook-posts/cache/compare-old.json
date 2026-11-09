@@ -1,6 +1,6 @@
 [
   {
-    "url": "https://www.facebook.com/NorthCanterburyChildrensAthletics/posts/pfbid0WmAmF58DoU78EmNK25mA5HmfrLwB7vdusPCDC2etkcvFho5Qgs8D1PcuPwQELMGil",
+    "url": "https://www.facebook.com/NorthCanterburyChildrensAthletics/posts/pfbid02a8ews6Uqq5kd5BHkfEEeWZrUjV8JrbaTZ4sBvkkDX79ph1a9oWnCG4TvJqQHYw9Wl",
     "topLevelUrl": "https://www.facebook.com/100070118231763/posts/1466479695699291",
     "facebookUrl": "https://www.facebook.com/NorthCanterburyChildrensAthletics/",
     "timestamp": 1793515747,
@@ -21,7 +21,7 @@
       "name": "North Canterbury Children's Athletics"
     },
     "sharedPost": {
-      "url": "https://www.facebook.com/CanterburyChildrensAthleticAssociationInc/posts/pfbid0CRTnj61MUt29EWLuwgpf1G43ymbTLKuEgD97JiqMKPCjSf5b5NqzCk9Zbt3CZaKSl",
+      "url": "https://www.facebook.com/CanterburyChildrensAthleticAssociationInc/posts/pfbid02FnwyM7MyWgf1BS24qKbbcJuXgupiYkWXmfJJSx3HD3EU6VRZJti297tnhz4RoPCHl",
       "timestamp": 1793171724,
       "user": {
         "name": "Canterbury Children's Athletic Association Inc.",
@@ -32,13 +32,22 @@
     }
   },
   {
-    "url": "https://www.facebook.com/NorthCanterburyChildrensAthletics/posts/pfbid0qSyFdakinFyTZhSk3iwcqVhi2j2TiBkZMse5uF2cJLRiNBxLj3JwsfYHU8At3p4El",
-    "topLevelUrl": "https://www.facebook.com/100070118231763/posts/1460866672927260",
-    "facebookUrl": "https://www.facebook.com/NorthCanterburyChildrensAthletics/",
-    "timestamp": 1793066314,
-    "text": "TRAINING CANCELLED \n\nHi all, due to the rain and wet grounds, our Training for tonight (Tuesday) has been cancelled. Stay dry and keep warm!!",
+    "url": "https://www.facebook.com/NorthCanterburyAthleticClub/posts/pfbid0oJae3ykXD3pJWsGaHMdTJacfWeHbPf9KmBdnzpViFfpoT41TJjPmTV33H164F1Qwl",
+    "topLevelUrl": "https://www.facebook.com/100064227061348/posts/1535471235270431",
+    "facebookUrl": "https://www.facebook.com/NorthCanterburyAthleticClub/",
+    "timestamp": 1793066541,
+    "text": "Training canceled today due to weather.",
     "user": {
-      "name": "North Canterbury Children's Athletics"
+      "name": "North Canterbury Athletic Club"
+    },
+    "sharedPost": {
+      "url": "https://www.facebook.com/NorthCanterburyChildrensAthletics/posts/pfbid0qSyFdakinFyTZhSk3iwcqVhi2j2TiBkZMse5uF2cJLRiNBxLj3JwsfYHU8At3p4El",
+      "timestamp": 1793066314,
+      "user": {
+        "name": "North Canterbury Children's Athletics",
+        "profileUrl": "https://www.facebook.com/NorthCanterburyChildrensAthletics"
+      },
+      "text": "TRAINING CANCELLED \n\nHi all, due to the rain and wet grounds, our Training for tonight (Tuesday) has been cancelled. Stay dry and keep warm!!"
     }
   }
 ]
