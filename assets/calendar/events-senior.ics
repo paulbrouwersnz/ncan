@@ -135,31 +135,29 @@ END:VEVENT
 BEGIN:VEVENT
 UID:ac-interclub-05@athleticscanterbury.org.nz
 DTSTAMP:20260913T000000Z
-DTSTART;VALUE=DATE:20261121
-DTEND;VALUE=DATE:20261122
-TRANSP:TRANSPARENT
+DTSTART;TZID=Pacific/Auckland:20261121T090000
+DTEND;TZID=Pacific/Auckland:20261121T123000
+TRANSP:OPAQUE
 SUMMARY:AC Senior Interclub 5 - EARLY START
 LOCATION:Ngā Puna Wai Sports Hub\, Augustine Drive\, Christchurch
 DESCRIPTION:EARLY START — the senior meeting is swapped with CCAA\, who
- se Children's Interclub moves to 2:00pm-5:00pm that day. No senior start
-  time has been published yet\, so this is an all-day placeholder — che
- ck the AC website.\n2 x 100m relay followed by the 100m. *5000m — U20+
-  athletes only.\nTRACK: 2 x 100m relay\, 100m\, 400m\, 1500m\, 3000m\, 5
- 000m*\, Track Walk\, Short hurdles\nFIELD: Long Jump\, High Jump\, Pole 
- Vault\nSprint format (trialled this half-season\, one of three options):
- \n  i.  60m followed by 100m (as in previous seasons)\n  ii. 2 x 100m re
- lay followed by 100m (teams of TWO\, enter on the day)\n  iii. 100m heat
- s followed by 100m final (advise if opting out of the final)\n\nNOTE: me
- eting number (5) inferred from the AC website's sequence — not yet lis
- ted there.\n\nEntries via AthleticNET\; entries close Thursday 11:45pm. 
- Seeded programme and live results on AthleticLIVE.\nFees: all grades $8.
- 50 incl. first event\, $1.50 per additional event (plus AthleticNET fees
- ).\nRelay events can be added to any interclub on request by club / scho
- ol teams.\nProgramme source: AC 2026-2027 Interclub Event Schedule (Draf
- t September 2026).\nhttps://athleticscanterbury.org.nz/wp-content/upload
- s/2026/09/AC-2026-2027-Interclub-Event-Schedule-Pre-Christmas.pdf
+ se Children's Interclub moves to 2:00pm-5:00pm that day. Runs 9:00am-12:
+ 30pm.\n2 x 100m relay followed by the 100m. *5000m — U20+ athletes onl
+ y.\nTRACK: 2 x 100m relay\, 100m\, 400m\, 1500m\, 3000m\, 5000m*\, Track
+  Walk\, Short hurdles\nFIELD: Long Jump\, High Jump\, Pole Vault\nSprint
+  format (trialled this half-season\, one of three options):\n  i.  60m f
+ ollowed by 100m (as in previous seasons)\n  ii. 2 x 100m relay followed 
+ by 100m (teams of TWO\, enter on the day)\n  iii. 100m heats followed by
+  100m final (advise if opting out of the final)\n\nEntries via AthleticN
+ ET\; entries close Thursday 11:45pm. Seeded programme and live results o
+ n AthleticLIVE.\nFees: all grades $8.50 incl. first event\, $1.50 per ad
+ ditional event (plus AthleticNET fees).\nRelay events can be added to an
+ y interclub on request by club / school teams.\nProgramme source: AC 202
+ 6-2027 Interclub Event Schedule (Draft September 2026).\nhttps://athleti
+ cscanterbury.org.nz/wp-content/uploads/2026/09/AC-2026-2027-Interclub-Ev
+ ent-Schedule-Pre-Christmas.pdf
 CATEGORIES:Senior Track and Field
-STATUS:TENTATIVE
+STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
 UID:ac-interclub-06@athleticscanterbury.org.nz
@@ -338,10 +336,11 @@ TRANSP:OPAQUE
 SUMMARY:South Island Masters Championships / SI Combined Events Champions
  hips
 LOCATION:Surrey Park\, Invercargill
-DESCRIPTION:Schedule and register at https://www.athletic.net/TrackAndField/meet/670589/
- info
+DESCRIPTION:Schedule and register at https://www.athletic.net/TrackAndFie
+ ld/meet/670589/info
 CATEGORIES:National Events
-URL:https://nzmastersathletics.org.nz/event/south-island-masters-track-field-championships/
+URL:https://nzmastersathletics.org.nz/event/south-island-masters-track-fi
+ eld-championships/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
@@ -531,5 +530,22 @@ CATEGORIES:Nga Puna Wai
 URL:https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=ZgaZvm_VaUC
  1OGDtOJJgn6VUdh5srt9NqBumf3kgjZFUQTdTTUw1RzVRS1lIVFNGUFU3VEEzMjJNOS4u
 STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:itm-2027@internationaltrackmeet.co.nz
+DTSTAMP:20261109T000000Z
+DTSTART;TZID=Pacific/Auckland:20270221T080000
+DTEND;TZID=Pacific/Auckland:20270221T160000
+TRANSP:OPAQUE
+SUMMARY:International Track Meet
+LOCATION:Ngā Puna Wai Sports Hub\, Augustine Drive\, Christchurch
+DESCRIPTION:Canterbury's international track and field meeting. The date 
+ comes from Athletics Canterbury's events page\, which closes the track 8
+ am-4pm for the meet. Start times are not yet published.\nEntries\, ticke
+ ts and the programme have not been released for 2027 yet - check the ITM
+  website.
+CATEGORIES:Senior Track and Field
+URL:https://internationaltrackmeet.co.nz/
+STATUS:TENTATIVE
 END:VEVENT
 END:VCALENDAR
