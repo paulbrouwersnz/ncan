@@ -942,6 +942,167 @@ ul { margin: 0; padding: 0; list-style: none; }
   .records-actions .btn { width: 100%; justify-content: center; }
 }
 
+/* ---------- Club championships ---------- */
+/* girls and boys tables for a grade sit side by side when there is room */
+.champs-grid {
+  display: grid;
+  gap: .9rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr));
+  align-items: start;
+}
+/* the records page spaces stacked tables with a top margin; here the grid's
+   gap does that, and the margin would push the boys table below the girls */
+.records-grade .champs-grid > .table-wrap + .table-wrap { margin-top: 0; }
+table.schedule.champs-table { min-width: 0; }
+.champs-num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.champs-points { font-weight: 700; color: var(--green-800); }
+.champs-events { font-size: .9rem; color: var(--text-soft); }
+/* "Discus (10)" reads as one item, so it never breaks across lines */
+.champs-event { white-space: nowrap; }
+/* the result a standings link jumped to stands out for a moment */
+.champs-results tbody > tr:target > * { animation: champs-flash 2.4s ease-out; }
+/* on top of the page's 96px, so the "Girls · grade 11" band stays in view even a
+   couple of rows above */
+.champs-results tbody > tr[id] { scroll-margin-top: 130px; }
+@keyframes champs-flash {
+  0%, 35% { background: color-mix(in srgb, var(--yellow-500) 32%, transparent); }
+  100% { background: transparent; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .champs-results tbody > tr:target > * {
+    animation: none;
+    background: color-mix(in srgb, var(--yellow-500) 22%, transparent);
+  }
+}
+.champs-none { color: var(--text-soft); }
+.champs-programme th[scope="row"] { white-space: nowrap; }
+/* a Saturday with results links to them, without looking like body text links */
+.champs-date-link { color: inherit; text-decoration: none; }
+.champs-date-link:hover,
+.champs-date-link:focus-visible { text-decoration: underline; text-decoration-color: var(--yellow-500); }
+.champs-date-link:hover .champs-tag { background: var(--yellow-500); color: var(--green-800); }
+.champs-tag {
+  display: inline-block;
+  padding: .12rem .45rem;
+  border-radius: 5px;
+  background: var(--green-100);
+  color: var(--green-700);
+  font-family: var(--font-display);
+  font-size: .66rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  vertical-align: .15em;
+}
+.champs-tag--next { background: var(--yellow-500); color: var(--green-800); }
+.champs-note { display: block; font-size: .85rem; font-weight: 400; color: var(--text-soft); }
+
+/* each Saturday's results fold away behind a heading row, as the gallery's albums do */
+/* no scroll-margin: the page's own scroll-padding (96px) already clears the header */
+.champs-day { margin: 0 0 clamp(1.4rem, 3vw, 2rem); }
+.champs-day__head {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .4rem .9rem;
+  padding-bottom: .6rem;
+  border-bottom: 2px solid var(--line);
+  cursor: pointer;
+  list-style: none;
+  transition: border-color .2s var(--ease);
+}
+.champs-day__head::-webkit-details-marker { display: none; }
+.champs-day__head::marker { content: ""; }
+.champs-day__head:hover { border-bottom-color: var(--green-600); }
+.champs-day__head:focus-visible {
+  outline: 3px solid var(--yellow-500);
+  outline-offset: 4px;
+  border-radius: var(--radius-sm);
+}
+.champs-day__head::after {          /* round chevron: down = folded, up = open */
+  content: '';
+  order: 9;
+  flex: none;
+  margin-left: auto;
+  width: 2rem;
+  height: 2rem;
+  border: 2px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--white) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230B3B2E' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") center / .85rem auto no-repeat;
+  transition: transform .25s var(--ease), border-color .16s var(--ease), background-color .16s var(--ease);
+}
+.champs-day[open] > .champs-day__head::after { transform: rotate(180deg); }
+.champs-day__head:hover::after { border-color: var(--green-600); background-color: var(--green-050); }
+.champs-day__title { margin: 0; font-size: clamp(1.15rem, 1.8vw, 1.4rem); color: var(--green-800); }
+.champs-day__count {
+  font-family: var(--font-display);
+  font-size: .74rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--green-600);
+}
+.champs-day__all { font-size: .9rem; }
+.champs-day__body { margin-top: .9rem; }
+.champs-day:not([open]) .champs-day__body { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  .champs-day__head::after { transition: none; }
+}
+
+/* five filters share the bar here, so the dropdowns run narrower than the records page's */
+.champs-bar .records-field select { min-width: 7.5rem; }
+.champs-bar .champs-combo { width: 11rem; }
+.champs-bar .records-field--grow { flex-basis: 10rem; }
+
+/* event filter: a text box with its own dropdown list directly beneath it */
+.champs-combo { position: relative; display: block; }
+.champs-combo input { padding-right: 2.2rem; }
+.champs-combo::after {
+  content: "";
+  position: absolute;
+  right: .8rem;
+  top: 50%;
+  width: .8rem;
+  height: .8rem;
+  margin-top: -.4rem;
+  background: currentColor;
+  pointer-events: none;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+.champs-combo__list {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + .3rem);
+  left: 0;
+  right: 0;
+  min-width: 12rem;
+  max-height: 16rem;
+  margin: 0;
+  padding: .3rem;
+  overflow-y: auto;
+  list-style: none;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+}
+.champs-combo__list[hidden] { display: none; }
+.champs-combo__option {
+  padding: .45rem .6rem;
+  border-radius: 6px;
+  font-size: .95rem;
+  cursor: pointer;
+}
+.champs-combo__option:hover,
+.champs-combo__option[aria-selected="true"] { background: var(--green-100); color: var(--green-800); }
+.champs-combo__option.is-current { font-weight: 700; }
+@media (max-width: 760px) {
+  /* "Girls 10–14" needs a wider label column than the stacked tables' default */
+  table.schedule.champs-programme tbody > tr:not(.schedule__band) > td { padding-left: 6.9rem; }
+  table.schedule.champs-programme tbody > tr:not(.schedule__band) > td::before { width: 6.3rem; }
+}
+
 .table-wrap {
   overflow-x: auto;
   border: 1px solid var(--line);
