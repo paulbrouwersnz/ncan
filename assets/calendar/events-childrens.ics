@@ -468,4 +468,54 @@ CATEGORIES:Nga Puna Wai
 URL:https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=ZgaZvm_VaUC1
  OGDtOJJgn6VUdh5srt9NqBumf3kgjZFUN05GV01RMDFMVDgwQ1FSVjRSQkJTQkg2Qi4u
 END:VEVENT
+BEGIN:VEVENT
+UID:u16-combined-events-day1-2026-childrens@athleticscanterbury.org.nz
+DTSTAMP:20261109T000000Z
+DTSTART;VALUE=DATE:20261121
+DTEND;VALUE=DATE:20261122
+TRANSP:TRANSPARENT
+SUMMARY:U16 Combined Events Teams Competition - Day 1
+DESCRIPTION:Try Combined Events! A Canterbury teams competition for 14-15
+  year olds (U16)\, with Canterbury teams lining up against Otago and Sou
+ thland. Day 2 is Saturday 28 November.\n\nHeptathlon day 1: 80m hurdles\
+ , high jump\, shot put\, 200m.\nOctathlon day 1: 100m\, javelin\, pole v
+ ault\, 300m.\n\nTeams of 3: everyone does every event\, and the top 2 sc
+ ores per team per event count. Get a team together or register individua
+ lly and you will be placed in a team. Numbers may be limited.\nPole vaul
+ t sessions with Terry Lomax on Sunday mornings at 9:45am at Ngā Puna Wa
+ i\, and weekday javelin sessions (dates by email)\, for selected athlete
+ s. A small fee may apply.\nStart times and venue not yet published.\nReg
+ ister your interest: https://docs.google.com/forms/d/e/1FAIpQLSfgCG1lqF0
+ fwTishFWierQ-rKKh_-I6_15tz8tA0uOm2luilQ/viewform\nMore info: terry@athle
+ tics.org.nz
+CATEGORIES:Children's Track and Field
+URL:https://docs.google.com/forms/d/e/1FAIpQLSfgCG1lqF0fwTishFWierQ-rKKh_
+ -I6_15tz8tA0uOm2luilQ/viewform
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:u16-combined-events-day2-2026-childrens@athleticscanterbury.org.nz
+DTSTAMP:20261109T000000Z
+DTSTART;VALUE=DATE:20261128
+DTEND;VALUE=DATE:20261129
+TRANSP:TRANSPARENT
+SUMMARY:U16 Combined Events Teams Competition - Day 2
+DESCRIPTION:Try Combined Events! A Canterbury teams competition for 14-15
+  year olds (U16)\, with Canterbury teams lining up against Otago and Sou
+ thland. Day 1 was Saturday 21 November.\n\nHeptathlon day 2: long jump\,
+  javelin\, 600m.\nOctathlon day 2: 100m hurdles\, discus\, long jump\, 1
+ 000m.\n\nTeams of 3: everyone does every event\, and the top 2 scores pe
+ r team per event count. Get a team together or register individually and
+  you will be placed in a team. Numbers may be limited.\nPole vault sessi
+ ons with Terry Lomax on Sunday mornings at 9:45am at Ngā Puna Wai\, and
+  weekday javelin sessions (dates by email)\, for selected athletes. A sm
+ all fee may apply.\nStart times and venue not yet published.\nRegister y
+ our interest: https://docs.google.com/forms/d/e/1FAIpQLSfgCG1lqF0fwTishF
+ WierQ-rKKh_-I6_15tz8tA0uOm2luilQ/viewform\nMore info: terry@athletics.or
+ g.nz
+CATEGORIES:Children's Track and Field
+URL:https://docs.google.com/forms/d/e/1FAIpQLSfgCG1lqF0fwTishFWierQ-rKKh_
+ -I6_15tz8tA0uOm2luilQ/viewform
+STATUS:CONFIRMED
+END:VEVENT
 END:VCALENDAR
