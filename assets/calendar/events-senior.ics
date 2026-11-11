@@ -213,25 +213,22 @@ STATUS:TENTATIVE
 END:VEVENT
 BEGIN:VEVENT
 UID:ac-twilight-01@athleticscanterbury.org.nz
-DTSTAMP:20260913T000000Z
+DTSTAMP:20261111T000000Z
 DTSTART;TZID=Pacific/Auckland:20261105T183000
 DTEND;TZID=Pacific/Auckland:20261105T203000
 TRANSP:OPAQUE
 SUMMARY:AC Twilight Meet 1
 LOCATION:Ngā Puna Wai Sports Hub\, Augustine Drive\, Christchurch
 DESCRIPTION:TRACK: 60m\, 100m\, 200m\, 300m\, 800m\, 1500m\, Steeplechase
- \nFIELD: Added on request — TBC\nNOTE: meeting number (1) and the 6:30
- pm start are inferred from the AC website's sequence (Twilight Meets 2-4
-  are listed at 6:30pm-8:30pm) — this date is not yet listed there.\n\n
- Non-club athletes welcome. Relays on request.\nA greater range of events
-  is offered at twilight meetings — Secondary School non-club athletes 
- are encouraged to attend and entry numbers are lower than on a Saturday.
- \nField events added on request — TBC.\nProgramme source: AC 2026-2027
-  Interclub Event Schedule (Draft September 2026).\nhttps://athleticscant
- erbury.org.nz/wp-content/uploads/2026/09/AC-2026-2027-Interclub-Event-Sc
- hedule-Pre-Christmas.pdf
+ \nFIELD: Added on request — TBC\n\nNon-club athletes welcome. Relays o
+ n request.\nA greater range of events is offered at twilight meetings 
+ — Secondary School non-club athletes are encouraged to attend and entr
+ y numbers are lower than on a Saturday.\nField events added on request 
+ — TBC.\nProgramme source: AC 2026-2027 Interclub Event Schedule (Draft
+  September 2026).\nhttps://athleticscanterbury.org.nz/wp-content/uploads
+ /2026/09/AC-2026-2027-Interclub-Event-Schedule-Pre-Christmas.pdf
 CATEGORIES:Senior Track and Field
-STATUS:TENTATIVE
+STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
 UID:ac-twilight-02@athleticscanterbury.org.nz
@@ -401,6 +398,32 @@ DESCRIPTION:Entries close 11.59pm Sunday 7 February 2027\n\n
  is was added\, so it is an all-day entry.\n\nMeet website: https://porri
  ttclassic.co.nz/home
 URL:https://porrittclassic.co.nz/
+CATEGORIES:National Events
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:sir-graeme-douglas-international-2027@athleticsevents.co.nz
+DTSTAMP:20261111T000000Z
+DTSTART;VALUE=DATE:20270228
+DTEND;VALUE=DATE:20270301
+TRANSP:TRANSPARENT
+SUMMARY:2027 Sir Graeme Douglas International
+LOCATION:Douglas Track and Field\, Trusts Arena\, 65 Central Park Drive\,
+  Henderson\, Auckland
+DESCRIPTION:Entries close 11.59pm Thursday 28 January 2027\nEnter: https:
+ //www.athletic.net/TrackAndField/meet/671864/register\nNZ U20 Mile Champ
+ ionships: entries close 11.59pm Monday 1 February 2027\nEnter: https://w
+ ww.athletic.net/TrackAndField/meet/675682/register\nEntry standards appl
+ y\, see https://athletics.org.nz/wp-content/uploads/2026/11/2027-Sir-Gra
+ eme-Douglas-Performance-Standards.pdf\n\nPart of the Rebel Bakehouse Sum
+ mer Circuit. A World Athletics Continental Tour Silver meeting\, the hig
+ hest graded one-day meeting in New Zealand\, and host of the NZ U20 Mile
+  Championships.\n\nSpectator tickets available from November 2026.\n\nSt
+ art times were not published when this was added\, so it is an all-day e
+ ntry.\n\nEvent page: https://athleticsevents.co.nz/event/2027-sir-graeme
+ -douglas-international-rebel-bakehouse-summer-circuit/
+URL:https://athletics.org.nz/event/2027-sir-graeme-douglas-international-
+ summer-circuit/
 CATEGORIES:National Events
 STATUS:CONFIRMED
 END:VEVENT
