@@ -136,12 +136,14 @@ STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
 UID:ac-msc-arthur@athleticscanterbury.org.nz
-DTSTAMP:20260913T000000Z
-DTSTART;TZID=Pacific/Auckland:20261030T180000
-DTEND;TZID=Pacific/Auckland:20261030T200000
+DTSTAMP:20261110T000000Z
+DTSTART;TZID=Pacific/Auckland:20261101T100000
+DTEND;TZID=Pacific/Auckland:20261101T130000
 TRANSP:OPAQUE
 SUMMARY:Mid South Canterbury Meeting - Arthur Cup
-LOCATION:Ashburton
+LOCATION:Ashburton Domain\, Ashburton
+DESCRIPTION:Track and field from 10:00am. Results: https://www.athletic.n
+ et/TrackAndField/meet/677007/results
 CATEGORIES:Mid South Canterbury Events
 URL:https://athleticscanterbury.org.nz/events/mid-south-canterbury-meetin
  g-arthur-cap/
