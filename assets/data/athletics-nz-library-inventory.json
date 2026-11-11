@@ -1,7 +1,7 @@
 {
   "title": "Athletics NZ eLearning Library inventory",
   "source": "https://athleticsnz.elearning.worldathletics.org/library",
-  "captured": "2026-10-07",
+  "captured": "2026-11-11",
   "complete": true,
   "notes": [
     "Dates are the portal's last-modified values (NZ time).",
@@ -10,14 +10,14 @@
     "Folder URLs require a portal login."
   ],
   "totals": {
-    "files": 252,
+    "files": 251,
     "folders_including_root": 46,
-    "direct_links": 222,
+    "direct_links": 221,
     "folder_links_only": 30,
     "by_top_level_folder": {
       "Club Resources": 112,
       "Coaching Resources": 38,
-      "Officials Resources": 94,
+      "Officials Resources": 93,
       "Club Newsletters": 8
     },
     "requests_made": 91
@@ -252,7 +252,7 @@
       "top_level_folder": "Club Resources",
       "folder_id": "45796c4b-5a39-4440-88db-9b0443a08c8e",
       "url": "https://athleticsnz.elearning.worldathletics.org/library/45796c4b-5a39-4440-88db-9b0443a08c8e",
-      "file_count": 13,
+      "file_count": 14,
       "files": [
         {
           "name": "Hazard Register",
@@ -370,6 +370,15 @@
           "file_type": "pptx",
           "link_type": "direct",
           "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/bab150b4-5765-48f8-ac56-c1ca30350418/4865616c746820616e64205361666574792050726573656e746174696f6e20436c756220436f6e6e6563742032303137.pptx"
+        },
+        {
+          "name": "have a go disclaimer form",
+          "last_modified": "2026-10-21",
+          "size": "35.24 KB",
+          "size_bytes": 36083,
+          "file_type": "docx",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/bcb39f4f-6db9-4bc8-928c-c17f08cfcf33/436c7562204e6967687420686176652d612d676f20446973636c61696d657220466f726d.docx"
         }
       ]
     },
@@ -567,7 +576,7 @@
       "top_level_folder": "Club Resources",
       "folder_id": "e317d106-619a-40c2-ba68-bb46946df187",
       "url": "https://athleticsnz.elearning.worldathletics.org/library/e317d106-619a-40c2-ba68-bb46946df187",
-      "file_count": 3,
+      "file_count": 4,
       "files": [
         {
           "name": "Get Set Go overview for parents",
@@ -595,6 +604,15 @@
           "file_type": "docx",
           "link_type": "direct",
           "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/be5a136e-0f75-43af-94cd-f3279308358c/4174686c6574696373204e5a20436c7562204e696768742067756964652031302d31342079656172206f6c6473.docx"
+        },
+        {
+          "name": "Awatea Athletics Club Example",
+          "last_modified": "2026-10-23",
+          "size": "6.08 MB",
+          "size_bytes": 6380395,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/eefd2adc-11a7-4e0e-b842-0e2ba8d2b9c1/417761746561204174686c657469637320436c7562206578616d706c652070726573656e746174696f6e.pdf"
         }
       ]
     },
@@ -828,7 +846,7 @@
       "top_level_folder": "Club Resources",
       "folder_id": "b8a81d80-f540-4e5e-87a2-e30c10b1252f",
       "url": "https://athleticsnz.elearning.worldathletics.org/library/b8a81d80-f540-4e5e-87a2-e30c10b1252f",
-      "file_count": 5,
+      "file_count": 6,
       "files": [
         {
           "name": "27 Best Practices of High Performing Volunteer Organisations",
@@ -874,6 +892,15 @@
           "file_type": "pdf",
           "link_type": "direct",
           "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/1a5ba71b-f232-42eb-bc36-377c807dfece/4174686c657469637320436c756220566f6c756e7465657220526563727569746d656e74204775696465207632.pdf"
+        },
+        {
+          "name": "Athletics 101 Volunteers Guide",
+          "last_modified": "2026-10-22",
+          "size": "6.39 MB",
+          "size_bytes": 6697907,
+          "file_type": "pdf",
+          "link_type": "direct",
+          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/ad169686-624f-48c7-805c-a28bd6d62ff6/4174686c65746963732031303120566f6c756e7465657273204775696465207768697465626c61636b2076657273696f6e.pdf"
         }
       ]
     },
@@ -981,7 +1008,7 @@
       "top_level_folder": "Club Resources",
       "folder_id": "d364d857-3e4c-420b-8e74-2a5d42d67369",
       "url": "https://athleticsnz.elearning.worldathletics.org/library/d364d857-3e4c-420b-8e74-2a5d42d67369",
-      "file_count": 23,
+      "file_count": 20,
       "files": [
         {
           "name": "ANZ Club Constitution Template",
@@ -1162,33 +1189,6 @@
           "file_type": "docx",
           "link_type": "direct",
           "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/c15d29e7-9c66-42c6-ba26-58a762a0c5e3/426f6172645f436f64655f6f665f436f6e647563745f54656d706c61746520283129.docx"
-        },
-        {
-          "name": "Becoming Incorporated - steps to follow",
-          "last_modified": "2026-05-20",
-          "size": "48.45 KB",
-          "size_bytes": 49616,
-          "file_type": "docx",
-          "link_type": "direct",
-          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/1b4d3905-086c-4877-ac5b-9384b017bf87/4265636f6d696e6720696e636f72706f7261746564202d20737465707320746f20666f6c6c6f77.docx"
-        },
-        {
-          "name": "Filing with Registrar",
-          "last_modified": "2026-05-20",
-          "size": "25.95 KB",
-          "size_bytes": 26569,
-          "file_type": "docx",
-          "link_type": "direct",
-          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/3b2aa705-cf29-4a81-8ae0-17f935648df9/5265726567697374726174696f6e207374657073202d2066696c696e6720776974682074686520436f6d70616e696573204f.docx"
-        },
-        {
-          "name": "Financial Reporting for Inc Societies and Registered Charities",
-          "last_modified": "2026-09-02",
-          "size": "106.22 KB",
-          "size_bytes": 108770,
-          "file_type": "pdf",
-          "link_type": "direct",
-          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/dad9b7af-18ae-462d-af34-ed00d1eb17a5/46696e616e6369616c207265706f7274696e6720666f7220496e636f72706f726174656420536f6369657469657320286173.pdf"
         }
       ]
     },
@@ -2210,7 +2210,7 @@
       "top_level_folder": "Officials Resources",
       "folder_id": "13efeb32-fa1d-45c1-b87f-0102847bb834",
       "url": "https://athleticsnz.elearning.worldathletics.org/library/13efeb32-fa1d-45c1-b87f-0102847bb834",
-      "file_count": 21,
+      "file_count": 20,
       "files": [
         {
           "name": "Chief Judges Procedures",
@@ -2391,15 +2391,6 @@
           "file_type": "pdf",
           "link_type": "direct",
           "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/a5f09e34-cdfe-4348-917f-1aa6a8a7d572/507269766174652d496d706c656d656e742d43657274696669636174696f6e2d446973637573.pdf"
-        },
-        {
-          "name": "Private-Implement-Certification-Hammer",
-          "last_modified": "2026-05-20",
-          "size": "54.45 KB",
-          "size_bytes": 55759,
-          "file_type": "pdf",
-          "link_type": "direct",
-          "url": "https://asset-in.storage.prod.cls-eu-west-1-alpha.thelearning-lab.com/worldathletics/user-uploads/ead7bbbf-d606-4606-87bf-b82d8f624410/507269766174652d496d706c656d656e742d43657274696669636174696f6e2d48616d6d6572.pdf"
         }
       ]
     },
