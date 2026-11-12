@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en-NZ">
+
+<head>
+<!-- @partial:head -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0B3B2E">
+
+<meta property="og:type" content="website">
+<meta property="og:image" content="assets/img/logo.svg">
+<meta property="og:image:alt" content="North Canterbury Athletic Club">
+<meta property="og:locale" content="en_NZ">
+
+<link rel="icon" href="assets/img/logo.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/img/logo.png">
+<link rel="preload" href="assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/archivo-variable.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/css/styles.css?v=1dec39eb">
+<!-- /@partial:head -->
+
+<link rel="canonical" href="https://ncan.nz/athletes.html">
+<!-- results are behind a sign-in: keep this page out of search engines -->
+<meta name="robots" content="noindex">
+
+<title>Our Athletes &mdash; North Canterbury Athletic Club</title>
+<meta name="description" content="North Canterbury Athletic Club athletes with published results, each with a page charting their progression in every event.">
+<meta property="og:title" content="Our Athletes &mdash; North Canterbury Athletic Club">
+<meta property="og:description" content="Every North Canterbury athlete with published results, and their progression.">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<!-- @partial:header -->
+<!-- ================= Header ================= -->
+<header class="site-header" id="site-header">
+  <div class="wrap site-header__bar">
+    <a class="brand" href="index.html" aria-label="North Canterbury Athletic Club — home">
+      <img src="assets/img/logo.svg" alt="" width="888" height="508">
+      <span class="brand__name">
+        North Canterbury<br>Athletic Club
+      </span>
+    </a>
+
+    <button class="nav-toggle" type="button" id="nav-toggle" aria-expanded="false" aria-controls="primary-nav">
+      <span class="nav-toggle__bars" aria-hidden="true"><i></i></span>
+      Menu
+    </button>
+
+    <nav class="nav" id="primary-nav" aria-label="Primary">
+      <ul>
+        <li><a href="index.html#why">Why NCAN</a></li>
+        <li><a href="index.html#programmes">Programmes</a></li>
+        <li><a href="index.html#training">Training</a></li>
+        <li><a href="calendar.html">Calendar</a></li>
+        <li><a href="index.html#news">Community</a></li>
+        <li><a href="gallery.html">Gallery</a></li>
+        <li><a href="index.html#contact">Contact</a></li>
+        <li class="nav__cta"><a class="btn btn--accent" href="index.html#join">Join the club</a></li>
+      </ul>
+    </nav>
+
+    <div class="site-header__cta">
+      <a class="btn btn--accent btn--sm" href="index.html#join">Join the club</a>
+    </div>
+  </div>
+</header>
+<!-- /@partial:header -->
+
+  <main id="main">
+    <span id="top"></span>
+
+    <!-- ================= Page head ================= -->
+    <section class="page-head" aria-labelledby="page-heading">
+      <div class="wrap">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="index.html">Home</a> <span aria-hidden="true">/</span> <span>Athletes</span>
+        </nav>
+        <p class="eyebrow eyebrow--light">Results and progression</p>
+        <h1 id="page-heading">Our athletes</h1>
+        <p class="lede">
+          Every North Canterbury athlete with published track and field results, each with a page
+          charting their progression in every event, for the club and for any team they represented
+          while a member of NCAN. Cross country and road events aren&rsquo;t included.
+          Results are for club families, coaches and the committee: sign in to see them. Families see
+          their own children.
+        </p>
+        <p class="lede">
+          These pages draw mainly on <a href="https://live.athletic.net">AthleticLIVE</a> (athletic.net),
+          where Athletics Canterbury, school and national meetings have published results since 2024.
+          Results from before then, and athletes who only competed before then, are missing. The club
+          would love to hear about any sources for missing or earlier results.
+        </p>
+        <div class="btn-row">
+          <a class="btn btn--accent" href="#athletes">Find an athlete</a>
+          <a class="btn btn--ghost-light" href="club-champs.html">Club championships</a>
+          <a class="btn btn--ghost-light" href="records.html">Children&rsquo;s records</a>
+          <a class="btn btn--ghost-light" href="results-sources.html">Results sources</a>
+        </div>
+        <p class="account-line" id="account" hidden></p>
+      </div>
+    </section>
+
+    <section class="section" id="athletes" aria-labelledby="athletes-heading">
+      <div class="wrap">
+        <div class="section-head section-head--wide" data-reveal>
+          <p class="eyebrow">Find an athlete</p>
+          <h2 id="athletes-heading">Athletes</h2>
+          <p class="lede">
+            Athletes are listed under the most recent season they competed in, with their age group that season: grade 7&ndash;14 for children (younger children run in grade 7), then U16&ndash;U20, Senior and Masters as Athletics NZ&rsquo;s competition rules define them, by age on 31&nbsp;December. Pages are built from results
+            already published by the meetings, so a result can take a few days to appear.
+          </p>
+        </div>
+        <dl class="stats__grid ath-stats" id="ix-stats" hidden></dl>
+
+        <div class="records-bar champs-bar" data-reveal>
+          <div class="records-filters">
+            <p class="records-field">
+              <label for="ix-grade">Age group</label>
+              <select id="ix-grade"><option value="">All age groups</option></select>
+            </p>
+            <p class="records-field">
+              <label for="ix-gender">Female or male</label>
+              <select id="ix-gender">
+                <option value="">Both</option>
+                <option value="girls">Girls &amp; women</option>
+                <option value="boys">Boys &amp; men</option>
+              </select>
+            </p>
+            <p class="records-field">
+              <label for="ix-event">Event</label>
+              <select id="ix-event"><option value="">All events</option></select>
+            </p>
+            <p class="records-field records-field--grow">
+              <label for="ix-text">Search</label>
+              <input type="search" id="ix-text" placeholder="athlete name" autocomplete="off">
+            </p>
+          </div>
+          <div class="records-actions">
+            <button type="button" class="btn btn--ghost" id="ix-clear">Clear filters</button>
+          </div>
+        </div>
+
+        <div id="ix-signin" hidden></div>
+        <p class="records-status" id="ix-status" role="status">Loading the athletes&hellip;</p>
+        <div id="ix-out"></div>
+        <p class="records-note" id="ix-updated"></p>
+      </div>
+    </section>
+
+    <section class="section section--tint" aria-labelledby="optout-heading">
+      <div class="wrap">
+        <div class="section-head section-head--wide">
+          <p class="eyebrow">Your page</p>
+          <h2 id="optout-heading">Rather your page not be shown?</h2>
+          <p class="lede">
+            Whether it&rsquo;s your own page or your child&rsquo;s, tell us and we will remove it, as
+            we do for photos. Athletes 16 and over can ask for themselves; for younger athletes, a
+            parent or caregiver. If a result is missing or wrong, let us know that too.
+          </p>
+          <div class="btn-row">
+            <a class="btn" href="index.html#contact">Contact the club</a>
+            <a class="btn btn--ghost" href="safeguarding.html">Child safeguarding</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- @partial:footer -->
+<!-- ================= Footer ================= -->
+<footer class="site-footer" aria-labelledby="footer-heading">
+  <div class="wrap">
+    <h2 class="visually-hidden" id="footer-heading">Site footer</h2>
+
+    <div class="site-footer__grid">
+      <div>
+        <div class="footer-brand">
+          <img src="assets/img/logo.svg" alt="" width="888" height="508">
+          <div>
+            <strong><a href="index.html">North Canterbury<br>Athletic Club</a></strong>
+            <span>Rangiora, New Zealand</span>
+          </div>
+        </div>
+        <p>A volunteer-run club affiliated with <a href="https://athletics.org.nz/">Athletics New Zealand</a> and <a href="https://athleticscanterbury.org.nz/">Athletics Canterbury</a>, welcoming athletes of every age and ability since 1978.</p>
+
+        <div class="socials">
+          <a href="https://www.facebook.com/NorthCanterburyAthleticClub" aria-label="North Canterbury Athletic Club on Facebook">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 22v-8h2.8l.4-3.2h-3.2V8.7c0-.9.3-1.5 1.6-1.5h1.7V4.1A22 22 0 0 0 14.4 4C12 4 10.3 5.5 10.3 8.3v2.5H7.6V14h2.7v8Z"/></svg>
+            <span>Club</span>
+          </a>
+          <a href="https://www.facebook.com/NorthCanterburyChildrensAthletics" aria-label="Children's Athletics on Facebook">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 22v-8h2.8l.4-3.2h-3.2V8.7c0-.9.3-1.5 1.6-1.5h1.7V4.1A22 22 0 0 0 14.4 4C12 4 10.3 5.5 10.3 8.3v2.5H7.6V14h2.7v8Z"/></svg>
+            <span>Children&rsquo;s</span>
+          </a>
+        </div>
+      </div>
+      <div>
+        <h3>Quick links</h3>
+        <ul>
+          <li><a href="index.html#programmes">Our programmes</a></li>
+          <li><a href="index.html#training">Training times</a></li>
+          <li><a href="index.html#join">Register &amp; fees</a></li>
+          <li><a href="index.html#news">News &amp; results</a></li>
+          <li><a href="gallery.html">Photo gallery</a></li>
+          <li><a href="index.html#contact">Contact the club</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3>Get involved</h3>
+        <ul>
+          <li><a href="index.html#join">Become a member</a></li>
+          <li><a href="calendar.html">Club calendar</a></li>
+          <li><a href="coaches-officials-volunteers.html#volunteer">Volunteer roles</a></li>
+          <li><a href="coaches-officials-volunteers.html#coaching">Coaching development</a></li>
+          <li><a href="coaches-officials-volunteers.html#officials">Officials training</a></li>
+          <li><a href="index.html#sponsors">Sponsor the club</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3>Club information</h3>
+        <ul>
+          <li><a href="committee.html">Committee and documents</a></li>
+          <li><a href="safeguarding.html">Child safeguarding</a></li>
+          <li><a href="records.html">Children&rsquo;s records</a></li>
+          <li><a href="history.html">History</a></li>
+          <li><a href="https://codesport.co.nz/catalog/%20NorthCanterburyAthleticsClub%20-1107550.htmx">Uniform and apparel</a></li>
+          <li><a href="resources.html">Athletics resources</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="site-footer__base">
+      <p>&copy; 2026 <a href="index.html">North Canterbury Athletic Club Incorporated</a>. All rights reserved.</p>
+      <ul>
+        <li><a href="index.html">Back to top</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+<!-- /@partial:footer -->
+
+  <script>
+    (function () {
+      'use strict';
+
+      /* Mobile navigation ------------------------------------------------ */
+      var toggle = document.getElementById('nav-toggle');
+      var nav = document.getElementById('primary-nav');
+
+      function closeNav() {
+        nav.removeAttribute('data-open');
+        toggle.setAttribute('aria-expanded', 'false');
+      }
+
+      toggle.addEventListener('click', function () {
+        if (nav.getAttribute('data-open') === 'true') {
+          closeNav();
+        } else {
+          nav.setAttribute('data-open', 'true');
+          toggle.setAttribute('aria-expanded', 'true');
+        }
+      });
+
+      nav.addEventListener('click', function (event) {
+        if (event.target.closest('a')) { closeNav(); }
+      });
+
+      document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && nav.getAttribute('data-open') === 'true') {
+          closeNav();
+          toggle.focus();
+        }
+      });
+
+      /* Header shadow once scrolled ------------------------------------- */
+      var header = document.getElementById('site-header');
+      var onScroll = function () {
+        header.classList.toggle('is-stuck', window.scrollY > 8);
+      };
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+
+      /* Reveal on scroll ------------------------------------------------- */
+      var targets = document.querySelectorAll('[data-reveal]');
+
+      if (!('IntersectionObserver' in window) ||
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        Array.prototype.forEach.call(targets, function (el) { el.classList.add('is-visible'); });
+        return;
+      }
+
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { rootMargin: '0px 0px -8% 0px', threshold: 0.12 });
+
+      Array.prototype.forEach.call(targets, function (el) { observer.observe(el); });
+    }());
+  </script>
+
+  <script src="assets/js/ncan-account.js"></script>
+  <script>
+    (function () {
+      'use strict';
+
+      /* Athlete index -------------------------------------------------------
+         Reads the athletes list from the club's API (GET /v1/athletes; see
+         assets/js/ncan-account.js), only for someone signed in: a family gets
+         their own children, coaches and administrators everyone. Each name
+         links to athlete.html?id=<number>. */
+
+      var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July',
+                    'August', 'September', 'October', 'November', 'December'];
+      var $ = function (id) { return document.getElementById(id); };
+      var all = [];
+
+      function text(tag, cls, value) {
+        var el = document.createElement(tag);
+        if (cls) { el.className = cls; }
+        if (value !== undefined && value !== null) { el.textContent = value; }
+        return el;
+      }
+      function longDate(iso) {
+        var p = iso.split('-');
+        return +p[2] + ' ' + MONTHS[+p[1] - 1] + ' ' + p[0];
+      }
+
+      // girls and boys to grade 14; women and men from U16, as the competition rules name them
+      function sex(a) {
+        var adult = a.group && !/^Grade /.test(a.group);
+        return a.gender === 'girls' ? (adult ? 'women' : 'girls') : a.gender === 'boys' ? (adult ? 'men' : 'boys') : '';
+      }
+
+      var BANDS = [
+        { key: '7-10', label: 'Grades 7–10', test: function (g) { var m = /^Grade (\d+)$/.exec(g); return !!m && +m[1] <= 10; } },
+        { key: '11-14', label: 'Grades 11–14', test: function (g) { var m = /^Grade (\d+)$/.exec(g); return !!m && +m[1] >= 11; } },
+        { key: 'youth', label: 'Youth (U16–U20)', test: function (g) { return /^U\d+$/.test(g); } },
+        { key: 'adults', label: 'Adults (Seniors & Masters)', test: function (g) { return g === 'Senior' || g === 'Masters'; } }
+      ];
+
+      // Totals for the athletes shown, added up from each athlete's totals in the list
+      // (worked out by ncan-api's collector). A meeting several of them went to counts once.
+      function renderStats(rows) {
+        var dl = $('ix-stats');
+        dl.textContent = '';
+        if (!rows.length || !rows[0].totals) { dl.hidden = true; return; }
+        var t = { results: 0, podiums: 0, run: 0, walked: 0, jumped: 0, thrown: 0 }, meets = {}, events = {};
+        rows.forEach(function (a) {
+          Object.keys(t).forEach(function (k) { t[k] += a.totals[k] || 0; });
+          a.totals.meetings.forEach(function (m) { meets[m] = 1; });
+          a.events.forEach(function (e) { events[e] = 1; });
+        });
+        var n = function (v) { return Math.round(v).toLocaleString('en-NZ'); };
+        // metres, until 10,000 m reads better as km
+        var len = function (m) {
+          return m >= 10000 ? (m / 1000).toLocaleString('en-NZ', { maximumFractionDigits: 1 }) + ' km' : n(m) + ' m';
+        };
+        [[n(rows.length), rows.length === 1 ? 'Athlete' : 'Athletes'],
+         [n(Object.keys(meets).length), 'Meetings'], [n(t.results), 'Results'],
+         [n(Object.keys(events).length), 'Events'], t.podiums ? [n(t.podiums), 'Podium places'] : null,
+         t.run ? [n(t.run / 1000) + ' km', 'Run'] : null,
+         t.walked ? [n(t.walked / 1000) + ' km', 'Race walked'] : null,
+         t.jumped ? [len(t.jumped), 'Jumped'] : null, t.thrown ? [len(t.thrown), 'Thrown'] : null].filter(Boolean).forEach(function (x) {
+          var div = text('div', 'stat');
+          div.appendChild(text('dt', null, x[0]));
+          div.appendChild(text('dd', null, x[1]));
+          dl.appendChild(div);
+        });
+        dl.hidden = false;
+      }
+
+      function filters() {
+        return {
+          grade: $('ix-grade').value,
+          gender: $('ix-gender').value,
+          event: $('ix-event').value,
+          needle: $('ix-text').value.replace(/\s+/g, ' ').trim().toLowerCase()
+        };
+      }
+
+      function render() {
+        var f = filters();
+        $('ix-clear').disabled = !(f.grade || f.gender || f.event || f.needle);
+        var rows = all.filter(function (a) {
+          if (f.grade) {
+            var band = f.grade.indexOf('band:') === 0 && BANDS.filter(function (x) { return 'band:' + x.key === f.grade; })[0];
+            if (band ? !(a.group && band.test(a.group)) : a.group !== f.grade) { return false; }
+          }
+          if (f.gender && a.gender !== f.gender) { return false; }
+          if (f.event && a.events.indexOf(f.event) === -1) { return false; }
+          if (f.needle && a.name.toLowerCase().indexOf(f.needle) === -1) { return false; }
+          return true;
+        });
+        renderStats(rows);
+        var out = $('ix-out');
+        out.textContent = '';
+        $('ix-status').textContent = rows.length === all.length
+          ? all.length + ' athletes.'
+          : 'Showing ' + rows.length + ' of ' + all.length + ' athletes.';
+        if (!rows.length) { return; }
+
+        // grouped by each athlete's most recent season, newest first
+        var seasons = [];
+        rows.forEach(function (a) { if (seasons.indexOf(a.season) === -1) { seasons.push(a.season); } });
+        seasons.sort().reverse();
+        seasons.forEach(function (season) {
+        var group = rows.filter(function (a) { return a.season === season; });
+        var block = text('div', 'records-grade');
+        block.appendChild(text('h3', 'records-grade__head', season + ' season'));
+        var wrap = text('div', 'table-wrap');
+        var table = text('table', 'schedule ath-index');
+        table.appendChild(text('caption', 'visually-hidden', 'North Canterbury athletes last competing in ' + season));
+        var thead = document.createElement('thead');
+        var hr = document.createElement('tr');
+        ['Athlete', 'Age group', 'Results', 'Events', 'Last result'].forEach(function (h) {
+          var th = text('th', null, h); th.setAttribute('scope', 'col'); hr.appendChild(th);
+        });
+        thead.appendChild(hr);
+        table.appendChild(thead);
+        var tbody = document.createElement('tbody');
+        group.forEach(function (a) {
+          var tr = document.createElement('tr');
+          var who = text('th');
+          who.setAttribute('scope', 'row');
+          var link = text('a', null, a.name);
+          link.href = 'athlete.html?id=' + a.id;
+          who.appendChild(link);
+          tr.appendChild(who);
+          [['Age group', a.group ? a.group.replace(/^Grade /, '') + ' ' + sex(a) : '–', 'champs-num'],
+           ['Results', a.results, 'champs-num'],
+           ['Events', a.events.join(', '), 'champs-events'],
+           ['Last result', a.last ? longDate(a.last) : '–', 'records-date']].forEach(function (c) {
+            var td = text('td', c[2], c[1]);
+            td.setAttribute('data-label', c[0]);
+            tr.appendChild(td);
+          });
+          tbody.appendChild(tr);
+        });
+        table.appendChild(tbody);
+        wrap.appendChild(table);
+        block.appendChild(wrap);
+        out.appendChild(block);
+        });
+      }
+
+      // Not signed in: a sign-in box instead of the list and its filters.
+      function signedOut() {
+        document.querySelector('#athletes .records-bar').hidden = true;
+        $('ix-status').textContent = '';
+        NCAN.signIn($('ix-signin'));
+      }
+
+      NCAN.me()
+        .then(function (who) {
+          NCAN.account($('account'), who);
+          if (!who) { signedOut(); return null; }
+          return NCAN.get('/athletes');
+        })
+        .then(function (json) {
+          if (!json) { return; }
+          all = json.athletes || [];
+          if (!all.length) {
+            document.querySelector('#athletes .records-bar').hidden = true;
+            $('ix-status').textContent = 'There are no athlete pages linked to your email address yet. ' +
+              'If you think there should be, please contact the club.';
+            return;
+          }
+          var grades = {}, events = {};
+          all.forEach(function (a) {
+            if (a.group) { grades[a.group] = 1; }
+            a.events.forEach(function (e) { events[e] = 1; });
+          });
+          // Grade 7-14, then U16-U20, Senior, Masters
+          var rank = function (g) {
+            var m = /(\d+)/.exec(g);
+            return g === 'Senior' ? 100 : g === 'Masters' ? 101 : (/^U/.test(g) ? 50 : 0) + (m ? +m[1] : 0);
+          };
+          // each band is a heading in the list, with an option for the whole band first
+          var order = Object.keys(grades).sort(function (a, b) { return rank(a) - rank(b); });
+          BANDS.forEach(function (band) {
+            var inBand = order.filter(function (g) { return band.test(g); });
+            if (!inBand.length) { return; }
+            var og = document.createElement('optgroup');
+            og.label = band.label;
+            var all = text('option', null, 'All ' + band.label.replace(/^Grades/, 'grades').replace(/^Youth/, 'youth').replace(/^Adults/, 'adults'));
+            all.value = 'band:' + band.key;
+            og.appendChild(all);
+            inBand.forEach(function (g) { var o = text('option', null, g); o.value = g; og.appendChild(o); });
+            $('ix-grade').appendChild(og);
+          });
+          Object.keys(events).sort(function (a, b) {
+            var na = parseInt(a, 10), nb = parseInt(b, 10);
+            if (!isNaN(na) && !isNaN(nb)) { return na - nb || a.localeCompare(b); }
+            if (!isNaN(na)) { return -1; }
+            if (!isNaN(nb)) { return 1; }
+            return a.localeCompare(b);
+          }).forEach(function (e) {
+            var o = text('option', null, e); o.value = e; $('ix-event').appendChild(o);
+          });
+          if (json.updated) { $('ix-updated').textContent = 'Last updated ' + longDate(json.updated) + '.'; }
+          ['ix-grade', 'ix-gender', 'ix-event'].forEach(function (id) { $(id).addEventListener('change', render); });
+          $('ix-text').addEventListener('input', render);
+          $('ix-clear').addEventListener('click', function () {
+            ['ix-grade', 'ix-gender', 'ix-event', 'ix-text'].forEach(function (id) { $(id).value = ''; });
+            render();
+          });
+          render();
+        })
+        .catch(function (err) {
+          if (err.status === 401) { signedOut(); return; }
+          $('ix-status').textContent = 'Sorry, the athletes could not be loaded. Please try again later.';
+        });
+    }());
+  </script>
+
+</body>
+
+</html>

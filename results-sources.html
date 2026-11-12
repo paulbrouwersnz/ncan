@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en-NZ">
+
+<head>
+<!-- @partial:head -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0B3B2E">
+
+<meta property="og:type" content="website">
+<meta property="og:image" content="assets/img/logo.svg">
+<meta property="og:image:alt" content="North Canterbury Athletic Club">
+<meta property="og:locale" content="en_NZ">
+
+<link rel="icon" href="assets/img/logo.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/img/logo.png">
+<link rel="preload" href="assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/archivo-variable.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/css/styles.css?v=1dec39eb">
+<!-- /@partial:head -->
+
+<link rel="canonical" href="https://ncan.nz/results-sources.html">
+
+<title>Results Sources &mdash; North Canterbury Athletic Club</title>
+<meta name="description" content="Every meeting the North Canterbury Athletic Club athlete pages are built from, and what each one added.">
+<meta property="og:title" content="Results Sources &mdash; North Canterbury Athletic Club">
+<meta property="og:description" content="The meetings behind the North Canterbury athlete pages.">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<!-- @partial:header -->
+<!-- ================= Header ================= -->
+<header class="site-header" id="site-header">
+  <div class="wrap site-header__bar">
+    <a class="brand" href="index.html" aria-label="North Canterbury Athletic Club — home">
+      <img src="assets/img/logo.svg" alt="" width="888" height="508">
+      <span class="brand__name">
+        North Canterbury<br>Athletic Club
+      </span>
+    </a>
+
+    <button class="nav-toggle" type="button" id="nav-toggle" aria-expanded="false" aria-controls="primary-nav">
+      <span class="nav-toggle__bars" aria-hidden="true"><i></i></span>
+      Menu
+    </button>
+
+    <nav class="nav" id="primary-nav" aria-label="Primary">
+      <ul>
+        <li><a href="index.html#why">Why NCAN</a></li>
+        <li><a href="index.html#programmes">Programmes</a></li>
+        <li><a href="index.html#training">Training</a></li>
+        <li><a href="calendar.html">Calendar</a></li>
+        <li><a href="index.html#news">Community</a></li>
+        <li><a href="gallery.html">Gallery</a></li>
+        <li><a href="index.html#contact">Contact</a></li>
+        <li class="nav__cta"><a class="btn btn--accent" href="index.html#join">Join the club</a></li>
+      </ul>
+    </nav>
+
+    <div class="site-header__cta">
+      <a class="btn btn--accent btn--sm" href="index.html#join">Join the club</a>
+    </div>
+  </div>
+</header>
+<!-- /@partial:header -->
+
+
+  <main id="main">
+    <span id="top"></span>
+
+    <!-- ================= Page head ================= -->
+    <section class="page-head" aria-labelledby="page-heading">
+      <div class="wrap">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="index.html">Home</a> <span aria-hidden="true">/</span>
+          <a href="athletes.html">Athletes</a> <span aria-hidden="true">/</span> <span>Results sources</span>
+        </nav>
+        <p class="eyebrow eyebrow--light">Behind the athlete pages</p>
+        <h1 id="page-heading">Results sources</h1>
+        <p class="lede">
+          Every meeting the athlete pages are built from, with what each one added. Most come from
+          <a href="https://live.athletic.net">AthleticLIVE</a> (athletic.net); a few, such as primary
+          school sports, were typed in by hand from the results the organisers published.
+        </p>
+        <p class="lede">
+          Know of a meeting that&rsquo;s missing, or earlier results? The club would love to hear about it.
+        </p>
+        <div class="btn-row">
+          <a class="btn btn--accent" href="#meetings">Browse meetings</a>
+          <a class="btn btn--ghost-light" href="athletes.html">All athletes</a>
+          <a class="btn btn--ghost-light" href="index.html#contact">Suggest a source</a>
+        </div>
+        <p class="account-line" id="account" hidden></p>
+      </div>
+    </section>
+
+    <section class="section" id="meetings" aria-labelledby="meetings-heading">
+      <div class="wrap">
+        <div class="section-head section-head--wide" data-reveal>
+          <p class="eyebrow">Meetings collected</p>
+          <h2 id="meetings-heading">Meetings</h2>
+          <p class="lede">
+            Newest first, by season. Open a meeting to see its dates, the events, and how many North
+            Canterbury athletes and results it added (coaches and the committee, signed in, also see who).
+            A meeting with no results here was read, but none of our members competed at it (or only before
+            or after their membership).
+          </p>
+        </div>
+        <dl class="stats__grid ath-stats" id="src-stats" hidden></dl>
+
+        <div class="records-bar champs-bar" data-reveal>
+          <div class="records-filters">
+            <p class="records-field">
+              <label for="src-season">Season</label>
+              <select id="src-season"><option value="">All seasons</option></select>
+            </p>
+            <p class="records-field">
+              <label for="src-type">Type</label>
+              <select id="src-type"><option value="">All types</option></select>
+            </p>
+            <p class="records-field">
+              <label for="src-from">Source</label>
+              <select id="src-from">
+                <option value="">Any</option>
+                <option value="AthleticLIVE">AthleticLIVE</option>
+                <option value="By hand">Typed in by hand</option>
+              </select>
+            </p>
+            <p class="records-field records-field--grow">
+              <label for="src-text">Search</label>
+              <input type="search" id="src-text" placeholder="meeting or athlete" autocomplete="off">
+            </p>
+            <div class="ath-checks">
+              <p class="records-field ath-check">
+                <input type="checkbox" id="src-ours">
+                <label for="src-ours">Only meetings with our athletes</label>
+              </p>
+            </div>
+          </div>
+          <div class="records-actions">
+            <button type="button" class="btn btn--ghost" id="src-clear">Clear filters</button>
+          </div>
+        </div>
+
+        <p class="records-status" id="src-status" role="status">Loading the meetings&hellip;</p>
+        <div id="src-out"></div>
+        <p class="records-note" id="src-updated"></p>
+      </div>
+    </section>
+  </main>
+
+  <!-- @partial:footer -->
+<!-- ================= Footer ================= -->
+<footer class="site-footer" aria-labelledby="footer-heading">
+  <div class="wrap">
+    <h2 class="visually-hidden" id="footer-heading">Site footer</h2>
+
+    <div class="site-footer__grid">
+      <div>
+        <div class="footer-brand">
+          <img src="assets/img/logo.svg" alt="" width="888" height="508">
+          <div>
+            <strong><a href="index.html">North Canterbury<br>Athletic Club</a></strong>
+            <span>Rangiora, New Zealand</span>
+          </div>
+        </div>
+        <p>A volunteer-run club affiliated with <a href="https://athletics.org.nz/">Athletics New Zealand</a> and <a href="https://athleticscanterbury.org.nz/">Athletics Canterbury</a>, welcoming athletes of every age and ability since 1978.</p>
+
+        <div class="socials">
+          <a href="https://www.facebook.com/NorthCanterburyAthleticClub" aria-label="North Canterbury Athletic Club on Facebook">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 22v-8h2.8l.4-3.2h-3.2V8.7c0-.9.3-1.5 1.6-1.5h1.7V4.1A22 22 0 0 0 14.4 4C12 4 10.3 5.5 10.3 8.3v2.5H7.6V14h2.7v8Z"/></svg>
+            <span>Club</span>
+          </a>
+          <a href="https://www.facebook.com/NorthCanterburyChildrensAthletics" aria-label="Children's Athletics on Facebook">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 22v-8h2.8l.4-3.2h-3.2V8.7c0-.9.3-1.5 1.6-1.5h1.7V4.1A22 22 0 0 0 14.4 4C12 4 10.3 5.5 10.3 8.3v2.5H7.6V14h2.7v8Z"/></svg>
+            <span>Children&rsquo;s</span>
+          </a>
+        </div>
+      </div>
+      <div>
+        <h3>Quick links</h3>
+        <ul>
+          <li><a href="index.html#programmes">Our programmes</a></li>
+          <li><a href="index.html#training">Training times</a></li>
+          <li><a href="index.html#join">Register &amp; fees</a></li>
+          <li><a href="index.html#news">News &amp; results</a></li>
+          <li><a href="gallery.html">Photo gallery</a></li>
+          <li><a href="index.html#contact">Contact the club</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3>Get involved</h3>
+        <ul>
+          <li><a href="index.html#join">Become a member</a></li>
+          <li><a href="calendar.html">Club calendar</a></li>
+          <li><a href="coaches-officials-volunteers.html#volunteer">Volunteer roles</a></li>
+          <li><a href="coaches-officials-volunteers.html#coaching">Coaching development</a></li>
+          <li><a href="coaches-officials-volunteers.html#officials">Officials training</a></li>
+          <li><a href="index.html#sponsors">Sponsor the club</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3>Club information</h3>
+        <ul>
+          <li><a href="committee.html">Committee and documents</a></li>
+          <li><a href="safeguarding.html">Child safeguarding</a></li>
+          <li><a href="records.html">Children&rsquo;s records</a></li>
+          <li><a href="history.html">History</a></li>
+          <li><a href="https://codesport.co.nz/catalog/%20NorthCanterburyAthleticsClub%20-1107550.htmx">Uniform and apparel</a></li>
+          <li><a href="resources.html">Athletics resources</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="site-footer__base">
+      <p>&copy; 2026 <a href="index.html">North Canterbury Athletic Club Incorporated</a>. All rights reserved.</p>
+      <ul>
+        <li><a href="index.html">Back to top</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+<!-- /@partial:footer -->
+
+  <script>
+    (function () {
+      'use strict';
+
+      /* Mobile navigation ------------------------------------------------ */
+      var toggle = document.getElementById('nav-toggle');
+      var nav = document.getElementById('primary-nav');
+
+      function closeNav() {
+        nav.removeAttribute('data-open');
+        toggle.setAttribute('aria-expanded', 'false');
+      }
+
+      toggle.addEventListener('click', function () {
+        if (nav.getAttribute('data-open') === 'true') {
+          closeNav();
+        } else {
+          nav.setAttribute('data-open', 'true');
+          toggle.setAttribute('aria-expanded', 'true');
+        }
+      });
+
+      nav.addEventListener('click', function (event) {
+        if (event.target.closest('a')) { closeNav(); }
+      });
+
+      document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && nav.getAttribute('data-open') === 'true') {
+          closeNav();
+          toggle.focus();
+        }
+      });
+
+      /* Header shadow once scrolled ------------------------------------- */
+      var header = document.getElementById('site-header');
+      var onScroll = function () {
+        header.classList.toggle('is-stuck', window.scrollY > 8);
+      };
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+
+      /* Reveal on scroll ------------------------------------------------- */
+      var targets = document.querySelectorAll('[data-reveal]');
+
+      if (!('IntersectionObserver' in window) ||
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        Array.prototype.forEach.call(targets, function (el) { el.classList.add('is-visible'); });
+        return;
+      }
+
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { rootMargin: '0px 0px -8% 0px', threshold: 0.12 });
+
+      Array.prototype.forEach.call(targets, function (el) { observer.observe(el); });
+    }());
+  </script>
+
+  <script src="assets/js/ncan-account.js"></script>
+  <script>
+    (function () {
+      'use strict';
+
+      /* Results sources -----------------------------------------------------
+         Reads every meeting collected, newest first, from the club's API
+         (GET /v1/meetings; see assets/js/ncan-account.js). Public, without
+         athletes' names; coaches and administrators signed in also see them. */
+
+      var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July',
+                    'August', 'September', 'October', 'November', 'December'];
+      var $ = function (id) { return document.getElementById(id); };
+      var all = [];
+
+      function text(tag, cls, value) {
+        var el = document.createElement(tag);
+        if (cls) { el.className = cls; }
+        if (value !== undefined && value !== null) { el.textContent = value; }
+        return el;
+      }
+      function longDate(iso) {
+        var p = iso.split('-');
+        return +p[2] + ' ' + MONTHS[+p[1] - 1] + ' ' + p[0];
+      }
+      function dates(m) {
+        if (!m.first) { return 'No results read'; }
+        if (m.first === m.last) { return longDate(m.first); }
+        var a = m.first.split('-'), b = m.last.split('-');
+        if (a[0] === b[0] && a[1] === b[1]) { return +a[2] + '–' + longDate(m.last); }
+        return longDate(m.first) + ' – ' + longDate(m.last);
+      }
+      var n = function (v) { return v.toLocaleString('en-NZ'); };
+
+      function filters() {
+        return {
+          season: $('src-season').value, type: $('src-type').value, from: $('src-from').value,
+          ours: $('src-ours').checked,
+          needle: $('src-text').value.replace(/\s+/g, ' ').trim().toLowerCase()
+        };
+      }
+
+      function matches(m, f) {
+        if (f.season && m.season !== f.season) { return false; }
+        if (f.type && m.type !== f.type) { return false; }
+        if (f.from && m.from !== f.from) { return false; }
+        if (f.ours && !m.results) { return false; }
+        if (f.needle) {
+          var hay = (m.name + ' ' + (m.athletes || []).map(function (a) { return a.name; }).join(' ')).toLowerCase();
+          if (hay.indexOf(f.needle) === -1) { return false; }
+        }
+        return true;
+      }
+
+      function renderStats(ms) {
+        var dl = $('src-stats');
+        dl.textContent = '';
+        var results = 0, ours = 0, live = 0, hand = 0;
+        ms.forEach(function (m) {
+          results += m.results;
+          if (m.results) { ours++; }
+          if (m.from === 'AthleticLIVE') { live++; } else { hand++; }
+        });
+        [[n(ms.length), 'Meetings'], [n(ours), 'With our athletes'], [n(results), 'Results added'],
+         [n(live), 'From AthleticLIVE'], hand ? [n(hand), 'Typed in by hand'] : null]
+          .filter(Boolean).forEach(function (x) {
+            var div = text('div', 'stat');
+            div.appendChild(text('dt', null, x[0]));
+            div.appendChild(text('dd', null, x[1]));
+            dl.appendChild(div);
+          });
+        dl.hidden = !ms.length;
+      }
+
+      function athleteCount(m) {
+        return m.athletes ? m.athletes.length : (m.athlete_count || 0);
+      }
+
+      function meeting(m) {
+        var block = text('details', 'champs-day src-meeting');
+        var head = text('summary', 'champs-day__head');
+        head.appendChild(text('h4', 'champs-day__title src-meeting__title', m.name));
+        head.appendChild(text('span', 'champs-day__count', dates(m) + (m.type ? ' · ' + m.type : '')));
+        head.appendChild(text('span', 'champs-tag ath-badge' + (m.results ? ' champs-tag--next' : ''),
+          m.results ? n(m.results) + ' result' + (m.results === 1 ? '' : 's') : 'None of ours'));
+        block.appendChild(head);
+
+        var body = text('div', 'champs-day__body src-meeting__body');
+        var facts = text('dl', 'src-facts');
+        var link = text('a', 'records-source', m.from === 'AthleticLIVE' ? 'Meeting on AthleticLIVE' : 'Published results');
+        link.href = m.link; link.target = '_blank'; link.rel = 'noopener';
+        [['Source', link],
+         ['Dates', dates(m)],
+         m.competitors ? ['Competitors', n(m.competitors) + ' across all clubs and schools'] : null,
+         ['Our athletes', athleteCount(m) ? n(athleteCount(m)) : 'None'],
+         m.events.length ? ['Events', m.events.join(', ')] : null].filter(Boolean).forEach(function (f) {
+          facts.appendChild(text('dt', null, f[0]));
+          var dd = text('dd');
+          if (typeof f[1] === 'string') { dd.textContent = f[1]; } else { dd.appendChild(f[1]); }
+          facts.appendChild(dd);
+        });
+        body.appendChild(facts);
+        // names only for coaches and administrators: the public list has just the count
+        if (m.athletes && m.athletes.length) {
+          var ul = text('ul', 'src-athletes');
+          m.athletes.forEach(function (a) {
+            var li = text('li');
+            var al = text('a', null, a.name);
+            al.href = 'athlete.html?id=' + a.id;
+            li.appendChild(al);
+            li.appendChild(text('span', 'src-athletes__n', ' ' + a.results));
+            ul.appendChild(li);
+          });
+          body.appendChild(ul);
+        }
+        block.appendChild(body);
+        return block;
+      }
+
+      function render() {
+        var f = filters();
+        $('src-clear').disabled = !(f.season || f.type || f.from || f.ours || f.needle);
+        var ms = all.filter(function (m) { return matches(m, f); });
+        renderStats(ms);
+        $('src-status').textContent = ms.length === all.length
+          ? all.length + ' meetings.' : 'Showing ' + ms.length + ' of ' + all.length + ' meetings.';
+        var out = $('src-out');
+        out.textContent = '';
+        var seasons = [];
+        ms.forEach(function (m) { var s = m.season || 'Not dated'; if (seasons.indexOf(s) === -1) { seasons.push(s); } });
+        seasons.forEach(function (s) {
+          var group = text('div', 'records-grade');
+          group.appendChild(text('h3', 'records-grade__head', s === 'Not dated' ? s : s + ' season'));
+          ms.filter(function (m) { return (m.season || 'Not dated') === s; })
+            .forEach(function (m) { group.appendChild(meeting(m)); });
+          out.appendChild(group);
+        });
+      }
+
+      // Public: anyone sees the meetings and how many of our athletes each added.
+      // Coaches and administrators, signed in, also get the athletes' names.
+      NCAN.me().then(function (who) { NCAN.account($('account'), who); }, function () { /* shown below */ });
+
+      NCAN.get('/meetings')
+        .then(function (json) {
+          all = json.meetings || [];
+          var names = all.some(function (m) { return m.athletes; });
+          $('src-text').placeholder = names ? 'meeting or athlete' : 'meeting';
+          var seasons = {}, types = {};
+          all.forEach(function (m) { if (m.season) { seasons[m.season] = 1; } if (m.type) { types[m.type] = 1; } });
+          Object.keys(seasons).sort().reverse().forEach(function (s) {
+            var o = text('option', null, s); o.value = s; $('src-season').appendChild(o);
+          });
+          Object.keys(types).sort().forEach(function (t) {
+            var o = text('option', null, t); o.value = t; $('src-type').appendChild(o);
+          });
+          ['src-season', 'src-type', 'src-from', 'src-ours'].forEach(function (id) { $(id).addEventListener('change', render); });
+          $('src-text').addEventListener('input', render);
+          $('src-clear').addEventListener('click', function () {
+            ['src-season', 'src-type', 'src-from', 'src-text'].forEach(function (id) { $(id).value = ''; });
+            $('src-ours').checked = false;
+            render();
+          });
+          if (json.updated) { $('src-updated').textContent = 'Last updated ' + longDate(json.updated) + '.'; }
+          render();
+        })
+        .catch(function () {
+          $('src-status').textContent = 'Sorry, the meetings could not be loaded. Please try again later.';
+        });
+    }());
+  </script>
+
+</body>
+
+</html>

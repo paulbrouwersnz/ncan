@@ -997,6 +997,163 @@ table.schedule.champs-table { min-width: 0; }
 .champs-tag--next { background: var(--yellow-500); color: var(--green-800); }
 .champs-note { display: block; font-size: .85rem; font-weight: 400; color: var(--text-soft); }
 
+/* ---------- Athlete pages ---------- */
+.ath-filters { margin-bottom: clamp(1.2rem, 2.6vw, 1.8rem); }
+.ath-filters .records-bar { margin-bottom: 1rem; }
+.ath-filters .cal-filter__label { margin: 0 0 .5rem; }
+/* a checkbox field lines up with the selects beside it */
+.ath-check { display: flex; align-items: center; gap: .5rem; min-height: 2.75rem; }
+.ath-check[hidden] { display: none; }   /* e.g. no early-season results to show */
+/* the table's checkboxes on a line of their own under its dropdowns */
+.ath-checks { flex-basis: 100%; display: flex; flex-wrap: wrap; gap: .4rem 1.4rem; }
+.ath-check input { width: 1.15rem; height: 1.15rem; accent-color: var(--green-700); }
+.ath-check label { text-transform: none; letter-spacing: 0; font-size: .95rem; color: inherit; font-family: inherit; font-weight: 600; }
+.ath-stats { margin-block: clamp(1rem, 2.4vw, 1.6rem); }
+.ath-stats .stat dt { font-size: clamp(1.7rem, 2.6vw, 2.3rem); }
+
+.ath-pbs__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 13rem), 1fr));
+  gap: .8rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ath-pb {
+  padding: 1rem 1.1rem;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--yellow-500);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
+}
+.ath-pb__event { margin: 0 0 .3rem; font-size: .95rem; color: var(--green-700); }
+.ath-pb__mark {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--green-800);
+}
+.ath-pb__mark a { color: inherit; text-decoration: none; }
+.ath-pb__mark a:hover { text-decoration: underline; text-decoration-color: var(--yellow-500); }
+.ath-pb__mark--none { font-size: 1.1rem; color: var(--text-soft); }
+.ath-pb__meta, .ath-pb__trend { margin: .25rem 0 0; font-size: .85rem; color: var(--text-soft); }
+.ath-pb__trend { color: var(--green-700); font-weight: 600; }
+/* a wind-assisted best: dashed top edge, the reading, and the best legal mark */
+.ath-pb--wind { border-top-style: dashed; }
+.ath-pb__wind {
+  display: inline-block;
+  margin: .4rem 0 0;
+  padding: .1rem .45rem;
+  border-radius: 5px;
+  background: var(--green-100);
+  color: var(--green-800);
+  font-size: .78rem;
+  font-weight: 700;
+}
+.ath-pb__legal { margin: .35rem 0 0; font-size: .85rem; color: var(--text-soft); }
+.ath-pb__legal a { font-weight: 700; }
+
+/* chart key */
+.ath-key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem 1.4rem;
+  margin: 0 0 1rem;
+  padding: 0;
+  list-style: none;
+  font-size: .88rem;
+  color: var(--text-soft);
+}
+.ath-key li { display: inline-flex; align-items: center; gap: .45rem; }
+.ath-key__mark {
+  width: .8rem;
+  height: .8rem;
+  border-radius: 999px;
+  background: var(--green-700);
+  border: 2px solid var(--white);
+  box-shadow: 0 0 0 1px var(--green-700);
+}
+.ath-key__mark--pb { width: 1rem; height: 1rem; background: var(--yellow-500); box-shadow: 0 0 0 2px var(--green-800); }
+.ath-key__mark--rep { border-radius: 2px; transform: rotate(45deg); background: var(--green-600); }
+.ath-key__mark--wind { background: var(--white); box-shadow: 0 0 0 2px var(--green-700); }
+.ath-key__mark--newpb { box-shadow: 0 0 0 3px var(--yellow-500); }
+/* sortable results headings: look like the heading, with an arrow */
+.ath-sort { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: .3rem; font: inherit; color: inherit; text-transform: inherit; letter-spacing: inherit; }
+.ath-sort:focus-visible { outline: 2px solid var(--yellow-500); outline-offset: 2px; border-radius: 3px; }
+.ath-sort__arrow { font-size: .75em; opacity: .4; }
+.ath-sort.is-active .ath-sort__arrow, .ath-sort:hover .ath-sort__arrow { opacity: 1; }
+.ath-sort__n { font-size: .7em; font-weight: 700; background: var(--yellow-500); color: var(--green-900); border-radius: 999px; min-width: 1.2em; padding: 0 .3em; text-align: center; }
+.ath-sorted { font-size: .9rem; color: var(--text-muted, #4b6157); margin: 0 0 .6rem; }
+.ath-sorted__reset { all: unset; cursor: pointer; color: var(--green-700); text-decoration: underline; text-decoration-color: var(--yellow-500); text-underline-offset: 3px; }
+.ath-sorted__reset:focus-visible { outline: 2px solid var(--yellow-500); outline-offset: 2px; }
+
+/* one chart per event */
+.ath-charts {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 26rem), 1fr));
+  gap: 1rem;
+}
+.ath-chart {
+  position: relative;
+  margin: 0;
+  padding: 1rem 1rem .8rem;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+}
+.ath-chart__title { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem;
+  margin: 0 0 .4rem; font-family: var(--font-display); font-weight: 700; color: var(--green-800); }
+.ath-chart__dir { font-family: var(--font-sans); font-size: .78rem; font-weight: 700; color: var(--green-600); }
+.ath-chart__svg { display: block; width: 100%; height: auto; overflow: visible; }
+.ath-chart__empty, .ath-chart__note { margin: .4rem 0 0; font-size: .82rem; color: var(--text-soft); }
+.ath-grid { stroke: var(--line); stroke-width: 1; }
+.ath-baseline, .ath-tick { stroke: var(--line-strong); stroke-width: 1; }
+.ath-axis { font-family: var(--font-sans); font-size: 12px; fill: var(--text-soft); }
+.ath-axis--y { text-anchor: end; font-variant-numeric: tabular-nums; }
+.ath-axis--x { text-anchor: middle; }
+.ath-axis--grade { text-anchor: middle; font-weight: 700; fill: var(--green-600); font-size: 11px; }
+.ath-line { fill: none; stroke: var(--green-600); stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; }
+.ath-point { fill: var(--green-700); stroke: var(--white); stroke-width: 2; }
+.ath-point--rep { fill: var(--green-600); }
+.ath-point--wind { fill: var(--white); stroke: var(--green-700); stroke-width: 2.5; }
+.ath-point--pb { fill: var(--yellow-500); stroke: var(--green-800); stroke-width: 2.5; }
+.ath-point--pb-wind { stroke-dasharray: 3 2.5; stroke-width: 3; }
+/* a result that was a new PB when it happened: a yellow ring */
+.ath-point--newpb { stroke: var(--yellow-500); stroke-width: 3; }
+.ath-badge--newpb { opacity: .8; }
+.ath-key__mark--pb-wind { box-shadow: none; outline: 2px dashed var(--green-800); outline-offset: 0; border-color: var(--yellow-500); }
+.ath-point-link { cursor: pointer; }
+.ath-point-link:focus { outline: none; }
+.ath-point-link:focus-visible .ath-point,
+.ath-point-link:hover .ath-point { stroke: var(--green-800); stroke-width: 3.5; }
+.ath-tip {
+  position: absolute;
+  z-index: 5;
+  max-width: 17rem;
+  transform: translate(-50%, calc(-100% - 12px));
+  padding: .45rem .65rem;
+  background: var(--green-800);
+  color: var(--white);
+  border-radius: var(--radius-sm);
+  font-size: .8rem;
+  line-height: 1.35;
+  pointer-events: none;
+  box-shadow: var(--shadow);
+}
+.ath-tip[hidden] { display: none; }
+.ath-badge { margin-left: .4rem; }
+/* in the results table, a mark's tags stack under it to keep the column narrow */
+.ath-table .records-perf .ath-badge { display: block; width: fit-content; margin: .3rem 0 0; }
+.ath-table td .ath-wind { margin-left: 0; letter-spacing: .02em; border: 2px solid transparent; }
+.ath-table td .ath-wind--assisted { background: var(--white); border-color: var(--green-700); color: var(--green-800); }
+/* "Pentathlon" under an event that was part of a multi-event */
+.ath-combined { display: block; font-size: .78rem; color: var(--text-soft); }
+.ath-index th[scope="row"] a { font-weight: 700; }
+
 /* each Saturday's results fold away behind a heading row, as the gallery's albums do */
 /* no scroll-margin: the page's own scroll-padding (96px) already clears the header */
 .champs-day { margin: 0 0 clamp(1.4rem, 3vw, 2rem); }
@@ -1752,6 +1909,9 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
   margin-bottom: .5em;
 }
 .page-head .lede { color: var(--text-on-dark); max-width: 62ch; }
+/* links in the dark page header: light text, keeping the yellow underline */
+.page-head .lede a { color: #fff; }
+.page-head .lede a:hover { color: var(--yellow-400); }
 .page-head .btn-row { margin-top: 2rem; }
 
 .breadcrumb {
@@ -2772,3 +2932,46 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
   body { color: #000; background: #fff; }
   .hero, .cta-band, .site-footer { background: #fff; color: #000; }
 }
+
+/* ================= Results sources ================= */
+.src-meeting { margin-bottom: 1rem; }
+.src-meeting .champs-day__head { border-bottom-width: 1px; }
+.src-meeting__title { font-size: clamp(1rem, 1.5vw, 1.15rem); flex: 1 1 18rem; }
+.src-facts { display: grid; grid-template-columns: max-content 1fr; gap: .35rem 1.2rem; margin: 0 0 1rem; font-size: .95rem; }
+.src-facts dt { font-family: var(--font-display); font-weight: 700; font-size: .74rem; letter-spacing: .08em; text-transform: uppercase; color: var(--green-600); padding-top: .15rem; }
+.src-facts dd { margin: 0; }
+.src-athletes { list-style: none; margin: 0; padding: 0; columns: 14rem auto; column-gap: 1.5rem; font-size: .95rem; }
+.src-athletes li { break-inside: avoid; padding: .15rem 0; }
+.src-athletes__n { color: var(--green-600); font-size: .85em; }
+@media (max-width: 520px) { .src-facts { grid-template-columns: 1fr; } }
+.ath-sources { margin-top: clamp(2rem, 4vw, 3rem); }
+.ath-sources__head { margin: 0 0 .4rem; color: var(--green-800); }
+.src-meeting__link { margin: 0 0 .6rem; font-size: .95rem; }
+.src-results { list-style: none; margin: 0; padding: 0; font-size: .95rem; }
+.src-results li { padding: .2rem 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: .2rem .5rem; }
+.src-results__event { min-width: 8rem; font-weight: 600; }
+.src-results__meta { color: var(--green-600); font-size: .9em; }
+
+/* Signing in (assets/js/ncan-account.js): the box shown instead of results, and
+   the "Signed in as ..." line in the page head */
+.records-bar[hidden], .ath-filters[hidden], #progress[hidden], #all-results[hidden] { display: none; }
+.signin {
+  max-width: 36rem;
+  margin: 0 0 1.5rem;
+  padding: clamp(1.2rem, 3vw, 1.8rem);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--white);
+}
+.signin[hidden] { display: none; }
+.signin__head { margin: 0 0 .5rem; color: var(--green-800); }
+.signin__form { display: flex; flex-wrap: wrap; align-items: flex-end; gap: .8rem; margin-top: 1rem; }
+.signin__status { margin: .9rem 0 0; font-weight: 600; color: var(--green-800); }
+.signin__status:empty { display: none; }
+.account-line { margin: 1.2rem 0 0; font-size: .95rem; color: rgba(255, 255, 255, .85); }
+.account-line[hidden] { display: none; }
+.account-line__out {
+  font: inherit; color: #fff; background: none; border: 0; padding: 0;
+  text-decoration: underline; text-underline-offset: .2em; cursor: pointer;
+}
+.account-line__out:hover { color: var(--yellow-400); }

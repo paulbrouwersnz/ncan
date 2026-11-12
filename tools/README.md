@@ -39,6 +39,7 @@ browser's console on the Athletics NZ eLearning library (see below).
 | changed the weekly training times | `build-training-calendar.py`, then `build-calendar-list.py` |
 | added AGM papers to `assets/docs/agm/` | `build-agm-list.py` |
 | a club championships Saturday has finished | `club-champs-results.py` |
+| a meeting's results are out, or a family asks for a page to be removed | in the private ncan-api project: `ncan add-meeting` / `ncan opt-out`, then `ncan collect` |
 | new records to check against official results | `verify-records.py` |
 | added characters the site's fonts may not have (e.g. a new macron) | `build-fonts.py` |
 
@@ -85,7 +86,8 @@ python tools/build-fonts.py --report-chars   # list the characters and where the
 ### `build-sitemap.py`
 Writes `sitemap.xml` and `robots.txt`, listing every `.html` page at the site
 root (the home page as `https://ncan.nz/`). Add a filename to `SKIP` in the
-script to leave a page out. The sitemap was submitted once in Google Search
+script to leave a page out; `athlete.html` is skipped, as on its own it is only
+a template. The sitemap was submitted once in Google Search
 Console; Google re-reads it by itself.
 
 ```bash
@@ -215,6 +217,29 @@ built for single-day interclub meetings.
 
 Starting a new season is a matter of data files, not this tool: see the notes
 at the top of `assets/data/club-champs/index.json`.
+
+## Athlete pages
+
+`athletes.html` and `athlete.html?id=<number>` hold no results themselves. They
+read them from the club's API at `https://api.ncan.nz`, and only for someone
+signed in: a family sees their own children, coaches and the committee see
+everyone. `results-sources.html` is public: it lists every meeting collected,
+with how many of our athletes and results each added, and shows the athletes'
+names only to coaches and the committee. The shared sign-in code is
+`assets/js/ncan-account.js`.
+
+Collecting results, the members list, merges, corrections and opt-outs all live
+in the private **ncan-api** project (`docs/DATA.md` there), not in this public
+repository. No athlete data belongs here.
+
+To try the pages on this computer, run ncan-api's API locally on port 8765,
+allowing this site's address (see `docs/API.md` in ncan-api), then open
+`http://localhost:8123/athletes.html`.
+
+### `athleticlive.py`
+Not run directly: the AthleticLIVE reading used by `club-champs-results.py`
+(a copy is in ncan-api for the athlete pages) (fetching the published JSON, finding a meeting's
+sessions, checking every file belongs to the right meeting, reading marks).
 
 ## Committee page
 
