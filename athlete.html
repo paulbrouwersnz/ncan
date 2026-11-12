@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="en-NZ">
+
+<head>
+<!-- @partial:head -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0B3B2E">
+
+<meta property="og:type" content="website">
+<meta property="og:image" content="assets/img/logo.svg">
+<meta property="og:image:alt" content="North Canterbury Athletic Club">
+<meta property="og:locale" content="en_NZ">
+
+<link rel="icon" href="assets/img/logo.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/img/logo.png">
+<link rel="preload" href="assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/archivo-variable.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/css/styles.css?v=1dec39eb">
+<!-- /@partial:head -->
+
+<link rel="canonical" href="https://ncan.nz/athlete.html">
+<!-- results are behind a sign-in: keep this page out of search engines -->
+<meta name="robots" content="noindex">
+
+<title>Athlete results &mdash; North Canterbury Athletic Club</title>
+<meta name="description" content="A North Canterbury Athletic Club athlete's results and progression in each event, with charts, personal bests and links to the official results.">
+<meta property="og:title" content="Athlete results &mdash; North Canterbury Athletic Club">
+<meta property="og:description" content="Results and progression in each event, with charts and personal bests.">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<!-- @partial:header -->
+<!-- ================= Header ================= -->
+<header class="site-header" id="site-header">
+  <div class="wrap site-header__bar">
+    <a class="brand" href="index.html" aria-label="North Canterbury Athletic Club — home">
+      <img src="assets/img/logo.svg" alt="" width="888" height="508">
+      <span class="brand__name">
+        North Canterbury<br>Athletic Club
+      </span>
+    </a>
+
+    <button class="nav-toggle" type="button" id="nav-toggle" aria-expanded="false" aria-controls="primary-nav">
+      <span class="nav-toggle__bars" aria-hidden="true"><i></i></span>
+      Menu
+    </button>
+
+    <nav class="nav" id="primary-nav" aria-label="Primary">
+      <ul>
+        <li><a href="index.html#why">Why NCAN</a></li>
+        <li><a href="index.html#programmes">Programmes</a></li>
+        <li><a href="index.html#training">Training</a></li>
+        <li><a href="calendar.html">Calendar</a></li>
+        <li><a href="index.html#news">Community</a></li>
+        <li><a href="gallery.html">Gallery</a></li>
+        <li><a href="index.html#contact">Contact</a></li>
+        <li class="nav__cta"><a class="btn btn--accent" href="index.html#join">Join the club</a></li>
+      </ul>
+    </nav>
+
+    <div class="site-header__cta">
+      <a class="btn btn--accent btn--sm" href="index.html#join">Join the club</a>
+    </div>
+  </div>
+</header>
+<!-- /@partial:header -->
+
+  <main id="main">
+    <span id="top"></span>
+
+    <!-- ================= Page head ================= -->
+    <section class="page-head" aria-labelledby="page-heading">
+      <div class="wrap">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="index.html">Home</a> <span aria-hidden="true">/</span>
+          <a href="athletes.html">Athletes</a> <span aria-hidden="true">/</span>
+          <span id="crumb-name">Athlete</span>
+        </nav>
+        <p class="eyebrow eyebrow--light" id="ath-eyebrow">North Canterbury athlete</p>
+        <h1 id="page-heading">Athlete results</h1>
+        <p class="lede" id="ath-lede">
+          Track and field results from published meetings, for North Canterbury and for teams our athletes
+          have represented.
+        </p>
+        <div class="btn-row">
+          <a class="btn btn--accent" href="#progress">Progression</a>
+          <a class="btn btn--ghost-light" href="#all-results">All results</a>
+          <a class="btn btn--ghost-light" href="athletes.html">All athletes</a>
+        </div>
+        <p class="account-line" id="account" hidden></p>
+      </div>
+    </section>
+
+    <!-- ================= Summary and filters ================= -->
+    <section class="section" id="summary" aria-labelledby="summary-heading">
+      <div class="wrap">
+        <div class="section-head section-head--split" data-reveal>
+          <p class="eyebrow">At a glance</p>
+          <h2 id="summary-heading">Personal bests</h2>
+          <div>
+            <p class="lede">
+              The best mark in each event for the results shown. The filters below change every
+              section of the page.
+            </p>
+          </div>
+          <div class="section-head__aside">
+            <a class="btn btn--ghost" href="club-champs.html">Club championships</a>
+          </div>
+        </div>
+
+        <div class="ath-filters" data-reveal>
+          <div class="records-bar champs-bar">
+            <div class="records-filters">
+              <p class="records-field">
+                <label for="ath-season">Season</label>
+                <select id="ath-season"><option value="">All seasons</option></select>
+              </p>
+              <p class="records-field">
+                <label for="ath-team">Representing</label>
+                <select id="ath-team">
+                  <option value="">Anyone</option>
+                  <option value="club">North Canterbury</option>
+                  <option value="rep">Other teams</option>
+                </select>
+              </p>
+              <p class="records-field ath-check">
+                <input type="checkbox" id="ath-wind">
+                <label for="ath-wind">Wind-legal only</label>
+              </p>
+              <p class="records-field ath-check" id="ath-early-field" hidden>
+                <input type="checkbox" id="ath-early">
+                <label for="ath-early">Show early-season distances</label>
+              </p>
+            </div>
+            <div class="records-actions">
+              <button type="button" class="btn btn--ghost" id="ath-clear">Clear filters</button>
+            </div>
+          </div>
+          <p class="cal-filter__label" id="ath-events-label">Events</p>
+          <div class="cal-filter__chips" id="ath-events" role="group" aria-labelledby="ath-events-label"></div>
+        </div>
+
+        <div id="ath-signin" hidden></div>
+        <p class="records-status" id="ath-status" role="status">Loading&hellip;</p>
+        <dl class="stats__grid ath-stats" id="ath-stats" hidden></dl>
+        <div class="ath-pbs" id="ath-pbs"></div>
+      </div>
+    </section>
+
+    <!-- ================= Progression ================= -->
+    <section class="section section--tint" id="progress" aria-labelledby="progress-heading">
+      <div class="wrap">
+        <div class="section-head section-head--wide" data-reveal>
+          <p class="eyebrow">Over time</p>
+          <h2 id="progress-heading">Progression</h2>
+          <p class="lede">
+            One chart per event, higher on the chart is always better, so times run the other way
+            up. Throws and hurdles get heavier or higher as athletes move up a grade, so their line
+            breaks where the grade changes.
+          </p>
+        </div>
+        <ul class="ath-key" aria-label="Chart key">
+          <li><span class="ath-key__mark ath-key__mark--pb"></span> Personal best</li>
+          <li><span class="ath-key__mark ath-key__mark--newpb"></span> New personal best at the time</li>
+          <li><span class="ath-key__mark"></span> Result</li>
+          <li><span class="ath-key__mark ath-key__mark--rep"></span> Representing another team</li>
+          <li><span class="ath-key__mark ath-key__mark--pb ath-key__mark--pb-wind"></span> Personal best, wind-assisted</li>
+          <li><span class="ath-key__mark ath-key__mark--wind"></span> Wind over +2.0 m/s</li>
+        </ul>
+        <p class="records-field ath-check" id="ath-spread-field" hidden>
+          <input type="checkbox" id="ath-spread">
+          <label for="ath-spread">Spread out results from the same day (heats and finals)</label>
+        </p>
+        <div class="ath-charts" id="ath-charts"></div>
+      </div>
+    </section>
+
+    <!-- ================= All results ================= -->
+    <section class="section" id="all-results" aria-labelledby="results-heading">
+      <div class="wrap">
+        <div class="section-head section-head--wide" data-reveal>
+          <p class="eyebrow">Every result</p>
+          <h2 id="results-heading">All results</h2>
+          <p class="lede">
+            Newest first, or grouped by event. Each mark links to the official result. Place is the
+            place in the whole race or competition, out of everyone who recorded a result.
+          </p>
+        </div>
+        <!-- the table's own bar: grouping, plus the same filters as the top of the page, kept in step -->
+        <div class="records-bar champs-bar" data-reveal>
+          <div class="records-filters">
+            <p class="records-field">
+              <label for="ath-group">Group by</label>
+              <select id="ath-group">
+                <option value="date">Newest first</option>
+                <option value="event">By event</option>
+              </select>
+            </p>
+            <p class="records-field">
+              <label for="ath-season-2">Season</label>
+              <select id="ath-season-2"><option value="">All seasons</option></select>
+            </p>
+            <p class="records-field">
+              <label for="ath-event-2">Event</label>
+              <select id="ath-event-2"><option value="">All events</option></select>
+            </p>
+            <p class="records-field">
+              <label for="ath-team-2">Representing</label>
+              <select id="ath-team-2">
+                <option value="">Anyone</option>
+                <option value="club">North Canterbury</option>
+                <option value="rep">Other teams</option>
+              </select>
+            </p>
+            <div class="ath-checks">
+              <p class="records-field ath-check">
+                <input type="checkbox" id="ath-wind-2">
+                <label for="ath-wind-2">Wind-legal only</label>
+              </p>
+              <p class="records-field ath-check" id="ath-early-field-2" hidden>
+                <input type="checkbox" id="ath-early-2">
+                <label for="ath-early-2">Show early-season distances</label>
+              </p>
+            </div>
+          </div>
+          <div class="records-actions">
+            <button type="button" class="btn btn--ghost" id="ath-clear-2">Clear filters</button>
+          </div>
+        </div>
+        <p class="records-status" id="ath-status-2" role="status"></p>
+        <div id="ath-table"></div>
+
+        <div class="ath-sources" id="ath-sources" hidden>
+          <h3 class="ath-sources__head" id="ath-sources-heading">Results sources</h3>
+          <p class="records-note">
+            The meetings these results come from, newest first. Open one for the official results and
+            what was done there. <a href="results-sources.html">All the club&rsquo;s results sources</a>
+          </p>
+          <div id="ath-sources-list"></div>
+        </div>
+        <p class="records-note">
+          These pages draw mainly on <a href="https://live.athletic.net">AthleticLIVE</a> (athletic.net),
+          where Athletics Canterbury, school and national meetings have published results since 2024.
+          Results from before then, and athletes who only competed before then, are missing. The club
+          would love to hear about any sources for missing or earlier results.
+        </p>
+        <p class="records-note" id="ath-updated"></p>
+      </div>
+    </section>
+
+    <section class="section section--tint" aria-labelledby="optout-heading">
+      <div class="wrap">
+        <div class="section-head section-head--wide">
+          <p class="eyebrow">Your page</p>
+          <h2 id="optout-heading">Something missing, or rather not shown?</h2>
+          <p class="lede">
+            These pages are built from results already published by the meetings. If a result is
+            missing or wrong, or you would rather your page &ndash; or your child&rsquo;s &ndash; not be
+            shown, tell us and we will fix or remove it. Athletes 16 and over can ask for themselves;
+            for younger athletes, a parent or caregiver.
+          </p>
+          <div class="btn-row">
+            <a class="btn" href="index.html#contact">Contact the club</a>
+            <a class="btn btn--ghost" href="safeguarding.html">Child safeguarding</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- @partial:footer -->
+<!-- ================= Footer ================= -->
+<footer class="site-footer" aria-labelledby="footer-heading">
+  <div class="wrap">
+    <h2 class="visually-hidden" id="footer-heading">Site footer</h2>
+
+    <div class="site-footer__grid">
+      <div>
+        <div class="footer-brand">
+          <img src="assets/img/logo.svg" alt="" width="888" height="508">
+          <div>
+            <strong><a href="index.html">North Canterbury<br>Athletic Club</a></strong>
+            <span>Rangiora, New Zealand</span>
+          </div>
+        </div>
+        <p>A volunteer-run club affiliated with <a href="https://athletics.org.nz/">Athletics New Zealand</a> and <a href="https://athleticscanterbury.org.nz/">Athletics Canterbury</a>, welcoming athletes of every age and ability since 1978.</p>
+
+        <div class="socials">
+          <a href="https://www.facebook.com/NorthCanterburyAthleticClub" aria-label="North Canterbury Athletic Club on Facebook">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 22v-8h2.8l.4-3.2h-3.2V8.7c0-.9.3-1.5 1.6-1.5h1.7V4.1A22 22 0 0 0 14.4 4C12 4 10.3 5.5 10.3 8.3v2.5H7.6V14h2.7v8Z"/></svg>
+            <span>Club</span>
+          </a>
+          <a href="https://www.facebook.com/NorthCanterburyChildrensAthletics" aria-label="Children's Athletics on Facebook">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 22v-8h2.8l.4-3.2h-3.2V8.7c0-.9.3-1.5 1.6-1.5h1.7V4.1A22 22 0 0 0 14.4 4C12 4 10.3 5.5 10.3 8.3v2.5H7.6V14h2.7v8Z"/></svg>
+            <span>Children&rsquo;s</span>
+          </a>
+        </div>
+      </div>
+      <div>
+        <h3>Quick links</h3>
+        <ul>
+          <li><a href="index.html#programmes">Our programmes</a></li>
+          <li><a href="index.html#training">Training times</a></li>
+          <li><a href="index.html#join">Register &amp; fees</a></li>
+          <li><a href="index.html#news">News &amp; results</a></li>
+          <li><a href="gallery.html">Photo gallery</a></li>
+          <li><a href="index.html#contact">Contact the club</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3>Get involved</h3>
+        <ul>
+          <li><a href="index.html#join">Become a member</a></li>
+          <li><a href="calendar.html">Club calendar</a></li>
+          <li><a href="coaches-officials-volunteers.html#volunteer">Volunteer roles</a></li>
+          <li><a href="coaches-officials-volunteers.html#coaching">Coaching development</a></li>
+          <li><a href="coaches-officials-volunteers.html#officials">Officials training</a></li>
+          <li><a href="index.html#sponsors">Sponsor the club</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3>Club information</h3>
+        <ul>
+          <li><a href="committee.html">Committee and documents</a></li>
+          <li><a href="safeguarding.html">Child safeguarding</a></li>
+          <li><a href="records.html">Children&rsquo;s records</a></li>
+          <li><a href="history.html">History</a></li>
+          <li><a href="https://codesport.co.nz/catalog/%20NorthCanterburyAthleticsClub%20-1107550.htmx">Uniform and apparel</a></li>
+          <li><a href="resources.html">Athletics resources</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="site-footer__base">
+      <p>&copy; 2026 <a href="index.html">North Canterbury Athletic Club Incorporated</a>. All rights reserved.</p>
+      <ul>
+        <li><a href="index.html">Back to top</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+<!-- /@partial:footer -->
+
+  <script>
+    (function () {
+      'use strict';
+
+      /* Mobile navigation ------------------------------------------------ */
+      var toggle = document.getElementById('nav-toggle');
+      var nav = document.getElementById('primary-nav');
+
+      function closeNav() {
+        nav.removeAttribute('data-open');
+        toggle.setAttribute('aria-expanded', 'false');
+      }
+
+      toggle.addEventListener('click', function () {
+        if (nav.getAttribute('data-open') === 'true') {
+          closeNav();
+        } else {
+          nav.setAttribute('data-open', 'true');
+          toggle.setAttribute('aria-expanded', 'true');
+        }
+      });
+
+      nav.addEventListener('click', function (event) {
+        if (event.target.closest('a')) { closeNav(); }
+      });
+
+      document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && nav.getAttribute('data-open') === 'true') {
+          closeNav();
+          toggle.focus();
+        }
+      });
+
+      /* Header shadow once scrolled ------------------------------------- */
+      var header = document.getElementById('site-header');
+      var onScroll = function () {
+        header.classList.toggle('is-stuck', window.scrollY > 8);
+      };
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+
+      /* Reveal on scroll ------------------------------------------------- */
+      var targets = document.querySelectorAll('[data-reveal]');
+
+      if (!('IntersectionObserver' in window) ||
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        Array.prototype.forEach.call(targets, function (el) { el.classList.add('is-visible'); });
+        return;
+      }
+
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { rootMargin: '0px 0px -8% 0px', threshold: 0.12 });
+
+      Array.prototype.forEach.call(targets, function (el) { observer.observe(el); });
+    }());
+  </script>
+
+  <script src="assets/js/ncan-account.js"></script>
+  <script>
+    (function () {
+      'use strict';
+
+      /* Athlete page ------------------------------------------------------
+         Reads the athlete from the club's API (GET /v1/athletes/<id>; see
+         assets/js/ncan-account.js), only for someone signed in who may see
+         them: their family, a coach or an administrator. Anyone else gets
+         "not found". The athlete is the ?id= in the address: their
+         athletic.net number.
+
+         The filters (season, team, wind, events) feed every section: the
+         personal bests, the charts and the table all describe the same set
+         of results. */
+
+      var SVG = 'http://www.w3.org/2000/svg';
+      var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July',
+                    'August', 'September', 'October', 'November', 'December'];
+      var WIND_LIMIT = 2.0;   // over this a mark is wind-assisted
+      // events that change implement or height between grades
+      var SPEC_CHANGES = /shot|discus|javelin|hammer|hurdle|vortex|weight/i;
+      // a meeting's running order: sprints, distance, hurdles, walks, throws, jumps
+      var FIELD_ORDER = ['Shot Put', 'Discus', 'Javelin', 'Hammer', 'Vortex',
+                         'Long Jump', 'Triple Jump', 'High Jump', 'Pole Vault'];
+
+      var $ = function (id) { return document.getElementById(id); };
+      var athlete = null;
+      var eventsOff = {};    // events switched off with the chips
+
+      function text(tag, cls, value) {
+        var el = document.createElement(tag);
+        if (cls) { el.className = cls; }
+        if (value !== undefined && value !== null) { el.textContent = value; }
+        return el;
+      }
+      function svg(tag, attrs) {
+        var el = document.createElementNS(SVG, tag);
+        Object.keys(attrs || {}).forEach(function (k) { el.setAttribute(k, attrs[k]); });
+        return el;
+      }
+      function parseDate(iso) { var p = iso.split('-'); return new Date(+p[0], +p[1] - 1, +p[2]); }
+      function longDate(iso) { var d = parseDate(iso); return d.getDate() + ' ' + MONTHS[d.getMonth()] + ' ' + d.getFullYear(); }
+      function shortDate(d) { return d.getDate() + ' ' + MONTHS[d.getMonth()].slice(0, 3); }
+      function ordinal(n) {
+        if (10 <= n % 100 && n % 100 <= 20) { return n + 'th'; }
+        return n + ({ 1: 'st', 2: 'nd', 3: 'rd' }[n % 10] || 'th');
+      }
+
+      /* Marks --------------------------------------------------------------- */
+
+      function better(r) { return r.field ? 'higher' : 'lower'; }
+      function isBetter(a, b) { return a.field ? a.value > b.value : a.value < b.value; }
+      // only a timed mark can be wind-assisted: not a false start (FS), DNF or DQ
+      function windy(r) { return !r.field && typeof r.value === 'number' && typeof r.wind === 'number' && r.wind > WIND_LIMIT; }
+      // a wind-assisted mark is written with a w after it, as results lists do: 32.27w
+      // Marks in words, not results-sheet shorthand: 'FS' is a false start, '15.87q'
+      // is 15.87 (qualified for the next round, shown as its own tag). A wind-assisted
+      // mark is said in words beside it rather than with a 'w'.
+      var NO_MARK_WORDS = {
+        FS: 'False start', DNF: 'Did not finish', DQ: 'Disqualified', DNS: 'Did not start',
+        NM: 'No mark', ND: 'No distance', NH: 'No height', NT: 'No time',
+        FOUL: 'Foul', F: 'Foul', UNTIMED: 'Untimed', UNMEASURED: 'Not measured'
+      };
+      // Marks as the official results show them (12.47, 2:44.87, 4.56m): the event
+      // says whether it's a time or a distance. Field marks always end in m.
+      function markText(r) {
+        var m = (r.mark || '').trim();
+        if (NO_MARK_WORDS[m.toUpperCase()]) { return NO_MARK_WORDS[m.toUpperCase()]; }
+        m = m.replace(/\s*[qQ]$/, '');
+        if (!m) { return '–'; }
+        if (r.field && typeof r.value === 'number') { return m.replace(/\s*m$/i, '') + 'm'; }
+        return m;
+      }
+      // The same mark in words, for chart descriptions read on their own or aloud:
+      // 12.47 seconds, 2 minutes 44.87 seconds, 4.56 metres.
+      function markSpoken(r) {
+        if (typeof r.value !== 'number') { return markText(r); }
+        var m = markText(r);
+        if (r.field) { return m.replace(/m$/, '') + ' metres'; }
+        var p = m.split(':');
+        if (p.length === 1) { return m + ' seconds'; }
+        if (p.length === 2) { return +p[0] + ' minute' + (+p[0] === 1 ? ' ' : 's ') + p[1] + ' seconds'; }
+        return +p[0] + ' hour' + (+p[0] === 1 ? ' ' : 's ') + +p[1] + ' minutes ' + p[2] + ' seconds';
+      }
+      function qualified(r) { return typeof r.value === 'number' && /[qQ]$/.test((r.mark || '').trim()); }
+      function windText(w) { return (w > 0 ? '+' : '') + w.toFixed(1); }
+
+      // A result's age group: the grade the meeting recorded, or else the one worked
+      // out from the member's birth year (U16-U20, Senior, Masters, or a grade).
+      function groupOf(r) { return r.grade ? 'Grade ' + r.grade : r.age_group || ''; }
+      function groupShort(r) { return r.grade ? String(r.grade) : (r.age_group || '').replace(/^Grade /, ''); }
+      // for sorting: the age in years each group stands for
+      function groupAge(r) {
+        var g = groupOf(r), m = /(\d+)/.exec(g);
+        if (!g) { return null; }
+        if (g === 'Senior') { return 20; }
+        if (g === 'Masters') { return 35; }
+        return /^U/.test(g) ? +m[1] - 1 : +m[1];
+      }
+
+      // Results that set a new personal best when they happened: in date order, each
+      // wind-legal mark better than every earlier one in that event (a first mark
+      // doesn't count). Worked out once over all results, whatever is filtered.
+      var newPb = [];
+      function findNewPbs(all) {
+        var bestSoFar = {};
+        all.filter(function (r) { return typeof r.value === 'number' && !windy(r); })
+          .sort(function (a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; })
+          .forEach(function (r) {
+            var b = bestSoFar[r.event];
+            if (b && isBetter(r, b)) { newPb.push(r); }
+            if (!b || isBetter(r, b)) { bestSoFar[r.event] = r; }
+          });
+      }
+      function isNewPb(r) { return newPb.indexOf(r) !== -1; }
+
+      // seconds as 12.34 or 1:02.34; metres as 4.56m
+      function formatValue(v, field, axis) {
+        if (field) { return v.toFixed(2) + ' m'; }
+        if (v >= 60 && axis) {
+          // short enough for a chart's scale: 1:02 min, 1:02.5 min
+          var am = Math.floor(v / 60), as = v - am * 60;
+          var st = Math.abs(as - Math.round(as)) < 0.005 ? String(Math.round(as)) : as.toFixed(1);
+          return am + ':' + (as < 10 ? '0' : '') + st + ' min';
+        }
+        if (v >= 60) {
+          var m = Math.floor(v / 60), s = v - m * 60;
+          return m + ' min ' + (s < 10 ? '0' : '') + s.toFixed(2) + ' s';
+        }
+        return v.toFixed(2) + ' s';
+      }
+      function difference(first, last, field) {
+        var d = last - first;
+        if (Math.abs(d) < 0.005) { return 'level'; }
+        var good = field ? d > 0 : d < 0;
+        var amount = field ? Math.abs(d).toFixed(2) + ' m' : Math.abs(d).toFixed(2) + ' s';
+        return (good ? 'better by ' : 'down by ') + amount;
+      }
+
+      function eventRank(name) {
+        var fi = FIELD_ORDER.indexOf(name);
+        if (fi !== -1) { return 10000 + fi; }
+        var m = /^(\d+)m/.exec(name);
+        var dist = m ? +m[1] : 9000;
+        if (/hurdle/i.test(name)) { return 5000 + dist; }
+        if (/walk/i.test(name)) { return 7000 + dist; }
+        return dist;
+      }
+
+      /* Filtering ----------------------------------------------------------- */
+
+      function filters() {
+        return { season: $('ath-season').value, team: $('ath-team').value, wind: $('ath-wind').checked };
+      }
+      function isFiltered(f) {
+        return !!f.season || !!f.team || f.wind || Object.keys(eventsOff).some(function (k) { return eventsOff[k]; });
+      }
+      // what the page describes: results passing season, team and the event chips
+      function shown() {
+        var f = filters();
+        return athlete.results.filter(function (r) {
+          if (f.season && r.season !== f.season) { return false; }
+          if (f.team === 'club' && !r.club) { return false; }
+          if (f.team === 'rep' && r.club) { return false; }
+          if (eventsOff[r.event]) { return false; }
+          return true;
+        });
+      }
+      // marks that can count as a best: numeric, and wind-legal when asked
+      function countable(rs) {
+        var f = filters();
+        return rs.filter(function (r) { return typeof r.value === 'number' && !(f.wind && windy(r)); });
+      }
+
+      function byEvent(rs) {
+        var out = {};
+        rs.forEach(function (r) { (out[r.event] = out[r.event] || []).push(r); });
+        return Object.keys(out).sort(function (a, b) { return eventRank(a) - eventRank(b) || a.localeCompare(b); })
+          .map(function (name) { return { name: name, results: out[name] }; });
+      }
+
+      function best(rs) {
+        return rs.reduce(function (b, r) { return !b || isBetter(r, b) ? r : b; }, null);
+      }
+
+      /* Summary ------------------------------------------------------------- */
+
+      // Totals for the results the filters show: a finished race counts at its length
+      // (timed or "Untimed"), jumps and throws their marks. Empty ones are left out.
+      var JUMPS = /^(long jump|triple jump|high jump|pole vault)/i;
+      var THROWS = /^(shot put|discus|javelin|hammer|vortex|weight throw|turbo jav)/i;
+      function renderStats(rs) {
+        var dl = $('ath-stats');
+        dl.textContent = '';
+        var t = { run: 0, walked: 0, jumped: 0, thrown: 0, podiums: 0 }, meets = {}, seasons = {};
+        rs.forEach(function (r) {
+          meets[r.date + r.meeting] = 1;
+          seasons[r.season] = 1;
+          if (r.place >= 1 && r.place <= 3) { t.podiums++; }
+          var len = /^(\d+)m(?![a-z])/i.exec(r.event);
+          var race = /walk/i.test(r.event) ? 'walked' : 'run';
+          if (r.value === undefined || r.value === null) {
+            if (len && /^untimed$/i.test(r.mark || '')) { t[race] += +len[1]; }
+          } else if (JUMPS.test(r.event)) { t.jumped += r.value; }
+          else if (THROWS.test(r.event)) { t.thrown += r.value; }
+          else if (len) { t[race] += +len[1]; }
+        });
+        var n = function (v, dp) { return v.toLocaleString('en-NZ', { maximumFractionDigits: dp || 0 }); };
+        // metres, until 10,000 m reads better as km
+        var dist = function (m) { return m >= 10000 ? n(m / 1000, 1) + ' km' : n(m, 1) + ' m'; };
+        [[n(rs.length), 'Results'], [n(Object.keys(meets).length), 'Meetings'],
+         [n(byEvent(rs).length), 'Events'], [n(Object.keys(seasons).length), 'Seasons'],
+         t.podiums ? [n(t.podiums), 'Podium places'] : null,
+         t.run ? [n(t.run / 1000, 1) + ' km', 'Run'] : null,
+         t.walked ? [n(t.walked / 1000, 1) + ' km', 'Race walked'] : null,
+         t.jumped ? [dist(t.jumped), 'Jumped'] : null,
+         t.thrown ? [dist(t.thrown), 'Thrown'] : null].filter(Boolean).forEach(function (x) {
+          var div = text('div', 'stat');
+          div.appendChild(text('dt', null, x[0]));
+          div.appendChild(text('dd', null, x[1]));
+          dl.appendChild(div);
+        });
+        dl.hidden = false;
+      }
+
+      function renderPbs(groups) {
+        var out = $('ath-pbs');
+        out.textContent = '';
+        var list = text('ul', 'ath-pbs__list');
+        groups.forEach(function (g) {
+          var marks = countable(g.results);
+          var li = text('li', 'ath-pb');
+          li.appendChild(text('h3', 'ath-pb__event', g.name));
+          var pb = best(marks);
+          if (!pb) {
+            li.appendChild(text('p', 'ath-pb__mark ath-pb__mark--none', 'No mark'));
+            li.appendChild(text('p', 'ath-pb__meta', g.results.length + ' result' + (g.results.length === 1 ? '' : 's') + ', none measured'));
+          } else {
+            var mark = text('p', 'ath-pb__mark');
+            var a = text('a', 'records-source', markText(pb));
+            a.href = pb.source; a.target = '_blank'; a.rel = 'noopener';
+            a.title = 'Official result';
+            mark.appendChild(a);
+            li.appendChild(mark);
+            li.appendChild(text('p', 'ath-pb__meta', longDate(pb.date) + (groupOf(pb) ? ' · ' + groupOf(pb) : '')));
+            if (windy(pb)) {
+              // a wind-assisted best doesn't count officially, so give the legal one too
+              li.classList.add('ath-pb--wind');
+              li.appendChild(text('p', 'ath-pb__wind', 'Wind-assisted ' + windText(pb.wind) + ' m/s'));
+              var legal = best(marks.filter(function (r) { return !windy(r); }));
+              var lp = text('p', 'ath-pb__legal');
+              if (legal) {
+                lp.appendChild(document.createTextNode('Best wind-legal: '));
+                var la = text('a', 'records-source', markText(legal));
+                la.href = legal.source; la.target = '_blank'; la.rel = 'noopener'; la.title = 'Official result';
+                lp.appendChild(la);
+                lp.appendChild(document.createTextNode(' · ' + longDate(legal.date)));
+              } else {
+                lp.textContent = 'No wind-legal mark yet';
+              }
+              li.appendChild(lp);
+            }
+            var sorted = marks.slice().sort(function (x, y) { return x.date < y.date ? -1 : 1; });
+            if (sorted.length > 1) {
+              li.appendChild(text('p', 'ath-pb__trend',
+                sorted.length + ' marks · first to latest ' +
+                difference(sorted[0].value, sorted[sorted.length - 1].value, pb.field)));
+            } else {
+              li.appendChild(text('p', 'ath-pb__trend', 'One mark so far'));
+            }
+          }
+          list.appendChild(li);
+        });
+        out.appendChild(list);
+      }
+
+      /* Charts --------------------------------------------------------------
+         Small multiples, one per event, all sharing the time axis of the
+         results shown so they line up by date. Up is always better. */
+
+      function niceStep(span, target) {
+        var raw = span / target, pow = Math.pow(10, Math.floor(Math.log10(raw))), n = raw / pow;
+        return pow * (n < 1.5 ? 1 : n < 3 ? 2 : n < 3.5 ? 2.5 : n < 7.5 ? 5 : 10);
+      }
+
+      function chart(group, t0, t1, pbOf) {
+        var W = 600, H = 250, L = 62, R = 18, T = 18, B = 40;
+        var field = group.results[0].field;
+        // Same-day results (heats, semi, final) are spread a little sideways so each
+        // can be seen and hovered: qualifying rounds first, then the rest in order.
+        var pts = countable(group.results).slice().sort(function (a, b) {
+          return a.date < b.date ? -1 : a.date > b.date ? 1 : (qualified(b) ? 1 : 0) - (qualified(a) ? 1 : 0);
+        });
+        var SPREAD = $('ath-spread').checked ? 9 : 0;
+        var sameDay = {};
+        pts.forEach(function (p) { (sameDay[p.date] = sameDay[p.date] || []).push(p); });
+        Object.keys(sameDay).forEach(function (d) {
+          var day = sameDay[d];
+          day.forEach(function (p, i) { p.dx = (i - (day.length - 1) / 2) * SPREAD; });
+        });
+        var px = function (p) { return x(p.date) + (p.dx || 0); };
+        var card = text('figure', 'ath-chart');
+        var cap = text('figcaption', 'ath-chart__title', group.name);
+        cap.appendChild(text('span', 'ath-chart__dir', field ? '↑ further' : '↑ faster'));
+        card.appendChild(cap);
+        if (!pts.length) {
+          card.appendChild(text('p', 'ath-chart__empty', 'No measured marks to chart.'));
+          return card;
+        }
+
+        var lo = Math.min.apply(null, pts.map(function (p) { return p.value; }));
+        var hi = Math.max.apply(null, pts.map(function (p) { return p.value; }));
+        // at least 3% of the mark either side, so marks a hundredth apart still get a readable scale
+        var pad = Math.max((hi - lo) * 0.15, hi * 0.03);
+        lo = Math.max(0, lo - pad); hi += pad;
+        var step = niceStep(hi - lo, 4);
+        lo = Math.floor(lo / step) * step; hi = Math.ceil(hi / step) * step;
+
+        // one date only: put it in the middle (dates compare by value, not as objects)
+        var oneDay = +t1 === +t0;
+        var x = function (d) { return L + (oneDay ? (W - L - R) / 2 : (parseDate(d) - t0) / (t1 - t0) * (W - L - R)); };
+        // times: smaller is better, so smaller goes higher
+        var y = function (v) { var f = (v - lo) / (hi - lo); return field ? T + (1 - f) * (H - T - B) : T + f * (H - T - B); };
+
+        var s = svg('svg', { viewBox: '0 0 ' + W + ' ' + H, role: 'img',
+                             'aria-label': group.name + ' progression, ' + pts.length + ' marks' });
+        s.classList.add('ath-chart__svg');
+
+        // value grid
+        for (var v = lo; v <= hi + step / 2; v += step) {
+          var gy = y(v);
+          s.appendChild(svg('line', { x1: L, x2: W - R, y1: gy, y2: gy, class: 'ath-grid' }));
+          var lab = svg('text', { x: L - 8, y: gy + 4, class: 'ath-axis ath-axis--y' });
+          lab.textContent = formatValue(v, field, true);
+          s.appendChild(lab);
+        }
+        // date axis: each result date when close together, else month starts
+        var span = (t1 - t0) / 864e5, ticks = [];
+        if (span <= 60) {
+          pts.forEach(function (p) { if (ticks.indexOf(p.date) === -1) { ticks.push(p.date); } });
+          ticks = ticks.map(parseDate);
+        } else {
+          var d = new Date(t0.getFullYear(), t0.getMonth() + 1, 1);
+          var every = span > 730 ? 6 : span > 365 ? 3 : 1;
+          for (; d <= t1; d = new Date(d.getFullYear(), d.getMonth() + every, 1)) { ticks.push(d); }
+        }
+        ticks.forEach(function (d) {
+          var tx = oneDay ? (W - L - R) / 2 + L : L + (d - t0) / (t1 - t0) * (W - L - R);
+          s.appendChild(svg('line', { x1: tx, x2: tx, y1: H - B, y2: H - B + 5, class: 'ath-tick' }));
+          var lab = svg('text', { x: tx, y: H - B + 20, class: 'ath-axis ath-axis--x' });
+          lab.textContent = span <= 60 ? shortDate(d) : MONTHS[d.getMonth()].slice(0, 3) + ' ' + String(d.getFullYear()).slice(2);
+          s.appendChild(lab);
+        });
+        s.appendChild(svg('line', { x1: L, x2: W - R, y1: H - B, y2: H - B, class: 'ath-baseline' }));
+
+        // the line, broken where the grade changes for throws and hurdles
+        var breaks = SPEC_CHANGES.test(group.name);
+        // A result with no grade (school meetings give none) carries on the grade
+        // before it, so it joins that line rather than starting a new one.
+        var runs = [], run = [], known = null;
+        pts.forEach(function (p) {
+          var g = groupOf(p) || known;
+          if (run.length && breaks && g && known && g !== known) { runs.push(run); run = []; }
+          if (g) { known = g; }
+          p.lineGrade = g;
+          run.push(p);
+        });
+        runs.push(run);
+        var lastLabel = -Infinity;
+        runs.forEach(function (r) {
+          if (r.length > 1) {
+            s.appendChild(svg('polyline', { class: 'ath-line',
+              points: r.map(function (p) { return px(p) + ',' + y(p.value); }).join(' ') }));
+          }
+          // a label where each grade's line starts, unless it would overlap the last one
+          if (breaks && runs.length > 1 && r[0].lineGrade && x(r[0].date) - lastLabel > 40) {
+            var gl = svg('text', { x: x(r[0].date), y: T + 2, class: 'ath-axis ath-axis--grade' });
+            gl.textContent = r[0].lineGrade;
+            s.appendChild(gl);
+            lastLabel = x(r[0].date);
+          }
+        });
+
+        // points, each focusable with its details
+        pts.forEach(function (p) {
+          var isPb = p === pbOf[group.name];
+          var cls = 'ath-point' + (isPb ? ' ath-point--pb' : isNewPb(p) ? ' ath-point--newpb' : '') +
+                    (p.club ? '' : ' ath-point--rep') +
+                    (windy(p) ? (isPb ? ' ath-point--pb-wind' : ' ath-point--wind') : '');
+          var g = svg('a', { href: p.source, target: '_blank', rel: 'noopener', class: 'ath-point-link' });
+          var label = markSpoken(p) + (windy(p) ? ' (wind-assisted)' : '') + ', ' + longDate(p.date) + ', ' + p.meeting +
+                      (p.combined ? ', part of a ' + p.combined.toLowerCase() : '') +
+                      (groupOf(p) ? ', ' + groupOf(p) : '') +
+                      (typeof p.wind === 'number' ? ', wind ' + (p.wind > 0 ? '+' : '') + p.wind.toFixed(1) : '') +
+                      (p.unattached ? ', entered Unattached' : p.club ? '' : ', representing ' + p.team) + (isPb ? ', personal best' : isNewPb(p) ? ', a new personal best at the time' : '');
+          g.setAttribute('aria-label', label);
+          var cx = px(p), cy = y(p.value);
+          var shape = p.club
+            ? svg('circle', { cx: cx, cy: cy, r: isPb ? 8 : 5.5, class: cls })
+            : svg('rect', { x: cx - 6, y: cy - 6, width: 12, height: 12, transform: 'rotate(45 ' + cx + ' ' + cy + ')', class: cls });
+          var title = svg('title'); title.textContent = label;
+          shape.appendChild(title);
+          g.appendChild(shape);
+          g.addEventListener('mouseenter', function () { tip(card, label, cx / W, cy / H); });
+          g.addEventListener('focus', function () { tip(card, label, cx / W, cy / H); });
+          g.addEventListener('mouseleave', function () { tip(card); });
+          g.addEventListener('blur', function () { tip(card); });
+          s.appendChild(g);
+        });
+
+        card.appendChild(s);
+        var notes = [];
+        if (breaks && runs.length > 1) { notes.push('The line breaks where the grade changes: heavier implements or higher hurdles.'); }
+        var unmeasured = group.results.length - pts.length;
+        if (unmeasured > 0) { notes.push(unmeasured + ' result' + (unmeasured === 1 ? '' : 's') + ' without a counted mark not charted.'); }
+        if (notes.length) { card.appendChild(text('p', 'ath-chart__note', notes.join(' '))); }
+        return card;
+      }
+
+      // a floating label over the chart for the point under the pointer
+      function tip(card, label, fx, fy) {
+        var t = card.querySelector('.ath-tip');
+        if (!label) { if (t) { t.hidden = true; } return; }
+        if (!t) { t = text('div', 'ath-tip'); t.setAttribute('aria-hidden', 'true'); card.appendChild(t); }
+        t.textContent = label;
+        t.hidden = false;
+        t.style.left = Math.min(Math.max(fx * 100, 18), 82) + '%';
+        t.style.top = (fy * 100) + '%';
+      }
+
+      function renderCharts(groups) {
+        var out = $('ath-charts');
+        out.textContent = '';
+        var all = [];
+        groups.forEach(function (g) { all = all.concat(countable(g.results)); });
+        if (!all.length) { out.appendChild(text('p', 'records-status', 'No measured marks to chart for these filters.')); return; }
+        var dates = all.map(function (r) { return parseDate(r.date); });
+        var t0 = new Date(Math.min.apply(null, dates)), t1 = new Date(Math.max.apply(null, dates));
+        if (t1 - t0 > 0) {   // a little room either side
+          var padMs = (t1 - t0) * 0.06;
+          t0 = new Date(t0 - padMs); t1 = new Date(+t1 + padMs);
+        }
+        var pbOf = {};
+        groups.forEach(function (g) { pbOf[g.name] = best(countable(g.results)); });
+        groups.forEach(function (g) { out.appendChild(chart(g, t0, t1, pbOf)); });
+      }
+
+      /* Table ---------------------------------------------------------------- */
+
+      // Table order: up to three columns, each with a direction (1 = ascending).
+      // Clicking a heading puts it first and keeps the earlier ones as tie-breakers,
+      // so event, then wind, then date is: click Date, then Wind, then Event.
+      // Date starts newest first; Mark starts best first (for times, the smallest).
+      var DEFAULT_SORT = [{ key: 'Date', dir: -1 }];
+      var sorts = DEFAULT_SORT.slice();
+      var SORT_FIRST = { Date: -1, Mark: 1 };
+      var MAX_SORTS = 3;
+      function cmp(a, b) { return a < b ? -1 : a > b ? 1 : 0; }
+      function missingLast(a, b, dir) {
+        var na = a === null || a === undefined || a === '', nb = b === null || b === undefined || b === '';
+        if (na || nb) { return na === nb ? 0 : na ? 1 : -1; }
+        return dir * cmp(a, b);
+      }
+      function teamOf(r) { return r.unattached ? 'Unattached' : r.club ? 'North Canterbury' : r.team; }
+      function byColumn(k, d, a, b) {
+        if (k === 'Date') { return d * cmp(a.date, b.date); }
+        if (k === 'Event') { return d * (eventRank(a.event) - eventRank(b.event)); }
+        if (k === 'Mark') {
+          // marks only compare within an event: events in running order, then best first
+          var c = eventRank(a.event) - eventRank(b.event);
+          if (c) { return c; }
+          var va = typeof a.value === 'number' ? (a.field ? -a.value : a.value) : null;
+          var vb = typeof b.value === 'number' ? (b.field ? -b.value : b.value) : null;
+          return missingLast(va, vb, d);
+        }
+        if (k === 'Wind') { return missingLast(typeof a.wind === 'number' ? a.wind : null, typeof b.wind === 'number' ? b.wind : null, d); }
+        if (k === 'Place') { return missingLast(a.place, b.place, d); }
+        if (k === 'Age group') { return missingLast(groupAge(a), groupAge(b), d); }
+        if (k === 'Meeting') { return d * cmp(a.meeting.toLowerCase(), b.meeting.toLowerCase()); }
+        if (k === 'Representing') { return d * cmp(teamOf(a).toLowerCase(), teamOf(b).toLowerCase()); }
+        return 0;
+      }
+      function order(a, b) {
+        for (var i = 0; i < sorts.length; i++) {
+          var c = byColumn(sorts[i].key, sorts[i].dir, a, b);
+          if (c) { return c; }
+        }
+        // still level: newest first, then running order
+        return cmp(b.date, a.date) || eventRank(a.event) - eventRank(b.event);
+      }
+      function sortWords(x) {
+        var words = {
+          Date: ['oldest first', 'newest first'], Event: ['running order', 'reverse running order'],
+          Mark: ['best first', 'best last'], Wind: ['lowest first', 'highest first'],
+          Place: ['1st first', 'last first'], 'Age group': ['youngest first', 'oldest first'],
+          Meeting: ['A–Z', 'Z–A'], Representing: ['A–Z', 'Z–A']
+        }[x.key];
+        return x.key + ' (' + words[x.dir > 0 ? 0 : 1] + ')';
+      }
+
+      function renderTable(rs, groups) {
+        var out = $('ath-table');
+        out.textContent = '';
+        if (!rs.length) { out.appendChild(text('p', 'records-status', 'No results for these filters.')); return; }
+        var pbs = {}, sbs = {};
+        groups.forEach(function (g) {
+          var c = countable(g.results);
+          pbs[g.name] = best(c);
+          var seasons = {};
+          c.forEach(function (r) { (seasons[r.season] = seasons[r.season] || []).push(r); });
+          Object.keys(seasons).forEach(function (s) { sbs[g.name + '|' + s] = best(seasons[s]); });
+        });
+
+        var how = text('p', 'ath-sorted', 'Sorted by ' + sorts.map(sortWords).join(', then ') + '. ');
+        if (sorts.length > 1 || sorts[0].key !== 'Date' || sorts[0].dir !== -1) {
+          var reset = text('button', 'ath-sorted__reset', 'Reset sort');
+          reset.type = 'button';
+          reset.addEventListener('click', function () { sorts = DEFAULT_SORT.slice(); render(); });
+          how.appendChild(reset);
+        }
+        out.appendChild(how);
+        var wrap = text('div', 'table-wrap');
+        var table = text('table', 'schedule ath-table');
+        table.appendChild(text('caption', 'visually-hidden', 'All results for ' + athlete.name));
+        var thead = document.createElement('thead');
+        var hr = document.createElement('tr');
+        // each heading sorts the table; the arrow shows the column and direction in use
+        ['Date', 'Event', 'Mark', 'Wind', 'Place', 'Age group', 'Meeting', 'Representing'].forEach(function (h) {
+          var th = text('th');
+          th.setAttribute('scope', 'col');
+          var at = -1;
+          sorts.forEach(function (x, i) { if (x.key === h) { at = i; } });
+          var on = at !== -1, dir = on ? sorts[at].dir : 0;
+          if (at === 0) { th.setAttribute('aria-sort', dir > 0 ? 'ascending' : 'descending'); }
+          var b = text('button', 'ath-sort' + (on ? ' is-active' : ''), h);
+          b.type = 'button';
+          b.appendChild(text('span', 'ath-sort__arrow', on ? (dir > 0 ? '▲' : '▼') : '↕'));
+          if (on && sorts.length > 1) { b.appendChild(text('span', 'ath-sort__n', String(at + 1))); }
+          b.title = at === 0 ? 'Reverse the ' + h.toLowerCase() + ' order' : 'Sort by ' + h.toLowerCase() + ' first';
+          b.addEventListener('click', function () {
+            if (at === 0) { sorts[0] = { key: h, dir: -dir }; }
+            else {
+              sorts = sorts.filter(function (x) { return x.key !== h; });
+              sorts.unshift({ key: h, dir: SORT_FIRST[h] || 1 });
+              sorts = sorts.slice(0, MAX_SORTS);
+            }
+            render();
+          });
+          th.appendChild(b);
+          hr.appendChild(th);
+        });
+        thead.appendChild(hr);
+        table.appendChild(thead);
+        var tbody = document.createElement('tbody');
+        var newestFirst = function (a, b) { return order(a, b); };
+        if ($('ath-group').value === 'event') {
+          // a band per event, in a meeting's running order, its results newest first
+          groups.forEach(function (g) {
+            var band = text('tr', 'schedule__band');
+            var pb = pbs[g.name];
+            var bth = text('th', null, g.name + ' · ' + g.results.length + ' result' +
+                                       (g.results.length === 1 ? '' : 's') + (pb ? ' · personal best ' + markText(pb) : ''));
+            bth.setAttribute('scope', 'colgroup');
+            bth.colSpan = 8;
+            band.appendChild(bth);
+            tbody.appendChild(band);
+            g.results.slice().sort(newestFirst).forEach(function (r) { tbody.appendChild(row(r, pbs, sbs)); });
+          });
+        } else {
+          rs.slice().sort(newestFirst).forEach(function (r) { tbody.appendChild(row(r, pbs, sbs)); });
+        }
+        table.appendChild(tbody);
+        wrap.appendChild(table);
+        out.appendChild(wrap);
+      }
+
+      function row(r, pbs, sbs) {
+          var tr = document.createElement('tr');
+          // dd/mm/yyyy in the table; the full date is kept for screen readers and on hover
+          var p = r.date.split('-');
+          var when = text('th', 'records-date', p[2] + '/' + p[1] + '/' + p[0]);
+          when.title = longDate(r.date);
+          when.setAttribute('scope', 'row');
+          tr.appendChild(when);
+          var cells = [
+            ['Event', r.event, null],   // with its multi-event, if any, added below
+            ['Mark', null, 'records-perf'],
+            ['Wind', typeof r.wind === 'number' ? (r.wind > 0 ? '+' : '') + r.wind.toFixed(1) : '–', 'champs-num'],
+            ['Place', r.place ? ordinal(r.place) + (r.of ? ' of ' + r.of : '') : '–', 'champs-num'],
+            ['Age group', groupShort(r) || '–', 'champs-num'],
+            ['Meeting', r.meeting, null],
+            ['Representing', r.unattached ? 'Unattached' : r.club ? 'North Canterbury' : r.team, null]
+          ];
+          cells.forEach(function (c) {
+            var td = text('td', c[2], c[1]);
+            td.setAttribute('data-label', c[0]);
+            if (c[0] === 'Event' && r.combined) {
+              // a pentathlon's 200m is still a 200m; say which multi-event it was part of
+              td.appendChild(text('span', 'ath-combined', r.combined));
+            }
+            if (c[0] === 'Mark') {
+              var a = text('a', 'records-source', markText(r));
+              a.href = r.source; a.target = '_blank'; a.rel = 'noopener'; a.title = 'Official result';
+              td.appendChild(a);
+              if (pbs[r.event] === r) { td.appendChild(text('span', 'champs-tag champs-tag--next ath-badge', 'Personal best')); }
+              else if (isNewPb(r)) { td.appendChild(text('span', 'champs-tag champs-tag--next ath-badge ath-badge--newpb', 'New personal best')); }
+              else if (sbs[r.event + '|' + r.season] === r) { td.appendChild(text('span', 'champs-tag ath-badge', 'Season best')); }
+              if (qualified(r)) { td.appendChild(text('span', 'champs-tag ath-badge', 'Qualified')); }
+            }
+            // every wind reading is a tag; one over +2.0 m/s is outlined, like the
+            // wind-assisted points on the charts
+            if (c[0] === 'Wind' && typeof r.wind === 'number') {
+              td.textContent = '';
+              var assisted = windy(r);
+              var w = text('span', 'champs-tag ath-badge ath-wind' + (assisted ? ' ath-wind--assisted' : ''), windText(r.wind));
+              w.title = assisted ? 'Wind-assisted: over +2.0 m/s, so not a legal mark' : 'Wind-legal';
+              td.appendChild(w);
+            }
+            tr.appendChild(td);
+          });
+          return tr;
+      }
+
+      /* Everything ----------------------------------------------------------- */
+
+      // the table's Event list says which events the chips leave on
+      function syncEventSelect() {
+        var sel = $('ath-event-2');
+        var names = byEvent(athlete.results).map(function (g) { return g.name; });
+        var on = names.filter(function (n) { return !eventsOff[n]; });
+        var some = sel.querySelector('option[value="__some"]');
+        if (on.length === names.length) {
+          sel.value = '';
+        } else if (on.length === 1) {
+          sel.value = on[0];
+        } else {
+          if (!some) {
+            some = text('option', null, '');
+            some.value = '__some';
+            some.disabled = true;
+            sel.appendChild(some);
+          }
+          some.textContent = on.length + ' events';
+          sel.value = '__some';
+        }
+        if (some && sel.value !== '__some') { some.remove(); }
+      }
+
+      function render() {
+        var rs = shown();
+        var groups = byEvent(rs);
+        var f = filters();
+        $('ath-clear').disabled = $('ath-clear-2').disabled = !isFiltered(f);
+        $('ath-status').textContent = $('ath-status-2').textContent = rs.length === athlete.results.length
+          ? ''
+          : 'Showing ' + rs.length + ' of ' + athlete.results.length + ' results.';
+        $('ath-season-2').value = $('ath-season').value;
+        $('ath-team-2').value = $('ath-team').value;
+        $('ath-wind-2').checked = $('ath-wind').checked;
+        syncEventSelect();
+        renderStats(rs);
+        renderPbs(groups);
+        renderCharts(groups);
+        renderTable(rs, groups);
+      }
+
+      function setUp() {
+        var seasons = {};
+        athlete.results.forEach(function (r) { seasons[r.season] = 1; });
+        Object.keys(seasons).sort().reverse().forEach(function (s) {
+          ['ath-season', 'ath-season-2'].forEach(function (id) {
+            var o = text('option', null, s); o.value = s; $(id).appendChild(o);
+          });
+        });
+        if (!athlete.results.some(function (r) { return !r.club; })) {
+          $('ath-team').disabled = $('ath-team-2').disabled = true;
+        }
+        byEvent(athlete.results).forEach(function (g) {
+          var o = text('option', null, g.name); o.value = g.name; $('ath-event-2').appendChild(o);
+        });
+
+        var chips = $('ath-events');
+        byEvent(athlete.results).forEach(function (g) {
+          var b = text('button', 'cal-filter__chip');
+          b.type = 'button';
+          b.setAttribute('aria-pressed', 'true');
+          b.appendChild(text('span', 'cal-filter__dot'));
+          b.appendChild(document.createTextNode(g.name));
+          b.addEventListener('click', function () {
+            eventsOff[g.name] = !eventsOff[g.name];
+            b.setAttribute('aria-pressed', eventsOff[g.name] ? 'false' : 'true');
+            render();
+          });
+          chips.appendChild(b);
+        });
+
+        // the top bar holds the filters; the table's bar copies its changes across
+        ['ath-season', 'ath-team', 'ath-wind'].forEach(function (id) { $(id).addEventListener('change', render); });
+        [['ath-season-2', 'ath-season'], ['ath-team-2', 'ath-team']].forEach(function (pair) {
+          $(pair[0]).addEventListener('change', function () { $(pair[1]).value = $(pair[0]).value; render(); });
+        });
+        $('ath-wind-2').addEventListener('change', function () { $('ath-wind').checked = $('ath-wind-2').checked; render(); });
+
+        function setChips() {
+          Array.prototype.forEach.call(chips.children, function (b) {
+            b.setAttribute('aria-pressed', eventsOff[b.textContent] ? 'false' : 'true');
+          });
+        }
+        // one event from the list switches every other chip off; All events turns them all on
+        $('ath-event-2').addEventListener('change', function () {
+          var pick = $('ath-event-2').value;
+          eventsOff = {};
+          if (pick) {
+            byEvent(athlete.results).forEach(function (g) { if (g.name !== pick) { eventsOff[g.name] = true; } });
+          }
+          setChips();
+          render();
+        });
+
+        function clearAll() {
+          $('ath-season').value = ''; $('ath-team').value = ''; $('ath-wind').checked = false;
+          eventsOff = {};
+          setChips();
+          render();
+        }
+        $('ath-clear').addEventListener('click', clearAll);
+        $('ath-clear-2').addEventListener('click', clearAll);
+
+        // grouping is a viewing preference, kept on this device when it can be
+        try {
+          var saved = localStorage.getItem('ncan-athlete-group');
+          if (saved === 'event' || saved === 'date') { $('ath-group').value = saved; }
+        } catch (e) { /* private mode or blocked storage: start from the default */ }
+        $('ath-group').addEventListener('change', function () {
+          try { localStorage.setItem('ncan-athlete-group', $('ath-group').value); } catch (e) { /* not kept */ }
+          render();
+        });
+      }
+
+      // The meetings this athlete's results come from, like results-sources.html but
+      // for one athlete: every result, whatever the filters above show.
+      function renderSources() {
+        var meets = {}, order = [];
+        athlete.everything.forEach(function (r) {
+          var m = /^(https?:\/\/[^/]+\/meets\/\d+)\//.exec(r.source || '');
+          var key = m ? m[1] : 'hand:' + r.meeting;
+          if (!meets[key]) {
+            meets[key] = { name: r.meeting, type: r.type, link: m ? m[1] : r.source, live: !!m, results: [] };
+            order.push(key);
+          }
+          meets[key].results.push(r);
+        });
+        var list = order.map(function (k) {
+          var m = meets[k];
+          m.results.sort(function (a, b) { return cmp(a.date, b.date) || eventRank(a.event) - eventRank(b.event); });
+          m.first = m.results[0].date; m.last = m.results[m.results.length - 1].date;
+          m.season = m.results[0].season;
+          return m;
+        }).sort(function (a, b) { return cmp(b.first, a.first) || cmp(a.name, b.name); });
+        var out = $('ath-sources-list');
+        out.textContent = '';
+        var seasons = [];
+        list.forEach(function (m) { if (seasons.indexOf(m.season) === -1) { seasons.push(m.season); } });
+        seasons.forEach(function (season) {
+          var group = text('div', 'records-grade');
+          group.appendChild(text('h4', 'records-grade__head', season + ' season'));
+          list.filter(function (m) { return m.season === season; }).forEach(function (m) {
+            var block = text('details', 'champs-day src-meeting');
+            var head = text('summary', 'champs-day__head');
+            head.appendChild(text('h5', 'champs-day__title src-meeting__title', m.name));
+            var when = m.first === m.last ? longDate(m.first) : longDate(m.first) + ' – ' + longDate(m.last);
+            head.appendChild(text('span', 'champs-day__count', when + (m.type ? ' · ' + m.type : '')));
+            head.appendChild(text('span', 'champs-tag champs-tag--next ath-badge',
+              m.results.length + ' result' + (m.results.length === 1 ? '' : 's')));
+            block.appendChild(head);
+            var body = text('div', 'champs-day__body src-meeting__body');
+            var link = text('a', 'records-source', m.live ? 'Meeting on AthleticLIVE' : 'Published results');
+            link.href = m.link; link.target = '_blank'; link.rel = 'noopener';
+            var p = text('p', 'src-meeting__link'); p.appendChild(link); body.appendChild(p);
+            var ul = text('ul', 'src-results');
+            m.results.forEach(function (r) {
+              var li = text('li');
+              li.appendChild(text('span', 'src-results__event', r.event));
+              var a = text('a', 'records-source', markText(r));
+              a.href = r.source; a.target = '_blank'; a.rel = 'noopener'; a.title = 'Official result';
+              li.appendChild(a);
+              var bits = [];
+              if (r.place) { bits.push(ordinal(r.place) + (r.of ? ' of ' + r.of : '')); }
+              if (!r.club) { bits.push(r.team); } else if (r.unattached) { bits.push('Unattached'); }
+              if (bits.length) { li.appendChild(text('span', 'src-results__meta', ' · ' + bits.join(' · '))); }
+              if (isNewPb(r)) { li.appendChild(text('span', 'champs-tag champs-tag--next ath-badge ath-badge--newpb', 'New personal best')); }
+              ul.appendChild(li);
+            });
+            body.appendChild(ul);
+            block.appendChild(body);
+            group.appendChild(block);
+          });
+          out.appendChild(group);
+        });
+        $('ath-sources').hidden = !list.length;
+      }
+
+      function describe() {
+        var name = athlete.name;
+        document.title = name + ' — North Canterbury Athletic Club';
+        $('page-heading').textContent = name;
+        $('crumb-name').textContent = name;
+        var bits = [];
+        var group = athlete.group || (athlete.grade ? 'Grade ' + athlete.grade : '');
+        if (group) { bits.push(group + ' in ' + athlete.season); }
+        var adult = group && !/^Grade /.test(group);   // women and men from U16
+        bits.push(athlete.gender === 'girls' ? (adult ? 'Women' : 'Girls')
+          : athlete.gender === 'boys' ? (adult ? 'Men' : 'Boys') : 'North Canterbury');
+        $('ath-eyebrow').textContent = bits.join(' · ');
+        var events = byEvent(athlete.results).length;
+        var total = athlete.everything.length;
+        events = byEvent(athlete.everything).length;
+        $('ath-lede').textContent = total + ' result' + (total === 1 ? '' : 's') +
+          ' in ' + events + ' event' + (events === 1 ? '' : 's') +
+          ', from published track and field results, for North Canterbury and any team ' + name.split(' ')[0] + ' represented while a member of NCAN.';
+        if (athlete.updated) { $('ath-updated').textContent = 'Last updated ' + longDate(athlete.updated) + '.'; }
+      }
+
+      function missing(message) {
+        $('ath-status').textContent = message;
+        $('page-heading').textContent = 'Athlete not found';
+        $('ath-lede').textContent = 'There is no page for this athlete that you can see. They may not have a result yet, ' +
+          'their family may have asked for it to be removed, or it isn’t linked to your email address.';
+        ['progress', 'all-results'].forEach(function (id) { $(id).hidden = true; });
+        document.querySelector('.ath-filters').hidden = true;
+      }
+
+      // Not signed in: a sign-in box, which brings them back to this page.
+      function signedOut() {
+        $('ath-status').textContent = '';
+        ['progress', 'all-results'].forEach(function (id) { $(id).hidden = true; });
+        document.querySelector('.ath-filters').hidden = true;
+        NCAN.signIn($('ath-signin'));
+      }
+
+      NCAN.me().then(function (who) { NCAN.account($('account'), who); }, function () { /* shown below */ });
+
+      var id = new URLSearchParams(location.search).get('id');
+      if (!/^\d+$/.test(id || '')) {
+        missing('No athlete given. Find one on the athletes page.');
+        return;
+      }
+      NCAN.get('/athletes/' + id)
+        .then(function (json) {
+          // an older athletic.net number for an athlete whose numbers were merged:
+          // go to the page they are kept under, keeping any #section in the address
+          if (json.same_as) {
+            location.replace('athlete.html?id=' + json.same_as + location.hash);
+            return;
+          }
+          athlete = json;
+          // Odd distances run only at October's opening meetings (145m, 600m...) are
+          // hidden unless asked for; the choice is kept on this device.
+          athlete.everything = json.results;
+          findNewPbs(json.results);
+          // the spread switch, only for an athlete with more than one mark in an event on a day
+          var days = {};
+          var sameDay = json.results.some(function (r) {
+            if (typeof r.value !== 'number') { return false; }
+            var k = r.event + '|' + r.date;
+            if (days[k]) { return true; }
+            days[k] = 1;
+            return false;
+          });
+          if (sameDay) {
+            $('ath-spread-field').hidden = false;
+            try { $('ath-spread').checked = localStorage.getItem('ncan-athlete-spread') === '1'; } catch (e) { /* default */ }
+            $('ath-spread').addEventListener('change', function () {
+              try { localStorage.setItem('ncan-athlete-spread', $('ath-spread').checked ? '1' : '0'); } catch (e) { /* not kept */ }
+              render();
+            });
+          }
+          var early = false;
+          try { early = localStorage.getItem('ncan-athlete-early') === '1'; } catch (e) { /* default */ }
+          // an athlete with only early-season results sees them all, with no switch
+          var onlyEarly = json.results.length && json.results.every(function (r) { return r.early; });
+          if (onlyEarly) { early = true; }
+          if (!onlyEarly && json.results.some(function (r) { return r.early; })) {
+            ['', '-2'].forEach(function (n) {
+              $('ath-early-field' + n).hidden = false;
+              $('ath-early' + n).checked = early;
+              $('ath-early' + n).addEventListener('change', function () {
+                try { localStorage.setItem('ncan-athlete-early', this.checked ? '1' : '0'); } catch (e) { /* not kept */ }
+                location.reload();
+              });
+            });
+          }
+          if (!early) { athlete.results = json.results.filter(function (r) { return !r.early; }); }
+          // the wind-legal filter only means something if there is a wind-assisted mark
+          if (!athlete.results.some(windy)) {
+            ['ath-wind', 'ath-wind-2'].forEach(function (id) { $(id).parentNode.hidden = true; });
+          }
+          describe();
+          renderSources();
+          setUp();
+          render();
+        })
+        .catch(function (err) {
+          if (err.status === 401) { signedOut(); }
+          else if (err.status === 404) { missing('There is no page for athlete ' + id + ' that you can see.'); }
+          else { $('ath-status').textContent = 'Sorry, this page could not be loaded. Please try again later.'; }
+        });
+    }());
+  </script>
+
+</body>
+
+</html>

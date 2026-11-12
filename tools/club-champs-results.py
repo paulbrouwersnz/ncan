@@ -66,24 +66,15 @@ import json
 import os
 import re
 import sys
-import urllib.error
-import urllib.request
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from athleticlive import (DID_NOT_START, NCAN_CLUB, NO_MARK, Stop, event_grade,  # noqa: E402
+                          feed, ncan_team, parse_team_url, place_value, programme_name,
+                          sessions_for)
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join(ROOT, 'assets', 'data', 'club-champs')
-FEED = 'https://data.athletic.live'
-NCAN_CLUB = 87812            # North Canterbury's athletic.net club number
-UA = 'ncan-site-tools/1.0 (+https://ncan.nz)'
 GROUPS = ('7-9', '10-14')
-
-# marks that mean the athlete competed but has no measurable result
-NO_MARK = {'ND', 'NM', 'DNF', 'NT', 'FOUL', 'NH', 'F'}
-DID_NOT_START = {'DNS', 'SCR', 'SCRATCH'}
-
-
-class Stop(Exception):
-    """A check failed: say why and write nothing."""
-
 
 def say(text=''):
     try:
@@ -91,21 +82,6 @@ def say(text=''):
     except UnicodeEncodeError:
         enc = sys.stdout.encoding or 'ascii'
         print(text.encode(enc, 'replace').decode(enc))
-
-
-def feed(kind, number):
-    """One JSON file from data.athletic.live, or None if there is no such file."""
-    url = '%s/%s/_doc/%s' % (FEED, kind, number)
-    req = urllib.request.Request(url, headers={'User-Agent': UA})
-    try:
-        with urllib.request.urlopen(req, timeout=30) as resp:
-            return json.loads(resp.read().decode('utf-8'))['_source']
-    except urllib.error.HTTPError as exc:
-        if exc.code == 404:
-            return None
-        raise Stop('%s answered %s' % (url, exc.code))
-    except (urllib.error.URLError, OSError) as exc:
-        raise Stop('could not reach %s (%s)' % (url, exc))
 
 
 # ---------------------------------------------------------------- the season
@@ -126,83 +102,11 @@ def season_for(date):
     raise Stop('%s is not a Saturday on any season\'s programme (assets/data/club-champs/)' % date)
 
 
-# ------------------------------------------------------- AthleticLIVE names
-
-def programme_name(event):
-    """AthleticLIVE's short event name, in the programme's words."""
-    un = (event.get('un') or '').strip()
-    ab = (event.get('ab') or '').strip()
-    words = (un + ' ' + ab).lower()
-    if 'hurdle' in words or re.search(r'\d+mh\b', ab.lower()):
-        return 'Hurdles'
-    if 'walk' in words or re.search(r'\brw\b', ab.lower()):
-        return 'Race Walk'
-    if re.fullmatch(r'\d+', un):
-        return un + 'm'
-    if un:
-        return un
-    return ab
-
-
-def event_grade(event):
-    """The grade in AthleticLIVE's division name, e.g. 'Grade 11 BP: 41.27m' -> 11."""
-    m = re.match(r'\s*Grade\s+(\d+)', event.get('na') or '')
-    return int(m.group(1)) if m else None
-
-
 def group_of(grade):
     return '7-9' if grade <= 9 else '10-14'
 
 
-# ------------------------------------------------------- finding the meeting
-
-def parse_team_url(url):
-    m = re.match(r'^(https?://[^/]+)/meets/(\d+)/teams/(\d+)', url.strip())
-    if not m:
-        raise Stop('that does not look like an AthleticLIVE team page: expected '
-                   'https://<site>/meets/<meeting>/teams/<team>')
-    return m.group(1), int(m.group(2)), int(m.group(3))
-
-
-def sessions_for(meet, date, team):
-    """The meeting's sessions on this date, found from the team's own results.
-
-    AthleticLIVE does not publish a meeting's list of sessions as a file, so
-    one session is found from an event in the team's results, and the
-    sessions numbered either side of it are tried. Only sessions belonging to
-    this meeting and dated --date are kept."""
-    seed = None
-    for r in team.get('r', []):
-        ev = feed('ind_res_list', r['ev']['i'])
-        if ev and ev.get('mi') == meet and ev.get('se'):
-            seed = ev['se']['i']
-            break
-    if seed is None:
-        raise Stop('could not find any of the meeting\'s sessions from North Canterbury\'s results')
-
-    found = {}
-    misses = 0
-    for offset in [0, 1, -1, 2, -2, 3, -3, 4, -4]:
-        sid = seed + offset
-        s = feed('session_detail', sid)
-        if s and s.get('mi') == meet:
-            if s.get('ds') == date:
-                found[sid] = s
-            misses = 0
-        else:
-            misses += 1
-    if not found:
-        raise Stop('none of the meeting\'s sessions is dated %s' % date)
-    return found
-
-
 # ---------------------------------------------------------------- the results
-
-def place_value(p):
-    """Overall place as a number, or None for no place ('--', '')."""
-    m = re.match(r'^\s*T?(\d+)\s*$', str(p or ''))
-    return int(m.group(1)) if m else None
-
 
 def ncan_rows(event, results, grades, site, meet):
     """North Canterbury results in one event: (rows, problems)."""
@@ -268,16 +172,8 @@ def run(args):
     meeting = [m for m in season['meetings'] if m['date'] == args.date][0]
     grades = {re.sub(r'\s+', ' ', k).strip(): int(v) for k, v in (season.get('grades') or {}).items()}
 
-    team = feed('team_detail', team_no)
-    if not team:
-        raise Stop('AthleticLIVE has no team %d' % team_no)
-    if team.get('mi') != meet:
-        raise Stop('team %d belongs to meeting %s, not %d: copy the address again from the '
-                   'meeting\'s Teams page' % (team_no, team.get('mi'), meet))
-    if team.get('ani') != NCAN_CLUB:
-        raise Stop('team %d is %s, not North Canterbury' % (team_no, team.get('n')))
-
-    sessions = sessions_for(meet, args.date, team)
+    team = ncan_team(meet, team_no)
+    sessions = sessions_for(meet, team, args.date)
     say('Meeting %d on %s, sessions: %s' % (meet, args.date,
         ', '.join('%s (%d)' % (s['n'], sid) for sid, s in sorted(sessions.items()))))
 
