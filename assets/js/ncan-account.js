@@ -12,6 +12,7 @@
     get(path)              -> Promise of the JSON. A failed request rejects with
                               err.status (401 = not signed in, 403 = not allowed,
                               404 = not found, or not one you can see).
+    send(path, data)       -> Promise of {status, body}: a POST of JSON.
     me()                   -> Promise of {email, role, athletes}, or null.
     signIn(el, intro)      -> fills el with a sign-in form.
     account(el, who)       -> fills el with "Signed in as ... Sign out".
@@ -47,6 +48,16 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data || {})
     }).catch(function () { throw failure(0, 'The results service could not be reached.'); });
+  }
+
+  // A change (e.g. adding a meeting): resolves to {status, body} whatever the
+  // status, so the page can show the API's own error message.
+  function send(path, data) {
+    return post(path, data).then(function (res) {
+      return res.json().catch(function () { return {}; }).then(function (body) {
+        return { status: res.status, body: body };
+      });
+    });
   }
 
   function me() {
@@ -114,7 +125,7 @@
     });
   }
 
-  var ROLES = { admin: 'club administrator', coach: 'coach', family: 'family' };
+  var ROLES = { admin: 'club administrator', coach: 'coach', committee: 'committee', family: 'family' };
 
   // "Signed in as paul@example.nz (coach). Sign out"
   function account(box, who) {
@@ -133,5 +144,5 @@
     box.appendChild(out);
   }
 
-  window.NCAN = { api: API, get: get, me: me, signIn: signIn, account: account };
+  window.NCAN = { api: API, get: get, send: send, me: me, signIn: signIn, account: account };
 }());

@@ -2981,3 +2981,20 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 .ath-implement { font-variant-numeric: tabular-nums; }
 .ath-implement--none { font-style: italic; }
 .ath-pb__guess { font-size: .82rem; font-style: italic; }
+
+/* Adding a meeting (results-sources.html, for coaches and the committee) */
+#add-meeting[hidden] { display: none; }
+.src-add { display: grid; gap: .9rem; max-width: 52rem; }
+.src-add > .records-field { margin: 0; }
+.src-add > #add-check { justify-self: start; }
+.src-add__found { padding: 1rem 1.2rem; background: var(--white); border: 1px solid var(--line); border-radius: var(--radius-sm); }
+.src-add__found[hidden] { display: none; }
+.src-add__found > p { margin: 0 0 .9rem; }
+.src-add__fields { display: flex; flex-wrap: wrap; align-items: flex-end; gap: .8rem; }
+.src-add__status { margin: 0; font-weight: 600; color: var(--green-800); }
+.src-add__status:empty { display: none; }
+.src-remove { margin: .2rem 0 1rem; }
+.src-add__help { margin-top: 1rem; font-size: .9rem; color: var(--text-soft); }
+.src-add__help p { margin: 0 0 .4rem; }
+.src-add__help ul { margin: 0; padding-left: 1.2rem; list-style: disc; }
+.src-add__help li { margin: .15rem 0; }

@@ -16,7 +16,7 @@
 <link rel="apple-touch-icon" href="assets/img/logo.png">
 <link rel="preload" href="assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/archivo-variable.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/styles.css?v=b01edbbe">
+<link rel="stylesheet" href="assets/css/styles.css?v=4e304174">
 <!-- /@partial:head -->
 
 <link rel="canonical" href="https://ncan.nz/results-sources.html">
@@ -93,6 +93,63 @@
           <a class="btn btn--ghost-light" href="index.html#contact">Suggest a source</a>
         </div>
         <p class="account-line" id="account" hidden></p>
+      </div>
+    </section>
+
+    <!-- Adding meetings: only for club administrators, coaches and the committee, signed in -->
+    <section class="section section--tint" id="add-meeting" aria-labelledby="add-heading" hidden>
+      <div class="wrap">
+        <div class="section-head section-head--wide">
+          <p class="eyebrow">For coaches and the committee</p>
+          <h2 id="add-heading">Add a meeting</h2>
+          <p class="lede">
+            Open the meeting on <a href="https://athleticscanterbury.anet.live/meet-list">AthleticLIVE</a>,
+            add <code>/teams</code> to its address, choose a club that has results (North Canterbury if it
+            competed; any club works, as the whole meeting is read) and copy that page&rsquo;s address.
+            Add a meeting once its results are complete: what&rsquo;s published when it&rsquo;s collected is kept.
+          </p>
+        </div>
+        <form class="src-add" id="src-add" novalidate>
+          <p class="records-field records-field--grow">
+            <label for="add-url">Team page address</label>
+            <input type="url" id="add-url" required placeholder="https://athleticscanterbury.anet.live/meets/80234/teams/1855906" autocomplete="off">
+          </p>
+          <button type="button" class="btn btn--ghost" id="add-check">Check</button>
+          <div class="src-add__found" id="add-found" hidden>
+            <p id="add-about"></p>
+            <div class="src-add__fields">
+              <p class="records-field records-field--grow">
+                <label for="add-name">Name on the pages</label>
+                <input type="text" id="add-name" maxlength="120" aria-describedby="add-name-help"
+                       placeholder="e.g. Canterbury Children&rsquo;s Interclub, Programme 4">
+              </p>
+              <p class="records-field">
+                <label for="add-type">Type</label>
+                <select id="add-type"></select>
+              </p>
+              <button type="submit" class="btn btn--accent" id="add-go">Add meeting</button>
+            </div>
+            <div class="src-add__help" id="add-name-help">
+              <p>Name it in the club&rsquo;s style, so the list reads consistently. The AthleticLIVE tab&rsquo;s
+                title shows its name to start from: tidy the spelling and punctuation.</p>
+              <ul>
+                <li><strong>Interclub rounds:</strong> by series and round, with no year (the dates tell
+                  seasons apart): &ldquo;Canterbury Children&rsquo;s Interclub, Programme 4&rdquo;,
+                  &ldquo;AC Senior Interclub 3&rdquo;</li>
+                <li><strong>Twilights:</strong> number, then year: &ldquo;AC Twilight 1, 2026&rdquo;</li>
+                <li><strong>Championships, games and one-off meetings:</strong> the full name with the year:
+                  &ldquo;Canterbury Children&rsquo;s Championships 2026&rdquo;, &ldquo;NZ Track and Field
+                  Championships 2026&rdquo;, &ldquo;South Island Colgate Games 2026&rdquo;</li>
+                <li><strong>One day of a longer meeting:</strong> add it after a comma:
+                  &ldquo;Canterbury Secondary Schools Championships 2026, Day 1&rdquo;</li>
+                <li>Use <strong>AC</strong> for Athletics Canterbury, <strong>NZ</strong> for New Zealand,
+                  and full words otherwise.</li>
+              </ul>
+            </div>
+          </div>
+          <p class="src-add__status" id="add-status" role="status"></p>
+        </form>
+        <p class="records-note" id="collect-status"></p>
       </div>
     </section>
 
@@ -391,6 +448,13 @@
           facts.appendChild(dd);
         });
         body.appendChild(facts);
+        // a club administrator can take an AthleticLIVE meeting off the list
+        if (CAN_REMOVE && m.from === 'AthleticLIVE') {
+          var rm = text('button', 'btn btn--ghost btn--sm src-remove', 'Remove this meeting');
+          rm.type = 'button';
+          rm.addEventListener('click', function () { removeMeeting(m, rm); });
+          body.appendChild(rm);
+        }
         // names only for coaches and administrators: the public list has just the count
         if (m.athletes && m.athletes.length) {
           var ul = text('ul', 'src-athletes');
@@ -430,7 +494,96 @@
 
       // Public: anyone sees the meetings and how many of our athletes each added.
       // Coaches and administrators, signed in, also get the athletes' names.
-      NCAN.me().then(function (who) { NCAN.account($('account'), who); }, function () { /* shown below */ });
+      /* Adding and removing meetings ----------------------------------------
+         For club administrators, coaches and the committee, signed in: the API
+         (POST /v1/sources) checks the address with AthleticLIVE, adds it to the
+         list and collects the results in the background. Only administrators
+         remove (POST /v1/sources/remove). */
+
+      var CAN_REMOVE = false;
+      var checked = null;     // the meeting the Check button found
+
+      function collectWords(c) {
+        if (!c || !c.state) { return ''; }
+        var at = function (t) { return t ? longDate(t.slice(0, 10)) + ' at ' + t.slice(11, 16) : ''; };
+        if (c.state === 'running') { return 'Collecting results now (started ' + c.started.slice(11, 16) + '). This takes 5–10 minutes; this page updates when it’s done.'; }
+        if (c.state === 'done') { return 'Results last collected ' + at(c.finished) + ': ' + (c.message || '') ; }
+        return 'The last collect, ' + at(c.finished || c.started) + ', didn’t finish: ' + (c.message || '') + ' Ask a club administrator.';
+      }
+
+      // after a change: show the collect's progress, and reload the list once it's done
+      function watchCollect() {
+        NCAN.get('/sources').then(function (info) {
+          $('collect-status').textContent = collectWords(info.collect);
+          if (info.collect && info.collect.state === 'running') { setTimeout(watchCollect, 15000); }
+          else { location.reload(); }
+        }, function () { setTimeout(watchCollect, 30000); });
+      }
+
+      function setUpAdding() {
+        NCAN.get('/sources').then(function (info) {
+          $('add-meeting').hidden = false;
+          info.types.forEach(function (t) { var o = text('option', null, t); o.value = t; $('add-type').appendChild(o); });
+          $('collect-status').textContent = collectWords(info.collect);
+          if (info.collect && info.collect.state === 'running') { setTimeout(watchCollect, 15000); }
+          if (info.can_remove) { CAN_REMOVE = true; if (all.length) { render(); } }
+        }, function () { /* not staff after all: nothing to show */ });
+
+        $('add-url').addEventListener('input', function () { checked = null; $('add-found').hidden = true; });
+        $('add-check').addEventListener('click', function () {
+          var url = $('add-url').value.trim();
+          if (!url) { $('add-status').textContent = 'Paste the team page address first.'; return; }
+          $('add-status').textContent = 'Checking with AthleticLIVE…';
+          $('add-found').hidden = true;
+          NCAN.send('/sources/check', { url: url }).then(function (r) {
+            if (r.status !== 200) { $('add-status').textContent = r.body.error || 'Sorry, that didn’t work.'; return; }
+            var m = r.body;
+            if (m.already) {
+              $('add-status').textContent = 'That meeting is already listed, as “' + m.already.name + '”.';
+              return;
+            }
+            checked = m;
+            var when = m.dates.length ? ' on ' + m.dates.map(function (d) { return longDate(d); }).join(' and ') : '';
+            $('add-about').textContent = 'AthleticLIVE meeting ' + m.meet + when + ': ' + m.results + ' result' + (m.results === 1 ? '' : 's') + ' for ' + m.team + '.' +
+              (m.recent ? ' This meeting is recent: if its results are still coming in, wait until they’re complete.' : '');
+            $('add-found').hidden = false;
+            $('add-status').textContent = 'Give it a name and type, then add it.';
+            $('add-name').focus();
+          }, function (err) { $('add-status').textContent = err.message; });
+        });
+        $('src-add').addEventListener('submit', function (e) {
+          e.preventDefault();
+          if (!checked) { $('add-status').textContent = 'Check the address first.'; return; }
+          $('add-go').disabled = true;
+          $('add-status').textContent = 'Adding…';
+          NCAN.send('/sources', { url: checked.url, name: $('add-name').value, type: $('add-type').value }).then(function (r) {
+            $('add-go').disabled = false;
+            if (r.status !== 201) { $('add-status').textContent = r.body.error || 'Sorry, that didn’t work.'; return; }
+            $('add-status').textContent = 'Added “' + r.body.meeting.name + '”. Its results are being collected now.';
+            $('src-add').reset();
+            $('add-found').hidden = true;
+            checked = null;
+            setTimeout(watchCollect, 3000);
+          }, function (err) { $('add-go').disabled = false; $('add-status').textContent = err.message; });
+        });
+      }
+
+      function removeMeeting(m, button) {
+        if (!confirm('Remove “' + m.name + '”? Its results come off the athlete pages when the results are next ' +
+                     'collected, which starts now. It can be added again later.')) { return; }
+        button.disabled = true;
+        NCAN.send('/sources/remove', { url: m.link }).then(function (r) {
+          if (r.status !== 200) { button.disabled = false; alert(r.body.error || 'Sorry, that didn’t work.'); return; }
+          button.textContent = 'Removed: updating the results…';
+          $('collect-status').textContent = 'Collecting results now. This takes 5–10 minutes; this page updates when it’s done.';
+          setTimeout(watchCollect, 3000);
+        }, function (err) { button.disabled = false; alert(err.message); });
+      }
+
+      NCAN.me().then(function (who) {
+        NCAN.account($('account'), who);
+        if (who && who.role !== 'family') { setUpAdding(); }
+      }, function () { /* shown below */ });
 
       NCAN.get('/meetings')
         .then(function (json) {
