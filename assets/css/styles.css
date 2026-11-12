@@ -2975,3 +2975,9 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
   text-decoration: underline; text-underline-offset: .2em; cursor: pointer;
 }
 .account-line__out:hover { color: var(--yellow-400); }
+
+/* Throws: the implement weight under the event in the results table, and a note on a
+   personal best whose weight was inferred from the grade */
+.ath-implement { font-variant-numeric: tabular-nums; }
+.ath-implement--none { font-style: italic; }
+.ath-pb__guess { font-size: .82rem; font-style: italic; }

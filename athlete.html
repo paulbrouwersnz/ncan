@@ -16,7 +16,7 @@
 <link rel="apple-touch-icon" href="assets/img/logo.png">
 <link rel="preload" href="assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/archivo-variable.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/styles.css?v=1dec39eb">
+<link rel="stylesheet" href="assets/css/styles.css?v=b01edbbe">
 <!-- /@partial:head -->
 
 <link rel="canonical" href="https://ncan.nz/athlete.html">
@@ -134,6 +134,10 @@
                 <input type="checkbox" id="ath-early">
                 <label for="ath-early">Show early-season distances</label>
               </p>
+              <p class="records-field ath-check" id="ath-infer-field" hidden>
+                <input type="checkbox" id="ath-infer">
+                <label for="ath-infer">Infer unrecorded throw weights from age grade</label>
+              </p>
             </div>
             <div class="records-actions">
               <button type="button" class="btn btn--ghost" id="ath-clear">Clear filters</button>
@@ -158,8 +162,9 @@
           <h2 id="progress-heading">Progression</h2>
           <p class="lede">
             One chart per event, higher on the chart is always better, so times run the other way
-            up. Throws and hurdles get heavier or higher as athletes move up a grade, so their line
-            breaks where the grade changes.
+            up. A throw&rsquo;s line breaks where the implement weight changes, labelled with the
+            weight; a hurdles line breaks where the grade changes, as the hurdles get higher.
+            Personal bests for throws are for each weight.
           </p>
         </div>
         <ul class="ath-key" aria-label="Chart key">
@@ -173,6 +178,10 @@
         <p class="records-field ath-check" id="ath-spread-field" hidden>
           <input type="checkbox" id="ath-spread">
           <label for="ath-spread">Spread out results from the same day (heats and finals)</label>
+        </p>
+        <p class="records-field ath-check" id="ath-perweight-field" hidden>
+          <input type="checkbox" id="ath-perweight">
+          <label for="ath-perweight">A separate chart for each throwing weight</label>
         </p>
         <div class="ath-charts" id="ath-charts"></div>
       </div>
@@ -510,18 +519,43 @@
         return /^U/.test(g) ? +m[1] - 1 : +m[1];
       }
 
+      // Throws: the implement's weight, as the meeting published it, or - with "Infer
+      // unrecorded throw weights" ticked - the usual one for the grade or age group
+      // (ncan-api's config/implements.json). Personal bests for throws are per weight.
+      var INFER = false, PER_WEIGHT = false;
+      try {
+        INFER = localStorage.getItem('ncan-athlete-infer') === '1';
+        PER_WEIGHT = localStorage.getItem('ncan-athlete-perweight') === '1';
+      } catch (e) { /* defaults */ }
+      function isThrow(r) { return THROWS.test(r.event); }
+      function weightOf(r) { return r.implement || (INFER && r.implement_usual) || ''; }
+      function weightGuessed(r) { return !r.implement && INFER && !!r.implement_usual; }
+      function weightWords(r) {
+        var w = weightOf(r);
+        return w ? w + (weightGuessed(r) ? ' (usual for the grade)' : '') : 'weight not recorded';
+      }
+      // what a personal best is counted within: the event, and for a throw its weight
+      function pbKey(r) { return isThrow(r) ? r.event + ' ' + (weightOf(r) || '(weight not recorded)') : r.event; }
+      // lightest first; an unknown weight last
+      function weightOrder(w) {
+        var m = /([\d.]+)\s*(kg|g|lb)/.exec(w || '');
+        if (!m) { return 1e9; }
+        return m[2] === 'g' ? +m[1] / 1000 : m[2] === 'lb' ? +m[1] * 0.4536 : +m[1];
+      }
+
       // Results that set a new personal best when they happened: in date order, each
-      // wind-legal mark better than every earlier one in that event (a first mark
-      // doesn't count). Worked out once over all results, whatever is filtered.
+      // wind-legal mark better than every earlier one in that event (and, for a throw,
+      // at that weight; a first mark doesn't count). Worked out once over all results,
+      // whatever is filtered.
       var newPb = [];
       function findNewPbs(all) {
         var bestSoFar = {};
         all.filter(function (r) { return typeof r.value === 'number' && !windy(r); })
           .sort(function (a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; })
           .forEach(function (r) {
-            var b = bestSoFar[r.event];
+            var k = pbKey(r), b = bestSoFar[k];
             if (b && isBetter(r, b)) { newPb.push(r); }
-            if (!b || isBetter(r, b)) { bestSoFar[r.event] = r; }
+            if (!b || isBetter(r, b)) { bestSoFar[k] = r; }
           });
       }
       function isNewPb(r) { return newPb.indexOf(r) !== -1; }
@@ -591,6 +625,21 @@
           .map(function (name) { return { name: name, results: out[name] }; });
       }
 
+      // as byEvent, but a throw is split by weight: "Shot Put 3kg", "Shot Put 4kg"
+      function byWeight(rs) {
+        var out = {}, first = {};
+        rs.forEach(function (r) {
+          var k = pbKey(r);
+          (out[k] = out[k] || []).push(r);
+          first[k] = first[k] || r;
+        });
+        return Object.keys(out).sort(function (a, b) {
+          var ra = first[a], rb = first[b];
+          return eventRank(ra.event) - eventRank(rb.event) || ra.event.localeCompare(rb.event) ||
+                 weightOrder(weightOf(ra)) - weightOrder(weightOf(rb));
+        }).map(function (k) { return { name: k, results: out[k] }; });
+      }
+
       function best(rs) {
         return rs.reduce(function (b, r) { return !b || isBetter(r, b) ? r : b; }, null);
       }
@@ -655,6 +704,12 @@
             mark.appendChild(a);
             li.appendChild(mark);
             li.appendChild(text('p', 'ath-pb__meta', longDate(pb.date) + (groupOf(pb) ? ' · ' + groupOf(pb) : '')));
+            // a weight filled in from the grade, not published by the meeting: say so
+            if (isThrow(pb) && g.results.some(weightGuessed)) {
+              li.appendChild(text('p', 'ath-pb__meta ath-pb__guess', g.results.every(weightGuessed)
+                ? 'Weight inferred from the grade: the meetings didn’t publish it.'
+                : 'Includes results whose weight was inferred from the grade.'));
+            }
             if (windy(pb)) {
               // a wind-assisted best doesn't count officially, so give the legal one too
               li.classList.add('ath-pb--wind');
@@ -765,13 +820,17 @@
         });
         s.appendChild(svg('line', { x1: L, x2: W - R, y1: H - B, y2: H - B, class: 'ath-baseline' }));
 
-        // the line, broken where the grade changes for throws and hurdles
-        var breaks = SPEC_CHANGES.test(group.name);
-        // A result with no grade (school meetings give none) carries on the grade
-        // before it, so it joins that line rather than starting a new one.
+        // The line breaks where the implement changes: for a throw where its weight
+        // changes (labelled with the weight), for hurdles where the grade changes. A
+        // chart for one weight has nothing to break.
+        var throwChart = isThrow(group.results[0]);
+        var breaks = throwChart ? !PER_WEIGHT : SPEC_CHANGES.test(group.name);
+        var stage = throwChart ? weightOf : groupOf;
+        // A result with no weight or grade recorded (school meetings give neither)
+        // carries on from the one before, joining that line rather than starting one.
         var runs = [], run = [], known = null;
         pts.forEach(function (p) {
-          var g = groupOf(p) || known;
+          var g = stage(p) || known;
           if (run.length && breaks && g && known && g !== known) { runs.push(run); run = []; }
           if (g) { known = g; }
           p.lineGrade = g;
@@ -784,10 +843,13 @@
             s.appendChild(svg('polyline', { class: 'ath-line',
               points: r.map(function (p) { return px(p) + ',' + y(p.value); }).join(' ') }));
           }
-          // a label where each grade's line starts, unless it would overlap the last one
-          if (breaks && runs.length > 1 && r[0].lineGrade && x(r[0].date) - lastLabel > 40) {
+          // a label where each grade's (or weight's) line starts, unless it would overlap
+          // the last one; a line starting with unrecorded results takes the first it has
+          var named = null;
+          for (var i = 0; i < r.length && !named; i++) { named = r[i].lineGrade; }
+          if (breaks && runs.length > 1 && named && x(r[0].date) - lastLabel > 40) {
             var gl = svg('text', { x: x(r[0].date), y: T + 2, class: 'ath-axis ath-axis--grade' });
-            gl.textContent = r[0].lineGrade;
+            gl.textContent = named;
             s.appendChild(gl);
             lastLabel = x(r[0].date);
           }
@@ -795,13 +857,14 @@
 
         // points, each focusable with its details
         pts.forEach(function (p) {
-          var isPb = p === pbOf[group.name];
+          var isPb = p === pbOf[pbKey(p)];
           var cls = 'ath-point' + (isPb ? ' ath-point--pb' : isNewPb(p) ? ' ath-point--newpb' : '') +
                     (p.club ? '' : ' ath-point--rep') +
                     (windy(p) ? (isPb ? ' ath-point--pb-wind' : ' ath-point--wind') : '');
           var g = svg('a', { href: p.source, target: '_blank', rel: 'noopener', class: 'ath-point-link' });
           var label = markSpoken(p) + (windy(p) ? ' (wind-assisted)' : '') + ', ' + longDate(p.date) + ', ' + p.meeting +
                       (p.combined ? ', part of a ' + p.combined.toLowerCase() : '') +
+                      (isThrow(p) ? ', ' + weightWords(p) : '') +
                       (groupOf(p) ? ', ' + groupOf(p) : '') +
                       (typeof p.wind === 'number' ? ', wind ' + (p.wind > 0 ? '+' : '') + p.wind.toFixed(1) : '') +
                       (p.unattached ? ', entered Unattached' : p.club ? '' : ', representing ' + p.team) + (isPb ? ', personal best' : isNewPb(p) ? ', a new personal best at the time' : '');
@@ -822,7 +885,13 @@
 
         card.appendChild(s);
         var notes = [];
-        if (breaks && runs.length > 1) { notes.push('The line breaks where the grade changes: heavier implements or higher hurdles.'); }
+        if (breaks && runs.length > 1) {
+          notes.push(throwChart ? 'The line breaks where the implement weight changes; the personal best is marked at each weight.'
+                                : 'The line breaks where the grade changes, as the hurdles get higher.');
+        }
+        if (throwChart && pts.some(function (p) { return !weightOf(p); })) {
+          notes.push('Results without a recorded weight join the line before them.');
+        }
         var unmeasured = group.results.length - pts.length;
         if (unmeasured > 0) { notes.push(unmeasured + ' result' + (unmeasured === 1 ? '' : 's') + ' without a counted mark not charted.'); }
         if (notes.length) { card.appendChild(text('p', 'ath-chart__note', notes.join(' '))); }
@@ -852,8 +921,10 @@
           var padMs = (t1 - t0) * 0.06;
           t0 = new Date(t0 - padMs); t1 = new Date(+t1 + padMs);
         }
-        var pbOf = {};
-        groups.forEach(function (g) { pbOf[g.name] = best(countable(g.results)); });
+        // the personal best for each event, and for a throw each weight
+        var pbOf = {}, rs = [];
+        groups.forEach(function (g) { rs = rs.concat(g.results); });
+        byWeight(rs).forEach(function (g) { pbOf[g.name] = best(countable(g.results)); });
         groups.forEach(function (g) { out.appendChild(chart(g, t0, t1, pbOf)); });
       }
 
@@ -914,8 +985,9 @@
         var out = $('ath-table');
         out.textContent = '';
         if (!rs.length) { out.appendChild(text('p', 'records-status', 'No results for these filters.')); return; }
+        // personal and season bests per event, and for a throw per weight
         var pbs = {}, sbs = {};
-        groups.forEach(function (g) {
+        byWeight(rs).forEach(function (g) {
           var c = countable(g.results);
           pbs[g.name] = best(c);
           var seasons = {};
@@ -969,9 +1041,15 @@
           // a band per event, in a meeting's running order, its results newest first
           groups.forEach(function (g) {
             var band = text('tr', 'schedule__band');
-            var pb = pbs[g.name];
+            // a throw has a personal best at each weight: "3kg 8.45m, 4kg 7.10m"
+            var bests = byWeight(g.results).map(function (w) { return pbs[w.name]; }).filter(Boolean);
+            var pbWords = !bests.length ? '' : isThrow(bests[0])
+              ? ' · personal best' + (bests.length > 1 ? 's ' : ' ') + bests.map(function (b) {
+                  return (weightOf(b) || 'weight not recorded') + ' ' + markText(b);
+                }).join(', ')
+              : ' · personal best ' + markText(bests[0]);
             var bth = text('th', null, g.name + ' · ' + g.results.length + ' result' +
-                                       (g.results.length === 1 ? '' : 's') + (pb ? ' · personal best ' + markText(pb) : ''));
+                                       (g.results.length === 1 ? '' : 's') + pbWords);
             bth.setAttribute('scope', 'colgroup');
             bth.colSpan = 8;
             band.appendChild(bth);
@@ -1006,6 +1084,13 @@
           cells.forEach(function (c) {
             var td = text('td', c[2], c[1]);
             td.setAttribute('data-label', c[0]);
+            if (c[0] === 'Event' && isThrow(r)) {
+              // the implement: as published, inferred from the grade, or not recorded
+              var wt = text('span', 'ath-combined ath-implement' + (weightOf(r) ? '' : ' ath-implement--none'),
+                            weightOf(r) ? weightOf(r) + (weightGuessed(r) ? ' (usual)' : '') : 'Weight not recorded');
+              if (weightGuessed(r)) { wt.title = 'Not published by the meeting: the usual weight for the grade'; }
+              td.appendChild(wt);
+            }
             if (c[0] === 'Event' && r.combined) {
               // a pentathlon's 200m is still a 200m; say which multi-event it was part of
               td.appendChild(text('span', 'ath-combined', r.combined));
@@ -1014,9 +1099,9 @@
               var a = text('a', 'records-source', markText(r));
               a.href = r.source; a.target = '_blank'; a.rel = 'noopener'; a.title = 'Official result';
               td.appendChild(a);
-              if (pbs[r.event] === r) { td.appendChild(text('span', 'champs-tag champs-tag--next ath-badge', 'Personal best')); }
+              if (pbs[pbKey(r)] === r) { td.appendChild(text('span', 'champs-tag champs-tag--next ath-badge', 'Personal best')); }
               else if (isNewPb(r)) { td.appendChild(text('span', 'champs-tag champs-tag--next ath-badge ath-badge--newpb', 'New personal best')); }
-              else if (sbs[r.event + '|' + r.season] === r) { td.appendChild(text('span', 'champs-tag ath-badge', 'Season best')); }
+              else if (sbs[pbKey(r) + '|' + r.season] === r) { td.appendChild(text('span', 'champs-tag ath-badge', 'Season best')); }
               if (qualified(r)) { td.appendChild(text('span', 'champs-tag ath-badge', 'Qualified')); }
             }
             // every wind reading is a tag; one over +2.0 m/s is outlined, like the
@@ -1071,8 +1156,10 @@
         $('ath-wind-2').checked = $('ath-wind').checked;
         syncEventSelect();
         renderStats(rs);
-        renderPbs(groups);
-        renderCharts(groups);
+        // personal bests per event, and for a throw per weight; the charts the same
+        // when "a separate chart for each throwing weight" is ticked
+        renderPbs(byWeight(rs));
+        renderCharts(PER_WEIGHT ? byWeight(rs) : groups);
         renderTable(rs, groups);
       }
 
@@ -1284,6 +1371,31 @@
             try { $('ath-spread').checked = localStorage.getItem('ncan-athlete-spread') === '1'; } catch (e) { /* default */ }
             $('ath-spread').addEventListener('change', function () {
               try { localStorage.setItem('ncan-athlete-spread', $('ath-spread').checked ? '1' : '0'); } catch (e) { /* not kept */ }
+              render();
+            });
+          }
+          // "Infer unrecorded throw weights", only if some throw has no published weight
+          // but a usual one; it changes which results are personal bests, so the page
+          // starts again. The choice is kept on this device.
+          if (json.results.some(function (r) { return isThrow(r) && !r.implement && r.implement_usual; })) {
+            $('ath-infer-field').hidden = false;
+            $('ath-infer').checked = INFER;
+            $('ath-infer').addEventListener('change', function () {
+              try { localStorage.setItem('ncan-athlete-infer', this.checked ? '1' : '0'); } catch (e) { /* not kept */ }
+              location.reload();
+            });
+          }
+          // "A separate chart for each throwing weight", only if an event has two weights
+          var weights = {};
+          json.results.filter(isThrow).forEach(function (r) {
+            (weights[r.event] = weights[r.event] || {})[weightOf(r) || '?'] = 1;
+          });
+          if (Object.keys(weights).some(function (e) { return Object.keys(weights[e]).length > 1; })) {
+            $('ath-perweight-field').hidden = false;
+            $('ath-perweight').checked = PER_WEIGHT;
+            $('ath-perweight').addEventListener('change', function () {
+              PER_WEIGHT = this.checked;
+              try { localStorage.setItem('ncan-athlete-perweight', PER_WEIGHT ? '1' : '0'); } catch (e) { /* not kept */ }
               render();
             });
           }
