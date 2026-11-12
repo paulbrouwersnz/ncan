@@ -2994,3 +2994,7 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 .src-add__status { margin: 0; font-weight: 600; color: var(--green-800); }
 .src-add__status:empty { display: none; }
 .src-remove { margin: .2rem 0 1rem; }
+.src-add__help { margin-top: 1rem; font-size: .9rem; color: var(--text-soft); }
+.src-add__help p { margin: 0 0 .4rem; }
+.src-add__help ul { margin: 0; padding-left: 1.2rem; list-style: disc; }
+.src-add__help li { margin: .15rem 0; }

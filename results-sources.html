@@ -16,7 +16,7 @@
 <link rel="apple-touch-icon" href="assets/img/logo.png">
 <link rel="preload" href="assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/archivo-variable.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/styles.css?v=f49fe4cc">
+<link rel="stylesheet" href="assets/css/styles.css?v=4e304174">
 <!-- /@partial:head -->
 
 <link rel="canonical" href="https://ncan.nz/results-sources.html">
@@ -120,13 +120,31 @@
             <div class="src-add__fields">
               <p class="records-field records-field--grow">
                 <label for="add-name">Name on the pages</label>
-                <input type="text" id="add-name" maxlength="120" placeholder="e.g. Canterbury Children&rsquo;s Interclub, Programme 4">
+                <input type="text" id="add-name" maxlength="120" aria-describedby="add-name-help"
+                       placeholder="e.g. Canterbury Children&rsquo;s Interclub, Programme 4">
               </p>
               <p class="records-field">
                 <label for="add-type">Type</label>
                 <select id="add-type"></select>
               </p>
               <button type="submit" class="btn btn--accent" id="add-go">Add meeting</button>
+            </div>
+            <div class="src-add__help" id="add-name-help">
+              <p>Name it in the club&rsquo;s style, so the list reads consistently. The AthleticLIVE tab&rsquo;s
+                title shows its name to start from: tidy the spelling and punctuation.</p>
+              <ul>
+                <li><strong>Interclub rounds:</strong> by series and round, with no year (the dates tell
+                  seasons apart): &ldquo;Canterbury Children&rsquo;s Interclub, Programme 4&rdquo;,
+                  &ldquo;AC Senior Interclub 3&rdquo;</li>
+                <li><strong>Twilights:</strong> number, then year: &ldquo;AC Twilight 1, 2026&rdquo;</li>
+                <li><strong>Championships, games and one-off meetings:</strong> the full name with the year:
+                  &ldquo;Canterbury Children&rsquo;s Championships 2026&rdquo;, &ldquo;NZ Track and Field
+                  Championships 2026&rdquo;, &ldquo;South Island Colgate Games 2026&rdquo;</li>
+                <li><strong>One day of a longer meeting:</strong> add it after a comma:
+                  &ldquo;Canterbury Secondary Schools Championships 2026, Day 1&rdquo;</li>
+                <li>Use <strong>AC</strong> for Athletics Canterbury, <strong>NZ</strong> for New Zealand,
+                  and full words otherwise.</li>
+              </ul>
             </div>
           </div>
           <p class="src-add__status" id="add-status" role="status"></p>
