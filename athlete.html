@@ -16,7 +16,7 @@
 <link rel="apple-touch-icon" href="assets/img/logo.png">
 <link rel="preload" href="assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/archivo-variable.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/styles.css?v=24770548">
+<link rel="stylesheet" href="assets/css/styles.css?v=4bb2bd95">
 <!-- /@partial:head -->
 
 <link rel="canonical" href="https://ncan.nz/athlete.html">
@@ -82,8 +82,8 @@
         <p class="eyebrow eyebrow--light" id="ath-eyebrow">North Canterbury athlete</p>
         <h1 id="page-heading">Athlete results</h1>
         <p class="lede" id="ath-lede">
-          Track and field results from published meetings, for North Canterbury and for teams our athletes
-          have represented.
+          Track and field, cross country and road results from published meetings, for North Canterbury
+          and for teams our athletes have represented.
         </p>
         <div class="btn-row">
           <a class="btn btn--accent" href="#progress">Progression</a>
@@ -257,6 +257,35 @@
           would love to hear about any sources for missing or earlier results.
         </p>
         <p class="records-note" id="ath-updated"></p>
+      </div>
+    </section>
+
+    <!-- ================= Cross country and road ================= -->
+    <section class="section section--tint" id="off-track" aria-labelledby="offtrack-heading" hidden>
+      <div class="wrap">
+        <div class="section-head section-head--wide">
+          <p class="eyebrow">Out of the stadium</p>
+          <h2 id="offtrack-heading">Cross country, road and relays</h2>
+          <p class="lede">
+            Newest first. Cross country times depend on the course and the conditions, so they
+            aren&rsquo;t compared as personal bests: the place in the race tells more. A relay shows
+            the runner&rsquo;s own leg and their team&rsquo;s place. Grades are cross country and road
+            grades: two-year junior grades by age on 31&nbsp;December, and Masters by age on the day.
+          </p>
+        </div>
+        <div class="table-wrap">
+          <table class="schedule ath-table ath-offtrack">
+            <caption class="visually-hidden">Cross country, road and relay results, newest first</caption>
+            <thead>
+              <tr>
+                <th scope="col">Date</th><th scope="col">Race</th><th scope="col">Time</th>
+                <th scope="col">Place</th><th scope="col">Grade</th><th scope="col">Meeting</th>
+                <th scope="col">Representing</th>
+              </tr>
+            </thead>
+            <tbody id="offtrack-body"></tbody>
+          </table>
+        </div>
       </div>
     </section>
 
@@ -1145,6 +1174,53 @@
           return tr;
       }
 
+      /* Cross country, road and relays ------------------------------------------
+         Newest first, in a table of their own. No PBs or charts: courses differ.
+         The grade is the out-of-stadia one (U10-U20 in two-year grades, then
+         Senior and Masters by age on the day), with the race's own division. */
+      function renderOffTrack(list) {
+        var body = $('offtrack-body');
+        body.textContent = '';
+        $('off-track').hidden = !list.length;
+        list.slice().sort(function (a, b) { return a.date < b.date ? 1 : a.date > b.date ? -1 : 0; })
+          .forEach(function (r) {
+            var tr = document.createElement('tr');
+            var p = r.date.split('-');
+            var when = text('th', 'records-date', p[2] + '/' + p[1] + '/' + p[0]);
+            when.title = longDate(r.date);
+            when.setAttribute('scope', 'row');
+            tr.appendChild(when);
+            var leg = r.relay;
+            var race = leg ? 'Relay, leg ' + leg.leg + (leg.legs ? ' of ' + leg.legs : '') +
+                             (/\d+m$/.test(r.event) ? ' (' + r.event.match(/(\d+m)$/)[1] + ')' : '')
+                           : r.event.replace(/^(Cross country|Road) /, '');
+            var cells = [
+              ['Race', null, null],
+              ['Time', null, 'records-perf'],
+              ['Place', r.place ? ordinal(r.place) + (r.of ? ' of ' + r.of : '') + (leg ? ' (team)' : '') : '–', 'champs-num'],
+              ['Grade', r.oos_grade || '–', 'champs-num'],
+              ['Meeting', r.meeting, null],
+              ['Representing', r.unattached ? 'Unattached' : r.club ? 'North Canterbury' : r.team, null]
+            ];
+            cells.forEach(function (c) {
+              var td = text('td', c[2], c[1]);
+              td.setAttribute('data-label', c[0]);
+              if (c[0] === 'Race') {
+                td.appendChild(text('span', null, race));
+                td.appendChild(text('span', 'ath-combined', r.oos + (r.division ? ' · ' + r.division : '')));
+              }
+              if (c[0] === 'Time') {
+                var a = text('a', 'records-source', r.mark || '–');
+                a.href = r.source; a.target = '_blank'; a.rel = 'noopener'; a.title = 'Official result';
+                td.appendChild(a);
+                if (leg && leg.team_mark) { td.appendChild(text('span', 'ath-combined', 'Team ' + leg.team_mark)); }
+              }
+              tr.appendChild(td);
+            });
+            body.appendChild(tr);
+          });
+      }
+
       /* Everything ----------------------------------------------------------- */
 
       // the table's Event list says which events the chips leave on
@@ -1380,6 +1456,11 @@
             return;
           }
           athlete = json;
+          // cross country, road and relay legs have a section of their own: the
+          // track sections (PBs, charts, filters, the results table) never see them
+          var offTrack = json.results.filter(function (r) { return r.oos; });
+          json.results = json.results.filter(function (r) { return !r.oos; });
+          renderOffTrack(offTrack);
           // Odd distances run only at October's opening meetings (145m, 600m...) are
           // hidden unless asked for; the choice is kept on this device.
           athlete.everything = json.results;
@@ -1447,15 +1528,23 @@
             ['ath-wind', 'ath-wind-2'].forEach(function (id) { $(id).parentNode.hidden = true; });
           }
           describe();
-          // a member registered with the club who has no published results yet
+          var first = json.name.split(' ')[0];
+          var oosWords = offTrack.length + ' cross country, road and relay result' + (offTrack.length === 1 ? '' : 's');
+          // no track and field results: a member with no results yet, or one who only
+          // runs cross country and road
           if (!json.results.length) {
-            $('ath-lede').textContent = json.name.split(' ')[0] + ' is registered with the club for ' +
-              json.season + ', with no published track and field results yet. Results appear here a few ' +
-              'days after a meeting publishes them.';
+            $('ath-lede').textContent = offTrack.length
+              ? oosWords + ' from published meetings, for North Canterbury and any team ' + first +
+                ' represented while a member of NCAN. No track and field results yet.'
+              : first + ' is registered with the club for ' + json.season + ', with no published ' +
+                'results yet. Results appear here a few days after a meeting publishes them.';
             ['summary', 'progress', 'all-results'].forEach(function (x) { $(x).hidden = true; });
             Array.prototype.forEach.call(document.querySelectorAll('.page-head a[href^="#"]'),
               function (a) { a.style.display = 'none'; });
             return;
+          }
+          if (offTrack.length) {
+            $('ath-lede').textContent += ' Also ' + oosWords + ': see below.';
           }
           renderSources();
           setUp();

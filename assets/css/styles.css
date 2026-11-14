@@ -3020,6 +3020,10 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 .access-status { margin: .8rem 0 0; font-weight: 600; color: var(--green-800); }
 .access-status:empty { display: none; }
 
+/* Cross country, road and relays (athlete.html) */
+.ath-offtrack td[data-label="Race"] { min-width: 11rem; }
+.ath-offtrack td[data-label="Meeting"] { min-width: 12rem; }
+
 /* Membership changes (athletes.html, administrators) */
 .mem-add { display: flex; flex-wrap: wrap; align-items: flex-end; gap: .8rem; max-width: 60rem; }
 .mem-add [hidden] { display: none; }
