@@ -3008,3 +3008,14 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 .review-fix { display: flex; flex-wrap: wrap; gap: .5rem; margin: .35rem 0 .2rem; }
 .review-pick { font: inherit; font-size: .9rem; padding: .45rem .6rem; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); max-width: 100%; }
 .review-actions { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 1rem; }
+
+/* Who can see an athlete's page (athlete.html, assets/js/athlete-access.js) */
+#ath-access[hidden] { display: none; }
+.access-list { list-style: none; margin: 0 0 1.5rem; padding: 0; max-width: 46rem; }
+.access-list li { display: flex; flex-wrap: wrap; align-items: center; gap: .3rem .8rem; padding: .7rem 0; border-bottom: 1px solid var(--line); }
+.access-list strong { font-weight: 600; word-break: break-all; }
+.access-how { flex: 1 1 14rem; color: var(--text-soft); font-size: .9rem; }
+.access-sub { margin: 1rem 0 .3rem; font-size: 1rem; color: var(--green-800); }
+.access-add { display: flex; flex-wrap: wrap; align-items: flex-end; gap: .8rem; max-width: 46rem; }
+.access-status { margin: .8rem 0 0; font-weight: 600; color: var(--green-800); }
+.access-status:empty { display: none; }
