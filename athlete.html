@@ -1447,6 +1447,16 @@
             ['ath-wind', 'ath-wind-2'].forEach(function (id) { $(id).parentNode.hidden = true; });
           }
           describe();
+          // a member registered with the club who has no published results yet
+          if (!json.results.length) {
+            $('ath-lede').textContent = json.name.split(' ')[0] + ' is registered with the club for ' +
+              json.season + ', with no published track and field results yet. Results appear here a few ' +
+              'days after a meeting publishes them.';
+            ['summary', 'progress', 'all-results'].forEach(function (x) { $(x).hidden = true; });
+            Array.prototype.forEach.call(document.querySelectorAll('.page-head a[href^="#"]'),
+              function (a) { a.style.display = 'none'; });
+            return;
+          }
           renderSources();
           setUp();
           render();

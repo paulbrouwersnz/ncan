@@ -108,7 +108,8 @@
           <p class="eyebrow">Find an athlete</p>
           <h2 id="athletes-heading">Athletes</h2>
           <p class="lede">
-            Athletes are listed under the most recent season they competed in, with their age group that season: grade 7&ndash;14 for children (younger children run in grade 7), then U16&ndash;U20, Senior and Masters as Athletics NZ&rsquo;s competition rules define them, by age on 31&nbsp;December. Pages are built from results
+            Athletes are listed under the most recent season they were registered with the club or competed in,
+            with their age group that season: grade 7&ndash;14 for children (younger children run in grade 7), then U16&ndash;U20, Senior and Masters as Athletics NZ&rsquo;s competition rules define them, by age on 31&nbsp;December. Members with no results yet are listed too. Pages are built from results
             already published by the meetings, so a result can take a few days to appear.
           </p>
         </div>
@@ -478,7 +479,7 @@
           : 'Showing ' + rows.length + ' of ' + all.length + ' athletes.';
         if (!rows.length) { return; }
 
-        // grouped by each athlete's most recent season, newest first
+        // grouped by each athlete's most recent season (registered, or with results), newest first
         var seasons = [];
         rows.forEach(function (a) { if (seasons.indexOf(a.season) === -1) { seasons.push(a.season); } });
         seasons.sort().reverse();
@@ -488,7 +489,7 @@
         block.appendChild(text('h3', 'records-grade__head', season + ' season'));
         var wrap = text('div', 'table-wrap');
         var table = text('table', 'schedule ath-index');
-        table.appendChild(text('caption', 'visually-hidden', 'North Canterbury athletes last competing in ' + season));
+        table.appendChild(text('caption', 'visually-hidden', 'North Canterbury athletes most recently registered or competing in ' + season));
         var thead = document.createElement('thead');
         var hr = document.createElement('tr');
         ['Athlete', 'Age group', 'Results', 'Events', 'Last result'].forEach(function (h) {
@@ -505,9 +506,9 @@
           link.href = 'athlete.html?id=' + a.id;
           who.appendChild(link);
           tr.appendChild(who);
-          [['Age group', a.group ? a.group.replace(/^Grade /, '') + ' ' + sex(a) : '–', 'champs-num'],
+          [['Age group', a.group ? (a.group.replace(/^Grade /, '') + ' ' + sex(a)).trim() : '–', 'champs-num'],
            ['Results', a.results, 'champs-num'],
-           ['Events', a.events.join(', '), 'champs-events'],
+           ['Events', a.events.length ? a.events.join(', ') : 'No results yet', 'champs-events'],
            ['Last result', a.last ? longDate(a.last) : '–', 'records-date']].forEach(function (c) {
             var td = text('td', c[2], c[1]);
             td.setAttribute('data-label', c[0]);
