@@ -16,7 +16,7 @@
 <link rel="apple-touch-icon" href="assets/img/logo.png">
 <link rel="preload" href="assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/archivo-variable.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/styles.css?v=f5c2711a">
+<link rel="stylesheet" href="assets/css/styles.css?v=24770548">
 <!-- /@partial:head -->
 
 <link rel="canonical" href="https://ncan.nz/athletes.html">
@@ -146,6 +146,76 @@
         <p class="records-status" id="ix-status" role="status">Loading the athletes&hellip;</p>
         <div id="ix-out"></div>
         <p class="records-note" id="ix-updated"></p>
+      </div>
+    </section>
+
+    <section class="section" id="admin-members" aria-labelledby="members-heading" hidden>
+      <div class="wrap">
+        <div class="section-head section-head--wide">
+          <p class="eyebrow">For club administrators</p>
+          <h2 id="members-heading">Membership changes</h2>
+          <p class="lede">
+            The members list comes from the club&rsquo;s membership system (GameDay), and a result counts
+            for the club only while the athlete was a member. Changes here sit on top of that list, so the
+            next import doesn&rsquo;t undo them. Results are collected again after each change, which takes
+            5&ndash;10 minutes.
+          </p>
+        </div>
+        <div id="mem-out"></div>
+        <form class="mem-add" id="mem-add" novalidate>
+          <p class="records-field records-field--grow">
+            <label for="mem-name">Member</label>
+            <input type="text" id="mem-name" list="mem-names" autocomplete="off" placeholder="full name">
+            <datalist id="mem-names"></datalist>
+          </p>
+          <p class="records-field">
+            <label for="mem-kind">Change</label>
+            <select id="mem-kind">
+              <option value="left">Left on a date</option>
+              <option value="joined">Joined on a date</option>
+              <option value="member">A member for a season</option>
+              <option value="not">Not a member for a season</option>
+            </select>
+          </p>
+          <p class="records-field" id="mem-day-field">
+            <label for="mem-day">Date</label>
+            <input type="date" id="mem-day">
+          </p>
+          <p class="records-field" id="mem-season-field" hidden>
+            <label for="mem-season">Season</label>
+            <input type="text" id="mem-season" placeholder="2025/26" size="8" autocomplete="off">
+          </p>
+          <p class="records-field" id="mem-born-field" hidden>
+            <label for="mem-born">Birth year</label>
+            <input type="number" id="mem-born" min="1900" max="2100" placeholder="not on the list">
+          </p>
+          <p class="records-field records-field--grow">
+            <label for="mem-why">Why</label>
+            <input type="text" id="mem-why" maxlength="200" autocomplete="off"
+                   placeholder="e.g. transferred to another club; paid in cash">
+          </p>
+          <button type="submit" class="btn btn--accent">Make the change</button>
+        </form>
+        <p class="mem-help" id="mem-help"></p>
+        <p class="access-status" id="mem-status" role="status"></p>
+        <p class="records-note" id="mem-collect"></p>
+
+        <h3 class="access-sub" id="blocks-heading">Blocked from the whole site</h3>
+        <p class="mem-help">A blocked email can&rsquo;t sign in, whatever the membership system says, and is
+          signed out at once. To stop someone seeing one athlete only, use that athlete&rsquo;s page.</p>
+        <div id="blocks-out"></div>
+        <form class="access-add" id="block-add" novalidate>
+          <p class="records-field records-field--grow">
+            <label for="block-email">Email address</label>
+            <input type="email" id="block-email" autocomplete="off" placeholder="name@example.com">
+          </p>
+          <p class="records-field records-field--grow">
+            <label for="block-why">Why</label>
+            <input type="text" id="block-why" maxlength="200" autocomplete="off">
+          </p>
+          <button type="submit" class="btn btn--ghost">Block</button>
+        </form>
+        <p class="access-status" id="block-status" role="status"></p>
       </div>
     </section>
 
@@ -307,6 +377,7 @@
   </script>
 
   <script src="assets/js/ncan-account.js"></script>
+  <script src="assets/js/athletes-admin.js" defer></script>
   <script>
     (function () {
       'use strict';

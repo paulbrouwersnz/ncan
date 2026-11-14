@@ -16,7 +16,7 @@
 <link rel="apple-touch-icon" href="assets/img/logo.png">
 <link rel="preload" href="assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/archivo-variable.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/styles.css?v=f5c2711a">
+<link rel="stylesheet" href="assets/css/styles.css?v=24770548">
 <!-- /@partial:head -->
 
 <link rel="canonical" href="https://ncan.nz/athlete.html">
@@ -278,6 +278,32 @@
         </div>
       </div>
     </section>
+
+    <!-- Who can see this page: for the athlete's contacts from the membership
+         system, and club administrators (assets/js/athlete-access.js) -->
+    <section class="section" id="ath-access" aria-labelledby="access-heading" hidden>
+      <div class="wrap">
+        <div class="section-head section-head--wide">
+          <p class="eyebrow">Sharing</p>
+          <h2 id="access-heading">Who can see this page</h2>
+          <p class="lede" id="access-lede">
+            The contacts the club has in its membership system can see this page. You can let others
+            see it too, such as a grandparent or another carer: add their email address, and they can
+            sign in with it. Nobody is emailed when you add them. People you add can see the page,
+            but can&rsquo;t add anyone else.
+          </p>
+        </div>
+        <div id="access-out"></div>
+        <form class="access-add" id="access-add" novalidate>
+          <p class="records-field records-field--grow">
+            <label for="access-email">Add an email address</label>
+            <input type="email" id="access-email" autocomplete="off" placeholder="name@example.com">
+          </p>
+          <button type="submit" class="btn btn--accent">Let them see this page</button>
+        </form>
+        <p class="access-status" id="access-status" role="status"></p>
+      </div>
+    </section>
   </main>
 
   <!-- @partial:footer -->
@@ -419,6 +445,7 @@
   </script>
 
   <script src="assets/js/ncan-account.js"></script>
+  <script src="assets/js/athlete-access.js" defer></script>
   <script>
     (function () {
       'use strict';
