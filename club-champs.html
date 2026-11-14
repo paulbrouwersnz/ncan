@@ -16,7 +16,7 @@
 <link rel="apple-touch-icon" href="assets/img/logo.png">
 <link rel="preload" href="assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/archivo-variable.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/styles.css?v=4e304174">
+<link rel="stylesheet" href="assets/css/styles.css?v=f5c2711a">
 <!-- /@partial:head -->
 
 <link rel="canonical" href="https://ncan.nz/club-champs.html">
@@ -87,6 +87,24 @@
           <a class="btn btn--ghost-light" href="#programme">Programme</a>
           <a class="btn btn--ghost-light" href="#points">How points work</a>
         </div>
+        <p class="account-line" id="account" hidden></p>
+      </div>
+    </section>
+
+    <!-- ================= Review (club administrators and coaches, signed in) ================= -->
+    <section class="section section--tint" id="champs-review" aria-labelledby="review-heading" hidden>
+      <div class="wrap">
+        <div class="section-head section-head--wide">
+          <p class="eyebrow">For club administrators and coaches</p>
+          <h2 id="review-heading">Review results</h2>
+          <p class="lede">
+            Each Saturday&rsquo;s results are proposed from the meeting&rsquo;s results once it&rsquo;s been
+            added on the <a href="results-sources.html">results sources</a> page: North Canterbury athletes
+            in the programme&rsquo;s events, in their grade from the members list. Check anything listed
+            under &ldquo;Needs a look&rdquo;, then confirm the Saturday. Only confirmed results appear on this page.
+          </p>
+        </div>
+        <div id="review-out"></div>
       </div>
     </section>
 
@@ -384,15 +402,20 @@
     }());
   </script>
 
+  <script src="assets/js/ncan-account.js"></script>
+  <script src="assets/js/club-champs-review.js"></script>
   <script>
     (function () {
       'use strict';
 
       /* Club championships ------------------------------------------------
-         Everything is read from assets/data/club-champs/: index.json lists the
-         seasons, newest first, and each season has its own file (2026-27.json)
-         holding its programme, points scale and results. Edit those files to
-         change what appears here; nothing is duplicated into this page.
+         Everything is read from the club's API, without signing in:
+         /v1/club-champs lists the seasons, newest first, and
+         /v1/club-champs/<season> holds a season's programme, points scale and
+         confirmed results. Results are proposed from the meetings' results and
+         confirmed by a club administrator or coach (see
+         assets/js/club-champs-review.js); the programme is kept in the private
+         ncan-api project (config/club-champs/).
 
          The page opens on the season named in the address
          (club-champs.html?season=2026-27), or else the newest season whose
@@ -404,7 +427,7 @@
          that into points with the file's "points" list, so changing the
          scale re-scores the whole season. */
 
-      var DATA_DIR = 'assets/data/club-champs/';
+      var API = NCAN.api + '/club-champs';
       var seasons = [];   // from index.json, newest first
       var GROUPS = ['7-9', '10-14'];
       var COLUMNS = [
@@ -1195,7 +1218,8 @@
                                          (opening ? location.hash : ''));
         }
 
-        return getJson(DATA_DIR + season.id + '.json').then(function (json) {
+        if (window.ChampsReview) { ChampsReview.season(season.id); }
+        return getJson(API + '/' + season.id).then(function (json) {
           data = json;
           data.meetings = (data.meetings || []).slice().sort(function (a, b) {
             return a.date < b.date ? -1 : a.date > b.date ? 1 : 0;
@@ -1217,7 +1241,7 @@
           var note = data.updated ? 'Last updated ' + shortDate(data.updated) + ' ' +
                                     parseDate(data.updated).getFullYear() + '.' : '';
           if (problems.length) {
-            if (window.console) { problems.forEach(function (p) { console.warn(season.id + '.json: ' + p); }); }
+            if (window.console) { problems.forEach(function (p) { console.warn(season.id + ': ' + p); }); }
             note += ' ' + problems.length + ' result' + (problems.length === 1 ? ' was' : 's were') +
                     ' left out because ' + (problems.length === 1 ? 'it does' : 'they do') +
                     ' not match the programme.';
@@ -1228,7 +1252,7 @@
           }
           var odd = names.filter(function (n, i) { return names.indexOf(n) === i; });
           if (odd.length) {
-            if (window.console) { console.warn(season.id + '.json: not full names: ' + odd.join(', ')); }
+            if (window.console) { console.warn(season.id + ': not full names: ' + odd.join(', ')); }
             note += ' Check ' + (odd.length === 1 ? 'this name, which does' : 'these names, which do') +
                     ' not look like a full name: ' + odd.join(', ') + '.';
           }
@@ -1236,21 +1260,11 @@
         });
       }
 
-      // A season has a programme once one of its Saturdays lists an event.
-      function hasProgramme(json) {
-        return (json.meetings || []).some(function (m) {
-          return ['girls', 'boys'].some(function (gender) {
-            return GROUPS.some(function (group) { return eventsAt(m, gender, group).length > 0; });
-          });
-        });
-      }
 
       // the newest season with a programme; if none has one yet, the newest of all
       function defaultSeason(i) {
         if (i >= seasons.length) { return Promise.resolve(seasons[0].id); }
-        return getJson(DATA_DIR + seasons[i].id + '.json')
-          .then(function (json) { return hasProgramme(json) ? seasons[i].id : defaultSeason(i + 1); })
-          .catch(function () { return defaultSeason(i + 1); });
+        return Promise.resolve(seasons[i].programme ? seasons[i].id : defaultSeason(i + 1));
       }
 
       function failed() {
@@ -1265,7 +1279,7 @@
         });
       });
 
-      getJson(DATA_DIR + 'index.json')
+      getJson(API)
         .then(function (index) {
           seasons = (index.seasons || []).filter(function (x) { return x && x.id; });
           if (!seasons.length) { throw new Error('no seasons'); }

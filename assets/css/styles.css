@@ -2998,3 +2998,13 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 .src-add__help p { margin: 0 0 .4rem; }
 .src-add__help ul { margin: 0; padding-left: 1.2rem; list-style: disc; }
 .src-add__help li { margin: .15rem 0; }
+
+/* Reviewing the club championships (club-champs.html, administrators and coaches) */
+#champs-review[hidden] { display: none; }
+.review-day { margin-bottom: .8rem; }
+.review-sub { margin: 1.2rem 0 .4rem; font-size: 1rem; color: var(--green-800); }
+.review-list { margin: 0; padding-left: 1.2rem; list-style: disc; }
+.review-list li { margin: .35rem 0; }
+.review-fix { display: flex; flex-wrap: wrap; gap: .5rem; margin: .35rem 0 .2rem; }
+.review-pick { font: inherit; font-size: .9rem; padding: .45rem .6rem; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); max-width: 100%; }
+.review-actions { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 1rem; }
