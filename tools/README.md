@@ -38,7 +38,7 @@ browser's console on the Athletics NZ eLearning library (see below).
 | added or changed a calendar in `assets/calendar/` | `build-calendar-list.py` |
 | changed the weekly training times | `build-training-calendar.py`, then `build-calendar-list.py` |
 | added AGM papers to `assets/docs/agm/` | `build-agm-list.py` |
-| a club championships Saturday has finished | `club-champs-results.py` |
+| a club championships Saturday has finished | add its meeting on the results sources page, then confirm it under "Review results" on the club champs page |
 | a meeting's results are out, or a family asks for a page to be removed | in the private ncan-api project: `ncan add-meeting` / `ncan opt-out`, then `ncan collect` |
 | new records to check against official results | `verify-records.py` |
 | added characters the site's fonts may not have (e.g. a new macron) | `build-fonts.py` |
@@ -190,33 +190,17 @@ Options: `--cache` (folder for downloaded PDFs), `--refetch`, `--limit`.
 
 ## Children's club championships
 
-### `club-champs-results.py`
-Fills in one Saturday of the championships in
-`assets/data/club-champs/<season>.json` from AthleticLIVE's published results,
-with a link to each official result.
+`club-champs.html` holds no results itself. It reads each season from the club's
+API (`https://api.ncan.nz/v1/club-champs`), with no sign-in needed. The API works
+the results out from the meetings it collects: add a Saturday's interclub on the
+results sources page, and its club championship results are proposed. A club
+administrator or coach then reviews and confirms them, in "Review results" on
+the club champs page (`assets/js/club-champs-review.js`). Only confirmed results
+are shown.
 
-1. Take the meeting's AthleticLIVE address and add `/teams`, e.g.
-   `https://athleticscanterbury.anet.live/meets/80234/teams`.
-2. Click **North Canterbury Athletic Cl** and copy that page's address.
-3. Run it once results are final:
-
-```bash
-python tools/club-champs-results.py --date 2026-11-14 https://athleticscanterbury.anet.live/meets/NNNNN/teams/NNNNNNN
-python tools/club-champs-results.py --date 2026-11-14 <same address> --apply
-python tools/club-champs-results.py --date 2026-11-14 <same address> --apply --replace   # redo a Saturday
-```
-
-Without `--apply` it only shows what it found. It stops, writing nothing, if
-the team page isn't North Canterbury's, the meeting or date don't match, the
-date isn't on the programme, or an athlete's AthleticLIVE year doesn't match
-the race they ran in. For an athlete AthleticLIVE has in the wrong year, add
-them to `"grades"` in the season file, e.g. `"Stella Brown": 9`.
-
-It only finds athletes listed under North Canterbury on AthleticLIVE, and is
-built for single-day interclub meetings.
-
-Starting a new season is a matter of data files, not this tool: see the notes
-at the top of `assets/data/club-champs/index.json`.
+The programme for each season (which events count on each Saturday, and the
+points) is in the private **ncan-api** project, `config/club-champs/`, with the
+procedures in its `docs/DATA.md`.
 
 ## Athlete pages
 
@@ -235,11 +219,6 @@ repository. No athlete data belongs here.
 To try the pages on this computer, run ncan-api's API locally on port 8765,
 allowing this site's address (see `docs/API.md` in ncan-api), then open
 `http://localhost:8123/athletes.html`.
-
-### `athleticlive.py`
-Not run directly: the AthleticLIVE reading used by `club-champs-results.py`
-(a copy is in ncan-api for the athlete pages) (fetching the published JSON, finding a meeting's
-sessions, checking every file belongs to the right meeting, reading marks).
 
 ## Committee page
 
