@@ -124,6 +124,22 @@
     td.setAttribute('data-label', label);
     if (note) { td.appendChild(el('span', 'manage-mem-note', note)); }
     row.appendChild(td);
+    return td;
+  }
+  var MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  function day(iso) {
+    var m = /^(\d{4})-(\d\d)-(\d\d)$/.exec(iso || '');
+    return m ? +m[3] + ' ' + MONTHS[+m[2] - 1] + ' ' + m[1] : '';
+  }
+  // a registration: {type, ordered}, or (from an older import) just the type
+  function item(k) { return typeof k === 'string' ? { type: k, ordered: null } : k; }
+  // each registration: its type, and its order date under it
+  function registered(td, list) {
+    list.map(item).forEach(function (k) {
+      var one = el('span', 'manage-mem-item', k.type);
+      if (k.ordered) { one.appendChild(el('span', 'manage-mem-note', 'Ordered ' + day(k.ordered))); }
+      td.appendChild(one);
+    });
   }
   function memberships(m) {
     var out = $('manage-membership');
@@ -160,13 +176,15 @@
       var r = regs[s] || { club: [], centre: [], national: [] };
       var tr = el('tr');
       var th = el('th', null, s); th.scope = 'row'; tr.appendChild(th);
-      var club = r.club.length ? r.club.join('; ') : regs[s] ? 'None' : m.recorded === false ? 'A member' : 'Not in GameDay';
+      var club = r.club.length ? '' : regs[s] ? 'None' : m.recorded === false ? 'A member' : 'Not in GameDay';
       var note = !counted[s] ? 'Not counted as a club season' + (regs[s] ? ' (an admin’s change, or not an athlete membership)' : '')
                : added[s] ? 'Added by an admin' : '';
-      cell(tr, 'Club', club, note);
+      var td = cell(tr, 'Club', club);
+      registered(td, r.club);
+      if (note) { td.appendChild(el('span', 'manage-mem-note', note)); }
       var unknown = m.recorded === false ? '–' : 'No';
-      cell(tr, 'Athletics Canterbury', r.centre.length ? 'Yes' : unknown, r.centre.join('; '));
-      cell(tr, 'Athletics NZ', r.national.length ? 'Yes' : unknown, r.national.join('; '));
+      registered(cell(tr, 'Athletics Canterbury', r.centre.length ? '' : unknown), r.centre);
+      registered(cell(tr, 'Athletics NZ', r.national.length ? '' : unknown), r.national);
       body.appendChild(tr);
     });
     table.appendChild(body); wrap.appendChild(table); out.appendChild(wrap);
