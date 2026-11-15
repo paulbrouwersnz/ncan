@@ -3095,6 +3095,11 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 .th-sort:hover, .th-sort:focus-visible { text-decoration: underline; text-underline-offset: .2em; }
 .th-sort__arrow { font-size: .8em; }
 
+/* Totals above the personal bests (athlete.html) */
+.section.ath-glance { padding-bottom: 0; }
+.ath-glance .ath-stats { margin: .4rem 0 .6rem; }
+.ath-glance + .section { padding-top: 2.5rem; }
+
 /* Cross country, road and relays (athlete.html) */
 .ath-offtrack td[data-label="Race"] { min-width: 11rem; }
 .ath-offtrack td[data-label="Meeting"] { min-width: 12rem; }
