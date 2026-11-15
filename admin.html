@@ -16,7 +16,7 @@
 <link rel="apple-touch-icon" href="assets/img/logo.png">
 <link rel="preload" href="assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/archivo-variable.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/styles.css?v=88cc2314">
+<link rel="stylesheet" href="assets/css/styles.css?v=bee2bfe2">
 <!-- /@partial:head -->
 
 <meta name="robots" content="noindex">
@@ -86,7 +86,9 @@
         </p>
         <div class="btn-row" id="admin-jump" hidden>
           <a class="btn btn--accent" href="#review">Needs a look</a>
+          <a class="btn btn--ghost-light" href="#upload">Members list</a>
           <a class="btn btn--ghost-light" href="#members">Membership</a>
+          <a class="btn btn--ghost-light" href="#merges">Merges</a>
           <a class="btn btn--ghost-light" href="#corrections">Corrections</a>
           <a class="btn btn--ghost-light" href="#blocks">Blocked</a>
         </div>
@@ -114,8 +116,53 @@
       </div>
     </section>
 
+    <!-- ================= Members list from GameDay ================= -->
+    <section class="section section--tint" id="upload" aria-labelledby="upload-heading" hidden>
+      <div class="wrap">
+        <div class="section-head section-head--wide">
+          <p class="eyebrow">From GameDay</p>
+          <h2 id="upload-heading">Members list</h2>
+          <p class="lede">
+            The members list decides who has a page, and which seasons&rsquo; results count for the club.
+            Update it from two GameDay exports whenever memberships change. Nothing changes until
+            you&rsquo;ve seen the check and pressed Import.
+          </p>
+        </div>
+        <details class="upload-how">
+          <summary>Where to get the two files</summary>
+          <ol>
+            <li>Sign in to <a href="https://admin.mygameday.app/" target="_blank" rel="noopener">GameDay</a>
+              (admin.mygameday.app) as the club.</li>
+            <li>Go to <strong>Reporting</strong>, then <strong>Tabular Reports</strong>.</li>
+            <li>Open <strong>Advanced Member</strong>. Choose <strong>Export</strong>, set it to
+              <strong>All rows</strong> and <strong>All columns</strong>, and export as CSV. No need to change
+              the page&rsquo;s filters.</li>
+            <li>Do the same with <strong>Transactions</strong>: <strong>All rows</strong> and
+              <strong>All columns</strong>, with no date filter, so it holds every season&rsquo;s memberships.</li>
+            <li>The files download straight away, or GameDay shows a notification when they&rsquo;re ready.
+              Choose them below.</li>
+          </ol>
+          <p>The files hold members&rsquo; personal details. They go only to the club&rsquo;s server, and are
+            deleted there once imported (or after three hours). Delete your downloaded copies afterwards.</p>
+        </details>
+        <form class="upload-form" id="upload-form" novalidate>
+          <p class="records-field">
+            <label for="upload-members">Advanced Member report (CSV)</label>
+            <input type="file" id="upload-members" accept=".csv,text/csv">
+          </p>
+          <p class="records-field">
+            <label for="upload-tx">Transactions (CSV)</label>
+            <input type="file" id="upload-tx" accept=".csv,text/csv">
+          </p>
+          <button type="submit" class="btn btn--accent" id="upload-check">Check the files</button>
+        </form>
+        <p class="access-status" id="upload-status" role="status"></p>
+        <div id="upload-report"></div>
+      </div>
+    </section>
+
     <!-- ================= Membership ================= -->
-    <section class="section section--tint" id="members" aria-labelledby="members-heading" hidden>
+    <section class="section" id="members" aria-labelledby="members-heading" hidden>
       <div class="wrap">
         <div class="section-head section-head--wide">
           <p class="eyebrow">On top of the GameDay list</p>
@@ -163,6 +210,53 @@
         </form>
         <p class="mem-help" id="mem-help"></p>
         <p class="access-status" id="mem-status" role="status"></p>
+      </div>
+    </section>
+
+    <!-- ================= Merges ================= -->
+    <section class="section section--tint" id="merges" aria-labelledby="merges-heading" hidden>
+      <div class="wrap">
+        <div class="section-head section-head--wide">
+          <p class="eyebrow">athletic.net numbers</p>
+          <h2 id="merges-heading">Merges</h2>
+          <p class="lede">
+            AthleticLIVE sometimes gives one athlete a second athletic.net number, after a change of school
+            or club, or at a school meeting. The collector joins them into one page when their grades
+            match, or when one member has that name; a person can join or separate any. Each number&rsquo;s
+            latest results show what&rsquo;s under it.
+          </p>
+        </div>
+        <form class="mem-add" id="link-add" novalidate autocomplete="off">
+          <p class="records-field records-field--grow">
+            <label for="link-a">Join this page</label>
+            <input type="text" id="link-a" placeholder="an athlete page's address, or its number">
+          </p>
+          <p class="records-field records-field--grow">
+            <label for="link-b">with this one</label>
+            <input type="text" id="link-b" placeholder="the other page">
+          </p>
+          <button type="submit" class="btn btn--accent">Join them</button>
+        </form>
+        <p class="access-status" id="merge-status" role="status"></p>
+        <div class="records-bar champs-bar">
+          <div class="records-filters">
+            <p class="records-field records-field--grow">
+              <label for="merge-find">Find</label>
+              <input type="search" id="merge-find" placeholder="athlete name or number" autocomplete="off">
+            </p>
+            <p class="records-field">
+              <label for="merge-why">Joined by</label>
+              <select id="merge-why">
+                <option value="">Anything</option>
+                <option value="grades">Matching grades</option>
+                <option value="members">The members list</option>
+                <option value="same">A person</option>
+              </select>
+            </p>
+          </div>
+        </div>
+        <p class="records-status" id="merge-count"></p>
+        <div id="merge-out"></div>
       </div>
     </section>
 
