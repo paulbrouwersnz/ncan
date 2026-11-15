@@ -212,7 +212,9 @@ with how many of our athletes and results each added, and shows the athletes'
 names only to coaches and the committee. `admin.html` (Club admin) is for club
 administrators: what the last collect found that needs a look, membership
 changes, corrections and site-wide blocks (`assets/js/admin.js`); administrators
-get a "Club admin" link on the "Signed in as" line. The shared sign-in code is
+get a "Club admin" link on the "Signed in as" line. Each athlete page also has a "Manage this athlete" section
+for administrators only: its athletic.net numbers, with links to their bios, and
+adding or taking out a number (`assets/js/athlete-manage.js`). The shared sign-in code is
 `assets/js/ncan-account.js`.
 
 Collecting results, the members list, merges, corrections and opt-outs all live
