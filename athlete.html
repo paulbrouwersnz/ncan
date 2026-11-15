@@ -16,7 +16,7 @@
 <link rel="apple-touch-icon" href="assets/img/logo.png">
 <link rel="preload" href="assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/archivo-variable.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/styles.css?v=8ec9fc81">
+<link rel="stylesheet" href="assets/css/styles.css?v=74c89d99">
 <!-- /@partial:head -->
 
 <link rel="canonical" href="https://ncan.nz/athlete.html">
@@ -105,20 +105,22 @@
     </section>
 
     <!-- ================= Summary and filters ================= -->
-    <section class="section" id="summary" aria-labelledby="summary-heading">
+    <!-- ================= Track and field: personal bests, progression, every result ================= -->
+    <section class="section ath-part" id="track" aria-labelledby="track-heading">
+      <div class="wrap ath-part__head">
+        <p class="eyebrow">Athletics</p>
+        <h2 id="track-heading">Track and field</h2>
+      </div>
+
+    <div class="ath-sub" id="summary" role="region" aria-labelledby="summary-heading">
       <div class="wrap">
-        <div class="section-head section-head--split" data-reveal>
-          <p class="eyebrow">Track and field</p>
-          <h2 id="summary-heading">Personal bests</h2>
-          <div>
-            <p class="lede">
-              The best mark in each event for the results shown. The filters below change every
-              section of the page.
-            </p>
-          </div>
-          <div class="section-head__aside">
-            <a class="btn btn--ghost" href="club-champs.html">Club championships</a>
-          </div>
+        <div class="section-head section-head--wide" data-reveal>
+          <h3 class="ath-sub__title" id="summary-heading">Personal bests</h3>
+          <p class="lede">
+            The best mark in each event for the results shown. The filters below change every
+            track and field section, and the totals above. Club championship results are on the
+            <a href="club-champs.html">club championships</a> page.
+          </p>
         </div>
 
         <div class="ath-filters" data-reveal>
@@ -161,14 +163,13 @@
         <p class="records-status" id="ath-status" role="status">Loading&hellip;</p>
         <div class="ath-pbs" id="ath-pbs"></div>
       </div>
-    </section>
+    </div>
 
     <!-- ================= Progression ================= -->
-    <section class="section section--tint" id="progress" aria-labelledby="progress-heading">
+    <div class="ath-sub" id="progress" role="region" aria-labelledby="progress-heading">
       <div class="wrap">
         <div class="section-head section-head--wide" data-reveal>
-          <p class="eyebrow">Over time</p>
-          <h2 id="progress-heading">Progression</h2>
+          <h3 class="ath-sub__title" id="progress-heading">Progression</h3>
           <p class="lede">
             One chart per event, higher on the chart is always better, so times run the other way
             up. A throw&rsquo;s line breaks where the implement weight changes, labelled with the
@@ -194,14 +195,13 @@
         </p>
         <div class="ath-charts" id="ath-charts"></div>
       </div>
-    </section>
+    </div>
 
     <!-- ================= All results ================= -->
-    <section class="section" id="all-results" aria-labelledby="results-heading">
+    <div class="ath-sub" id="all-results" role="region" aria-labelledby="results-heading">
       <div class="wrap">
         <div class="section-head section-head--wide" data-reveal>
-          <p class="eyebrow">Every result</p>
-          <h2 id="results-heading">All results</h2>
+          <h3 class="ath-sub__title" id="results-heading">All results</h3>
           <p class="lede">
             Newest first, or grouped by event. Each mark links to the official result. Place is the
             place in the whole race or competition, out of everyone who recorded a result.
@@ -267,13 +267,14 @@
         </p>
         <p class="records-note" id="ath-updated"></p>
       </div>
+    </div>
     </section>
 
     <!-- ================= Cross country and road ================= -->
     <section class="section section--tint" id="off-track" aria-labelledby="offtrack-heading" hidden>
       <div class="wrap">
         <div class="section-head section-head--wide">
-          <p class="eyebrow">Out of Stadia Events</p>
+          <p class="eyebrow">Out of Stadia</p>
           <h2 id="offtrack-heading">Cross country, road and relays</h2>
           <p class="lede">
             Newest first. Cross country times depend on the course and the conditions, so they
@@ -282,6 +283,7 @@
             grades: two-year junior grades by age on 31&nbsp;December, and Masters by age on the day.
           </p>
         </div>
+        <h3 class="ath-sub__title ath-sub__title--plain">Results</h3>
         <div class="table-wrap">
           <table class="schedule ath-table ath-offtrack">
             <caption class="visually-hidden">Cross country, road and relay results, newest first</caption>
@@ -298,7 +300,7 @@
       </div>
     </section>
 
-    <section class="section section--tint" aria-labelledby="optout-heading">
+    <section class="section" aria-labelledby="optout-heading">
       <div class="wrap">
         <div class="section-head section-head--wide">
           <p class="eyebrow">Your page</p>
@@ -319,7 +321,7 @@
 
     <!-- Who can see this page: for the athlete's contacts from the membership
          system, and club administrators (assets/js/athlete-access.js) -->
-    <section class="section" id="ath-access" aria-labelledby="access-heading" hidden>
+    <section class="section section--tint" id="ath-access" aria-labelledby="access-heading" hidden>
       <div class="wrap">
         <div class="section-head section-head--wide">
           <p class="eyebrow">Sharing</p>
@@ -345,7 +347,7 @@
 
     <!-- Manage this athlete: club administrators only; the API answers nobody else
          (assets/js/athlete-manage.js) -->
-    <section class="section section--tint" id="ath-manage" aria-labelledby="manage-heading" hidden>
+    <section class="section" id="ath-manage" aria-labelledby="manage-heading" hidden>
       <div class="wrap">
         <div class="section-head section-head--wide">
           <p class="eyebrow">For club administrators</p>
@@ -1600,7 +1602,7 @@
                 ' represented while a member of NCAN. No track and field results yet.'
               : first + ' is registered with the club for ' + json.season + ', with no published ' +
                 'results yet. Results appear here a few days after a meeting publishes them.';
-            ['summary', 'progress', 'all-results'].forEach(function (x) { $(x).hidden = true; });
+            ['track', 'summary', 'progress', 'all-results'].forEach(function (x) { $(x).hidden = true; });
             Array.prototype.forEach.call(document.querySelectorAll('.page-head a[href^="#"]'),
               function (a) { a.style.display = 'none'; });
             if (offTrack.length) {
