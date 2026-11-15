@@ -16,7 +16,7 @@
 <link rel="apple-touch-icon" href="assets/img/logo.png">
 <link rel="preload" href="assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/archivo-variable.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/styles.css?v=9c59372d">
+<link rel="stylesheet" href="assets/css/styles.css?v=fea764c8">
 <!-- /@partial:head -->
 
 <link rel="canonical" href="https://ncan.nz/athlete.html">
@@ -768,6 +768,34 @@
           return true;
         });
       }
+      // 1st, 2nd and 3rd places, each in a block of its own with its medal; all three
+      // once there's any podium, so the row reads the same from athlete to athlete
+      var MEDALS = [['🥇', '1st place', '1st places'], ['🥈', '2nd place', '2nd places'], ['🥉', '3rd place', '3rd places']];
+      function medalRow(dl) {
+        var row = document.getElementById(dl.id + '-medals');
+        if (!row) {
+          row = text('dl', 'stats__grid ath-stats ath-medals');
+          row.id = dl.id + '-medals';
+          row.setAttribute('aria-label', 'Podium places');
+          dl.parentNode.insertBefore(row, dl.nextSibling);
+        }
+        row.textContent = '';
+        return row;
+      }
+      function statBlock(dl, value, label, medal) {
+        var div = text('div', medal ? 'stat stat--medal' : 'stat');
+        var dt = text('dt');
+        if (medal) {
+          var icon = text('span', 'stat__medal', medal);
+          icon.setAttribute('aria-hidden', 'true');
+          dt.appendChild(icon);
+        }
+        dt.appendChild(document.createTextNode(value));
+        div.appendChild(dt);
+        div.appendChild(text('dd', null, label));
+        dl.appendChild(div);
+      }
+
       function renderStats(track) {
         var dl = $('ath-stats');
         dl.textContent = '';
@@ -778,14 +806,15 @@
           ? 'Track and field, with ' + away.length + ' cross country, road and relay result' +
             (away.length === 1 ? '' : 's') + '. The filters below narrow these too.'
           : (athlete.offTrack || []).length ? 'The filters below narrow these too.' : '';
-        var t = { run: 0, walked: 0, jumped: 0, thrown: 0, podiums: 0 }, meets = {}, seasons = {}, relays = {};
+        var t = { run: 0, walked: 0, jumped: 0, thrown: 0 }, meets = {}, seasons = {}, relays = {};
+        var places = [0, 0, 0];
         rs.forEach(function (r) {
           meets[r.date + r.meeting] = 1;
           seasons[r.season] = 1;
           if (r.place >= 1 && r.place <= 3) {
             // a relay team's podium counts once, however many legs this athlete ran for it
-            if (r.relay) { relays[[r.date, r.meeting, r.event, r.division || '', r.place, r.relay.team_mark || ''].join('|')] = 1; }
-            else { t.podiums++; }
+            if (r.relay) { relays[[r.date, r.meeting, r.event, r.division || '', r.place, r.relay.team_mark || ''].join('|')] = r.place; }
+            else { places[r.place - 1]++; }
           }
           // "800m", or "Cross country 3000m" / "Road relay 2000m" (a relay leg's length)
           var len = (r.oos ? /(\d+)m(?![a-z])/i : /^(\d+)m(?![a-z])/i).exec(r.event);
@@ -796,23 +825,26 @@
           else if (THROWS.test(r.event)) { t.thrown += r.value; }
           else if (len) { t[race] += +len[1]; }
         });
-        t.podiums += Object.keys(relays).length;
+        Object.keys(relays).forEach(function (k) { places[relays[k] - 1]++; });
+        var podiums = places[0] + places[1] + places[2];
         var n = function (v, dp) { return v.toLocaleString('en-NZ', { maximumFractionDigits: dp || 0 }); };
         // metres, until 10,000 m reads better as km
         var dist = function (m) { return m >= 10000 ? n(m / 1000, 1) + ' km' : n(m, 1) + ' m'; };
         var many = function (k, one, more) { return [n(k), k === 1 ? one : more]; };
         [many(rs.length, 'Result', 'Results'), many(Object.keys(meets).length, 'Meeting', 'Meetings'),
          many(byEvent(rs).length, 'Event', 'Events'), many(Object.keys(seasons).length, 'Season', 'Seasons'),
-         t.podiums ? many(t.podiums, 'Podium place', 'Podium places') : null,
          t.run ? [n(t.run / 1000, 1) + ' km', 'Run'] : null,
          t.walked ? [n(t.walked / 1000, 1) + ' km', 'Race walked'] : null,
          t.jumped ? [dist(t.jumped), 'Jumped'] : null,
          t.thrown ? [dist(t.thrown), 'Thrown'] : null].filter(Boolean).forEach(function (x) {
-          var div = text('div', 'stat');
-          div.appendChild(text('dt', null, x[0]));
-          div.appendChild(text('dd', null, x[1]));
-          dl.appendChild(div);
+          statBlock(dl, x[0], x[1]);
         });
+        // the medals: a row of their own, under the rest
+        var row = medalRow(dl);
+        if (podiums) {
+          MEDALS.forEach(function (m, i) { statBlock(row, n(places[i]), places[i] === 1 ? m[1] : m[2], m[0]); });
+        }
+        row.hidden = !podiums;
         dl.hidden = false;
       }
 

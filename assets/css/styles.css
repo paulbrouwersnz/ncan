@@ -532,6 +532,12 @@ ul { margin: 0; padding: 0; list-style: none; }
 .stat dt sup { font-size: .5em; }
 .stat dd { margin: .6rem 0 0; font-size: .9rem; color: var(--text-soft); }
 .stat dd b { display: block; color: var(--green-700); font-family: var(--font-display); font-size: 1rem; }
+/* 1st, 2nd and 3rd places: the medal beside the count */
+.ath-stats.ath-medals { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: -.4rem; }
+.ath-medals .stat { padding-inline: clamp(.9rem, 2.5vw, 2rem); }
+.stat--medal dt { display: flex; align-items: center; gap: .5rem; }
+.stat__medal { font-size: 1.1em; line-height: 1; letter-spacing: 0;
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
 
 /* ---------- Feature ---------- */
 .feature__grid {
