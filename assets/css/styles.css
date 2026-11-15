@@ -1228,6 +1228,9 @@ table.schedule.champs-table { min-width: 0; }
 }
 .ath-tip[hidden] { display: none; }
 .ath-badge { margin-left: .4rem; }
+/* ✍️ beside a mark entered manually (not from AthleticLIVE); its title says so */
+.ath-manual { margin-left: .35rem; font-size: .9em; cursor: help;
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
 /* in the results table, a mark's tags stack under it to keep the column narrow */
 .ath-table .records-perf .ath-badge { display: block; width: fit-content; margin: .3rem 0 0; }
 .ath-table td .ath-wind { margin-left: 0; letter-spacing: .02em; border: 2px solid transparent; }
