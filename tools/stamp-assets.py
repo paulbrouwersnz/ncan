@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Stamp the stylesheet link with a content hash, so browsers pick up changes.
+"""Stamp the stylesheet and script links with a content hash, so browsers pick up changes.
 
 A browser that has already fetched assets/css/styles.css will happily keep
 using its copy for as long as the host's caching rules allow, which is why an
@@ -16,7 +16,11 @@ nothing to remember to bump.
     python tools/stamp-assets.py --check    # report only, change nothing
     python tools/stamp-assets.py --clear    # strip the stamps again
 
-Run it after editing the stylesheet, before publishing.
+Every script in assets/js/ is stamped the same way (<script src="assets/js/
+admin.js?v=...">): a page running an old script against the club's API, which
+has moved on, can show nonsense until a hard refresh.
+
+Run it after editing the stylesheet or a script, before publishing.
 
 The <link> lives in partials/head.html, which is generated into every page, so
 this stamps the partial as well as the pages. If it only stamped the pages, the
@@ -34,7 +38,8 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # (path on disk, how it is written in the pages)
 ASSETS = [
     (os.path.join('assets', 'css', 'styles.css'), 'assets/css/styles.css'),
-]
+] + [(os.path.join('assets', 'js', f), 'assets/js/' + f)
+     for f in sorted(os.listdir(os.path.join(ROOT, 'assets', 'js'))) if f.endswith('.js')]
 
 HASH_LENGTH = 8
 
