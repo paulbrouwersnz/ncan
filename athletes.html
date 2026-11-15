@@ -615,7 +615,10 @@
             inBand.forEach(function (g) { var o = text('option', null, g); o.value = g; og.appendChild(o); });
             $('ix-grade').appendChild(og);
           });
-          Object.keys(events).sort(function (a, b) {
+          // track by distance, then field; cross country, road and trail last, under a heading
+          var OOS = ['Cross country', 'Road', 'Trail'];
+          var away = function (e) { return OOS.indexOf(e) >= 0; };
+          Object.keys(events).filter(function (e) { return !away(e); }).sort(function (a, b) {
             var na = parseInt(a, 10), nb = parseInt(b, 10);
             if (!isNaN(na) && !isNaN(nb)) { return na - nb || a.localeCompare(b); }
             if (!isNaN(na)) { return -1; }
@@ -624,6 +627,13 @@
           }).forEach(function (e) {
             var o = text('option', null, e); o.value = e; $('ix-event').appendChild(o);
           });
+          var outside = OOS.filter(function (e) { return events[e]; });
+          if (outside.length) {
+            var og = document.createElement('optgroup');
+            og.label = 'Out of stadia';
+            outside.forEach(function (e) { var o = text('option', null, e); o.value = e; og.appendChild(o); });
+            $('ix-event').appendChild(og);
+          }
           if (json.updated) { $('ix-updated').textContent = 'Last updated ' + longDate(json.updated) + '.'; }
           ['ix-grade', 'ix-gender', 'ix-event'].forEach(function (id) { $(id).addEventListener('change', render); });
           $('ix-text').addEventListener('input', render);
