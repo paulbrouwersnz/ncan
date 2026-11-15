@@ -3138,4 +3138,9 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 .mem-add { display: flex; flex-wrap: wrap; align-items: flex-end; gap: .8rem; max-width: 60rem; }
 .mem-add [hidden] { display: none; }
 .mem-help { margin: .6rem 0 0; max-width: 46rem; color: var(--text-soft); font-size: .9rem; }
+/* "Manage this athlete": club memberships by season */
+.manage-mem-title { margin-top: 2.4rem; }
+#manage-membership .table-wrap { margin-top: 1rem; }
+table.schedule.manage-mem { min-width: 640px; }
+.manage-mem-note { display: block; margin-top: .15rem; color: var(--text-soft); font-size: .84rem; }
 #blocks-heading { margin-top: 2.5rem; }

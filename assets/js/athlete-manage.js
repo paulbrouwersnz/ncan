@@ -12,6 +12,9 @@
     added too: its results move to this page, and its old link leads here.
   - Take a number out (POST .../manage/remove): kept apart from the page's other
     numbers from then on.
+  - Club memberships: each season's paid GameDay registrations (the club
+    membership type, and whether they also registered with Athletics Canterbury
+    and Athletics NZ), with an admin's membership changes noted.
   Changes are kept with the club's corrections (undo on the Club admin page),
   and the results are collected again.
 */
@@ -116,9 +119,61 @@
         'had an athletic.net number) moves its results here and sends its old link here.';
   }
 
+  function cell(row, label, words, note) {
+    var td = el('td', null, words);
+    td.setAttribute('data-label', label);
+    if (note) { td.appendChild(el('span', 'manage-mem-note', note)); }
+    row.appendChild(td);
+  }
+  function memberships(m) {
+    var out = $('manage-membership');
+    out.textContent = '';
+    if (!m) {
+      out.appendChild(el('p', 'mem-help', 'Not on the club’s members list: no memberships to show.'));
+      return;
+    }
+    var regs = {};
+    (m.registrations || []).forEach(function (r) { regs[r.season] = r; });
+    var counted = {};
+    (m.seasons || []).forEach(function (s) { counted[s] = true; });
+    var seasons = Object.keys(regs).concat((m.seasons || []).filter(function (s) { return !regs[s]; }));
+    seasons.sort().reverse();
+    if (!seasons.length) {
+      out.appendChild(el('p', 'mem-help', 'No registrations in GameDay.'));
+      return;
+    }
+    var wrap = el('div', 'table-wrap');
+    var table = el('table', 'schedule manage-mem');
+    table.appendChild(el('caption', 'visually-hidden', 'Club memberships by season, newest first'));
+    var head = el('thead'); var hr = el('tr');
+    ['Season', 'Club membership', 'Athletics Canterbury', 'Athletics NZ'].forEach(function (h) {
+      var th = el('th', null, h); th.scope = 'col'; hr.appendChild(th);
+    });
+    head.appendChild(hr); table.appendChild(head);
+    var body = el('tbody');
+    seasons.forEach(function (s) {
+      var r = regs[s] || { club: [], centre: [], national: [] };
+      var tr = el('tr');
+      var th = el('th', null, s); th.scope = 'row'; tr.appendChild(th);
+      var club = r.club.length ? r.club.join('; ') : (regs[s] ? 'None' : 'Not in GameDay');
+      var note = !counted[s] ? 'Not counted as a club season' + (regs[s] ? ' (an admin’s change, or not an athlete membership)' : '')
+               : !regs[s] ? 'Added by an admin' : '';
+      cell(tr, 'Club', club, note);
+      cell(tr, 'Athletics Canterbury', r.centre.length ? 'Yes' : 'No', r.centre.join('; '));
+      cell(tr, 'Athletics NZ', r.national.length ? 'Yes' : 'No', r.national.join('; '));
+      body.appendChild(tr);
+    });
+    table.appendChild(body); wrap.appendChild(table); out.appendChild(wrap);
+    (m.away || []).forEach(function (p) {
+      out.appendChild(el('p', 'mem-help', 'Away from the club ' + (p[0] ? 'from ' + p[0] + ' ' : '') +
+                                           (p[1] ? 'until ' + p[1] : '') + ': results then don’t count for the club.'));
+    });
+  }
+
   function load() {
     NCAN.get('/athletes/' + id + '/manage').then(function (data) {
       render(data);
+      memberships(data.membership);
       $('ath-manage').hidden = false;
     }, function () { $('ath-manage').hidden = true; });
   }
