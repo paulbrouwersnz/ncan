@@ -375,7 +375,11 @@ ul { margin: 0; padding: 0; list-style: none; }
 
 .site-header__cta { display: flex; gap: .6rem; }
 
-@media (max-width: 1120px) {
+/* The menu button takes over when the links won't fit beside the logo and the
+   "Join the club" button. In em, not px: em here follows the browser's text
+   size setting, so with larger text the switch comes at a wider screen,
+   before the links run under the button (71.5em = 1144px at the usual size). */
+@media (max-width: 71.5em) {
   .nav-toggle { display: inline-flex; }
   .site-header__cta { display: none; }
   .nav {
