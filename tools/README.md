@@ -207,15 +207,29 @@ procedures in its `docs/DATA.md`.
 `athletes.html` and `athlete.html?id=<number>` hold no results themselves. They
 read them from the club's API at `https://api.ncan.nz`, and only for someone
 signed in: a family sees their own children, coaches and the committee see
-everyone. `results-sources.html` is public: it lists every meeting collected,
-with how many of our athletes and results each added, and shows the athletes'
-names only to coaches and the committee. `admin.html` (Club admin) is for club
-administrators: what the last collect found that needs a look, membership
-changes, corrections and site-wide blocks (`assets/js/admin.js`); administrators
-get a "Club admin" link on the "Signed in as" line. Each athlete page also has a "Manage this athlete" section
-for administrators only: its athletic.net numbers, with links to their bios, and
-adding or taking out a number (`assets/js/athlete-manage.js`). The shared sign-in code is
+everyone. Both show totals for what's shown (results, meetings, events,
+distances), with 1st, 2nd and 3rd places in a row of medal blocks of their own
+(only when there's a podium; a relay team's place counts once), and the
+athletes page counts the athletes on the podium.
+
+`results-sources.html` is public: it lists every meeting collected, with how
+many of our athletes and results each added, and shows the athletes' names only
+to coaches and the committee. Signed in, administrators, coaches and the
+committee add meetings there; administrators also change a meeting's type and
+remove meetings.
+
+`admin.html` (Club admin) is for club administrators: what the last collect
+found that needs a look, merges, membership changes, the members list upload,
+corrections and site-wide blocks (`assets/js/admin.js`); administrators get a
+"Club admin" link on the "Signed in as" line. Each athlete page also has a
+"Manage this athlete" section for administrators only: its numbers, with links
+to their athletic.net bios, and adding or taking out a number: an athletic.net
+number, or a page number given by hand (900000001 up), whose results move to
+the page (`assets/js/athlete-manage.js`). The shared sign-in code is
 `assets/js/ncan-account.js`.
+
+The filter and form dropdowns (`.records-field select`) draw the site's own
+arrow, so they look the same in every browser.
 
 Collecting results, the members list, merges, corrections and opt-outs all live
 in the private **ncan-api** project (`docs/DATA.md` there), not in this public
