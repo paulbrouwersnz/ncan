@@ -16,7 +16,7 @@
 <link rel="apple-touch-icon" href="assets/img/logo.png">
 <link rel="preload" href="assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/archivo-variable.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/styles.css?v=735c6e42">
+<link rel="stylesheet" href="assets/css/styles.css?v=8ec9fc81">
 <!-- /@partial:head -->
 
 <link rel="canonical" href="https://ncan.nz/athlete.html">
@@ -94,11 +94,21 @@
       </div>
     </section>
 
+    <!-- ================= Totals: every result, cross country and road included ================= -->
+    <section class="section ath-glance" id="glance" aria-labelledby="glance-heading" hidden>
+      <div class="wrap">
+        <p class="eyebrow">At a glance</p>
+        <h2 id="glance-heading" class="visually-hidden">Totals</h2>
+        <dl class="stats__grid ath-stats" id="ath-stats"></dl>
+        <p class="records-note" id="glance-note"></p>
+      </div>
+    </section>
+
     <!-- ================= Summary and filters ================= -->
     <section class="section" id="summary" aria-labelledby="summary-heading">
       <div class="wrap">
         <div class="section-head section-head--split" data-reveal>
-          <p class="eyebrow">At a glance</p>
+          <p class="eyebrow">Track and field</p>
           <h2 id="summary-heading">Personal bests</h2>
           <div>
             <p class="lede">
@@ -149,7 +159,6 @@
 
         <div id="ath-signin" hidden></div>
         <p class="records-status" id="ath-status" role="status">Loading&hellip;</p>
-        <dl class="stats__grid ath-stats" id="ath-stats" hidden></dl>
         <div class="ath-pbs" id="ath-pbs"></div>
       </div>
     </section>
@@ -734,19 +743,38 @@
 
       /* Summary ------------------------------------------------------------- */
 
-      // Totals for the results the filters show: a finished race counts at its length
-      // (timed or "Untimed"), jumps and throws their marks. Empty ones are left out.
+      // Totals for every result the season and team filters show - track and field
+      // (the event chips too), and cross country, road and relay legs. A finished race
+      // counts at its length (timed or "Untimed"), jumps and throws their marks.
+      // Empty ones are left out.
       var JUMPS = /^(long jump|triple jump|high jump|pole vault)/i;
       var THROWS = /^(shot put|discus|javelin|hammer|vortex|weight throw|turbo jav)/i;
-      function renderStats(rs) {
+      function offTrackShown() {
+        var f = filters();
+        return (athlete.offTrack || []).filter(function (r) {
+          if (f.season && r.season !== f.season) { return false; }
+          if (f.team === 'club' && !r.club) { return false; }
+          if (f.team === 'rep' && r.club) { return false; }
+          return true;
+        });
+      }
+      function renderStats(track) {
         var dl = $('ath-stats');
         dl.textContent = '';
+        var away = offTrackShown();
+        var rs = track.concat(away);
+        $('glance').hidden = !rs.length && !(athlete.offTrack || []).length && !athlete.results.length;
+        $('glance-note').textContent = away.length
+          ? 'Track and field, with ' + away.length + ' cross country, road and relay result' +
+            (away.length === 1 ? '' : 's') + '. The filters below narrow these too.'
+          : (athlete.offTrack || []).length ? 'The filters below narrow these too.' : '';
         var t = { run: 0, walked: 0, jumped: 0, thrown: 0, podiums: 0 }, meets = {}, seasons = {};
         rs.forEach(function (r) {
           meets[r.date + r.meeting] = 1;
           seasons[r.season] = 1;
           if (r.place >= 1 && r.place <= 3) { t.podiums++; }
-          var len = /^(\d+)m(?![a-z])/i.exec(r.event);
+          // "800m", or "Cross country 3000m" / "Road relay 2000m" (a relay leg's length)
+          var len = (r.oos ? /(\d+)m(?![a-z])/i : /^(\d+)m(?![a-z])/i).exec(r.event);
           var race = /walk/i.test(r.event) ? 'walked' : 'run';
           if (r.value === undefined || r.value === null) {
             if (len && /^untimed$/i.test(r.mark || '')) { t[race] += +len[1]; }
@@ -757,9 +785,10 @@
         var n = function (v, dp) { return v.toLocaleString('en-NZ', { maximumFractionDigits: dp || 0 }); };
         // metres, until 10,000 m reads better as km
         var dist = function (m) { return m >= 10000 ? n(m / 1000, 1) + ' km' : n(m, 1) + ' m'; };
-        [[n(rs.length), 'Results'], [n(Object.keys(meets).length), 'Meetings'],
-         [n(byEvent(rs).length), 'Events'], [n(Object.keys(seasons).length), 'Seasons'],
-         t.podiums ? [n(t.podiums), 'Podium places'] : null,
+        var many = function (k, one, more) { return [n(k), k === 1 ? one : more]; };
+        [many(rs.length, 'Result', 'Results'), many(Object.keys(meets).length, 'Meeting', 'Meetings'),
+         many(byEvent(rs).length, 'Event', 'Events'), many(Object.keys(seasons).length, 'Season', 'Seasons'),
+         t.podiums ? many(t.podiums, 'Podium place', 'Podium places') : null,
          t.run ? [n(t.run / 1000, 1) + ' km', 'Run'] : null,
          t.walked ? [n(t.walked / 1000, 1) + ' km', 'Race walked'] : null,
          t.jumped ? [dist(t.jumped), 'Jumped'] : null,
@@ -1492,6 +1521,7 @@
           // track sections (PBs, charts, filters, the results table) never see them
           var offTrack = json.results.filter(function (r) { return r.oos; });
           json.results = json.results.filter(function (r) { return !r.oos; });
+          athlete.offTrack = offTrack;
           renderOffTrack(offTrack);
           // Odd distances run only at October's opening meetings (145m, 600m...) are
           // hidden unless asked for; the choice is kept on this device.
@@ -1573,6 +1603,10 @@
             ['summary', 'progress', 'all-results'].forEach(function (x) { $(x).hidden = true; });
             Array.prototype.forEach.call(document.querySelectorAll('.page-head a[href^="#"]'),
               function (a) { a.style.display = 'none'; });
+            if (offTrack.length) {
+              renderStats([]);
+              $('glance-note').textContent = 'Cross country, road and relay results.';
+            }
             return;
           }
           if (offTrack.length) {
