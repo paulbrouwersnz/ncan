@@ -82,8 +82,8 @@
         <p class="lede">
           Every meeting the athlete pages are built from, with what each one added. Most come from
           <a href="https://live.athletic.net">AthleticLIVE</a> (athletic.net); a few, such as primary
-          school sports, were entered manually from the results the organisers published, and results
-          checked where no member competed are listed too.
+          school sports, were entered manually from the results the organisers published
+          (<span aria-hidden="true">&#9997;&#65039;</span>), and results checked where no member competed are listed too.
         </p>
         <p class="lede">
           Know of a meeting that&rsquo;s missing, or earlier results? The club would love to hear about it.
@@ -431,7 +431,16 @@
       function meeting(m) {
         var block = text('details', 'champs-day src-meeting');
         var head = text('summary', 'champs-day__head');
-        head.appendChild(text('h4', 'champs-day__title src-meeting__title', m.name));
+        var title = text('h4', 'champs-day__title src-meeting__title', m.name);
+        if (m.from !== 'AthleticLIVE') {
+          // entered manually from the published results, not from AthleticLIVE
+          var hand = text('span', 'ath-manual', '✍️');
+          hand.title = 'Entered manually from the published results';
+          hand.setAttribute('role', 'img');
+          hand.setAttribute('aria-label', 'Entered manually');
+          title.appendChild(hand);
+        }
+        head.appendChild(title);
         head.appendChild(text('span', 'champs-day__count', dates(m) + (m.type ? ' · ' + m.type : '')));
         head.appendChild(text('span', 'champs-tag ath-badge' + (m.results ? ' champs-tag--next' : ''),
           m.results ? n(m.results) + ' result' + (m.results === 1 ? '' : 's') : 'None of ours'));

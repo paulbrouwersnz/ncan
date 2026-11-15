@@ -204,9 +204,7 @@
           <h3 class="ath-sub__title" id="results-heading">All results</h3>
           <p class="lede">
             Newest first, or grouped by event. Each mark links to the official result. Place is the
-            place in the whole race or competition, out of everyone who recorded a result. Most results
-            come from AthleticLIVE; <span aria-hidden="true">&#9997;&#65039;</span> marks one entered
-            manually from the results the organisers published.
+            place in the whole race or competition, out of everyone who recorded a result.
           </p>
         </div>
         <!-- the table's own bar: grouping, plus the same filters as the top of the page, kept in step -->
@@ -275,8 +273,6 @@
             aren&rsquo;t compared as personal bests: the place in the race tells more. A relay shows
             the runner&rsquo;s own leg and their team&rsquo;s place. Grades are cross country and road
             grades: two-year junior grades by age on 31&nbsp;December, and Masters by age on the day.
-            <span aria-hidden="true">&#9997;&#65039;</span> marks a result entered manually from the
-            results the organisers published.
           </p>
         </div>
         <h3 class="ath-sub__title ath-sub__title--plain">Results</h3>
@@ -305,6 +301,8 @@
           <p class="lede">
             Every meeting these results come from, track and field, cross country, road and relays,
             newest first. Open one for the official results and what was done there.
+            <span aria-hidden="true">&#9997;&#65039;</span> marks a meeting entered manually from the
+            results the organisers published; the rest come from AthleticLIVE.
             <a href="results-sources.html">All the club&rsquo;s results sources</a>
           </p>
         </div>
@@ -882,7 +880,6 @@
             a.href = pb.source; a.target = '_blank'; a.rel = 'noopener';
             a.title = 'Official result';
             mark.appendChild(a);
-            addManual(mark, pb);
             li.appendChild(mark);
             li.appendChild(text('p', 'ath-pb__meta', longDate(pb.date) + (groupOf(pb) ? ' · ' + groupOf(pb) : '')));
             // a weight filled in from the grade, not published by the meeting: say so
@@ -1280,7 +1277,6 @@
               var a = text('a', 'records-source', markText(r));
               a.href = r.source; a.target = '_blank'; a.rel = 'noopener'; a.title = 'Official result';
               td.appendChild(a);
-              addManual(td, r);
               if (pbs[pbKey(r)] === r) { td.appendChild(text('span', 'champs-tag champs-tag--next ath-badge', 'Personal best')); }
               else if (isNewPb(r)) { td.appendChild(text('span', 'champs-tag champs-tag--next ath-badge ath-badge--newpb', 'New personal best')); }
               else if (sbs[pbKey(r) + '|' + r.season] === r) { td.appendChild(text('span', 'champs-tag ath-badge', 'Season best')); }
@@ -1299,17 +1295,6 @@
           });
           return tr;
       }
-
-      // a result entered manually from published results (not AthleticLIVE): a small ✍️
-      function manualMark(r) {
-        if (!r.manual) { return null; }
-        var s = text('span', 'ath-manual', '✍️');
-        s.title = 'Entered manually from the published results';
-        s.setAttribute('role', 'img');
-        s.setAttribute('aria-label', 'Entered manually');
-        return s;
-      }
-      function addManual(el, r) { var m = manualMark(r); if (m) { el.appendChild(m); } }
 
       /* Cross country, road and relays ------------------------------------------
          Newest first, in a table of their own. No PBs or charts: courses differ.
@@ -1354,7 +1339,6 @@
                 var a = text('a', 'records-source', r.mark || '–');
                 a.href = r.source; a.target = '_blank'; a.rel = 'noopener'; a.title = 'Official result';
                 td.appendChild(a);
-                addManual(td, r);
                 if (leg && leg.team_mark) { td.appendChild(text('span', 'ath-combined', 'Team ' + leg.team_mark)); }
               }
               tr.appendChild(td);
@@ -1511,7 +1495,16 @@
           list.filter(function (m) { return m.season === season; }).forEach(function (m) {
             var block = text('details', 'champs-day src-meeting');
             var head = text('summary', 'champs-day__head');
-            head.appendChild(text('h4', 'champs-day__title src-meeting__title', m.name));
+            var title = text('h4', 'champs-day__title src-meeting__title', m.name);
+            if (!m.live) {
+              // a meeting entered manually from its published results, not from AthleticLIVE
+              var hand = text('span', 'ath-manual', '✍️');
+              hand.title = 'Entered manually from the published results';
+              hand.setAttribute('role', 'img');
+              hand.setAttribute('aria-label', 'Entered manually');
+              title.appendChild(hand);
+            }
+            head.appendChild(title);
             var when = m.first === m.last ? longDate(m.first) : longDate(m.first) + ' – ' + longDate(m.last);
             head.appendChild(text('span', 'champs-day__count', when + (m.type ? ' · ' + m.type : '')));
             head.appendChild(text('span', 'champs-tag champs-tag--next ath-badge',
