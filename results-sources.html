@@ -82,7 +82,8 @@
         <p class="lede">
           Every meeting the athlete pages are built from, with what each one added. Most come from
           <a href="https://live.athletic.net">AthleticLIVE</a> (athletic.net); a few, such as primary
-          school sports, were typed in by hand from the results the organisers published.
+          school sports, were entered manually from the results the organisers published, and results
+          checked where no member competed are listed too.
         </p>
         <p class="lede">
           Know of a meeting that&rsquo;s missing, or earlier results? The club would love to hear about it.
@@ -185,7 +186,7 @@
               <select id="src-from">
                 <option value="">Any</option>
                 <option value="AthleticLIVE">AthleticLIVE</option>
-                <option value="By hand">Typed in by hand</option>
+                <option value="By hand">Manually entered</option>
               </select>
             </p>
             <p class="records-field records-field--grow">
@@ -413,7 +414,7 @@
           if (m.from === 'AthleticLIVE') { live++; } else { hand++; }
         });
         [[n(ms.length), 'Meetings'], [n(ours), 'With our athletes'], [n(results), 'Results added'],
-         [n(live), 'From AthleticLIVE'], hand ? [n(hand), 'Typed in by hand'] : null]
+         [n(live), 'From AthleticLIVE'], hand ? [n(hand), 'Manually entered'] : null]
           .filter(Boolean).forEach(function (x) {
             var div = text('div', 'stat');
             div.appendChild(text('dt', null, x[0]));
