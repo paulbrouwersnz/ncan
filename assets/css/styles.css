@@ -534,9 +534,34 @@ ul { margin: 0; padding: 0; list-style: none; }
 .stat dd b { display: block; color: var(--green-700); font-family: var(--font-display); font-size: 1rem; }
 /* 1st, 2nd and 3rd places: the medal beside the count */
 .stats__grid[hidden] { display: none; }   /* the grid's display would otherwise show it */
-.ath-stats.ath-medals { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: -.4rem; }
-.ath-medals .stat { padding-inline: clamp(.9rem, 2.5vw, 2rem); }
+/* a podium: 2nd, 1st, 3rd from the left, 1st highest, 3rd lowest, on one base
+   (the page keeps 1st, 2nd, 3rd order, so a screen reader reads 1st first) */
+.ath-stats.ath-medals {
+  --step: clamp(.9rem, 2.2vw, 1.4rem);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: end;
+  gap: clamp(.35rem, 1.2vw, .75rem);
+  margin-top: -.4rem;
+  background: none;
+  border: 0;
+  border-bottom: 3px solid var(--line-strong);
+  border-radius: 0;
+  box-shadow: none;
+  overflow: visible;
+}
+.ath-medals .stat {
+  padding-inline: clamp(.6rem, 2.2vw, 2rem);
+  text-align: center;
+  border: 1px solid var(--line);
+  border-bottom: 0;
+  border-radius: var(--radius) var(--radius) 0 0;
+  box-shadow: var(--shadow-sm);
+}
+.ath-medals .stat:nth-child(1) { order: 2; padding-bottom: calc(clamp(1.4rem, 2.5vw, 2rem) + 2 * var(--step)); }
+.ath-medals .stat:nth-child(2) { order: 1; padding-bottom: calc(clamp(1.4rem, 2.5vw, 2rem) + var(--step)); }
+.ath-medals .stat:nth-child(3) { order: 3; }
 .stat--medal dt { display: flex; align-items: center; gap: .5rem; }
+.ath-medals .stat--medal dt { justify-content: center; }
 .stat__medal { font-size: 1.1em; line-height: 1; letter-spacing: 0;
   font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
 
