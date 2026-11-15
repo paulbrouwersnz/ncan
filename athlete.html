@@ -82,12 +82,12 @@
         <p class="eyebrow eyebrow--light" id="ath-eyebrow">North Canterbury athlete</p>
         <h1 id="page-heading">Athlete results</h1>
         <p class="lede" id="ath-lede">
-          Track and field, cross country and road results from published meetings, for North Canterbury
+          Track and field, cross country, road and trail results from published meetings, for North Canterbury
           and for teams our athletes have represented.
         </p>
         <div class="btn-row">
           <a class="btn btn--accent" href="#track">Track &amp; field</a>
-          <a class="btn btn--ghost-light" href="#off-track">Cross country &amp; road</a>
+          <a class="btn btn--ghost-light" href="#off-track">Cross country, road &amp; trail</a>
           <a class="btn btn--ghost-light" href="athletes.html">All athletes</a>
         </div>
         <p class="account-line" id="account" hidden></p>
@@ -267,18 +267,18 @@
       <div class="wrap">
         <div class="section-head section-head--wide">
           <p class="eyebrow">Out of Stadia</p>
-          <h2 id="offtrack-heading">Cross country, road and relays</h2>
+          <h2 id="offtrack-heading">Cross country, road, trail and relays</h2>
           <p class="lede">
-            Newest first. Cross country times depend on the course and the conditions, so they
+            Newest first. Cross country and trail times depend on the course and the conditions, so they
             aren&rsquo;t compared as personal bests: the place in the race tells more. A relay shows
-            the runner&rsquo;s own leg and their team&rsquo;s place. Grades are cross country and road
-            grades: two-year junior grades by age on 31&nbsp;December, and Masters by age on the day.
+            the runner&rsquo;s own leg and their team&rsquo;s place. Grades are cross country, road and
+            trail grades: two-year junior grades by age on 31&nbsp;December, and Masters by age on the day.
           </p>
         </div>
         <h3 class="ath-sub__title ath-sub__title--plain">Results</h3>
         <div class="table-wrap">
           <table class="schedule ath-table ath-offtrack">
-            <caption class="visually-hidden">Cross country, road and relay results, newest first</caption>
+            <caption class="visually-hidden">Cross country, road, trail and relay results, newest first</caption>
             <thead>
               <tr>
                 <th scope="col">Date</th><th scope="col">Race</th><th scope="col">Time</th>
@@ -816,7 +816,7 @@
         var rs = track.concat(away);
         $('glance').hidden = !rs.length && !(athlete.offTrack || []).length && !athlete.results.length;
         $('glance-note').textContent = away.length
-          ? 'Track and field, with ' + away.length + ' cross country, road and relay result' +
+          ? 'Track and field, with ' + away.length + ' cross country, road, trail and relay result' +
             (away.length === 1 ? '' : 's') + '. The filters below narrow these too.'
           : (athlete.offTrack || []).length ? 'The filters below narrow these too.' : '';
         var t = { run: 0, walked: 0, jumped: 0, thrown: 0 }, meets = {}, seasons = {}, relays = {};
@@ -1317,7 +1317,7 @@
             var leg = r.relay;
             var race = leg ? 'Relay, leg ' + leg.leg + (leg.legs ? ' of ' + leg.legs : '') +
                              (/\d+m$/.test(r.event) ? ' (' + inKm(r.event.match(/(\d+m)$/)[1]) + ')' : '')
-                           : inKm(r.event.replace(/^(Cross country|Road) /, ''));
+                           : inKm(r.event.replace(/^(Cross country|Road|Trail) /, ''));
             var cells = [
               ['Race', null, null],
               ['Time', null, 'records-perf'],
@@ -1662,7 +1662,7 @@
           }
           describe();
           var first = json.name.split(' ')[0];
-          var oosWords = offTrack.length + ' cross country, road and relay result' + (offTrack.length === 1 ? '' : 's');
+          var oosWords = offTrack.length + ' cross country, road, trail and relay result' + (offTrack.length === 1 ? '' : 's');
           // no track and field results: a member with no results yet, or one who only
           // runs cross country and road
           if (!json.results.length) {
@@ -1677,7 +1677,7 @@
               athlete.everything = [];
               renderSources();
               renderStats([]);
-              $('glance-note').textContent = 'Cross country, road and relay results.';
+              $('glance-note').textContent = 'Cross country, road, trail and relay results.';
             }
             return;
           }
