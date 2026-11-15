@@ -16,7 +16,7 @@
 <link rel="apple-touch-icon" href="assets/img/logo.png">
 <link rel="preload" href="assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/archivo-variable.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/styles.css?v=b351ac2e">
+<link rel="stylesheet" href="assets/css/styles.css?v=19223907">
 <!-- /@partial:head -->
 
 <link rel="canonical" href="https://ncan.nz/results-sources.html">
@@ -578,14 +578,14 @@
       function typeForm(m) {
         var form = text('form', 'src-type-form');
         var id = 'src-type-' + (m.link || '').replace(/\D+/g, '-');
-        var label = text('label', null, 'Type');
+        var label = text('label', null, 'Meeting type');
         label.htmlFor = id;
         var pick = text('select');
         pick.id = id;
         TYPES.forEach(function (t) { var o = text('option', null, t); o.value = t; pick.appendChild(o); });
         if (m.type && TYPES.indexOf(m.type) === -1) { var o = text('option', null, m.type); o.value = m.type; pick.appendChild(o); }
         pick.value = m.type || '';
-        var go = text('button', 'btn btn--ghost btn--sm', 'Change type');
+        var go = text('button', 'btn btn--ghost', 'Change type');
         go.type = 'submit';
         go.disabled = true;
         var said = text('span', 'src-type-form__said');
@@ -603,7 +603,10 @@
             setTimeout(watchCollect, 3000);
           }, function (err) { go.disabled = pick.disabled = false; said.textContent = err.message; });
         });
-        [label, pick, go, said].forEach(function (x) { form.appendChild(x); });
+        var field = text('p', 'records-field');
+        field.appendChild(label);
+        field.appendChild(pick);
+        [field, go, said].forEach(function (x) { form.appendChild(x); });
         return form;
       }
 
