@@ -8,6 +8,8 @@
     and its latest results.
   - Add a number (POST .../manage/add): joined to the page; on a member's page
     with no athletic.net number yet, that number's results become the member's.
+    A page number given by hand (900000001 up, from results typed in) can be
+    added too: its results move to this page, and its old link leads here.
   - Take a number out (POST .../manage/remove): kept apart from the page's other
     numbers from then on.
   Changes are kept with the club's corrections (undo on the Club admin page),
@@ -71,6 +73,20 @@
       if (bits.length) { head.appendChild(el('span', 'access-how', ' · ' + bits.join(' · '))); }
       li.appendChild(head);
       var acts = el('div', 'review-item__acts');
+      if (n.kind === 'house' && !n.page) {
+        var hb = el('button', 'btn btn--ghost btn--sm', 'Not this athlete: take it out');
+        hb.type = 'button';
+        hb.addEventListener('click', function () {
+          var why = prompt('Take page ' + n.id + ' out of ' + data.athlete.name + '’s page? Its results go back to a ' +
+                           'page of their own. Why (optional)?', 'not the same athlete');
+          if (why === null) { return; }
+          hb.disabled = true;
+          change('/remove', { number: String(n.id), why: why }, function () {
+            return 'Page ' + n.id + ' is taken out of this page.' + COLLECTING;
+          });
+        });
+        acts.appendChild(hb);
+      }
       if (n.athletic_net) {
         acts.appendChild(link('https://www.athletic.net/athlete/' + n.id + '/track-and-field/all', 'Track and field bio'));
         acts.appendChild(link('https://www.athletic.net/athlete/' + n.id + '/cross-country/all', 'Cross country bio'));
@@ -95,7 +111,9 @@
     out.appendChild(ul);
     $('manage-add-help').textContent = data.member_only
       ? 'This member has no athletic.net number yet. Adding one makes that number’s results theirs.'
-      : 'Adding a number joins its results to this page. The most recently used number keeps the page.';
+      : 'Adding an athletic.net number joins its results to this page (the most recently used number keeps ' +
+        'the page). Adding a page number given by hand (900000001 up, for results typed in before the athlete ' +
+        'had an athletic.net number) moves its results here and sends its old link here.';
   }
 
   function load() {
@@ -108,11 +126,12 @@
   $('manage-add').addEventListener('submit', function (e) {
     e.preventDefault();
     var m = /(?:\/athlete\/)?(\d{1,12})/.exec($('manage-number').value);
-    if (!m) { say('Give an athletic.net number, or paste the address of their athletic.net bio.'); return; }
+    if (!m) { say('Give an athletic.net number, the address of their athletic.net bio, or a page number given by hand.'); return; }
     var number = m[1];
     change('/add', { number: number, why: $('manage-why').value }, function () {
       $('manage-number').value = ''; $('manage-why').value = '';
-      return 'athletic.net ' + number + ' is added to this page.' + COLLECTING;
+      return (+number >= 900000000 ? 'Page ' + number + '’s results are moving to this page.'
+                                   : 'athletic.net ' + number + ' is added to this page.') + COLLECTING;
     });
   });
 
