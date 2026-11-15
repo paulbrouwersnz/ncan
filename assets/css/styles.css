@@ -533,6 +533,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 .stat dd { margin: .6rem 0 0; font-size: .9rem; color: var(--text-soft); }
 .stat dd b { display: block; color: var(--green-700); font-family: var(--font-display); font-size: 1rem; }
 /* 1st, 2nd and 3rd places: the medal beside the count */
+.stats__grid[hidden] { display: none; }   /* the grid's display would otherwise show it */
 .ath-stats.ath-medals { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: -.4rem; }
 .ath-medals .stat { padding-inline: clamp(.9rem, 2.5vw, 2rem); }
 .stat--medal dt { display: flex; align-items: center; gap: .5rem; }

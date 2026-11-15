@@ -16,7 +16,7 @@
 <link rel="apple-touch-icon" href="assets/img/logo.png">
 <link rel="preload" href="assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/archivo-variable.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/styles.css?v=fea764c8">
+<link rel="stylesheet" href="assets/css/styles.css?v=67260bc2">
 <!-- /@partial:head -->
 
 <link rel="canonical" href="https://ncan.nz/athlete.html">
@@ -771,8 +771,13 @@
       // 1st, 2nd and 3rd places, each in a block of its own with its medal; all three
       // once there's any podium, so the row reads the same from athlete to athlete
       var MEDALS = [['🥇', '1st place', '1st places'], ['🥈', '2nd place', '2nd places'], ['🥉', '3rd place', '3rd places']];
-      function medalRow(dl) {
+      // the medal row, emptied, made if needed; or none, taken away if it was there
+      function medalRow(dl, wanted) {
         var row = document.getElementById(dl.id + '-medals');
+        if (!wanted) {
+          if (row) { row.parentNode.removeChild(row); }
+          return null;
+        }
         if (!row) {
           row = text('dl', 'stats__grid ath-stats ath-medals');
           row.id = dl.id + '-medals';
@@ -839,12 +844,11 @@
          t.thrown ? [dist(t.thrown), 'Thrown'] : null].filter(Boolean).forEach(function (x) {
           statBlock(dl, x[0], x[1]);
         });
-        // the medals: a row of their own, under the rest
-        var row = medalRow(dl);
-        if (podiums) {
+        // the medals: a row of their own, under the rest, only when there's a podium
+        var row = medalRow(dl, podiums > 0);
+        if (row) {
           MEDALS.forEach(function (m, i) { statBlock(row, n(places[i]), places[i] === 1 ? m[1] : m[2], m[0]); });
         }
-        row.hidden = !podiums;
         dl.hidden = false;
       }
 
