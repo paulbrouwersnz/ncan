@@ -537,7 +537,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 /* a podium: 2nd, 1st, 3rd from the left, 1st highest, 3rd lowest, on one base
    (the page keeps 1st, 2nd, 3rd order, so a screen reader reads 1st first) */
 .ath-stats.ath-medals {
-  --step: clamp(.9rem, 2.2vw, 1.4rem);
+  --step: clamp(1.6rem, 4.5vw, 2.8rem);
   grid-template-columns: repeat(3, minmax(0, 1fr));
   align-items: end;
   gap: 0;                       /* one podium: the steps stand against each other */
