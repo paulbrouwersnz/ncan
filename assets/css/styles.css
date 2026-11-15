@@ -2949,8 +2949,6 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 .src-athletes li { break-inside: avoid; padding: .15rem 0; }
 .src-athletes__n { color: var(--green-600); font-size: .85em; }
 @media (max-width: 520px) { .src-facts { grid-template-columns: 1fr; } }
-.ath-sources { margin-top: clamp(2rem, 4vw, 3rem); }
-.ath-sources__head { margin: 0 0 .4rem; color: var(--green-800); }
 .src-meeting__link { margin: 0 0 .6rem; font-size: .95rem; }
 .src-results { list-style: none; margin: 0; padding: 0; font-size: .95rem; }
 .src-results li { padding: .2rem 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: .2rem .5rem; }
