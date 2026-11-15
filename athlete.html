@@ -16,7 +16,7 @@
 <link rel="apple-touch-icon" href="assets/img/logo.png">
 <link rel="preload" href="assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/archivo-variable.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/styles.css?v=74c89d99">
+<link rel="stylesheet" href="assets/css/styles.css?v=4e18036f">
 <!-- /@partial:head -->
 
 <link rel="canonical" href="https://ncan.nz/athlete.html">
@@ -251,14 +251,6 @@
         <p class="records-status" id="ath-status-2" role="status"></p>
         <div id="ath-table"></div>
 
-        <div class="ath-sources" id="ath-sources" hidden>
-          <h3 class="ath-sources__head" id="ath-sources-heading">Results sources</h3>
-          <p class="records-note">
-            The meetings these results come from, newest first. Open one for the official results and
-            what was done there. <a href="results-sources.html">All the club&rsquo;s results sources</a>
-          </p>
-          <div id="ath-sources-list"></div>
-        </div>
         <p class="records-note">
           These pages draw mainly on <a href="https://live.athletic.net">AthleticLIVE</a> (athletic.net),
           where Athletics Canterbury, school and national meetings have published results since 2024.
@@ -300,7 +292,23 @@
       </div>
     </section>
 
-    <section class="section" aria-labelledby="optout-heading">
+    <!-- ================= Results sources: every meeting this athlete's results come from ================= -->
+    <section class="section" id="ath-sources" aria-labelledby="ath-sources-heading" hidden>
+      <div class="wrap">
+        <div class="section-head section-head--wide">
+          <p class="eyebrow">Where the results come from</p>
+          <h2 id="ath-sources-heading">Results sources</h2>
+          <p class="lede">
+            Every meeting these results come from, track and field, cross country, road and relays,
+            newest first. Open one for the official results and what was done there.
+            <a href="results-sources.html">All the club&rsquo;s results sources</a>
+          </p>
+        </div>
+        <div id="ath-sources-list"></div>
+      </div>
+    </section>
+
+    <section class="section section--tint" aria-labelledby="optout-heading">
       <div class="wrap">
         <div class="section-head section-head--wide">
           <p class="eyebrow">Your page</p>
@@ -321,7 +329,7 @@
 
     <!-- Who can see this page: for the athlete's contacts from the membership
          system, and club administrators (assets/js/athlete-access.js) -->
-    <section class="section section--tint" id="ath-access" aria-labelledby="access-heading" hidden>
+    <section class="section" id="ath-access" aria-labelledby="access-heading" hidden>
       <div class="wrap">
         <div class="section-head section-head--wide">
           <p class="eyebrow">Sharing</p>
@@ -347,7 +355,7 @@
 
     <!-- Manage this athlete: club administrators only; the API answers nobody else
          (assets/js/athlete-manage.js) -->
-    <section class="section" id="ath-manage" aria-labelledby="manage-heading" hidden>
+    <section class="section section--tint" id="ath-manage" aria-labelledby="manage-heading" hidden>
       <div class="wrap">
         <div class="section-head section-head--wide">
           <p class="eyebrow">For club administrators</p>
@@ -1406,7 +1414,7 @@
       // for one athlete: every result, whatever the filters above show.
       function renderSources() {
         var meets = {}, order = [];
-        athlete.everything.forEach(function (r) {
+        (athlete.everything || []).concat(athlete.offTrack || []).forEach(function (r) {
           var m = /^(https?:\/\/[^/]+\/meets\/\d+)\//.exec(r.source || '');
           var key = m ? m[1] : 'hand:' + r.meeting;
           if (!meets[key]) {
@@ -1428,11 +1436,11 @@
         list.forEach(function (m) { if (seasons.indexOf(m.season) === -1) { seasons.push(m.season); } });
         seasons.forEach(function (season) {
           var group = text('div', 'records-grade');
-          group.appendChild(text('h4', 'records-grade__head', season + ' season'));
+          group.appendChild(text('h3', 'records-grade__head', season + ' season'));
           list.filter(function (m) { return m.season === season; }).forEach(function (m) {
             var block = text('details', 'champs-day src-meeting');
             var head = text('summary', 'champs-day__head');
-            head.appendChild(text('h5', 'champs-day__title src-meeting__title', m.name));
+            head.appendChild(text('h4', 'champs-day__title src-meeting__title', m.name));
             var when = m.first === m.last ? longDate(m.first) : longDate(m.first) + ' – ' + longDate(m.last);
             head.appendChild(text('span', 'champs-day__count', when + (m.type ? ' · ' + m.type : '')));
             head.appendChild(text('span', 'champs-tag champs-tag--next ath-badge',
@@ -1613,6 +1621,8 @@
             ['track', 'summary', 'progress', 'all-results'].forEach(function (x) { $(x).hidden = true; });
             jump('#track', false);
             if (offTrack.length) {
+              athlete.everything = [];
+              renderSources();
               renderStats([]);
               $('glance-note').textContent = 'Cross country, road and relay results.';
             }
