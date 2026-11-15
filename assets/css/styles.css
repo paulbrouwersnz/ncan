@@ -557,7 +557,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   margin-top: var(--depth);
   padding-inline: clamp(.6rem, 2.2vw, 2rem);
   text-align: center;
-  background: linear-gradient(180deg, var(--white) 0%, var(--green-050) 55%, var(--green-100) 100%);
+  background: linear-gradient(180deg, var(--face-hi) 0%, var(--face-mid) 55%, var(--face-lo) 100%);
   box-shadow: inset 1px 0 0 var(--line), inset -1px 0 0 var(--line), inset 0 1px 0 rgba(255, 255, 255, .9),
               inset 6px 0 10px -8px rgba(11, 59, 46, .18), inset -6px 0 10px -8px rgba(11, 59, 46, .18),
               0 10px 18px -12px rgba(11, 59, 46, .35);
@@ -568,13 +568,21 @@ ul { margin: 0; padding: 0; list-style: none; }
   left: 0; right: 0;
   bottom: 100%;
   height: var(--depth);
-  background: linear-gradient(180deg, #c9ddd3, #dfece6);
+  background: linear-gradient(180deg, var(--top-hi), var(--top-lo));
   clip-path: polygon(var(--depth) 0, calc(100% - var(--depth)) 0, 100% 100%, 0 100%);
 }
 /* a lower step's top runs straight into the taller step beside it; only the
    podium's outer edges slope away */
 .ath-medals .stat:nth-child(2)::before { clip-path: polygon(var(--depth) 0, 100% 0, 100% 100%, 0 100%); }
 .ath-medals .stat:nth-child(3)::before { clip-path: polygon(0 0, calc(100% - var(--depth)) 0, 100% 100%, 0 100%); }
+/* each step in its medal's colours: light fronts, so the words stay easy to
+   read, and deeper tops */
+.ath-medals .stat:nth-child(1) { --face-hi: #fffaea; --face-mid: #fbefc4; --face-lo: #f3df98;
+                                 --top-hi: #e2b84a; --top-lo: #f0d27e; }
+.ath-medals .stat:nth-child(2) { --face-hi: #fbfcfd; --face-mid: #eef1f4; --face-lo: #dde2e8;
+                                 --top-hi: #b8c1cb; --top-lo: #d5dbe2; }
+.ath-medals .stat:nth-child(3) { --face-hi: #fdf6f0; --face-mid: #f6e3d3; --face-lo: #f0d5c0;
+                                 --top-hi: #c98d5f; --top-lo: #e2b38f; }
 /* the winner's step in front of its neighbours, so its edges show over theirs */
 .ath-medals .stat:nth-child(1) { z-index: 1; }
 /* the medal and count at the top of each step, the words at its foot: the
