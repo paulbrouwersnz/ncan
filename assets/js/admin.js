@@ -136,21 +136,110 @@
   var watching = false;
   function watch(c) {
     $('collect-status').textContent = collectWords(c);
-    if (c && c.state === 'running' && !watching) {
+    // while a collect runs, or a change is waiting for one, look again shortly
+    var waiting = (appliedKeys(c).keys || []).length;
+    if (((c && c.state === 'running') || waiting) && !watching) {
       watching = true;
       setTimeout(function () { watching = false; loadAll(); }, 15000);
     }
   }
 
-  // every change goes through here: say what happened, and show the new state
-  function change(path, body, where, done) {
+  // every change goes through here: say what happened, and show the new state.
+  // item: the "needs a look" entry it settles, which fades out of its group.
+  function change(path, body, where, done, item) {
     $(where).textContent = 'Saving…';
+    var li = item && entryOf(item);
+    if (li) { saving(li, true); }
     return NCAN.send(path, body).then(function (r) {
       if (r.status === 200 || r.status === 201) {
         $(where).textContent = typeof done === 'function' ? done(r.body) : done;
+        // a dismissal is hidden by the server at once; anything else waits for its collect
+        if (item) { settled(item, !!(r.body && r.body.collect)); return; }
       } else { failed(where)(r); }
+      if (li) { saving(li, false); }
       loadAll();
-    }, function (err) { $(where).textContent = err.message; });
+    }, function (err) { $(where).textContent = err.message; if (li) { saving(li, false); } });
+  }
+
+  function entryOf(item) {
+    return document.querySelector('.review-item[data-key="' + CSS.escape(item.key) + '"]');
+  }
+  // an entry whose change is on its way to the server: covered, with a spinner,
+  // its buttons off, until the server answers (then it fades out)
+  function saving(li, on) {
+    li.classList.toggle('is-saving', on);
+    li.setAttribute('aria-busy', on ? 'true' : 'false');
+    Array.prototype.forEach.call(li.querySelectorAll('button, input, select'), function (b) { b.disabled = on; });
+    var cover = li.querySelector('.review-item__cover');
+    if (on && !cover) {
+      cover = el('div', 'review-item__cover');
+      cover.appendChild(el('span', 'review-pending__spin'));
+      cover.appendChild(el('span', null, 'Saving…'));
+      li.appendChild(cover);
+    }
+    if (!on && cover) { cover.remove(); }
+  }
+
+  // "Applying 2 changes: results are being collected now ..." until that collect is done
+  function showPending(c) {
+    var n = (appliedKeys(c).keys || []).length;
+    var box = $('review-pending');
+    box.hidden = !n;
+    if (!n) { return; }
+    box.textContent = '';
+    box.appendChild(el('span', 'review-pending__spin'));
+    box.appendChild(document.createTextNode('Applying ' + n + ' change' + (n === 1 ? '' : 's') + ': ' +
+      (c && c.state === 'running' ? 'results are being collected now (started ' + (c.started || '').slice(11, 16) + ').'
+                                  : 'results are about to be collected.') +
+      ' This list updates when that finishes, in a few minutes.'));
+  }
+
+  /* Entries an admin has acted on. A fix takes effect at the collect it starts,
+     so until that collect finishes the server still lists the entry: the page
+     remembers it (on this device, through a reload) and leaves it out. */
+  var APPLIED = 'ncan-admin-applied';
+  function appliedKeys(collectState) {
+    var kept = {};
+    try { kept = JSON.parse(sessionStorage.getItem(APPLIED) || '{}'); } catch (e) { kept = {}; }
+    // once a collect has finished since, the server's list is up to date again
+    if (collectState && collectState.state !== 'running' && collectState.finished &&
+        kept.since && collectState.finished > kept.since) { kept = {}; }
+    return kept;
+  }
+  var lastCollect = null;
+  // "2026-11-15 14:53:07", in this device's time, as the server writes a collect's times
+  function localNow() {
+    var d = new Date(), two = function (n) { return (n < 10 ? '0' : '') + n; };
+    return d.getFullYear() + '-' + two(d.getMonth() + 1) + '-' + two(d.getDate()) + ' ' +
+           two(d.getHours()) + ':' + two(d.getMinutes()) + ':' + two(d.getSeconds());
+  }
+  function settled(item, collecting) {
+    if (collecting) {
+      var kept = appliedKeys(lastCollect);
+      kept.keys = kept.keys || [];
+      kept.keys.push(item.key);
+      kept.since = kept.since || localNow();
+      try { sessionStorage.setItem(APPLIED, JSON.stringify(kept)); } catch (e) { /* this visit only */ }
+      showPending(lastCollect);
+    }
+    var li = entryOf(item);
+    if (!li) { loadAll(); return; }
+    var group = li.closest('.review-group');
+    li.style.height = li.offsetHeight + 'px';
+    li.offsetHeight;                                   // start the fade from its full height
+    li.classList.add('is-settled');
+    setTimeout(function () {
+      li.remove();
+      var left = group.querySelectorAll('.review-item').length;
+      group.querySelector('.review-group__count').textContent = String(left);
+      if (!left) {
+        group.remove();
+        if (!document.querySelector('#review-out .review-group')) {
+          $('review-out').insertBefore(el('p', 'mem-help', 'Nothing needs a look.'), $('review-out').firstChild);
+        }
+      }
+      loadAll();
+    }, 450);
   }
   var COLLECTING = ' Results are being collected again.';
 
@@ -195,7 +284,7 @@
       var why = prompt('Dismiss this? It stays hidden unless it changes. Why (optional)?', 'fine as it is');
       if (why === null) { return; }
       change('/admin/corrections', { kind: 'dismissed', key: item.key, text: item.text, why: why },
-             'review-said', 'Dismissed.');
+             'review-said', 'Dismissed.', item);
     });
   }
 
@@ -220,7 +309,7 @@
       var body = { name: item.name, season: season.input.value, member: member, why: why.input.value };
       if (born) { body.born = born.input.value; }
       change('/membership', body, 'review-said', item.name + (member ? ' is a member for ' : ' isn’t a member for ') +
-             season.input.value + '.' + COLLECTING);
+             season.input.value + '.' + COLLECTING, item);
     });
     return form;
   }
@@ -237,7 +326,7 @@
       var name = to.input.value.trim();
       if (!name) { $('review-said').textContent = 'Give their name on the members list.'; return; }
       change('/admin/corrections', { kind: 'name_fixes', from: item.name, to: name, why: 'on the members list as ' + name },
-             'review-said', '“' + item.name + '” is now read as ' + name + '.' + COLLECTING);
+             'review-said', '“' + item.name + '” is now read as ' + name + '.' + COLLECTING, item);
     });
     return form;
   }
@@ -245,7 +334,10 @@
   function renderReview(data) {
     var out = $('review-out');
     out.textContent = '';
-    var items = data.items || [];
+    lastCollect = data.collect;
+    showPending(data.collect);
+    var done = appliedKeys(data.collect).keys || [];
+    var items = (data.items || []).filter(function (i) { return done.indexOf(i.key) === -1; });
     if (!items.length) {
       out.appendChild(el('p', 'mem-help', data.updated ? 'Nothing needs a look. ' : 'Nothing yet: the next collect fills this in. '));
     }
@@ -264,6 +356,7 @@
       var ul = el('ul', 'review-list');
       mine.forEach(function (item) {
         var li = el('li', 'review-item');
+        li.dataset.key = item.key;
         li.appendChild(el('p', 'review-item__text', item.text));
         var acts = el('div', 'review-item__acts');
         if (kind === 'pair') {
@@ -271,11 +364,11 @@
           acts.appendChild(pageLink(item.ids[1], 'Second page'));
           acts.appendChild(button('The same athlete', function () {
             change('/admin/corrections', { kind: 'same', ids: item.ids, why: 'checked' }, 'review-said',
-                   'Joined into one page.' + COLLECTING);
+                   'Joined into one page.' + COLLECTING, item);
           }, 'btn btn--accent btn--sm'));
           acts.appendChild(button('Two athletes', function () {
             change('/admin/corrections', { kind: 'not_same', ids: item.ids, why: 'checked' }, 'review-said',
-                   'Kept apart.' + COLLECTING);
+                   'Kept apart.' + COLLECTING, item);
           }));
         }
         if (kind === 'no_membership') {
@@ -292,7 +385,7 @@
           acts.appendChild(button('Not a member', function (b) {
             b.disabled = true;
             change('/admin/corrections', { kind: 'dismissed', key: item.key, text: item.text, why: 'not a club member' },
-                   'review-said', item.name + ': not a member. They have no page, and their results stay left out.');
+                   'review-said', item.name + ': not a member. They have no page, and their results stay left out.', item);
           }, 'btn btn--accent btn--sm'));
         } else {
           acts.appendChild(dismissButton(item));
