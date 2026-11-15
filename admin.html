@@ -16,7 +16,7 @@
 <link rel="apple-touch-icon" href="assets/img/logo.png">
 <link rel="preload" href="assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/archivo-variable.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/styles.css?v=b3d095b4">
+<link rel="stylesheet" href="assets/css/styles.css?v=bee2bfe2">
 <!-- /@partial:head -->
 
 <meta name="robots" content="noindex">
@@ -86,6 +86,7 @@
         </p>
         <div class="btn-row" id="admin-jump" hidden>
           <a class="btn btn--accent" href="#review">Needs a look</a>
+          <a class="btn btn--ghost-light" href="#upload">Members list</a>
           <a class="btn btn--ghost-light" href="#members">Membership</a>
           <a class="btn btn--ghost-light" href="#merges">Merges</a>
           <a class="btn btn--ghost-light" href="#corrections">Corrections</a>
@@ -115,8 +116,53 @@
       </div>
     </section>
 
+    <!-- ================= Members list from GameDay ================= -->
+    <section class="section section--tint" id="upload" aria-labelledby="upload-heading" hidden>
+      <div class="wrap">
+        <div class="section-head section-head--wide">
+          <p class="eyebrow">From GameDay</p>
+          <h2 id="upload-heading">Members list</h2>
+          <p class="lede">
+            The members list decides who has a page, and which seasons&rsquo; results count for the club.
+            Update it from two GameDay exports whenever memberships change. Nothing changes until
+            you&rsquo;ve seen the check and pressed Import.
+          </p>
+        </div>
+        <details class="upload-how">
+          <summary>Where to get the two files</summary>
+          <ol>
+            <li>Sign in to <a href="https://admin.mygameday.app/" target="_blank" rel="noopener">GameDay</a>
+              (admin.mygameday.app) as the club.</li>
+            <li>Go to <strong>Reporting</strong>, then <strong>Tabular Reports</strong>.</li>
+            <li>Open <strong>Advanced Member</strong>. Choose <strong>Export</strong>, set it to
+              <strong>All rows</strong> and <strong>All columns</strong>, and export as CSV. No need to change
+              the page&rsquo;s filters.</li>
+            <li>Do the same with <strong>Transactions</strong>: <strong>All rows</strong> and
+              <strong>All columns</strong>, with no date filter, so it holds every season&rsquo;s memberships.</li>
+            <li>The files download straight away, or GameDay shows a notification when they&rsquo;re ready.
+              Choose them below.</li>
+          </ol>
+          <p>The files hold members&rsquo; personal details. They go only to the club&rsquo;s server, and are
+            deleted there once imported (or after three hours). Delete your downloaded copies afterwards.</p>
+        </details>
+        <form class="upload-form" id="upload-form" novalidate>
+          <p class="records-field">
+            <label for="upload-members">Advanced Member report (CSV)</label>
+            <input type="file" id="upload-members" accept=".csv,text/csv">
+          </p>
+          <p class="records-field">
+            <label for="upload-tx">Transactions (CSV)</label>
+            <input type="file" id="upload-tx" accept=".csv,text/csv">
+          </p>
+          <button type="submit" class="btn btn--accent" id="upload-check">Check the files</button>
+        </form>
+        <p class="access-status" id="upload-status" role="status"></p>
+        <div id="upload-report"></div>
+      </div>
+    </section>
+
     <!-- ================= Membership ================= -->
-    <section class="section section--tint" id="members" aria-labelledby="members-heading" hidden>
+    <section class="section" id="members" aria-labelledby="members-heading" hidden>
       <div class="wrap">
         <div class="section-head section-head--wide">
           <p class="eyebrow">On top of the GameDay list</p>
@@ -168,7 +214,7 @@
     </section>
 
     <!-- ================= Merges ================= -->
-    <section class="section" id="merges" aria-labelledby="merges-heading" hidden>
+    <section class="section section--tint" id="merges" aria-labelledby="merges-heading" hidden>
       <div class="wrap">
         <div class="section-head section-head--wide">
           <p class="eyebrow">athletic.net numbers</p>
@@ -215,7 +261,7 @@
     </section>
 
     <!-- ================= Corrections ================= -->
-    <section class="section section--tint" id="corrections" aria-labelledby="corrections-heading" hidden>
+    <section class="section" id="corrections" aria-labelledby="corrections-heading" hidden>
       <div class="wrap">
         <div class="section-head section-head--wide">
           <p class="eyebrow">Made on the website</p>
@@ -242,7 +288,7 @@
     </section>
 
     <!-- ================= Blocks ================= -->
-    <section class="section" id="blocks" aria-labelledby="blocks-heading" hidden>
+    <section class="section section--tint" id="blocks" aria-labelledby="blocks-heading" hidden>
       <div class="wrap">
         <div class="section-head section-head--wide">
           <p class="eyebrow">Sign-in</p>

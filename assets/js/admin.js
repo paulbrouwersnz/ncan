@@ -155,7 +155,9 @@
   var COLLECTING = ' Results are being collected again.';
 
   /* Needs a look ------------------------------------------------------------ */
+  var openGroups = {};     // which "needs a look" groups the admin has opened
   var KINDS = {
+    champs: 'Club championships to confirm again',
     not_member: 'Entered for the club, not a member',
     unmatched: 'Club results that couldn’t be matched',
     no_membership: 'Kept without a membership',
@@ -250,7 +252,15 @@
     Object.keys(KINDS).forEach(function (kind) {
       var mine = items.filter(function (i) { return i.kind === kind; });
       if (!mine.length) { return; }
-      out.appendChild(el('h3', 'access-sub', KINDS[kind] + ' (' + mine.length + ')'));
+      // each kind folded away until opened; one that's open stays open after a change
+      var group = el('details', 'review-group');
+      group.dataset.kind = kind;
+      group.open = !!openGroups[kind];
+      group.addEventListener('toggle', function () { openGroups[kind] = group.open; });
+      var sum = el('summary', 'review-group__head');
+      sum.appendChild(el('span', null, KINDS[kind]));
+      sum.appendChild(el('span', 'review-group__count', String(mine.length)));
+      group.appendChild(sum);
       var ul = el('ul', 'review-list');
       mine.forEach(function (item) {
         var li = el('li', 'review-item');
@@ -271,6 +281,11 @@
         if (kind === 'no_membership') {
           acts.appendChild(pageLink(item.id, 'Their page'));
         }
+        if (kind === 'champs') {
+          var go = el('a', 'btn btn--accent btn--sm', 'Review ' + item.date);
+          go.href = 'club-champs.html?season=' + encodeURIComponent(item.season) + '#champs-review';
+          acts.appendChild(go);
+        }
         if (kind === 'not_member') {
           // they already have no page and their results count for nothing: this
           // records that they aren't a member, and takes the item off the list
@@ -282,7 +297,11 @@
         } else {
           acts.appendChild(dismissButton(item));
         }
-        if (kind === 'pair') {
+        if (kind === 'champs') {
+          var ch = el('ul', 'upload-list');
+          (item.changes || []).forEach(function (t) { ch.appendChild(el('li', null, t)); });
+          li.appendChild(ch);
+        } else if (kind === 'pair') {
           li.appendChild(resultsList((item.samples || [])[0], 'Under the first number'));
           li.appendChild(resultsList((item.samples || [])[1], 'Under the second number'));
         } else {
@@ -306,7 +325,8 @@
         }
         ul.appendChild(li);
       });
-      out.appendChild(ul);
+      group.appendChild(ul);
+      out.appendChild(group);
     });
     if (data.dismissed) {
       out.appendChild(el('p', 'records-note', data.dismissed + ' dismissed (listed under Corrections).'));
@@ -492,6 +512,123 @@
     });
   }
 
+  /* Members list from GameDay -------------------------------------------------
+     Two steps. Check: both files go to the server, which reads them and changes
+     nothing; the report says what's in them, how the list would change, and
+     what looks wrong. Import: only from a checked upload, and with warnings
+     only once someone ticks that they've checked them. */
+  function listOf(names, max) {
+    max = max || 40;
+    return names.slice(0, max).join(', ') + (names.length > max ? ' and ' + (names.length - max) + ' more' : '');
+  }
+
+  function renderUpload(rep) {
+    var out = $('upload-report');
+    out.textContent = '';
+    if (rep.problems && rep.problems.length) {
+      out.appendChild(el('h3', 'access-sub upload-bad', 'These files can’t be imported'));
+      var pl = el('ul', 'upload-list upload-list--bad');
+      rep.problems.forEach(function (p) { pl.appendChild(el('li', null, p)); });
+      out.appendChild(pl);
+      return;
+    }
+    var f = rep.files, m = rep.members, c = rep.comparison;
+    out.appendChild(el('h3', 'access-sub', 'What’s in the files'));
+    var facts = el('ul', 'upload-list');
+    [f.member_rows + ' people in the member report; ' + f.transaction_rows + ' transactions, ' +
+       (f.first_order ? 'ordered ' + f.first_order + ' to ' + f.last_order : 'with no order dates') + '.',
+     'Paid memberships by season: ' + (Object.keys(f.paid_by_season).map(function (s) {
+       return s + ' (' + f.paid_by_season[s] + ')'; }).join(', ') || 'none') + '.',
+     m.count + ' members would be listed (' + m.with_birth_date + ' with a date of birth, ' + m.with_gender +
+       ' with a gender); ' + m.never_paid + ' in the member report never had a paid membership and are left off.',
+     m.emails + ' contact emails would be able to sign in to see their member’s page (replacing the last import’s).'
+    ].forEach(function (t) { facts.appendChild(el('li', null, t)); });
+    out.appendChild(facts);
+
+    out.appendChild(el('h3', 'access-sub', 'Compared with the list in use (' + c.in_use + ' members)'));
+    var diff = el('ul', 'upload-list');
+    diff.appendChild(el('li', null, 'New (' + c.added.length + '): ' + (listOf(c.added) || 'nobody')));
+    diff.appendChild(el('li', null, 'No longer listed, so losing their page (' + c.gone.length + '): ' +
+                                    (listOf(c.gone) || 'nobody')));
+    var gained = c.changed.filter(function (x) { return x.added.length; });
+    var lost = c.changed.filter(function (x) { return x.removed.length; });
+    diff.appendChild(el('li', null, 'Gaining seasons (' + gained.length + '): ' + (listOf(gained.map(function (x) {
+      return x.name + ' +' + x.added.join(', '); })) || 'nobody')));
+    diff.appendChild(el('li', null, 'Losing seasons (' + lost.length + '): ' + (listOf(lost.map(function (x) {
+      return x.name + ' −' + x.removed.join(', '); })) || 'nobody')));
+    out.appendChild(diff);
+
+    var form = el('form', 'upload-go');
+    var tick = null;
+    if (rep.warnings.length) {
+      out.appendChild(el('h3', 'access-sub upload-bad', 'Check these first'));
+      var wl = el('ul', 'upload-list upload-list--warn');
+      rep.warnings.forEach(function (w) { wl.appendChild(el('li', null, w)); });
+      out.appendChild(wl);
+      var p = el('p', 'records-field ath-check');
+      tick = el('input');
+      tick.type = 'checkbox';
+      tick.id = 'upload-checked';
+      var lab = el('label', null, 'I’ve checked the warnings: import anyway');
+      lab.htmlFor = 'upload-checked';
+      p.appendChild(tick); p.appendChild(lab);
+      form.appendChild(p);
+    } else {
+      out.appendChild(el('p', 'mem-help', 'Nothing looks wrong.'));
+    }
+    var go = el('button', 'btn btn--accent', 'Import: replace the members list');
+    go.type = 'submit';
+    form.appendChild(go);
+    form.appendChild(button('Cancel', function () {
+      NCAN.send('/admin/members/discard', { token: rep.token });
+      out.textContent = '';
+      $('upload-status').textContent = 'Cancelled: the uploaded files were deleted, and nothing changed.';
+    }));
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (tick && !tick.checked) { $('upload-status').textContent = 'Tick that you’ve checked the warnings first.'; return; }
+      go.disabled = true;
+      $('upload-status').textContent = 'Importing…';
+      NCAN.send('/admin/members/import', { token: rep.token, checked: !!(tick && tick.checked) }).then(function (r) {
+        if (r.status !== 200) { failed('upload-status')(r); go.disabled = false; return; }
+        out.textContent = '';
+        $('upload-form').reset();
+        $('upload-status').textContent = 'Imported: ' + r.body.members + ' members and ' + r.body.emails +
+          ' contact emails. The uploaded files were deleted. Results are being collected again: athlete pages ' +
+          'update when that finishes (a few minutes). If that changes a confirmed club championships Saturday, ' +
+          'it appears under Needs a look, to review and confirm again. Delete your downloaded copies.';
+        loadAll();
+      }, function (err) { $('upload-status').textContent = err.message; go.disabled = false; });
+    });
+    out.appendChild(form);
+  }
+
+  function readFile(input) {
+    var file = input.files && input.files[0];
+    if (!file) { return Promise.resolve(null); }
+    if (file.size > 15 * 1024 * 1024) { return Promise.reject(new Error(file.name + ' is too big.')); }
+    return file.text();
+  }
+
+  function setUpUpload() {
+    $('upload-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      $('upload-report').textContent = '';
+      Promise.all([readFile($('upload-members')), readFile($('upload-tx'))]).then(function (texts) {
+        if (!texts[0] || !texts[1]) { $('upload-status').textContent = 'Choose both files first.'; return; }
+        $('upload-status').textContent = 'Checking…';
+        $('upload-check').disabled = true;
+        return NCAN.send('/admin/members/check', { member_csv: texts[0], transactions_csv: texts[1] }).then(function (r) {
+          $('upload-check').disabled = false;
+          if (r.status !== 200) { failed('upload-status')(r); return; }
+          $('upload-status').textContent = r.body.problems.length ? '' :
+            'Checked. Nothing has changed yet: read the report, then Import or Cancel.';
+          renderUpload(r.body);
+        });
+      }).catch(function (err) { $('upload-check').disabled = false; $('upload-status').textContent = err.message; });
+    });
+  }
+
   /* Remove a page ------------------------------------------------------------ */
   function setUpOptOut() {
     $('optout-add').addEventListener('submit', function (e) {
@@ -567,7 +704,8 @@
     loadAll().then(function () {
       $('admin-status').hidden = true;
       $('admin-jump').hidden = false;
-      ['review', 'members', 'merges', 'corrections', 'blocks'].forEach(function (x) { $(x).hidden = false; });
+      ['review', 'upload', 'members', 'merges', 'corrections', 'blocks'].forEach(function (x) { $(x).hidden = false; });
+      setUpUpload();
       setUpMembership();
       setUpMerges();
       setUpOptOut();
