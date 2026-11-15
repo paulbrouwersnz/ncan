@@ -3143,4 +3143,6 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 #manage-membership .table-wrap { margin-top: 1rem; }
 table.schedule.manage-mem { min-width: 640px; }
 .manage-mem-note { display: block; margin-top: .15rem; color: var(--text-soft); font-size: .84rem; }
+.manage-mem-item { display: block; }
+.manage-mem-item + .manage-mem-item { margin-top: .5rem; }
 #blocks-heading { margin-top: 2.5rem; }
