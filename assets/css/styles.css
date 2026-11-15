@@ -538,9 +538,69 @@ ul { margin: 0; padding: 0; list-style: none; }
 .stat dd b { display: block; color: var(--green-700); font-family: var(--font-display); font-size: 1rem; }
 /* 1st, 2nd and 3rd places: the medal beside the count */
 .stats__grid[hidden] { display: none; }   /* the grid's display would otherwise show it */
-.ath-stats.ath-medals { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: -.4rem; }
-.ath-medals .stat { padding-inline: clamp(.9rem, 2.5vw, 2rem); }
+/* a podium: 2nd, 1st, 3rd from the left, 1st highest, 3rd lowest, on one base
+   (the page keeps 1st, 2nd, 3rd order, so a screen reader reads 1st first) */
+.ath-stats.ath-medals {
+  --step: clamp(1.6rem, 4.5vw, 2.8rem);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: end;
+  gap: 0;                       /* one podium: the steps stand against each other */
+  margin-top: -.4rem;
+  background: none;
+  border: 0;
+  border-bottom: 3px solid var(--line-strong);
+  border-radius: 0;
+  box-shadow: none;
+  overflow: visible;
+}
+/* each step a block seen from a little above: a lit top face, a front that
+   darkens towards the floor, and shaded edges */
+.ath-medals .stat {
+  --depth: clamp(.7rem, 1.6vw, 1rem);
+  position: relative;
+  margin-top: var(--depth);
+  padding-inline: clamp(.6rem, 2.2vw, 2rem);
+  text-align: center;
+  background: linear-gradient(180deg, var(--face-hi) 0%, var(--face-mid) 55%, var(--face-lo) 100%);
+  box-shadow: inset 1px 0 0 var(--line), inset -1px 0 0 var(--line), inset 0 1px 0 rgba(255, 255, 255, .9),
+              inset 6px 0 10px -8px rgba(11, 59, 46, .18), inset -6px 0 10px -8px rgba(11, 59, 46, .18),
+              0 10px 18px -12px rgba(11, 59, 46, .35);
+}
+.ath-medals .stat::before {
+  content: "";
+  position: absolute;
+  left: 0; right: 0;
+  bottom: 100%;
+  height: var(--depth);
+  background: linear-gradient(180deg, var(--top-hi), var(--top-lo));
+  clip-path: polygon(var(--depth) 0, calc(100% - var(--depth)) 0, 100% 100%, 0 100%);
+}
+/* a lower step's top runs straight into the taller step beside it; only the
+   podium's outer edges slope away */
+.ath-medals .stat:nth-child(2)::before { clip-path: polygon(var(--depth) 0, 100% 0, 100% 100%, 0 100%); }
+.ath-medals .stat:nth-child(3)::before { clip-path: polygon(0 0, calc(100% - var(--depth)) 0, 100% 100%, 0 100%); }
+/* each step in its medal's colours: light fronts, so the words stay easy to
+   read, and deeper tops */
+.ath-medals .stat:nth-child(1) { --face-hi: #fffaea; --face-mid: #fbefc4; --face-lo: #f3df98;
+                                 --top-hi: #e2b84a; --top-lo: #f0d27e; }
+.ath-medals .stat:nth-child(2) { --face-hi: #fbfcfd; --face-mid: #eef1f4; --face-lo: #dde2e8;
+                                 --top-hi: #b8c1cb; --top-lo: #d5dbe2; }
+.ath-medals .stat:nth-child(3) { --face-hi: #fdf6f0; --face-mid: #f6e3d3; --face-lo: #f0d5c0;
+                                 --top-hi: #c98d5f; --top-lo: #e2b38f; }
+/* the winner's step in front of its neighbours, so its edges show over theirs */
+.ath-medals .stat:nth-child(1) { z-index: 1; }
+/* the medal and count at the top of each step, the words at its foot: the
+   step's height is the room between them */
+.ath-medals .stat dd { margin-top: .6rem; }
+.ath-medals .stat:nth-child(1) { order: 2; }
+.ath-medals .stat:nth-child(1) dt { margin-bottom: calc(2 * var(--step)); }
+.ath-medals .stat:nth-child(2) { order: 1; }
+.ath-medals .stat:nth-child(2) dt { margin-bottom: var(--step); }
+.ath-medals .stat:nth-child(3) { order: 3; }
 .stat--medal dt { display: flex; align-items: center; gap: .5rem; }
+.ath-medals .stat--medal dt { justify-content: center; }
+/* the medal's disc (below its ribbon) level with the middle of the count */
+.stat--medal .stat__medal { position: relative; top: -.18em; }
 .stat__medal { font-size: 1.1em; line-height: 1; letter-spacing: 0;
   font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
 
