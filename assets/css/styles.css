@@ -3100,6 +3100,14 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 .ath-glance .ath-stats { margin: .4rem 0 .6rem; }
 .ath-glance + .section { padding-top: 2.5rem; }
 
+/* Athlete page: two main sections (track and field; out of stadia), each with subsections */
+.ath-part__head { margin-bottom: 1.6rem; }
+.ath-sub[hidden] { display: none; }
+.ath-sub + .ath-sub { margin-top: 3.5rem; }
+.ath-sub + .ath-sub > .wrap { padding-top: 3rem; border-top: 1px solid var(--line); }
+.ath-sub__title { margin: 0 0 .6rem; font-size: clamp(1.35rem, 2.4vw, 1.7rem); color: var(--green-800); }
+.ath-sub__title--plain { margin-top: 1.5rem; }
+
 /* Cross country, road and relays (athlete.html) */
 .ath-offtrack td[data-label="Race"] { min-width: 11rem; }
 .ath-offtrack td[data-label="Meeting"] { min-width: 12rem; }
