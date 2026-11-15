@@ -3025,6 +3025,12 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 .access-status { margin: .8rem 0 0; font-weight: 600; color: var(--green-800); }
 .access-status:empty { display: none; }
 
+/* Sortable column headings (athletes.html) */
+.th-sort { padding: 0; border: 0; background: none; font: inherit; letter-spacing: inherit;
+  text-transform: inherit; color: inherit; cursor: pointer; text-align: left; }
+.th-sort:hover, .th-sort:focus-visible { text-decoration: underline; text-underline-offset: .2em; }
+.th-sort__arrow { font-size: .8em; }
+
 /* Cross country, road and relays (athlete.html) */
 .ath-offtrack td[data-label="Race"] { min-width: 11rem; }
 .ath-offtrack td[data-label="Meeting"] { min-width: 12rem; }

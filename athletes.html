@@ -16,7 +16,7 @@
 <link rel="apple-touch-icon" href="assets/img/logo.png">
 <link rel="preload" href="assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/archivo-variable.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/styles.css?v=a83dae86">
+<link rel="stylesheet" href="assets/css/styles.css?v=ecda3242">
 <!-- /@partial:head -->
 
 <link rel="canonical" href="https://ncan.nz/athletes.html">
@@ -136,6 +136,17 @@
             <p class="records-field records-field--grow">
               <label for="ix-text">Search</label>
               <input type="search" id="ix-text" placeholder="athlete name" autocomplete="off">
+            </p>
+            <p class="records-field">
+              <label for="ix-sort">Sort by</label>
+              <select id="ix-sort">
+                <option value="name">First name</option>
+                <option value="surname">Surname</option>
+                <option value="group">Age group</option>
+                <option value="results">Most results</option>
+                <option value="events">Most events</option>
+                <option value="last">Latest result</option>
+              </select>
             </p>
           </div>
           <div class="records-actions">
@@ -449,6 +460,75 @@
         dl.hidden = false;
       }
 
+      /* Sorting -------------------------------------------------------------
+         Within each season. A column heading sorts by that column (again to
+         reverse it); the Sort by menu does the same, and is the way to sort by
+         surname, and on a phone, where the headings aren't shown. */
+      var SORT = { key: 'name', dir: 1 };
+      // the way each column sorts first: names and age groups A-Z, the rest most first
+      var FIRST_DIR = { name: 1, surname: 1, group: 1, results: -1, events: -1, last: -1 };
+      var PARTICLES = /^(van|von|der|den|de|del|della|di|da|du|la|le|st\.?|mac|o')$/i;
+
+      // "Mila Joy van den Heuvel" -> "van den Heuvel": the last word, with any
+      // lower-case particles before it
+      function surname(name) {
+        var w = name.trim().split(/\s+/);
+        var i = w.length - 1;
+        while (i > 1 && PARTICLES.test(w[i - 1])) { i--; }
+        return w.slice(i).join(' ');
+      }
+      function surnameKey(name) { return surname(name).toLowerCase(); }
+
+      // Grade 7-14, then U16-U20, Senior, Masters
+      function groupRank(g) {
+        if (!g) { return 999; }
+        var m = /(\d+)/.exec(g);
+        return g === 'Senior' ? 100 : g === 'Masters' ? 101 : (/^U/.test(g) ? 50 : 0) + (m ? +m[1] : 0);
+      }
+
+      function compare(a, b) {
+        var byName = a.name.localeCompare(b.name, 'en', { sensitivity: 'base' });
+        var d = 0;
+        switch (SORT.key) {
+          case 'surname':
+            d = surnameKey(a.name).localeCompare(surnameKey(b.name), 'en', { sensitivity: 'base' }); break;
+          case 'group':
+            d = groupRank(a.group) - groupRank(b.group) || (a.gender || 'z').localeCompare(b.gender || 'z'); break;
+          case 'results': d = a.results - b.results; break;
+          case 'events': d = a.events.length - b.events.length; break;
+          case 'last':
+            // no result yet: always at the end
+            if (!a.last || !b.last) { return a.last ? -1 : b.last ? 1 : byName; }
+            d = a.last < b.last ? -1 : a.last > b.last ? 1 : 0; break;
+          default: d = byName;
+        }
+        return SORT.dir * d || byName;
+      }
+
+      function sortBy(key) {
+        SORT = SORT.key === key ? { key: key, dir: -SORT.dir } : { key: key, dir: FIRST_DIR[key] };
+        $('ix-sort').value = key;
+        render();
+      }
+
+      // a column heading that sorts; the Athlete column keeps to first name or surname
+      function heading(label, key) {
+        var th = text('th');
+        th.setAttribute('scope', 'col');
+        var on = SORT.key === key || (key === 'name' && SORT.key === 'surname');
+        var b = text('button', 'th-sort', label);
+        b.type = 'button';
+        b.title = 'Sort by ' + label.toLowerCase() + (on ? ' (again to reverse)' : '');
+        if (on) {
+          var up = SORT.dir === 1;
+          th.setAttribute('aria-sort', up ? 'ascending' : 'descending');
+          b.appendChild(text('span', 'th-sort__arrow', up ? ' ▲' : ' ▼'));
+        }
+        b.addEventListener('click', function () { sortBy(key === 'name' && SORT.key === 'surname' ? 'surname' : key); });
+        th.appendChild(b);
+        return th;
+      }
+
       function filters() {
         return {
           grade: $('ix-grade').value,
@@ -484,7 +564,7 @@
         rows.forEach(function (a) { if (seasons.indexOf(a.season) === -1) { seasons.push(a.season); } });
         seasons.sort().reverse();
         seasons.forEach(function (season) {
-        var group = rows.filter(function (a) { return a.season === season; });
+        var group = rows.filter(function (a) { return a.season === season; }).sort(compare);
         var block = text('div', 'records-grade');
         block.appendChild(text('h3', 'records-grade__head', season + ' season'));
         var wrap = text('div', 'table-wrap');
@@ -492,9 +572,8 @@
         table.appendChild(text('caption', 'visually-hidden', 'North Canterbury athletes most recently registered or competing in ' + season));
         var thead = document.createElement('thead');
         var hr = document.createElement('tr');
-        ['Athlete', 'Age group', 'Results', 'Events', 'Last result'].forEach(function (h) {
-          var th = text('th', null, h); th.setAttribute('scope', 'col'); hr.appendChild(th);
-        });
+        [['Athlete', 'name'], ['Age group', 'group'], ['Results', 'results'], ['Events', 'events'],
+         ['Last result', 'last']].forEach(function (h) { hr.appendChild(heading(h[0], h[1])); });
         thead.appendChild(hr);
         table.appendChild(thead);
         var tbody = document.createElement('tbody');
@@ -550,13 +629,8 @@
             if (a.group) { grades[a.group] = 1; }
             a.events.forEach(function (e) { events[e] = 1; });
           });
-          // Grade 7-14, then U16-U20, Senior, Masters
-          var rank = function (g) {
-            var m = /(\d+)/.exec(g);
-            return g === 'Senior' ? 100 : g === 'Masters' ? 101 : (/^U/.test(g) ? 50 : 0) + (m ? +m[1] : 0);
-          };
           // each band is a heading in the list, with an option for the whole band first
-          var order = Object.keys(grades).sort(function (a, b) { return rank(a) - rank(b); });
+          var order = Object.keys(grades).sort(function (a, b) { return groupRank(a) - groupRank(b); });
           BANDS.forEach(function (band) {
             var inBand = order.filter(function (g) { return band.test(g); });
             if (!inBand.length) { return; }
@@ -580,6 +654,10 @@
           if (json.updated) { $('ix-updated').textContent = 'Last updated ' + longDate(json.updated) + '.'; }
           ['ix-grade', 'ix-gender', 'ix-event'].forEach(function (id) { $(id).addEventListener('change', render); });
           $('ix-text').addEventListener('input', render);
+          $('ix-sort').addEventListener('change', function () {
+            SORT = { key: this.value, dir: FIRST_DIR[this.value] };
+            render();
+          });
           $('ix-clear').addEventListener('click', function () {
             ['ix-grade', 'ix-gender', 'ix-event', 'ix-text'].forEach(function (id) { $(id).value = ''; });
             render();
