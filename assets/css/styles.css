@@ -1383,15 +1383,20 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
   table.schedule tbody > tr:not(.schedule__band) > td {
     display: block;
     position: relative;
-    padding: .28rem 0 .28rem 5.4rem;
+    padding: .28rem 0 .28rem 7.2rem;
+    min-height: 1.9rem;              /* room for a label on two lines */
     border-top: 0;
   }
+  /* wide enough for the longest one-word label ("Representing"); longer
+     labels ("Points per placing") wrap between words, never into the value */
   table.schedule tbody > tr:not(.schedule__band) > td::before {
     content: attr(data-label);
     position: absolute;
     left: 0;
     top: .28rem;
-    width: 4.6rem;
+    width: 6.5rem;
+    line-height: 1.25;
+    white-space: normal;
     padding-top: .2rem;
     font-family: var(--font-display);
     font-size: .68rem;
@@ -3019,6 +3024,12 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 .access-add { display: flex; flex-wrap: wrap; align-items: flex-end; gap: .8rem; max-width: 46rem; }
 .access-status { margin: .8rem 0 0; font-weight: 600; color: var(--green-800); }
 .access-status:empty { display: none; }
+
+/* Sortable column headings (athletes.html) */
+.th-sort { padding: 0; border: 0; background: none; font: inherit; letter-spacing: inherit;
+  text-transform: inherit; color: inherit; cursor: pointer; text-align: left; }
+.th-sort:hover, .th-sort:focus-visible { text-decoration: underline; text-underline-offset: .2em; }
+.th-sort__arrow { font-size: .8em; }
 
 /* Cross country, road and relays (athlete.html) */
 .ath-offtrack td[data-label="Race"] { min-width: 11rem; }
