@@ -16,7 +16,7 @@
 <link rel="apple-touch-icon" href="assets/img/logo.png">
 <link rel="preload" href="assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/archivo-variable.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/styles.css?v=4e18036f">
+<link rel="stylesheet" href="assets/css/styles.css?v=b351ac2e">
 <!-- /@partial:head -->
 
 <link rel="canonical" href="https://ncan.nz/results-sources.html">
@@ -451,8 +451,9 @@
           facts.appendChild(dd);
         });
         body.appendChild(facts);
-        // a club administrator can take an AthleticLIVE meeting off the list
+        // a club administrator can change an AthleticLIVE meeting's type, or take it off the list
         if (CAN_REMOVE && m.from === 'AthleticLIVE') {
+          body.appendChild(typeForm(m));
           var rm = text('button', 'btn btn--ghost btn--sm src-remove', 'Remove this meeting');
           rm.type = 'button';
           rm.addEventListener('click', function () { removeMeeting(m, rm); });
@@ -501,9 +502,10 @@
          For club administrators, coaches and the committee, signed in: the API
          (POST /v1/sources) checks the address with AthleticLIVE, adds it to the
          list and collects the results in the background. Only administrators
-         remove (POST /v1/sources/remove). */
+         remove (POST /v1/sources/remove) or change a meeting's type (POST /v1/sources/type). */
 
       var CAN_REMOVE = false;
+      var TYPES = [];         // the meeting types, from GET /v1/sources
       var checked = null;     // the meeting the Check button found
 
       function collectWords(c) {
@@ -526,6 +528,7 @@
       function setUpAdding() {
         NCAN.get('/sources').then(function (info) {
           $('add-meeting').hidden = false;
+          TYPES = info.types;
           info.types.forEach(function (t) { var o = text('option', null, t); o.value = t; $('add-type').appendChild(o); });
           $('collect-status').textContent = collectWords(info.collect);
           if (info.collect && info.collect.state === 'running') { setTimeout(watchCollect, 15000); }
@@ -569,6 +572,39 @@
             setTimeout(watchCollect, 3000);
           }, function (err) { $('add-go').disabled = false; $('add-status').textContent = err.message; });
         });
+      }
+
+      // the meeting's type: changing it collects again, as cross country and road are read differently
+      function typeForm(m) {
+        var form = text('form', 'src-type-form');
+        var id = 'src-type-' + (m.link || '').replace(/\D+/g, '-');
+        var label = text('label', null, 'Type');
+        label.htmlFor = id;
+        var pick = text('select');
+        pick.id = id;
+        TYPES.forEach(function (t) { var o = text('option', null, t); o.value = t; pick.appendChild(o); });
+        if (m.type && TYPES.indexOf(m.type) === -1) { var o = text('option', null, m.type); o.value = m.type; pick.appendChild(o); }
+        pick.value = m.type || '';
+        var go = text('button', 'btn btn--ghost btn--sm', 'Change type');
+        go.type = 'submit';
+        go.disabled = true;
+        var said = text('span', 'src-type-form__said');
+        said.setAttribute('role', 'status');
+        pick.addEventListener('change', function () { go.disabled = pick.value === m.type; said.textContent = ''; });
+        form.addEventListener('submit', function (e) {
+          e.preventDefault();
+          if (pick.value === m.type) { return; }
+          go.disabled = pick.disabled = true;
+          said.textContent = 'Saving…';
+          NCAN.send('/sources/type', { url: m.link, type: pick.value }).then(function (r) {
+            if (r.status !== 200) { go.disabled = pick.disabled = false; said.textContent = r.body.error || 'Sorry, that didn’t work.'; return; }
+            said.textContent = 'Now ' + r.body.meeting.type + ': updating the results…';
+            $('collect-status').textContent = 'Collecting results now. This takes 5–10 minutes; this page updates when it’s done.';
+            setTimeout(watchCollect, 3000);
+          }, function (err) { go.disabled = pick.disabled = false; said.textContent = err.message; });
+        });
+        [label, pick, go, said].forEach(function (x) { form.appendChild(x); });
+        return form;
       }
 
       function removeMeeting(m, button) {
