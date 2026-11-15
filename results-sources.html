@@ -448,9 +448,17 @@
 
         var body = text('div', 'champs-day__body src-meeting__body');
         var facts = text('dl', 'src-facts');
-        var link = text('a', 'records-source', m.from === 'AthleticLIVE' ? 'Meeting on AthleticLIVE' : 'Published results');
-        link.href = m.link; link.target = '_blank'; link.rel = 'noopener';
-        [['Source', link],
+        // the meeting's results: on AthleticLIVE, or each published file (kids' and adults', say)
+        var files = (m.links && m.links.length) ? m.links
+          : [{ link: m.link, label: m.from === 'AthleticLIVE' ? 'Meeting on AthleticLIVE' : 'Published results' }];
+        var link = text('span', 'src-links');
+        files.forEach(function (f, i) {
+          if (i) { link.appendChild(document.createTextNode(' · ')); }
+          var a = text('a', 'records-source', f.label);
+          a.href = f.link; a.target = '_blank'; a.rel = 'noopener';
+          link.appendChild(a);
+        });
+        [[files.length > 1 ? 'Sources' : 'Source', link],
          ['Dates', dates(m)],
          m.competitors ? ['Competitors', n(m.competitors) + ' across all clubs and schools'] : null,
          ['Our athletes', athleteCount(m) ? n(athleteCount(m)) : 'None'],
