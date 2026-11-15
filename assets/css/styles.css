@@ -3025,6 +3025,28 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 .access-status { margin: .8rem 0 0; font-weight: 600; color: var(--green-800); }
 .access-status:empty { display: none; }
 
+/* Club admin (admin.html) */
+.admin-gate { margin-top: 2rem; margin-bottom: 2rem; }
+.admin-gate[hidden] { display: none; }
+.review-list { list-style: none; margin: 0 0 1.5rem; padding: 0; max-width: 60rem; }
+.review-item { padding: 1rem 0; border-bottom: 1px solid var(--line); }
+.review-item__text { margin: 0 0 .6rem; }
+.review-item__acts { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem 1rem; }
+.review-form { margin-top: .8rem; }
+.account-line__admin { color: inherit; font-weight: 600; }
+
+/* Name suggestions under a box: our own list, so it sits under the box */
+.suggest { position: relative; }
+.suggest__list {
+  position: absolute; z-index: 20; left: 0; right: 0; top: 100%; margin-top: .2rem;
+  display: block; max-height: 16rem; overflow-y: auto;
+  background: var(--white); border: 1px solid var(--line); border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
+}
+.suggest__list[hidden] { display: none; }
+.suggest__item { display: block; padding: .45rem .75rem; cursor: pointer; }
+.suggest__item:hover, .suggest__item.is-active { background: var(--green-050); }
+
 /* Sortable column headings (athletes.html) */
 .th-sort { padding: 0; border: 0; background: none; font: inherit; letter-spacing: inherit;
   text-transform: inherit; color: inherit; cursor: pointer; text-align: left; }

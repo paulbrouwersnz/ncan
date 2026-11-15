@@ -49,8 +49,9 @@ ROBOTS = os.path.join(ROOT, 'robots.txt')
 # pages to leave out of the sitemap
 # The athlete pages show results only to someone signed in (they read from the
 # club's API, api.ncan.nz), so search engines have nothing to index there; the
-# pages also carry a noindex tag. (results-sources.html is public.)
-SKIP = {'athlete.html', 'athletes.html'}
+# pages also carry a noindex tag. (results-sources.html is public.) admin.html is for
+# club administrators, signed in.
+SKIP = {'admin.html', 'athlete.html', 'athletes.html'}
 
 # index.html is the site root, not a page of its own
 HOME = 'index.html'
