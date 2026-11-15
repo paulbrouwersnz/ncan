@@ -30,7 +30,7 @@ browser's console on the Athletics NZ eLearning library (see below).
 
 | You've… | Run |
 |---|---|
-| edited `assets/css/styles.css` | `stamp-assets.py` |
+| edited `assets/css/styles.css` or a script in `assets/js/` | `stamp-assets.py` |
 | edited anything in `partials/` | `sync-partials.py`, then `stamp-assets.py` |
 | added a new page | `sync-partials.py`, `stamp-assets.py`, `build-sitemap.py`, then `indexnow.py <page>` |
 | changed a page's content and want search engines to notice | `indexnow.py <page>` |
@@ -60,9 +60,11 @@ have been reformatted (e.g. by an editor) shows a large but harmless diff the
 next time it runs.
 
 ### `stamp-assets.py`
-Adds a content hash to the stylesheet link (`styles.css?v=1a2b3c4d`) in every
-page and in `partials/head.html`, so browsers fetch the new stylesheet after it
-changes. Changes one line per page.
+Adds a content hash to the stylesheet link (`styles.css?v=1a2b3c4d`) and to
+every script from `assets/js/` (`admin.js?v=...`) in every page and in
+`partials/head.html`, so browsers fetch the new file after it changes, rather
+than running an old script against the club's updated API. Changes one line
+per file reference.
 
 ```bash
 python tools/stamp-assets.py            # stamp
