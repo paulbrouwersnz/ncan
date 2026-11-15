@@ -86,8 +86,8 @@
           and for teams our athletes have represented.
         </p>
         <div class="btn-row">
-          <a class="btn btn--accent" href="#progress">Progression</a>
-          <a class="btn btn--ghost-light" href="#all-results">All results</a>
+          <a class="btn btn--accent" href="#track">Track &amp; field</a>
+          <a class="btn btn--ghost-light" href="#off-track">Cross country &amp; road</a>
           <a class="btn btn--ghost-light" href="athletes.html">All athletes</a>
         </div>
         <p class="account-line" id="account" hidden></p>
@@ -1465,6 +1465,12 @@
         $('ath-sources').hidden = !list.length;
       }
 
+      // a button in the page heading that jumps to a section: shown or not
+      function jump(href, on) {
+        var a = document.querySelector('.page-head a[href="' + href + '"]');
+        if (a) { a.style.display = on ? '' : 'none'; }
+      }
+
       function describe() {
         var name = athlete.name;
         document.title = name + ' — North Canterbury Athletic Club';
@@ -1525,6 +1531,8 @@
           json.results = json.results.filter(function (r) { return !r.oos; });
           athlete.offTrack = offTrack;
           renderOffTrack(offTrack);
+          // the heading's buttons go only to sections that have results
+          jump('#off-track', offTrack.length > 0);
           // Odd distances run only at October's opening meetings (145m, 600m...) are
           // hidden unless asked for; the choice is kept on this device.
           athlete.everything = json.results;
@@ -1603,8 +1611,7 @@
               : first + ' is registered with the club for ' + json.season + ', with no published ' +
                 'results yet. Results appear here a few days after a meeting publishes them.';
             ['track', 'summary', 'progress', 'all-results'].forEach(function (x) { $(x).hidden = true; });
-            Array.prototype.forEach.call(document.querySelectorAll('.page-head a[href^="#"]'),
-              function (a) { a.style.display = 'none'; });
+            jump('#track', false);
             if (offTrack.length) {
               renderStats([]);
               $('glance-note').textContent = 'Cross country, road and relay results.';
