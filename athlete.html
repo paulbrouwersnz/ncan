@@ -333,6 +333,37 @@
         <p class="access-status" id="access-status" role="status"></p>
       </div>
     </section>
+
+    <!-- Manage this athlete: club administrators only; the API answers nobody else
+         (assets/js/athlete-manage.js) -->
+    <section class="section section--tint" id="ath-manage" aria-labelledby="manage-heading" hidden>
+      <div class="wrap">
+        <div class="section-head section-head--wide">
+          <p class="eyebrow">For club administrators</p>
+          <h2 id="manage-heading">Manage this athlete</h2>
+          <p class="lede">
+            The athletic.net numbers this page is made from. AthleticLIVE sometimes gives an athlete a
+            second number, after a change of school or club, or at a school meeting. Check each against
+            its athletic.net bio, add one that&rsquo;s missing, or take out one that isn&rsquo;t this
+            athlete. Changes can be undone on the <a href="admin.html#corrections">Club admin</a> page.
+          </p>
+        </div>
+        <div id="manage-out"></div>
+        <form class="mem-add" id="manage-add" novalidate autocomplete="off">
+          <p class="records-field records-field--grow">
+            <label for="manage-number">Add an athletic.net number</label>
+            <input type="text" id="manage-number" placeholder="e.g. 25967353, or their athletic.net bio address">
+          </p>
+          <p class="records-field records-field--grow">
+            <label for="manage-why">Why</label>
+            <input type="text" id="manage-why" maxlength="200" placeholder="e.g. same athlete at a school meeting">
+          </p>
+          <button type="submit" class="btn btn--accent">Add the number</button>
+        </form>
+        <p class="mem-help" id="manage-add-help"></p>
+        <p class="access-status" id="manage-status" role="status"></p>
+      </div>
+    </section>
   </main>
 
   <!-- @partial:footer -->
@@ -475,6 +506,7 @@
 
   <script src="assets/js/ncan-account.js"></script>
   <script src="assets/js/athlete-access.js" defer></script>
+  <script src="assets/js/athlete-manage.js" defer></script>
   <script>
     (function () {
       'use strict';
