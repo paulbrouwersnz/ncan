@@ -1298,6 +1298,10 @@
          Newest first, in a table of their own. No PBs or charts: courses differ.
          The grade is the out-of-stadia one (U10-U20 in two-year grades, then
          Senior and Masters by age on the day), with the race's own division. */
+      // cross country and road distances in km: '3000m' -> '3 km', '2500m' -> '2.5 km'
+      function inKm(name) {
+        return name.replace(/(\d+)m\b/g, function (_, m) { return String(+(m / 1000).toFixed(3)) + ' km'; });
+      }
       function renderOffTrack(list) {
         var body = $('offtrack-body');
         body.textContent = '';
@@ -1312,8 +1316,8 @@
             tr.appendChild(when);
             var leg = r.relay;
             var race = leg ? 'Relay, leg ' + leg.leg + (leg.legs ? ' of ' + leg.legs : '') +
-                             (/\d+m$/.test(r.event) ? ' (' + r.event.match(/(\d+m)$/)[1] + ')' : '')
-                           : r.event.replace(/^(Cross country|Road) /, '');
+                             (/\d+m$/.test(r.event) ? ' (' + inKm(r.event.match(/(\d+m)$/)[1]) + ')' : '')
+                           : inKm(r.event.replace(/^(Cross country|Road) /, ''));
             var cells = [
               ['Race', null, null],
               ['Time', null, 'records-perf'],
