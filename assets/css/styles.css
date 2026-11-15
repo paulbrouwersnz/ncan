@@ -549,19 +549,40 @@ ul { margin: 0; padding: 0; list-style: none; }
   box-shadow: none;
   overflow: visible;
 }
+/* each step a block seen from a little above: a lit top face, a front that
+   darkens towards the floor, and shaded edges */
 .ath-medals .stat {
+  --depth: clamp(.7rem, 1.6vw, 1rem);
+  position: relative;
+  margin-top: var(--depth);
   padding-inline: clamp(.6rem, 2.2vw, 2rem);
   text-align: center;
-  border: 1px solid var(--line);
-  border-bottom: 0;
-  border-radius: var(--radius) var(--radius) 0 0;
-  box-shadow: var(--shadow-sm);
+  background: linear-gradient(180deg, var(--white) 0%, var(--green-050) 55%, var(--green-100) 100%);
+  box-shadow: inset 1px 0 0 var(--line), inset -1px 0 0 var(--line), inset 0 1px 0 rgba(255, 255, 255, .9),
+              inset 6px 0 10px -8px rgba(11, 59, 46, .18), inset -6px 0 10px -8px rgba(11, 59, 46, .18),
+              0 10px 18px -12px rgba(11, 59, 46, .35);
 }
-.ath-medals .stat:nth-child(1) { order: 2; padding-bottom: calc(clamp(1.4rem, 2.5vw, 2rem) + 2 * var(--step)); }
-.ath-medals .stat:nth-child(2) { order: 1; padding-bottom: calc(clamp(1.4rem, 2.5vw, 2rem) + var(--step)); }
+.ath-medals .stat::before {
+  content: "";
+  position: absolute;
+  left: 0; right: 0;
+  bottom: 100%;
+  height: var(--depth);
+  background: linear-gradient(180deg, #c9ddd3, #dfece6);
+  clip-path: polygon(var(--depth) 0, calc(100% - var(--depth)) 0, 100% 100%, 0 100%);
+}
+/* the medal and count at the top of each step, the words at its foot: the
+   step's height is the room between them */
+.ath-medals .stat dd { margin-top: .6rem; }
+.ath-medals .stat:nth-child(1) { order: 2; }
+.ath-medals .stat:nth-child(1) dt { margin-bottom: calc(2 * var(--step)); }
+.ath-medals .stat:nth-child(2) { order: 1; }
+.ath-medals .stat:nth-child(2) dt { margin-bottom: var(--step); }
 .ath-medals .stat:nth-child(3) { order: 3; }
 .stat--medal dt { display: flex; align-items: center; gap: .5rem; }
 .ath-medals .stat--medal dt { justify-content: center; }
+/* the medal's disc (below its ribbon) level with the middle of the count */
+.stat--medal .stat__medal { position: relative; top: -.18em; }
 .stat__medal { font-size: 1.1em; line-height: 1; letter-spacing: 0;
   font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
 
