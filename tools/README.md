@@ -86,8 +86,8 @@ python tools/build-fonts.py --report-chars   # list the characters and where the
 ### `build-sitemap.py`
 Writes `sitemap.xml` and `robots.txt`, listing every `.html` page at the site
 root (the home page as `https://ncan.nz/`). Add a filename to `SKIP` in the
-script to leave a page out; `athlete.html` is skipped, as on its own it is only
-a template. The sitemap was submitted once in Google Search
+script to leave a page out; `athlete.html`, `athletes.html` and `admin.html`
+are skipped, as they show nothing until someone signs in (and carry a noindex tag). The sitemap was submitted once in Google Search
 Console; Google re-reads it by itself.
 
 ```bash
@@ -209,7 +209,10 @@ read them from the club's API at `https://api.ncan.nz`, and only for someone
 signed in: a family sees their own children, coaches and the committee see
 everyone. `results-sources.html` is public: it lists every meeting collected,
 with how many of our athletes and results each added, and shows the athletes'
-names only to coaches and the committee. The shared sign-in code is
+names only to coaches and the committee. `admin.html` (Club admin) is for club
+administrators: what the last collect found that needs a look, membership
+changes, corrections and site-wide blocks (`assets/js/admin.js`); administrators
+get a "Club admin" link on the "Signed in as" line. The shared sign-in code is
 `assets/js/ncan-account.js`.
 
 Collecting results, the members list, merges, corrections and opt-outs all live

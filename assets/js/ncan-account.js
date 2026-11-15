@@ -135,6 +135,12 @@
     box.classList.add('account-line');
     box.appendChild(document.createTextNode('Signed in as ' + who.email +
       (ROLES[who.role] ? ' (' + ROLES[who.role] + ')' : '') + '. '));
+    if (who.role === 'admin' && !/\/admin\.html$/.test(location.pathname)) {
+      var adm = el('a', 'account-line__admin', 'Club admin');
+      adm.href = 'admin.html';
+      box.appendChild(adm);
+      box.appendChild(document.createTextNode(' · '));
+    }
     var out = el('button', 'account-line__out', 'Sign out');
     out.type = 'button';
     out.addEventListener('click', function () {
