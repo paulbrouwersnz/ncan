@@ -3079,6 +3079,11 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 .src-add__status { margin: 0; font-weight: 600; color: var(--green-800); }
 .src-add__status:empty { display: none; }
 .src-remove { margin: .2rem 0 1rem; }
+.src-remove__ask { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem .6rem; max-width: 40rem; }
+.src-remove [hidden] { display: none; }   /* a .btn sets its own display */
+.src-remove__q { flex-basis: 100%; margin: 0; font-size: .9rem; }
+.src-remove__said { margin: .4rem 0 0; font-size: .9rem; color: var(--text-soft); }
+.src-remove__said:empty { display: none; }
 /* an administrator's meeting type: the site's field style, button level with the box */
 .src-type-form { display: flex; flex-wrap: wrap; align-items: flex-end; gap: .6rem .75rem;
   margin: .9rem 0 .75rem; padding-top: .9rem; border-top: 1px solid var(--line); }

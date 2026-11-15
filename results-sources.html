@@ -16,7 +16,7 @@
 <link rel="apple-touch-icon" href="assets/img/logo.png">
 <link rel="preload" href="assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/archivo-variable.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/styles.css?v=995b9eee">
+<link rel="stylesheet" href="assets/css/styles.css?v=0d5a351d">
 <!-- /@partial:head -->
 
 <link rel="canonical" href="https://ncan.nz/results-sources.html">
@@ -454,10 +454,7 @@
         // a club administrator can change an AthleticLIVE meeting's type, or take it off the list
         if (CAN_REMOVE && m.from === 'AthleticLIVE') {
           body.appendChild(typeForm(m));
-          var rm = text('button', 'btn btn--ghost btn--sm src-remove', 'Remove this meeting');
-          rm.type = 'button';
-          rm.addEventListener('click', function () { removeMeeting(m, rm); });
-          body.appendChild(rm);
+          body.appendChild(removeControl(m));
         }
         // names only for coaches and administrators: the public list has just the count
         if (m.athletes && m.athletes.length) {
@@ -610,16 +607,38 @@
         return form;
       }
 
-      function removeMeeting(m, button) {
-        if (!confirm('Remove “' + m.name + '”? Its results come off the athlete pages when the results are next ' +
-                     'collected, which starts now. It can be added again later.')) { return; }
-        button.disabled = true;
-        NCAN.send('/sources/remove', { url: m.link }).then(function (r) {
-          if (r.status !== 200) { button.disabled = false; alert(r.body.error || 'Sorry, that didn’t work.'); return; }
-          button.textContent = 'Removed: updating the results…';
-          $('collect-status').textContent = 'Collecting results now. This takes 5–10 minutes; this page updates when it’s done.';
-          setTimeout(watchCollect, 3000);
-        }, function (err) { button.disabled = false; alert(err.message); });
+      // "Remove this meeting", asked and answered on the page itself (a browser's
+      // confirm box can be switched off, and then it says no without showing)
+      function removeControl(m) {
+        var box = text('div', 'src-remove');
+        var rm = text('button', 'btn btn--ghost btn--sm', 'Remove this meeting');
+        rm.type = 'button';
+        var ask = text('div', 'src-remove__ask');
+        ask.hidden = true;
+        ask.appendChild(text('p', 'src-remove__q', 'Remove “' + m.name + '”? Its results come off the athlete pages ' +
+          'when the results are collected again, which starts now. It can be added again later.'));
+        var yes = text('button', 'btn btn--accent btn--sm', 'Yes, remove it');
+        var no = text('button', 'btn btn--ghost btn--sm', 'Keep it');
+        yes.type = no.type = 'button';
+        ask.appendChild(yes); ask.appendChild(no);
+        var said = text('p', 'src-remove__said');
+        said.setAttribute('role', 'status');
+        rm.addEventListener('click', function () { rm.hidden = true; ask.hidden = false; said.textContent = ''; yes.focus(); });
+        no.addEventListener('click', function () { ask.hidden = true; rm.hidden = false; rm.focus(); });
+        yes.addEventListener('click', function () {
+          yes.disabled = no.disabled = true;
+          said.textContent = 'Removing…';
+          NCAN.send('/sources/remove', { url: m.link }).then(function (r) {
+            yes.disabled = no.disabled = false;
+            if (r.status !== 200) { said.textContent = (r.body && r.body.error) || 'Sorry, that didn’t work.'; return; }
+            ask.hidden = true;
+            said.textContent = 'Removed. The results are being collected again: this meeting goes from the list when that’s done.';
+            $('collect-status').textContent = 'Collecting results now. This takes 5–10 minutes; this page updates when it’s done.';
+            setTimeout(watchCollect, 3000);
+          }, function (err) { yes.disabled = no.disabled = false; said.textContent = err.message; });
+        });
+        box.appendChild(rm); box.appendChild(ask); box.appendChild(said);
+        return box;
       }
 
       NCAN.me().then(function (who) {
