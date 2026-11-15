@@ -162,6 +162,32 @@
     pair: 'Two numbers, one athlete?'
   };
 
+  // the results an item is about, newest first, each mark linking to the official result
+  function resultsList(sample, heading) {
+    var box = el('div', 'review-results');
+    if (heading) { box.appendChild(el('p', 'review-results__head', heading)); }
+    if (!sample || !sample.length) { box.appendChild(el('p', 'mem-help', 'No results kept.')); return box; }
+    var ul = el('ul');
+    sample.forEach(function (r) {
+      var li = el('li');
+      var p = r.date.split('-');
+      li.appendChild(el('span', 'review-results__date', p[2] + '/' + p[1] + '/' + p[0]));
+      li.appendChild(el('span', null, r.event + ' '));
+      var a = el('a', 'records-source', r.mark || 'result');
+      a.href = r.source; a.target = '_blank'; a.rel = 'noopener'; a.title = 'Official result';
+      li.appendChild(a);
+      var bits = [];
+      if (r.place) { bits.push(r.place + (r.of ? ' of ' + r.of : '')); }
+      if (r.grade) { bits.push(typeof r.grade === 'number' ? 'grade ' + r.grade : r.grade); }
+      bits.push(r.meeting);
+      if (r.team) { bits.push(r.team); }
+      li.appendChild(el('span', 'review-results__more', ' · ' + bits.join(' · ')));
+      ul.appendChild(li);
+    });
+    box.appendChild(ul);
+    return box;
+  }
+
   function dismissButton(item) {
     return button('Dismiss', function () {
       var why = prompt('Dismiss this? It stays hidden unless it changes. Why (optional)?', 'fine as it is');
@@ -245,11 +271,29 @@
         if (kind === 'no_membership') {
           acts.appendChild(pageLink(item.id, 'Their page'));
         }
-        acts.appendChild(dismissButton(item));
+        if (kind === 'not_member') {
+          // they already have no page and their results count for nothing: this
+          // records that they aren't a member, and takes the item off the list
+          acts.appendChild(button('Not a member', function (b) {
+            b.disabled = true;
+            change('/admin/corrections', { kind: 'dismissed', key: item.key, text: item.text, why: 'not a club member' },
+                   'review-said', item.name + ': not a member. They have no page, and their results stay left out.');
+          }, 'btn btn--accent btn--sm'));
+        } else {
+          acts.appendChild(dismissButton(item));
+        }
+        if (kind === 'pair') {
+          li.appendChild(resultsList((item.samples || [])[0], 'Under the first number'));
+          li.appendChild(resultsList((item.samples || [])[1], 'Under the second number'));
+        } else {
+          li.appendChild(resultsList(item.sample, item.results > (item.sample || []).length
+            ? 'Their latest ' + item.sample.length + ' of ' + item.results + ' results' : 'Their results'));
+        }
         li.appendChild(acts);
         if (kind === 'not_member') {
-          li.appendChild(el('p', 'mem-help', 'A member paid some other way? Add them for the season. Or, if ' +
-                                             'they’re on the list under another name, give it.'));
+          li.appendChild(el('p', 'mem-help', 'Not a member: nothing to delete, as they already have no page and ' +
+                                             'their results are left out. A member paid some other way? Add them for ' +
+                                             'the season. Or, if they’re on the list under another name, give it.'));
           li.appendChild(membershipForm(item, true));
           li.appendChild(nameFixForm(item));
         } else if (kind === 'unmatched') {
@@ -268,6 +312,74 @@
       out.appendChild(el('p', 'records-note', data.dismissed + ' dismissed (listed under Corrections).'));
     }
     if (data.updated) { out.appendChild(el('p', 'records-note', 'From the collect of ' + data.updated + '.')); }
+  }
+
+  /* Merges ---------------------------------------------------------------------
+     Every page made from more than one athletic.net number, from the last collect. */
+  var WHY = { grades: 'grades matched', members: 'one member of that name', same: 'joined by a person' };
+  var merges = [];
+
+  function pageNumber(text) {
+    var m = /(?:id=)?(\d{5,12})\b/.exec(text || '');
+    return m ? +m[1] : null;
+  }
+
+  function renderMerges() {
+    var out = $('merge-out');
+    out.textContent = '';
+    var q = $('merge-find').value.trim().toLowerCase();
+    var why = $('merge-why').value;
+    var shown = merges.filter(function (g) {
+      if (why && !g.links.some(function (l) { return l.why === why; })) { return false; }
+      if (!q) { return true; }
+      return g.ids.some(function (x) { return x.name.toLowerCase().indexOf(q) !== -1 || String(x.id) === q; }) ||
+             String(g.kept) === q;
+    });
+    $('merge-count').textContent = shown.length === merges.length
+      ? merges.length + ' pages made from more than one number.'
+      : 'Showing ' + shown.length + ' of ' + merges.length + '.';
+    var ul = el('ul', 'review-list');
+    shown.slice(0, 60).forEach(function (g) {
+      var li = el('li', 'review-item');
+      var head = el('p', 'review-item__text');
+      var kept = g.ids.filter(function (x) { return x.id === g.kept; })[0] || g.ids[0];
+      head.appendChild(pageLink(g.kept, kept.name));
+      head.appendChild(el('span', 'access-how', ' · ' + g.ids.length + ' numbers · ' +
+        Array.from(new Set(g.links.map(function (l) { return WHY[l.why] || l.why; }))).join(', ')));
+      li.appendChild(head);
+      g.ids.forEach(function (x) {
+        var box = resultsList(x.sample, 'Number ' + x.id + (x.id === g.kept ? ' (the page’s own)' : '') +
+          ' · ' + x.results + ' result' + (x.results === 1 ? '' : 's') + (x.name !== kept.name ? ' as “' + x.name + '”' : ''));
+        box.appendChild(button('Not the same athlete: take it out', function (b) {
+          if (!confirm('Take number ' + x.id + ' out of ' + kept.name + '’s page? Its results get a page of ' +
+                       'their own at the next collect (if they count for the club), and it won’t be joined again.')) { return; }
+          b.disabled = true;
+          change('/admin/merges/split', { id: x.id, others: g.ids.map(function (y) { return y.id; }) }, 'merge-status',
+                 'Number ' + x.id + ' is kept apart.' + COLLECTING);
+        }));
+        li.appendChild(box);
+      });
+      ul.appendChild(li);
+    });
+    out.appendChild(ul);
+    if (shown.length > 60) { out.appendChild(el('p', 'records-note', 'The first 60: find a name to narrow it down.')); }
+  }
+
+  function setUpMerges() {
+    ['merge-find', 'merge-why'].forEach(function (x) {
+      $(x).addEventListener('input', renderMerges);
+      $(x).addEventListener('change', renderMerges);
+    });
+    $('link-add').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var a = pageNumber($('link-a').value), b = pageNumber($('link-b').value);
+      if (!a || !b || a === b) { $('merge-status').textContent = 'Give two different athlete pages (address or number).'; return; }
+      if (!confirm('Join pages ' + a + ' and ' + b + ' into one? The most recently used number keeps the page.')) { return; }
+      change('/admin/corrections', { kind: 'same', ids: [a, b], why: 'joined on the admin page' }, 'merge-status', function () {
+        $('link-a').value = ''; $('link-b').value = '';
+        return 'Joined.' + COLLECTING;
+      });
+    });
   }
 
   /* Corrections -------------------------------------------------------------- */
@@ -432,6 +544,8 @@
         members = r[1].members || [];
         renderReview(r[0]);
         renderCorrections(r[0].corrections);
+        merges = r[0].merges || [];
+        renderMerges();
         renderOverrides(r[1].overrides || []);
         renderBlocks(r[2].blocked || []);
         watch(r[0].collect);
@@ -453,8 +567,9 @@
     loadAll().then(function () {
       $('admin-status').hidden = true;
       $('admin-jump').hidden = false;
-      ['review', 'members', 'corrections', 'blocks'].forEach(function (x) { $(x).hidden = false; });
+      ['review', 'members', 'merges', 'corrections', 'blocks'].forEach(function (x) { $(x).hidden = false; });
       setUpMembership();
+      setUpMerges();
       setUpOptOut();
       setUpBlocks();
     }, function (err) { $('admin-status').textContent = err.message || 'Sorry, this page could not be loaded.'; });

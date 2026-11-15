@@ -16,7 +16,7 @@
 <link rel="apple-touch-icon" href="assets/img/logo.png">
 <link rel="preload" href="assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/archivo-variable.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/styles.css?v=88cc2314">
+<link rel="stylesheet" href="assets/css/styles.css?v=b3d095b4">
 <!-- /@partial:head -->
 
 <meta name="robots" content="noindex">
@@ -87,6 +87,7 @@
         <div class="btn-row" id="admin-jump" hidden>
           <a class="btn btn--accent" href="#review">Needs a look</a>
           <a class="btn btn--ghost-light" href="#members">Membership</a>
+          <a class="btn btn--ghost-light" href="#merges">Merges</a>
           <a class="btn btn--ghost-light" href="#corrections">Corrections</a>
           <a class="btn btn--ghost-light" href="#blocks">Blocked</a>
         </div>
@@ -166,8 +167,55 @@
       </div>
     </section>
 
+    <!-- ================= Merges ================= -->
+    <section class="section" id="merges" aria-labelledby="merges-heading" hidden>
+      <div class="wrap">
+        <div class="section-head section-head--wide">
+          <p class="eyebrow">athletic.net numbers</p>
+          <h2 id="merges-heading">Merges</h2>
+          <p class="lede">
+            AthleticLIVE sometimes gives one athlete a second athletic.net number, after a change of school
+            or club, or at a school meeting. The collector joins them into one page when their grades
+            match, or when one member has that name; a person can join or separate any. Each number&rsquo;s
+            latest results show what&rsquo;s under it.
+          </p>
+        </div>
+        <form class="mem-add" id="link-add" novalidate autocomplete="off">
+          <p class="records-field records-field--grow">
+            <label for="link-a">Join this page</label>
+            <input type="text" id="link-a" placeholder="an athlete page's address, or its number">
+          </p>
+          <p class="records-field records-field--grow">
+            <label for="link-b">with this one</label>
+            <input type="text" id="link-b" placeholder="the other page">
+          </p>
+          <button type="submit" class="btn btn--accent">Join them</button>
+        </form>
+        <p class="access-status" id="merge-status" role="status"></p>
+        <div class="records-bar champs-bar">
+          <div class="records-filters">
+            <p class="records-field records-field--grow">
+              <label for="merge-find">Find</label>
+              <input type="search" id="merge-find" placeholder="athlete name or number" autocomplete="off">
+            </p>
+            <p class="records-field">
+              <label for="merge-why">Joined by</label>
+              <select id="merge-why">
+                <option value="">Anything</option>
+                <option value="grades">Matching grades</option>
+                <option value="members">The members list</option>
+                <option value="same">A person</option>
+              </select>
+            </p>
+          </div>
+        </div>
+        <p class="records-status" id="merge-count"></p>
+        <div id="merge-out"></div>
+      </div>
+    </section>
+
     <!-- ================= Corrections ================= -->
-    <section class="section" id="corrections" aria-labelledby="corrections-heading" hidden>
+    <section class="section section--tint" id="corrections" aria-labelledby="corrections-heading" hidden>
       <div class="wrap">
         <div class="section-head section-head--wide">
           <p class="eyebrow">Made on the website</p>
@@ -194,7 +242,7 @@
     </section>
 
     <!-- ================= Blocks ================= -->
-    <section class="section section--tint" id="blocks" aria-labelledby="blocks-heading" hidden>
+    <section class="section" id="blocks" aria-labelledby="blocks-heading" hidden>
       <div class="wrap">
         <div class="section-head section-head--wide">
           <p class="eyebrow">Sign-in</p>

@@ -3033,6 +3033,13 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 .review-item__text { margin: 0 0 .6rem; }
 .review-item__acts { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem 1rem; }
 .review-form { margin-top: .8rem; }
+#merge-status:not(:empty) { margin-bottom: 1.2rem; }
+.review-results { margin: 0 0 .8rem; font-size: .92rem; }
+.review-results__head { margin: 0 0 .2rem; font-weight: 600; color: var(--green-800); }
+.review-results ul { list-style: none; margin: 0; padding: 0; }
+.review-results li { padding: .15rem 0; }
+.review-results__date { display: inline-block; min-width: 6.2rem; color: var(--text-soft); }
+.review-results__more { color: var(--text-soft); }
 .account-line__admin { color: inherit; font-weight: 600; }
 
 /* Name suggestions under a box: our own list, so it sits under the box */
