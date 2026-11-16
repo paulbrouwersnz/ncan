@@ -3087,6 +3087,7 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 
 /* ================= Admin page: the club members list ================= */
 .roll { margin-top: clamp(2rem, 4vw, 3rem); }
+.roll > .champs-day__head .roll__head { margin: 0; }
 .roll__head { margin: 0 0 .4rem; font-size: clamp(1.25rem, 2vw, 1.55rem); color: var(--green-800); }
 .roll__sub { margin: 1rem 0 .4rem; font-size: .95rem; color: var(--green-800); }
 .roll-member .champs-day__body .table-wrap { margin-bottom: .6rem; }
