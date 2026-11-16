@@ -16,7 +16,7 @@
 <link rel="apple-touch-icon" href="assets/img/logo.png">
 <link rel="preload" href="assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/archivo-variable.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/styles.css?v=4c7bf080">
+<link rel="stylesheet" href="assets/css/styles.css?v=0bbba9d1">
 <!-- /@partial:head -->
 
 <meta name="robots" content="noindex">
@@ -284,8 +284,13 @@
             </p>
           </div>
         </div>
-        <p class="records-status" id="merge-count"></p>
-        <div id="merge-out"></div>
+        <div class="merge-bar">
+          <p class="records-status" id="merge-count"></p>
+          <!-- the list is long: hidden until asked for, or until a find or filter is used -->
+          <button type="button" class="btn btn--ghost btn--sm" id="merge-show" aria-expanded="false"
+                  aria-controls="merge-out">Show the pages</button>
+        </div>
+        <div id="merge-out" hidden></div>
       </div>
     </section>
 
@@ -483,7 +488,7 @@
   </script>
 
   <script src="assets/js/ncan-account.js?v=8bdbf88e"></script>
-  <script src="assets/js/admin.js?v=b65567bd"></script>
+  <script src="assets/js/admin.js?v=9eaa499f"></script>
 
 </body>
 
