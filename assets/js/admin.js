@@ -31,7 +31,7 @@
     return b;
   }
   function pageLink(id, words) {
-    var a = el('a', null, words || 'page ' + id);
+    var a = el('a', null, words || 'number ' + id);
     a.href = 'athlete.html?id=' + id;
     a.target = '_blank';
     a.rel = 'noopener';
@@ -515,10 +515,24 @@
   }
 
   /* Corrections -------------------------------------------------------------- */
+  var corrNames = {};      // number -> the name its results carry, from the API, to say who each is about
+  // two numbers, by name: "Sam Example: number 1 and number 2", or each named when they differ
+  function pair(e) {
+    var a = corrNames[e.ids[0]], b = corrNames[e.ids[1]];
+    var out = [];
+    if (a && a === b) { out.push(el('span', null, a + ': ')); }
+    e.ids.forEach(function (id, i) {
+      if (i) { out.push(el('span', null, ' and ')); }
+      var name = corrNames[id];
+      out.push(pageLink(id, name && !(a && a === b) ? name + ' (number ' + id + ')' : 'number ' + id));
+    });
+    return out;
+  }
   var CORR = [
-    ['opt_out', 'Pages removed', function (e) { return [pageLink(e.id, 'Page ' + e.id)]; }],
-    ['same', 'Joined into one athlete', function (e) { return [pageLink(e.ids[0]), el('span', null, ' and '), pageLink(e.ids[1])]; }],
-    ['not_same', 'Kept apart', function (e) { return [pageLink(e.ids[0]), el('span', null, ' and '), pageLink(e.ids[1])]; }],
+    ['opt_out', 'Athletes removed', function (e) { return [pageLink(e.id, corrNames[e.id] || 'Athlete ' + e.id)].concat(
+      corrNames[e.id] ? [el('span', 'access-how', ' number ' + e.id)] : []); }],
+    ['same', 'Joined into one athlete', pair],
+    ['not_same', 'Kept apart', pair],
     ['names', 'Names corrected', function (e) { return [pageLink(e.id, e.name)]; }],
     ['name_fixes', 'Names a meeting spells differently', function (e) { return [el('span', null, '“' + e.from + '” is ' + e.to)]; }],
     ['dismissed', 'Dismissed', function (e) { return [el('span', null, e.text || e.key)]; }]
@@ -754,16 +768,16 @@
     });
   }
 
-  /* Remove a page ------------------------------------------------------------ */
+  /* Remove an athlete ------------------------------------------------------------ */
   function setUpOptOut() {
     $('optout-add').addEventListener('submit', function (e) {
       e.preventDefault();
       var m = /(?:id=)?(\d{5,12})\b/.exec($('optout-page').value);
-      if (!m) { $('corr-status').textContent = 'Paste the page’s address, or the number after id=.'; return; }
-      if (!confirm('Remove page ' + m[1] + '? It disappears at the next collect, and can be put back.')) { return; }
+      if (!m) { $('corr-status').textContent = 'Paste their page’s address, or the number after id=.'; return; }
+      if (!confirm('Remove athlete ' + m[1] + ' from the site? Their page disappears at the next collect, and can be put back.')) { return; }
       change('/admin/corrections', { kind: 'opt_out', id: +m[1], why: $('optout-why').value }, 'corr-status', function () {
         $('optout-page').value = ''; $('optout-why').value = '';
-        return 'Page ' + m[1] + ' will be removed.' + COLLECTING;
+        return 'Athlete ' + m[1] + ' will be taken off the site.' + COLLECTING;
       });
     });
   }
@@ -928,6 +942,7 @@
       .then(function (r) {
         members = r[1].members || [];
         renderReview(r[0]);
+        corrNames = r[0].names || {};
         renderCorrections(r[0].corrections);
         merges = r[0].merges || [];
         renderMerges();

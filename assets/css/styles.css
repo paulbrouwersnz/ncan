@@ -3089,11 +3089,11 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 .roll { margin-top: clamp(2rem, 4vw, 3rem); }
 .roll > .champs-day__head .roll__head { margin: 0; }
 /* the Merges section: the count, and the button that shows the list */
-.merge-bar { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem 1rem; }
+.merge-bar { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem 1rem;
+             margin: clamp(1.4rem, 3vw, 2rem) 0 0; }   /* clear of the form above */
 .merge-bar .records-status { margin: 0; }
-#merge-list { margin-top: 1rem; }
+#merge-list, #corr-out { margin-top: 1.2rem; }   /* the list below its count */
 #merge-list[hidden] { display: none; }
-#merges .merge-bar { margin-top: clamp(1.4rem, 3vw, 2rem); }
 /* a button's own display would otherwise show it while hidden */
 .btn[hidden] { display: none; }
 .roll__head { margin: 0 0 .4rem; font-size: clamp(1.25rem, 2vw, 1.55rem); color: var(--green-800); }
