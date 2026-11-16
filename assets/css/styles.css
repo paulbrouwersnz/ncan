@@ -3070,6 +3070,16 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 .champs-print__who { font-weight: 700; }
 .champs-print__foot { margin-top: 6mm; font-size: 9pt; color: #444; }
 
+/* ================= Admin page: the club members list ================= */
+.roll { margin-top: clamp(2rem, 4vw, 3rem); }
+.roll__head { margin: 0 0 .4rem; font-size: clamp(1.25rem, 2vw, 1.55rem); color: var(--green-800); }
+.roll__sub { margin: 1rem 0 .4rem; font-size: .95rem; color: var(--green-800); }
+.roll-member .champs-day__body .table-wrap { margin-bottom: .6rem; }
+.roll-table { min-width: 560px; }
+.roll-emails { margin: 0; padding-left: 1.1rem; font-size: .95rem; }
+.roll-emails li { margin: .2rem 0; overflow-wrap: anywhere; }
+.roll-emails__how { color: var(--text-soft); }
+
 /* ================= Results sources ================= */
 .src-meeting { margin-bottom: 1rem; }
 .src-meeting .champs-day__head { border-bottom-width: 1px; }

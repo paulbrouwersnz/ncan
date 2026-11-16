@@ -16,7 +16,7 @@
 <link rel="apple-touch-icon" href="assets/img/logo.png">
 <link rel="preload" href="assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/archivo-variable.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/styles.css?v=d3b2fc99">
+<link rel="stylesheet" href="assets/css/styles.css?v=e61b15e3">
 <!-- /@partial:head -->
 
 <meta name="robots" content="noindex">
@@ -159,6 +159,29 @@
         </form>
         <p class="access-status" id="upload-status" role="status"></p>
         <div id="upload-report"></div>
+
+        <!-- every member on the list, with all the club holds about them except results -->
+        <div class="roll" id="roll">
+          <h3 class="roll__head" id="roll-heading">Club members</h3>
+          <p class="records-note">
+            Everyone on the members list, from the last collect: date of birth, seasons, GameDay
+            registrations, their page and the emails that can sign in to see it. For administrators only.
+          </p>
+          <div class="records-bar champs-bar">
+            <div class="records-filters">
+              <p class="records-field">
+                <label for="roll-season">Season</label>
+                <select id="roll-season"><option value="">All seasons</option></select>
+              </p>
+              <p class="records-field records-field--grow">
+                <label for="roll-text">Search</label>
+                <input type="search" id="roll-text" placeholder="name or email" autocomplete="off">
+              </p>
+            </div>
+          </div>
+          <p class="records-status" id="roll-status" role="status">Loading the members&hellip;</p>
+          <div id="roll-out"></div>
+        </div>
       </div>
     </section>
 
@@ -455,7 +478,7 @@
   </script>
 
   <script src="assets/js/ncan-account.js?v=8bdbf88e"></script>
-  <script src="assets/js/admin.js?v=bd50b6fc"></script>
+  <script src="assets/js/admin.js?v=b65567bd"></script>
 
 </body>
 
