@@ -317,7 +317,13 @@
           <button type="submit" class="btn btn--ghost">Remove the page</button>
         </form>
         <p class="access-status" id="corr-status" role="status"></p>
-        <div id="corr-out"></div>
+        <!-- the list is long: hidden until asked for -->
+        <div class="merge-bar">
+          <p class="records-status" id="corr-count"></p>
+          <button type="button" class="btn btn--ghost btn--sm" id="corr-show" aria-expanded="false"
+                  aria-controls="corr-out" hidden>Show the corrections</button>
+        </div>
+        <div id="corr-out" hidden></div>
       </div>
     </section>
 
@@ -488,7 +494,7 @@
   </script>
 
   <script src="assets/js/ncan-account.js?v=8bdbf88e"></script>
-  <script src="assets/js/admin.js?v=9eaa499f"></script>
+  <script src="assets/js/admin.js?v=99094803"></script>
 
 </body>
 
