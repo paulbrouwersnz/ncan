@@ -450,12 +450,13 @@
              String(g.kept) === q;
     });
     $('merge-count').textContent = merges.length
-      ? merges.length + ' pages made from more than one number.' : 'No pages made from more than one number.';
-    $('merge-match').textContent = (q || why) ? shown.length + ' of ' + merges.length + ' pages match.' : '';
+      ? merges.length + ' athlete' + (merges.length === 1 ? ' has' : 's have') + ' more than one athletic.net number.'
+      : 'No athlete has more than one athletic.net number.';
+    $('merge-match').textContent = (q || why) ? shown.length + ' of ' + merges.length + ' athletes match.' : '';
     // the search and the list are hidden until the Show button asks for them; then every page, no limit
     $('merge-list').hidden = !mergesShown;
     $('merge-show').hidden = !merges.length;
-    $('merge-show').textContent = mergesShown ? 'Hide the pages' : 'Show the pages';
+    $('merge-show').textContent = mergesShown ? 'Hide the athletes' : 'Show the athletes';
     $('merge-show').setAttribute('aria-expanded', mergesShown ? 'true' : 'false');
     if (!mergesShown) { return; }
     var ul = el('ul', 'review-list');
