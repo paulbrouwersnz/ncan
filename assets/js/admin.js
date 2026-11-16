@@ -515,10 +515,24 @@
   }
 
   /* Corrections -------------------------------------------------------------- */
+  var corrNames = {};      // number -> the name its results carry, from the API, to say who each is about
+  // two numbers, by name: "Sam Example: number 1 and number 2", or each named when they differ
+  function pair(e) {
+    var a = corrNames[e.ids[0]], b = corrNames[e.ids[1]];
+    var out = [];
+    if (a && a === b) { out.push(el('span', null, a + ': ')); }
+    e.ids.forEach(function (id, i) {
+      if (i) { out.push(el('span', null, ' and ')); }
+      var name = corrNames[id];
+      out.push(pageLink(id, name && !(a && a === b) ? name + ' (number ' + id + ')' : 'number ' + id));
+    });
+    return out;
+  }
   var CORR = [
-    ['opt_out', 'Athletes removed', function (e) { return [pageLink(e.id, 'Athlete ' + e.id)]; }],
-    ['same', 'Joined into one athlete', function (e) { return [pageLink(e.ids[0]), el('span', null, ' and '), pageLink(e.ids[1])]; }],
-    ['not_same', 'Kept apart', function (e) { return [pageLink(e.ids[0]), el('span', null, ' and '), pageLink(e.ids[1])]; }],
+    ['opt_out', 'Athletes removed', function (e) { return [pageLink(e.id, corrNames[e.id] || 'Athlete ' + e.id)].concat(
+      corrNames[e.id] ? [el('span', 'access-how', ' number ' + e.id)] : []); }],
+    ['same', 'Joined into one athlete', pair],
+    ['not_same', 'Kept apart', pair],
     ['names', 'Names corrected', function (e) { return [pageLink(e.id, e.name)]; }],
     ['name_fixes', 'Names a meeting spells differently', function (e) { return [el('span', null, '“' + e.from + '” is ' + e.to)]; }],
     ['dismissed', 'Dismissed', function (e) { return [el('span', null, e.text || e.key)]; }]
@@ -928,6 +942,7 @@
       .then(function (r) {
         members = r[1].members || [];
         renderReview(r[0]);
+        corrNames = r[0].names || {};
         renderCorrections(r[0].corrections);
         merges = r[0].merges || [];
         renderMerges();
