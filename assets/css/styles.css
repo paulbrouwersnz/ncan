@@ -3091,6 +3091,11 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 /* the Merges section: the count, and the button that shows the list */
 .merge-bar { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem 1rem; }
 .merge-bar .records-status { margin: 0; }
+#merge-list { margin-top: 1rem; }
+#merge-list[hidden] { display: none; }
+#link-add { margin-top: clamp(1.4rem, 3vw, 2rem); }
+/* a button's own display would otherwise show it while hidden */
+.btn[hidden] { display: none; }
 .roll__head { margin: 0 0 .4rem; font-size: clamp(1.25rem, 2vw, 1.55rem); color: var(--green-800); }
 .roll__sub { margin: 1rem 0 .4rem; font-size: .95rem; color: var(--green-800); }
 .roll-member .champs-day__body .table-wrap { margin-bottom: .6rem; }

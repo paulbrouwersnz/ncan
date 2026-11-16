@@ -16,7 +16,7 @@
 <link rel="apple-touch-icon" href="assets/img/logo.png">
 <link rel="preload" href="assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/archivo-variable.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/styles.css?v=0bbba9d1">
+<link rel="stylesheet" href="assets/css/styles.css?v=001936fc">
 <!-- /@partial:head -->
 
 <meta name="robots" content="noindex">
@@ -255,18 +255,13 @@
             latest results show what&rsquo;s under it.
           </p>
         </div>
-        <form class="mem-add" id="link-add" novalidate autocomplete="off">
-          <p class="records-field records-field--grow">
-            <label for="link-a">Join this page</label>
-            <input type="text" id="link-a" placeholder="an athlete page's address, or its number">
-          </p>
-          <p class="records-field records-field--grow">
-            <label for="link-b">with this one</label>
-            <input type="text" id="link-b" placeholder="the other page">
-          </p>
-          <button type="submit" class="btn btn--accent">Join them</button>
-        </form>
-        <p class="access-status" id="merge-status" role="status"></p>
+        <div class="merge-bar">
+          <p class="records-status" id="merge-count"></p>
+          <!-- the list is long: it and its search are hidden until asked for -->
+          <button type="button" class="btn btn--ghost btn--sm" id="merge-show" aria-expanded="false"
+                  aria-controls="merge-list" hidden>Show the pages</button>
+        </div>
+        <div id="merge-list" hidden>
         <div class="records-bar champs-bar">
           <div class="records-filters">
             <p class="records-field records-field--grow">
@@ -284,13 +279,21 @@
             </p>
           </div>
         </div>
-        <div class="merge-bar">
-          <p class="records-status" id="merge-count"></p>
-          <!-- the list is long: hidden until asked for, or until a find or filter is used -->
-          <button type="button" class="btn btn--ghost btn--sm" id="merge-show" aria-expanded="false"
-                  aria-controls="merge-out">Show the pages</button>
+        <p class="records-status" id="merge-match"></p>
+        <div id="merge-out"></div>
         </div>
-        <div id="merge-out" hidden></div>
+        <form class="mem-add" id="link-add" novalidate autocomplete="off">
+          <p class="records-field records-field--grow">
+            <label for="link-a">Join this page</label>
+            <input type="text" id="link-a" placeholder="an athlete page's address, or its number">
+          </p>
+          <p class="records-field records-field--grow">
+            <label for="link-b">with this one</label>
+            <input type="text" id="link-b" placeholder="the other page">
+          </p>
+          <button type="submit" class="btn btn--accent">Join them</button>
+        </form>
+        <p class="access-status" id="merge-status" role="status"></p>
       </div>
     </section>
 
@@ -494,7 +497,7 @@
   </script>
 
   <script src="assets/js/ncan-account.js?v=8bdbf88e"></script>
-  <script src="assets/js/admin.js?v=99094803"></script>
+  <script src="assets/js/admin.js?v=0546ea3e"></script>
 
 </body>
 
