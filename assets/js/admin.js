@@ -449,11 +449,19 @@
       return g.ids.some(function (x) { return x.name.toLowerCase().indexOf(q) !== -1 || String(x.id) === q; }) ||
              String(g.kept) === q;
     });
-    $('merge-count').textContent = shown.length === merges.length
+    var filtered = !!(q || why);
+    $('merge-count').textContent = !filtered
       ? merges.length + ' pages made from more than one number.'
-      : 'Showing ' + shown.length + ' of ' + merges.length + '.';
+      : shown.length + ' of ' + merges.length + ' pages match.';
+    // hidden until the Show button, or a find or filter, asks for it; then every page, no limit
+    var open = mergesShown || filtered;
+    out.hidden = !open;
+    $('merge-show').hidden = filtered || !merges.length;
+    $('merge-show').textContent = mergesShown ? 'Hide the pages' : 'Show the pages';
+    $('merge-show').setAttribute('aria-expanded', open ? 'true' : 'false');
+    if (!open) { return; }
     var ul = el('ul', 'review-list');
-    shown.slice(0, 60).forEach(function (g) {
+    shown.forEach(function (g) {
       var li = el('li', 'review-item');
       var head = el('p', 'review-item__text');
       var kept = g.ids.filter(function (x) { return x.id === g.kept; })[0] || g.ids[0];
@@ -476,10 +484,21 @@
       ul.appendChild(li);
     });
     out.appendChild(ul);
-    if (shown.length > 60) { out.appendChild(el('p', 'records-note', 'The first 60: find a name to narrow it down.')); }
+  }
+  var mergesShown = false;    // the Show button's state; the list starts hidden
+
+  function setUpCorrections() {
+    $('corr-show').addEventListener('click', function () {
+      corrShown = !corrShown;
+      renderCorrections(corrLast);
+    });
   }
 
   function setUpMerges() {
+    $('merge-show').addEventListener('click', function () {
+      mergesShown = !mergesShown;
+      renderMerges();
+    });
     ['merge-find', 'merge-why'].forEach(function (x) {
       $(x).addEventListener('input', renderMerges);
       $(x).addEventListener('change', renderMerges);
@@ -506,9 +525,22 @@
     ['dismissed', 'Dismissed', function (e) { return [el('span', null, e.text || e.key)]; }]
   ];
 
+  var corrShown = false;      // the Show button's state; the list starts hidden
+  var corrLast = null;        // the corrections last loaded, to draw again on Show
+
   function renderCorrections(all) {
+    corrLast = all;
     var out = $('corr-out');
     out.textContent = '';
+    var total = CORR.reduce(function (n, c) { return n + ((all || {})[c[0]] || []).length; }, 0);
+    $('corr-count').textContent = total
+      ? total + ' correction' + (total === 1 ? '' : 's') + ' and dismissed item' + (total === 1 ? '' : 's') + ' in all.'
+      : 'No corrections made on the website yet.';
+    $('corr-show').hidden = !total;
+    $('corr-show').textContent = corrShown ? 'Hide the corrections' : 'Show the corrections';
+    $('corr-show').setAttribute('aria-expanded', corrShown ? 'true' : 'false');
+    out.hidden = !corrShown || !total;
+    if (out.hidden) { return; }
     var any = false;
     CORR.forEach(function (c) {
       var list = (all || {})[c[0]] || [];
@@ -926,6 +958,7 @@
       loadRoll();
       setUpMembership();
       setUpMerges();
+      setUpCorrections();
       setUpOptOut();
       setUpBlocks();
     }, function (err) { $('admin-status').textContent = err.message || 'Sorry, this page could not be loaded.'; });

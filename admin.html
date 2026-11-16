@@ -16,7 +16,7 @@
 <link rel="apple-touch-icon" href="assets/img/logo.png">
 <link rel="preload" href="assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/archivo-variable.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/styles.css?v=b44fb07f">
+<link rel="stylesheet" href="assets/css/styles.css?v=0bbba9d1">
 <!-- /@partial:head -->
 
 <meta name="robots" content="noindex">
@@ -161,8 +161,12 @@
         <div id="upload-report"></div>
 
         <!-- every member on the list, with all the club holds about them except results -->
-        <div class="roll" id="roll">
-          <h3 class="roll__head" id="roll-heading">Club members</h3>
+        <!-- folded by default: open it to see the list -->
+        <details class="champs-day roll" id="roll">
+          <summary class="champs-day__head">
+            <h3 class="roll__head" id="roll-heading">Club members</h3>
+          </summary>
+          <div class="champs-day__body">
           <p class="records-note">
             Everyone on the members list, from the last collect: date of birth, seasons, GameDay
             registrations, their page and the emails that can sign in to see it. For administrators only.
@@ -181,7 +185,8 @@
           </div>
           <p class="records-status" id="roll-status" role="status">Loading the members&hellip;</p>
           <div id="roll-out"></div>
-        </div>
+          </div>
+        </details>
       </div>
     </section>
 
@@ -279,8 +284,13 @@
             </p>
           </div>
         </div>
-        <p class="records-status" id="merge-count"></p>
-        <div id="merge-out"></div>
+        <div class="merge-bar">
+          <p class="records-status" id="merge-count"></p>
+          <!-- the list is long: hidden until asked for, or until a find or filter is used -->
+          <button type="button" class="btn btn--ghost btn--sm" id="merge-show" aria-expanded="false"
+                  aria-controls="merge-out">Show the pages</button>
+        </div>
+        <div id="merge-out" hidden></div>
       </div>
     </section>
 
@@ -307,7 +317,13 @@
           <button type="submit" class="btn btn--ghost">Remove the page</button>
         </form>
         <p class="access-status" id="corr-status" role="status"></p>
-        <div id="corr-out"></div>
+        <!-- the list is long: hidden until asked for -->
+        <div class="merge-bar">
+          <p class="records-status" id="corr-count"></p>
+          <button type="button" class="btn btn--ghost btn--sm" id="corr-show" aria-expanded="false"
+                  aria-controls="corr-out" hidden>Show the corrections</button>
+        </div>
+        <div id="corr-out" hidden></div>
       </div>
     </section>
 
@@ -478,7 +494,7 @@
   </script>
 
   <script src="assets/js/ncan-account.js?v=8bdbf88e"></script>
-  <script src="assets/js/admin.js?v=b65567bd"></script>
+  <script src="assets/js/admin.js?v=99094803"></script>
 
 </body>
 
