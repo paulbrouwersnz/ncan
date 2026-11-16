@@ -31,7 +31,7 @@
     return b;
   }
   function pageLink(id, words) {
-    var a = el('a', null, words || 'page ' + id);
+    var a = el('a', null, words || 'number ' + id);
     a.href = 'athlete.html?id=' + id;
     a.target = '_blank';
     a.rel = 'noopener';
@@ -516,7 +516,7 @@
 
   /* Corrections -------------------------------------------------------------- */
   var CORR = [
-    ['opt_out', 'Pages removed', function (e) { return [pageLink(e.id, 'Page ' + e.id)]; }],
+    ['opt_out', 'Athletes removed', function (e) { return [pageLink(e.id, 'Athlete ' + e.id)]; }],
     ['same', 'Joined into one athlete', function (e) { return [pageLink(e.ids[0]), el('span', null, ' and '), pageLink(e.ids[1])]; }],
     ['not_same', 'Kept apart', function (e) { return [pageLink(e.ids[0]), el('span', null, ' and '), pageLink(e.ids[1])]; }],
     ['names', 'Names corrected', function (e) { return [pageLink(e.id, e.name)]; }],
@@ -754,16 +754,16 @@
     });
   }
 
-  /* Remove a page ------------------------------------------------------------ */
+  /* Remove an athlete ------------------------------------------------------------ */
   function setUpOptOut() {
     $('optout-add').addEventListener('submit', function (e) {
       e.preventDefault();
       var m = /(?:id=)?(\d{5,12})\b/.exec($('optout-page').value);
-      if (!m) { $('corr-status').textContent = 'Paste the page’s address, or the number after id=.'; return; }
-      if (!confirm('Remove page ' + m[1] + '? It disappears at the next collect, and can be put back.')) { return; }
+      if (!m) { $('corr-status').textContent = 'Paste their page’s address, or the number after id=.'; return; }
+      if (!confirm('Remove athlete ' + m[1] + ' from the site? Their page disappears at the next collect, and can be put back.')) { return; }
       change('/admin/corrections', { kind: 'opt_out', id: +m[1], why: $('optout-why').value }, 'corr-status', function () {
         $('optout-page').value = ''; $('optout-why').value = '';
-        return 'Page ' + m[1] + ' will be removed.' + COLLECTING;
+        return 'Athlete ' + m[1] + ' will be taken off the site.' + COLLECTING;
       });
     });
   }
