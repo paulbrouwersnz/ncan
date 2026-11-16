@@ -16,7 +16,7 @@
 <link rel="apple-touch-icon" href="assets/img/logo.png">
 <link rel="preload" href="assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/archivo-variable.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/styles.css?v=9bc26af8">
+<link rel="stylesheet" href="assets/css/styles.css?v=a5178098">
 <!-- /@partial:head -->
 
 <link rel="canonical" href="https://ncan.nz/club-champs.html">
@@ -233,14 +233,6 @@
               <label for="results-filter-text">Search</label>
               <input type="search" id="results-filter-text" data-filter="text" placeholder="athlete name"
                      autocomplete="off">
-            </p>
-            <!-- how each Saturday's table is banded; not a filter, so Clear filters leaves it -->
-            <p class="records-field">
-              <label for="results-group">Group by</label>
-              <select id="results-group">
-                <option value="event" selected>Event</option>
-                <option value="grade">Grade</option>
-              </select>
             </p>
           </div>
           <div class="records-actions">
@@ -462,10 +454,6 @@
         return Array.prototype.slice.call(document.querySelectorAll('[data-filter="' + kind + '"]'));
       }
       var resultsStatus = document.getElementById('results-status');
-      // the results table banded by event (the default) or by grade, as the standings are;
-      // the choice is remembered on this device only, and the page works the same without it
-      var groupSel = document.getElementById('results-group');
-      try { if (localStorage.getItem('ncan-champs-group') === 'grade') { groupSel.value = 'grade'; } } catch (e) { /* no storage */ }
 
       var data = null;
       var results = [];
@@ -844,23 +832,15 @@
         var filtered = isFiltered(f);
         var newest = meetingsWithResults.length ? meetingsWithResults[meetingsWithResults.length - 1].date : '';
 
-        var byEvent = groupSel.value === 'event';
-        var gradeOf = function (r) { return title(r.gender) + ' · grade ' + r.grade; };
-
         // newest first: the latest round is what people come looking for
         meetingsWithResults.slice().reverse().forEach(function (m) {
           var rows = matching.filter(function (r) { return r.date === m.date; });
           rows.sort(function (a, b) {
-            // an athlete with no place (no mark) comes after everyone placed
-            var rest = (a.place || 999) - (b.place || 999) || a.athlete.localeCompare(b.athlete);
-            if (byEvent) {
-              // by event, in the programme's order; within it by grade, girls then boys
-              return eventRank(a.event) - eventRank(b.event) || a.event.localeCompare(b.event) ||
-                     a.grade - b.grade || b.gender.localeCompare(a.gender) || rest;
-            }
-            // by grade, girls then boys within it, as in the standings
+            // by grade, girls then boys within it, as in the standings; then by event,
+            // in the programme's order; an athlete with no place (no mark) comes last
             return a.grade - b.grade || b.gender.localeCompare(a.gender) ||
-                   a.event.localeCompare(b.event) || rest;
+                   eventRank(a.event) - eventRank(b.event) || a.event.localeCompare(b.event) ||
+                   (a.place || 999) - (b.place || 999) || a.athlete.localeCompare(b.athlete);
           });
 
           var wrap = text('div', 'table-wrap');
@@ -870,7 +850,7 @@
 
           var thead = document.createElement('thead');
           var hr = document.createElement('tr');
-          ['Athlete', byEvent ? 'Grade' : 'Event', 'Place', 'Mark', 'Points'].forEach(function (label) {
+          ['Athlete', 'Event', 'Place', 'Mark', 'Points'].forEach(function (label) {
             var th = text('th', null, label);
             th.setAttribute('scope', 'col');
             hr.appendChild(th);
@@ -879,24 +859,33 @@
           table.appendChild(thead);
 
           var tbody = document.createElement('tbody');
-          var lastBand = null;
+          // nested bands: the grade ("Girls · grade 9"), then each event within it
+          var lastBand = null, lastEvent = null;
+          var bandRow = function (label, cls) {
+            var btr = text('tr', cls);
+            var bth = text('th', null, label);
+            bth.setAttribute('scope', 'colgroup');
+            bth.colSpan = 5;
+            btr.appendChild(bth);
+            tbody.appendChild(btr);
+          };
           rows.forEach(function (r) {
-            var band = byEvent ? r.event : gradeOf(r);
+            var band = title(r.gender) + ' · grade ' + r.grade;
             if (band !== lastBand) {
-              var btr = text('tr', 'schedule__band');
-              var bth = text('th', null, band);
-              bth.setAttribute('scope', 'colgroup');
-              bth.colSpan = 5;
-              btr.appendChild(bth);
-              tbody.appendChild(btr);
+              bandRow(band, 'schedule__band');
               lastBand = band;
+              lastEvent = null;
+            }
+            if (r.event !== lastEvent) {
+              bandRow(r.event, 'schedule__band schedule__band--sub');
+              lastEvent = r.event;
             }
             var tr = document.createElement('tr');
             tr.id = rowId(r);
             var who = text('th', null, r.athlete);
             who.setAttribute('scope', 'row');
             tr.appendChild(who);
-            [byEvent ? ['Grade', gradeOf(r), null] : ['Event', r.event, null],
+            [['Event', r.event, null],
              ['Place', r.place ? ordinal(r.place) : '–', 'champs-num'],
              ['Mark', r.mark || '–', 'champs-num'],
              ['Points', r.points, 'champs-num champs-points']].forEach(function (cell) {
@@ -1300,11 +1289,6 @@
         programmeOut.textContent = '';
         resultsOut.textContent = '';
       }
-
-      groupSel.addEventListener('change', function () {
-        try { localStorage.setItem('ncan-champs-group', groupSel.value); } catch (e) { /* no storage */ }
-        if (data) { renderResults(); }
-      });
 
       controls('season').forEach(function (sel) {
         sel.addEventListener('change', function () {
