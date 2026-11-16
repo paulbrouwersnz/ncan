@@ -16,7 +16,7 @@
 <link rel="apple-touch-icon" href="assets/img/logo.png">
 <link rel="preload" href="assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/archivo-variable.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/styles.css?v=001936fc">
+<link rel="stylesheet" href="assets/css/styles.css?v=f9d842b3">
 <!-- /@partial:head -->
 
 <meta name="robots" content="noindex">
@@ -255,6 +255,18 @@
             latest results show what&rsquo;s under it.
           </p>
         </div>
+        <form class="mem-add" id="link-add" novalidate autocomplete="off">
+          <p class="records-field records-field--grow">
+            <label for="link-a">Join this page</label>
+            <input type="text" id="link-a" placeholder="an athlete page's address, or its number">
+          </p>
+          <p class="records-field records-field--grow">
+            <label for="link-b">with this one</label>
+            <input type="text" id="link-b" placeholder="the other page">
+          </p>
+          <button type="submit" class="btn btn--accent">Join them</button>
+        </form>
+        <p class="access-status" id="merge-status" role="status"></p>
         <div class="merge-bar">
           <p class="records-status" id="merge-count"></p>
           <!-- the list is long: it and its search are hidden until asked for -->
@@ -282,18 +294,6 @@
         <p class="records-status" id="merge-match"></p>
         <div id="merge-out"></div>
         </div>
-        <form class="mem-add" id="link-add" novalidate autocomplete="off">
-          <p class="records-field records-field--grow">
-            <label for="link-a">Join this page</label>
-            <input type="text" id="link-a" placeholder="an athlete page's address, or its number">
-          </p>
-          <p class="records-field records-field--grow">
-            <label for="link-b">with this one</label>
-            <input type="text" id="link-b" placeholder="the other page">
-          </p>
-          <button type="submit" class="btn btn--accent">Join them</button>
-        </form>
-        <p class="access-status" id="merge-status" role="status"></p>
       </div>
     </section>
 

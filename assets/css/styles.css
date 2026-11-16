@@ -3093,7 +3093,7 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 .merge-bar .records-status { margin: 0; }
 #merge-list { margin-top: 1rem; }
 #merge-list[hidden] { display: none; }
-#link-add { margin-top: clamp(1.4rem, 3vw, 2rem); }
+#merges .merge-bar { margin-top: clamp(1.4rem, 3vw, 2rem); }
 /* a button's own display would otherwise show it while hidden */
 .btn[hidden] { display: none; }
 .roll__head { margin: 0 0 .4rem; font-size: clamp(1.25rem, 2vw, 1.55rem); color: var(--green-800); }
