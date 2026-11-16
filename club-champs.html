@@ -16,7 +16,7 @@
 <link rel="apple-touch-icon" href="assets/img/logo.png">
 <link rel="preload" href="assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/archivo-variable.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/styles.css?v=78177b8f">
+<link rel="stylesheet" href="assets/css/styles.css?v=6cba4799">
 <!-- /@partial:head -->
 
 <link rel="canonical" href="https://ncan.nz/club-champs.html">
@@ -836,11 +836,11 @@
         meetingsWithResults.slice().reverse().forEach(function (m) {
           var rows = matching.filter(function (r) { return r.date === m.date; });
           rows.sort(function (a, b) {
-            // by grade, girls then boys within it, as in the standings
-            // an athlete with no place (no mark) comes after everyone placed
+            // by grade, girls then boys within it, as in the standings; then by event,
+            // in the programme's order; an athlete with no place (no mark) comes last
             return a.grade - b.grade || b.gender.localeCompare(a.gender) ||
-                   a.event.localeCompare(b.event) || (a.place || 999) - (b.place || 999) ||
-                   a.athlete.localeCompare(b.athlete);
+                   eventRank(a.event) - eventRank(b.event) || a.event.localeCompare(b.event) ||
+                   (a.place || 999) - (b.place || 999) || a.athlete.localeCompare(b.athlete);
           });
 
           var wrap = text('div', 'table-wrap');
@@ -850,7 +850,7 @@
 
           var thead = document.createElement('thead');
           var hr = document.createElement('tr');
-          ['Athlete', 'Event', 'Place', 'Mark', 'Points'].forEach(function (label) {
+          ['Athlete', 'Grade', 'Event', 'Place', 'Mark', 'Points'].forEach(function (label) {
             var th = text('th', null, label);
             th.setAttribute('scope', 'col');
             hr.appendChild(th);
@@ -859,24 +859,34 @@
           table.appendChild(thead);
 
           var tbody = document.createElement('tbody');
-          var lastBand = null;
+          // nested bands: the grade ("Girls · grade 9"), then each event within it
+          var lastBand = null, lastEvent = null;
+          var bandRow = function (label, cls) {
+            var btr = text('tr', cls);
+            var bth = text('th', null, label);
+            bth.setAttribute('scope', 'colgroup');
+            bth.colSpan = 6;
+            btr.appendChild(bth);
+            tbody.appendChild(btr);
+          };
           rows.forEach(function (r) {
             var band = title(r.gender) + ' · grade ' + r.grade;
             if (band !== lastBand) {
-              var btr = text('tr', 'schedule__band');
-              var bth = text('th', null, band);
-              bth.setAttribute('scope', 'colgroup');
-              bth.colSpan = 5;
-              btr.appendChild(bth);
-              tbody.appendChild(btr);
+              bandRow(band, 'schedule__band');
               lastBand = band;
+              lastEvent = null;
+            }
+            if (r.event !== lastEvent) {
+              bandRow(r.event, 'schedule__band schedule__band--sub');
+              lastEvent = r.event;
             }
             var tr = document.createElement('tr');
             tr.id = rowId(r);
             var who = text('th', null, r.athlete);
             who.setAttribute('scope', 'row');
             tr.appendChild(who);
-            [['Event', r.event, null],
+            [['Grade', band, null],
+             ['Event', r.event, null],
              ['Place', r.place ? ordinal(r.place) : '–', 'champs-num'],
              ['Mark', r.mark || '–', 'champs-num'],
              ['Points', r.points, 'champs-num champs-points']].forEach(function (cell) {
@@ -980,6 +990,14 @@
       var EVENT_ORDER = ['60m', '100m', '200m', '400m', '600m', '800m', '1000m', '1500m',
                          'Hurdles', 'Race Walk', 'Shot Put', 'Discus', 'Javelin',
                          'Long Jump', 'High Jump', 'Triple Jump'];
+      // an event's place in that order: '80m Hurdles' goes with Hurdles; unknown events last
+      function eventRank(ev) {
+        var i = EVENT_ORDER.indexOf(ev);
+        if (i === -1) {
+          EVENT_ORDER.some(function (o, j) { if (ev.indexOf(o) !== -1) { i = j; return true; } return false; });
+        }
+        return i === -1 ? 999 : i;
+      }
       function fillEvents() {
         var seen = {};
         data.meetings.forEach(function (m) {

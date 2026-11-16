@@ -1401,6 +1401,14 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
   background: var(--green-100);
   box-shadow: inset 5px 0 0 var(--green-600);
 }
+/* a band within a band (club champs results: an event within a grade) */
+.schedule__band--sub th {
+  padding: .5rem 1.25rem .5rem 2rem;
+  background: var(--green-050);
+  box-shadow: inset 5px 0 0 var(--green-100);
+  font-size: .9rem;
+  color: var(--green-800);
+}
 .schedule__group--summer .schedule__band th {
   background: var(--yellow-100);
   box-shadow: inset 5px 0 0 var(--yellow-500);
