@@ -850,7 +850,7 @@
 
           var thead = document.createElement('thead');
           var hr = document.createElement('tr');
-          ['Athlete', 'Event', 'Place', 'Mark', 'Points'].forEach(function (label) {
+          ['Athlete', 'Grade', 'Event', 'Place', 'Mark', 'Points'].forEach(function (label) {
             var th = text('th', null, label);
             th.setAttribute('scope', 'col');
             hr.appendChild(th);
@@ -865,7 +865,7 @@
             var btr = text('tr', cls);
             var bth = text('th', null, label);
             bth.setAttribute('scope', 'colgroup');
-            bth.colSpan = 5;
+            bth.colSpan = 6;
             btr.appendChild(bth);
             tbody.appendChild(btr);
           };
@@ -885,7 +885,8 @@
             var who = text('th', null, r.athlete);
             who.setAttribute('scope', 'row');
             tr.appendChild(who);
-            [['Event', r.event, null],
+            [['Grade', band, null],
+             ['Event', r.event, null],
              ['Place', r.place ? ordinal(r.place) : '–', 'champs-num'],
              ['Mark', r.mark || '–', 'champs-num'],
              ['Points', r.points, 'champs-num champs-points']].forEach(function (cell) {
