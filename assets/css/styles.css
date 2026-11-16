@@ -3048,6 +3048,28 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
   .hero, .cta-band, .site-footer { background: #fff; color: #000; }
 }
 
+/* club-champs.html: each Saturday's "Print winners" sheet. Built on demand and
+   shown only in print, and only while body has .champs-printing. */
+.champs-day__print { padding: .35rem .8rem; font-size: .8rem; }
+.champs-print { display: none; }
+@media print {
+  body.champs-printing > *:not(#champs-print) { display: none !important; }
+  body.champs-printing .champs-print { display: block; padding: 0; font-size: 11pt; }
+  @page { margin: 14mm; }
+}
+.champs-print__head { display: flex; align-items: center; gap: 6mm; margin-bottom: 6mm; }
+.champs-print__logo { width: 36mm; height: auto; }
+.champs-print__title { margin: 0; font-size: 20pt; color: #0b3b2e; }
+.champs-print__date { margin: 1mm 0 0; font-size: 12pt; font-weight: 700; }
+.champs-print__table { width: 100%; border-collapse: collapse; }
+.champs-print__table th,
+.champs-print__table td { padding: 1.6mm 2.5mm; text-align: left; border-bottom: 1px solid #ccc; }
+.champs-print__table thead th { font-size: 9pt; letter-spacing: .06em; text-transform: uppercase; border-bottom: 2px solid #0b3b2e; }
+.champs-print__band th { padding-top: 4mm; font-size: 12pt; color: #0b3b2e; border-bottom: 2px solid #0b3b2e; break-after: avoid; }
+.champs-print__table tr { break-inside: avoid; }
+.champs-print__who { font-weight: 700; }
+.champs-print__foot { margin-top: 6mm; font-size: 9pt; color: #444; }
+
 /* ================= Results sources ================= */
 .src-meeting { margin-bottom: 1rem; }
 .src-meeting .champs-day__head { border-bottom-width: 1px; }
