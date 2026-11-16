@@ -879,6 +879,46 @@
       body.appendChild(el('p', 'records-note', 'No GameDay registrations kept for them yet.'));
     }
 
+    // statements of correction (Privacy Act IPP 7): kept with the record when the club
+    // decides not to make a correction someone asked for, and always shown with it
+    body.appendChild(el('h5', 'roll__sub', 'Statements of correction'));
+    var said = el('ul', 'roll-emails');
+    (m.statements || []).forEach(function (st) {
+      var li = el('li', null, '“' + st.statement + '”');
+      li.appendChild(el('span', 'roll-emails__how', ' · kept ' + st.at + ' by ' + st.by));
+      said.appendChild(li);
+    });
+    if (!(m.statements || []).length) { said.appendChild(el('li', 'roll-emails__how', 'None.')); }
+    body.appendChild(said);
+    var form = el('form', 'roll-statement');
+    var box = el('textarea');
+    box.rows = 2;
+    box.maxLength = 2000;
+    box.placeholder = 'Their statement, when the club has decided not to make a correction they asked for';
+    box.setAttribute('aria-label', 'Statement of correction for ' + m.name);
+    var keep = el('button', 'btn btn--ghost btn--sm', 'Keep their statement');
+    keep.type = 'submit';
+    var note = el('p', 'access-status');
+    note.setAttribute('role', 'status');
+    form.appendChild(box); form.appendChild(keep); form.appendChild(note);
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var text = box.value.trim();
+      if (!text) { note.textContent = 'Write their statement first.'; return; }
+      keep.disabled = true;
+      note.textContent = 'Saving…';
+      NCAN.send('/admin/statements', { name: m.name, statement: text }).then(function (r) {
+        keep.disabled = false;
+        if (r.status !== 201) { note.textContent = (r.body && r.body.error) || 'Sorry, that didn’t work.'; return; }
+        var st = r.body.statement;
+        m.statements = (m.statements || []).concat([st]);
+        var fresh = rollMember(m);
+        fresh.open = true;
+        block.parentNode.replaceChild(fresh, block);
+      }, function (err) { keep.disabled = false; note.textContent = err.message; });
+    });
+    body.appendChild(form);
+
     body.appendChild(el('h5', 'roll__sub', 'Who can sign in to see their page'));
     if (m.emails.length) {
       var ul = el('ul', 'roll-emails');

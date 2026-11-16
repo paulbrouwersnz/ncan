@@ -103,6 +103,13 @@
     var said = el('p', 'signin__status');
     said.setAttribute('role', 'status');
     box.appendChild(said);
+    // what the email is used for (Privacy Act IPP 3): sign-in links, nothing else
+    var note = el('p', 'signin__privacy', 'We use your email address only to send sign-in links. ');
+    var more = el('a', null, 'How the club handles your information');
+    more.href = 'privacy.html';
+    note.appendChild(more);
+    note.appendChild(document.createTextNode('.'));
+    box.appendChild(note);
 
     form.addEventListener('submit', function (e) {
       e.preventDefault();
