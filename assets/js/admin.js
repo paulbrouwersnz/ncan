@@ -9,6 +9,7 @@
     POST /v1/admin/corrections/undo
     GET/POST /v1/membership, POST /v1/membership/undo     membership changes
     GET /v1/access/blocks, POST /v1/access/block|unblock  site-wide blocks
+    GET /v1/admin/members              every member, with all held about them but results
   No athlete data is in this file.
 */
 (function () {
@@ -767,6 +768,129 @@
     });
   }
 
+  /* Club members: everything held about each member except results ------------
+     GET /v1/admin/members (admins only), written by each collect. */
+  var roll = [];
+  var ORIGIN = { 'membership export': 'from GameDay', 'by hand': 'added by an admin', 'family': 'added by family' };
+
+  function seasonsOf(m) { return m.seasons || []; }
+
+  function regWords(list) {
+    return (list || []).map(function (k) {
+      return typeof k === 'string' ? k : k.type + (k.ordered ? ' (' + k.ordered + ')' : '');
+    }).join(', ') || '–';
+  }
+
+  function rollMember(m) {
+    var block = el('details', 'champs-day src-meeting roll-member');
+    var head = el('summary', 'champs-day__head');
+    head.appendChild(el('h4', 'champs-day__title src-meeting__title', m.name));
+    var latest = seasonsOf(m).length ? seasonsOf(m)[seasonsOf(m).length - 1] : 'no season';
+    head.appendChild(el('span', 'champs-day__count',
+      (m.dob || 'born ' + m.born) + ' · ' + latest + ' · ' +
+      m.emails.length + ' sign-in email' + (m.emails.length === 1 ? '' : 's')));
+    block.appendChild(head);
+
+    var body = el('div', 'champs-day__body');
+    var facts = el('dl', 'src-facts');
+    var page = m.page ? pageLink(m.page, m.page_name === m.name ? 'Page ' + m.page : m.page_name + ' (page ' + m.page + ')')
+      : 'No page yet';
+    var seasons = seasonsOf(m).map(function (s) {
+      return s + ((m.added || []).indexOf(s) !== -1 ? ' (added by an admin)' : '');
+    }).join(', ');
+    [['Date of birth', m.dob || 'Not held (born ' + m.born + ')'],
+     ['Gender', m.gender ? (m.gender === 'girls' ? 'Female' : 'Male') : 'Not held'],
+     m.grade ? ['Grade', 'Grade ' + m.grade] : null,
+     ['Seasons', seasons || 'None'],
+     (m.away || []).length ? ['Away', m.away.map(function (p) { return p[0] + ' to ' + p[1]; }).join('; ')] : null,
+     ['Page', page]].filter(Boolean).forEach(function (f) {
+      facts.appendChild(el('dt', null, f[0]));
+      var dd = el('dd');
+      if (typeof f[1] === 'string') { dd.textContent = f[1]; } else { dd.appendChild(f[1]); }
+      facts.appendChild(dd);
+    });
+    body.appendChild(facts);
+
+    if ((m.registrations || []).length) {
+      var wrap = el('div', 'table-wrap');
+      var table = el('table', 'schedule roll-table');
+      table.appendChild(el('caption', 'visually-hidden', 'GameDay registrations, ' + m.name));
+      var hr = el('tr');
+      ['Season', 'Club', 'Athletics Canterbury', 'Athletics NZ'].forEach(function (h) {
+        var th = el('th', null, h); th.setAttribute('scope', 'col'); hr.appendChild(th);
+      });
+      var thead = el('thead'); thead.appendChild(hr); table.appendChild(thead);
+      var tbody = el('tbody');
+      m.registrations.forEach(function (r) {
+        var tr = el('tr');
+        var th = el('th', null, r.season); th.setAttribute('scope', 'row'); tr.appendChild(th);
+        [['Club', r.club], ['Athletics Canterbury', r.centre], ['Athletics NZ', r.national]].forEach(function (c) {
+          var td = el('td', null, regWords(c[1])); td.setAttribute('data-label', c[0]); tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      });
+      table.appendChild(tbody); wrap.appendChild(table); body.appendChild(wrap);
+    } else {
+      body.appendChild(el('p', 'records-note', 'No GameDay registrations kept for them yet.'));
+    }
+
+    body.appendChild(el('h5', 'roll__sub', 'Who can sign in to see their page'));
+    if (m.emails.length) {
+      var ul = el('ul', 'roll-emails');
+      m.emails.forEach(function (e) {
+        var li = el('li');
+        var a = el('a', null, e.email); a.href = 'mailto:' + e.email; li.appendChild(a);
+        var how = [ORIGIN[e.origin] || e.origin];
+        if (e.origin === 'family' && e.added_by) { how[0] += ' (' + e.added_by + ')'; }
+        if (e.role) { how.push(e.role); }
+        if (e.blocked) { how.push('blocked'); }
+        li.appendChild(el('span', 'roll-emails__how', ' · ' + how.join(' · ')));
+        ul.appendChild(li);
+      });
+      body.appendChild(ul);
+    } else {
+      body.appendChild(el('p', 'records-note', m.page ? 'No email is linked to their page.' : 'They have no page yet.'));
+    }
+    block.appendChild(body);
+    return block;
+  }
+
+  function renderRoll() {
+    var season = $('roll-season').value;
+    var q = $('roll-text').value.replace(/\s+/g, ' ').trim().toLowerCase();
+    var shown = roll.filter(function (m) {
+      if (season && seasonsOf(m).indexOf(season) === -1) { return false; }
+      if (!q) { return true; }
+      var hay = (m.name + ' ' + m.emails.map(function (e) { return e.email; }).join(' ')).toLowerCase();
+      return hay.indexOf(q) !== -1;
+    });
+    $('roll-heading').textContent = 'Club members (' + roll.length + ')';
+    $('roll-status').textContent = shown.length === roll.length ? roll.length + ' members.'
+      : 'Showing ' + shown.length + ' of ' + roll.length + ' members.';
+    var out = $('roll-out');
+    out.textContent = '';
+    shown.forEach(function (m) { out.appendChild(rollMember(m)); });
+  }
+
+  function loadRoll() {
+    return NCAN.get('/admin/members').then(function (r) {
+      roll = r.members || [];
+      if (!roll.length) {
+        $('roll-status').textContent = 'No members yet: the list appears after the next collect.';
+        return;
+      }
+      var seasons = {};
+      roll.forEach(function (m) { seasonsOf(m).forEach(function (s) { seasons[s] = 1; }); });
+      Object.keys(seasons).sort().reverse().forEach(function (s) {
+        var o = el('option', null, s); o.value = s; $('roll-season').appendChild(o);
+      });
+      $('roll-season').addEventListener('change', renderRoll);
+      $('roll-text').addEventListener('input', renderRoll);
+      renderRoll();
+      if (r.updated) { $('roll-status').textContent += ' From the collect of ' + r.updated + '.'; }
+    }, function () { $('roll-status').textContent = 'Sorry, the members could not be loaded.'; });
+  }
+
   /* Loading ------------------------------------------------------------------- */
   function loadAll() {
     return Promise.all([NCAN.get('/admin/review'), NCAN.get('/membership'), NCAN.get('/access/blocks')])
@@ -799,6 +923,7 @@
       $('admin-jump').hidden = false;
       ['review', 'upload', 'members', 'merges', 'corrections', 'blocks'].forEach(function (x) { $(x).hidden = false; });
       setUpUpload();
+      loadRoll();
       setUpMembership();
       setUpMerges();
       setUpOptOut();
