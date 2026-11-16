@@ -535,8 +535,8 @@
   </script>
 
   <script src="assets/js/ncan-account.js?v=27229fc9"></script>
-  <script src="assets/js/athlete-access.js?v=2f29709a" defer></script>
-  <script src="assets/js/athlete-manage.js?v=28e2af07" defer></script>
+  <script src="assets/js/athlete-access.js?v=0272ee8d" defer></script>
+  <script src="assets/js/athlete-manage.js?v=22c51f1f" defer></script>
   <script>
     (function () {
       'use strict';
@@ -545,8 +545,9 @@
          Reads the athlete from the club's API (GET /v1/athletes/<id>; see
          assets/js/ncan-account.js), only for someone signed in who may see
          them: their family, a coach or an administrator. Anyone else gets
-         "not found". The athlete is the ?id= in the address: their
-         athletic.net number.
+         "not found". The athlete is the ?a= in the address: a URL-safe version
+         of their name (sam-brown), given by the API, never a number (Privacy Act
+         IPP 13). An old link's ?id= (a number) still works and is swapped for it.
 
          The filters (season, team, wind, events) feed every section: the
          personal bests, the charts and the table all describe the same set
@@ -1584,18 +1585,24 @@
 
       NCAN.me().then(function (who) { NCAN.account($('account'), who); }, function () { /* shown below */ });
 
-      var id = new URLSearchParams(location.search).get('id');
-      if (!/^\d+$/.test(id || '')) {
+      // the page's address is the athlete's name (?a=sam-brown); an old link has a number (?id=)
+      var query = new URLSearchParams(location.search);
+      var id = query.get('a') || query.get('id');
+      if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(id || '')) {
         missing('No athlete given. Find one on the athletes page.');
         return;
       }
       NCAN.get('/athletes/' + id)
         .then(function (json) {
-          // an older athletic.net number for an athlete whose numbers were merged:
-          // go to the page they are kept under, keeping any #section in the address
+          // an address that has moved (a corrected name, two numbers joined) or an old
+          // number: go to the page's address now, keeping any #section in the address
           if (json.same_as) {
-            location.replace('athlete.html?id=' + json.same_as + location.hash);
+            location.replace('athlete.html?' + (json.slug ? 'a=' + json.slug : 'id=' + json.same_as) + location.hash);
             return;
+          }
+          // an old link by number: show the page's own address instead
+          if (json.slug && json.slug !== query.get('a') && window.history && history.replaceState) {
+            history.replaceState(null, '', 'athlete.html?a=' + json.slug + location.hash);
           }
           athlete = json;
           // cross country, road and relay legs have a section of their own: the

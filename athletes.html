@@ -328,7 +328,7 @@
          Reads the athletes list from the club's API (GET /v1/athletes; see
          assets/js/ncan-account.js), only for someone signed in: a family gets
          their own children, coaches and administrators everyone. Each name
-         links to athlete.html?id=<number>. */
+         links to its page address, athlete.html?a=<their name> (a.slug). */
 
       var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July',
                     'August', 'September', 'October', 'November', 'December'];
@@ -556,7 +556,7 @@
           var who = text('th');
           who.setAttribute('scope', 'row');
           var link = text('a', null, a.name);
-          link.href = 'athlete.html?id=' + a.id;
+          link.href = a.slug ? 'athlete.html?a=' + a.slug : 'athlete.html?id=' + a.id;
           who.appendChild(link);
           tr.appendChild(who);
           [['Age group', a.group ? (a.group.replace(/^Grade /, '') + ' ' + sex(a)).trim() : '–', 'champs-num'],

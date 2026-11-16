@@ -30,9 +30,10 @@
     b.addEventListener('click', function () { onClick(b); });
     return b;
   }
+  var addresses = {};     // page number -> its address (the athlete's name), from the API
   function pageLink(id, words) {
     var a = el('a', null, words || 'number ' + id);
-    a.href = 'athlete.html?id=' + id;
+    a.href = addresses[id] ? 'athlete.html?a=' + addresses[id] : 'athlete.html?id=' + id;
     a.target = '_blank';
     a.rel = 'noopener';
     return a;
@@ -981,6 +982,7 @@
     return Promise.all([NCAN.get('/admin/review'), NCAN.get('/membership'), NCAN.get('/access/blocks')])
       .then(function (r) {
         members = r[1].members || [];
+        addresses = r[0].addresses || {};    // before anything draws a link to a page
         renderReview(r[0]);
         corrNames = r[0].names || {};
         renderCorrections(r[0].corrections);
