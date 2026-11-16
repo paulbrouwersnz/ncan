@@ -16,7 +16,7 @@
 <link rel="apple-touch-icon" href="assets/img/logo.png">
 <link rel="preload" href="assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/archivo-variable.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/styles.css?v=6cba4799">
+<link rel="stylesheet" href="assets/css/styles.css?v=d3b2fc99">
 <!-- /@partial:head -->
 
 <link rel="canonical" href="https://ncan.nz/club-champs.html">
@@ -931,6 +931,16 @@
             ours.title = 'All of North Canterbury’s results at this meeting, on AthleticLIVE. Places there are overall, not among NCAN athletes.';
             head.appendChild(ours);
           }
+          // a sheet of the day's event winners, for reading out at Tuesday training
+          var print = text('button', 'btn btn--ghost champs-day__print', 'Print winners');
+          print.type = 'button';
+          print.title = 'Print the winners of each championship event on ' + longDate(m.date);
+          print.addEventListener('click', function (e) {
+            e.preventDefault();      // a button in the summary would otherwise fold the day
+            e.stopPropagation();
+            printWinners(m.date);
+          });
+          head.appendChild(print);
           block.appendChild(head);
           var body = text('div', 'champs-day__body');
           body.appendChild(wrap);
@@ -939,6 +949,81 @@
           resultsOut.appendChild(block);
         });
       }
+
+      /* Winners sheet, to print ---------------------------------------------- */
+
+      // Every winner (1st, ties included) of each championship event that Saturday,
+      // by grade and then event, whatever the filters show. Printed on its own: the
+      // page's print styles hide everything else while body has .champs-printing.
+      function printWinners(date) {
+        var rows = results.filter(function (r) { return r.date === date && r.place === 1; });
+        rows.sort(function (a, b) {
+          return a.grade - b.grade || b.gender.localeCompare(a.gender) ||
+                 eventRank(a.event) - eventRank(b.event) || a.event.localeCompare(b.event) ||
+                 a.athlete.localeCompare(b.athlete);
+        });
+        var sheet = document.getElementById('champs-print');
+        if (!sheet) {
+          sheet = text('div', 'champs-print');
+          sheet.id = 'champs-print';
+          document.body.appendChild(sheet);
+        }
+        sheet.textContent = '';
+        var head = text('div', 'champs-print__head');
+        var logo = document.createElement('img');
+        logo.src = 'assets/img/logo.svg';
+        logo.alt = 'North Canterbury Athletic Club';
+        logo.className = 'champs-print__logo';
+        head.appendChild(logo);
+        var words = text('div');
+        words.appendChild(text('h1', 'champs-print__title', 'Children’s Club Championships'));
+        words.appendChild(text('p', 'champs-print__date',
+          'Event winners · ' + longDate(date) + ' ' + date.slice(0, 4)));
+        head.appendChild(words);
+        sheet.appendChild(head);
+
+        if (!rows.length) {
+          sheet.appendChild(text('p', null, 'No winners have been entered for this day yet.'));
+        } else {
+          var table = text('table', 'champs-print__table');
+          var thead = document.createElement('thead');
+          var hr = document.createElement('tr');
+          ['Event', 'Winner', 'Mark'].forEach(function (label) {
+            var th = text('th', null, label);
+            th.setAttribute('scope', 'col');
+            hr.appendChild(th);
+          });
+          thead.appendChild(hr);
+          table.appendChild(thead);
+          var tbody = document.createElement('tbody');
+          var lastBand = null;
+          rows.forEach(function (r) {
+            var band = title(r.gender) + ' · grade ' + r.grade;
+            if (band !== lastBand) {
+              var btr = text('tr', 'champs-print__band');
+              var bth = text('th', null, band);
+              bth.setAttribute('scope', 'colgroup');
+              bth.colSpan = 3;
+              btr.appendChild(bth);
+              tbody.appendChild(btr);
+              lastBand = band;
+            }
+            var tr = document.createElement('tr');
+            tr.appendChild(text('td', null, r.event));
+            tr.appendChild(text('td', 'champs-print__who', r.athlete));
+            tr.appendChild(text('td', null, r.mark || '–'));
+            tbody.appendChild(tr);
+          });
+          table.appendChild(tbody);
+          sheet.appendChild(table);
+        }
+        sheet.appendChild(text('p', 'champs-print__foot',
+          'Placings count North Canterbury athletes only, within each grade. ncan.nz/club-champs.html'));
+
+        document.body.classList.add('champs-printing');
+        window.print();
+      }
+      window.addEventListener('afterprint', function () { document.body.classList.remove('champs-printing'); });
 
       /* Points explainer ---------------------------------------------------- */
 
