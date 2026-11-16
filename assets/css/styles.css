@@ -3103,6 +3103,10 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 .roll-emails { margin: 0; padding-left: 1.1rem; font-size: .95rem; }
 .roll-emails li { margin: .2rem 0; overflow-wrap: anywhere; }
 .roll-emails__how { color: var(--text-soft); }
+.roll-statement { display: flex; flex-wrap: wrap; align-items: flex-start; gap: .5rem; margin: .6rem 0 0; }
+.roll-statement textarea { flex: 1 1 22rem; min-height: 3.2rem; padding: .5rem .7rem; font: inherit; font-size: .95rem;
+                           border: 1px solid var(--line-strong); border-radius: var(--radius-sm); }
+.roll-statement .access-status { flex-basis: 100%; margin: 0; }
 
 /* ================= Results sources ================= */
 .src-meeting { margin-bottom: 1rem; }
@@ -3137,6 +3141,7 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 .signin__form { display: flex; flex-wrap: wrap; align-items: flex-end; gap: .8rem; margin-top: 1rem; }
 .signin__status { margin: .9rem 0 0; font-weight: 600; color: var(--green-800); }
 .signin__status:empty { display: none; }
+.signin__privacy { margin: .9rem 0 0; font-size: .88rem; color: var(--text-soft); }
 .account-line { margin: 1.2rem 0 0; font-size: .95rem; color: rgba(255, 255, 255, .85); }
 .account-line[hidden] { display: none; }
 .account-line__out {

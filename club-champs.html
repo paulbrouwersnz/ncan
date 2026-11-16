@@ -16,7 +16,7 @@
 <link rel="apple-touch-icon" href="assets/img/logo.png">
 <link rel="preload" href="assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/archivo-variable.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/styles.css?v=e6d60132">
+<link rel="stylesheet" href="assets/css/styles.css?v=a9f76eb9">
 <!-- /@partial:head -->
 
 <link rel="canonical" href="https://ncan.nz/club-champs.html">
@@ -168,6 +168,8 @@
         </div>
 
         <p class="records-status" id="champs-status" role="status">Loading the championships&hellip;</p>
+        <!-- not signed in: children are shown by first name and initial (see privacy.html) -->
+        <p class="records-note" id="champs-names" hidden>Names show as a first name and initial. Club families, coaches and the committee see full names when signed in to an <a href="athletes.html">athlete page</a>.</p>
         <div id="standings-out"></div>
         <p class="records-note" id="champs-updated"></p>
       </div>
@@ -321,6 +323,7 @@
         <ul>
           <li><a href="committee.html">Committee and documents</a></li>
           <li><a href="safeguarding.html">Child safeguarding</a></li>
+          <li><a href="privacy.html">Privacy</a></li>
           <li><a href="records.html">Children&rsquo;s records</a></li>
           <li><a href="history.html">History</a></li>
           <li><a href="https://codesport.co.nz/catalog/%20NorthCanterburyAthleticsClub%20-1107550.htmx">Uniform and apparel</a></li>
@@ -403,7 +406,7 @@
   </script>
 
   <script src="assets/js/qr.js?v=9b5a549f"></script>
-  <script src="assets/js/ncan-account.js?v=8bdbf88e"></script>
+  <script src="assets/js/ncan-account.js?v=27229fc9"></script>
   <script src="assets/js/club-champs-review.js?v=12388763"></script>
   <script>
     (function () {
@@ -1301,7 +1304,8 @@
       controls('event').forEach(combobox);
 
       function getJson(url) {
-        return fetch(url, { cache: 'no-cache' }).then(function (res) {
+        // with the sign-in cookie: signed in, the names are full; otherwise first name and initial
+        return fetch(url, { cache: 'no-cache', credentials: 'include' }).then(function (res) {
           if (!res.ok) { throw new Error('HTTP ' + res.status); }
           return res.json();
         });
@@ -1337,6 +1341,7 @@
         if (window.ChampsReview) { ChampsReview.season(season.id); }
         return getJson(API + '/' + season.id).then(function (json) {
           data = json;
+          document.getElementById('champs-names').hidden = json.full_names !== false;
           data.meetings = (data.meetings || []).slice().sort(function (a, b) {
             return a.date < b.date ? -1 : a.date > b.date ? 1 : 0;
           });
