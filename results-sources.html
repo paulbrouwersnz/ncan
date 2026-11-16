@@ -16,7 +16,11 @@
 <link rel="apple-touch-icon" href="assets/img/logo.png">
 <link rel="preload" href="assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/archivo-variable.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/styles.css?v=a5178098">
+<<<<<<< HEAD
+<link rel="stylesheet" href="assets/css/styles.css?v=6cba4799">
+=======
+<link rel="stylesheet" href="assets/css/styles.css?v=6cba4799">
+>>>>>>> origin/main
 <!-- /@partial:head -->
 
 <link rel="canonical" href="https://ncan.nz/results-sources.html">
@@ -205,7 +209,13 @@
           </div>
         </div>
 
-        <p class="records-status" id="src-status" role="status">Loading the meetings&hellip;</p>
+        <div class="src-status-row">
+          <p class="records-status" id="src-status" role="status">Loading the meetings&hellip;</p>
+          <p class="src-folds" id="src-folds" hidden>
+            <button type="button" class="btn btn--ghost btn--small" id="src-open-all">Expand all seasons</button>
+            <button type="button" class="btn btn--ghost btn--small" id="src-fold-all">Collapse all seasons</button>
+          </p>
+        </div>
         <div id="src-out"></div>
         <p class="records-note" id="src-updated"></p>
       </div>
@@ -502,13 +512,33 @@
         out.textContent = '';
         var seasons = [];
         ms.forEach(function (m) { var s = m.season || 'Not dated'; if (seasons.indexOf(s) === -1) { seasons.push(s); } });
-        seasons.forEach(function (s) {
-          var group = text('div', 'records-grade');
-          group.appendChild(text('h3', 'records-grade__head', s === 'Not dated' ? s : s + ' season'));
-          ms.filter(function (m) { return (m.season || 'Not dated') === s; })
-            .forEach(function (m) { group.appendChild(meeting(m)); });
+        var filtered = !!(f.season || f.type || f.from || f.ours || f.needle);
+        seasons.forEach(function (s, i) {
+          var these = ms.filter(function (m) { return (m.season || 'Not dated') === s; });
+          // each season folds away: the newest starts open, older ones folded, and one
+          // opened or folded by hand stays that way. With a filter or search on, every
+          // season with a match opens.
+          var group = text('details', 'champs-day src-season');
+          group.open = filtered || (s in seasonOpen ? seasonOpen[s] : i === 0);
+          var head = text('summary', 'champs-day__head src-season__head');
+          head.appendChild(text('h3', 'records-grade__head', s === 'Not dated' ? s : s + ' season'));
+          var ours = these.filter(function (m) { return m.results; }).length;
+          head.appendChild(text('span', 'champs-day__count',
+            these.length + ' meeting' + (these.length === 1 ? '' : 's') + (ours ? ' · ' + ours + ' with our athletes' : '')));
+          group.appendChild(head);
+          if (!filtered) { group.addEventListener('toggle', function () { seasonOpen[s] = group.open; }); }
+          var body = text('div', 'champs-day__body src-season__body');
+          these.forEach(function (m) { body.appendChild(meeting(m)); });
+          group.appendChild(body);
           out.appendChild(group);
         });
+        $('src-folds').hidden = seasons.length < 2;
+      }
+
+      var seasonOpen = {};    // seasons opened or folded by hand, by season
+
+      function foldAll(open) {
+        Array.prototype.forEach.call(document.querySelectorAll('#src-out .src-season'), function (d) { d.open = open; });
       }
 
       // Public: anyone sees the meetings and how many of our athletes each added.
@@ -684,6 +714,8 @@
             $('src-ours').checked = false;
             render();
           });
+          $('src-open-all').addEventListener('click', function () { foldAll(true); });
+          $('src-fold-all').addEventListener('click', function () { foldAll(false); });
           if (json.updated) { $('src-updated').textContent = 'Last updated ' + longDate(json.updated) + '.'; }
           render();
         })
