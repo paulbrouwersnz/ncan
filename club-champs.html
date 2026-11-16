@@ -16,7 +16,7 @@
 <link rel="apple-touch-icon" href="assets/img/logo.png">
 <link rel="preload" href="assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/archivo-variable.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/styles.css?v=e61b15e3">
+<link rel="stylesheet" href="assets/css/styles.css?v=b44fb07f">
 <!-- /@partial:head -->
 
 <link rel="canonical" href="https://ncan.nz/club-champs.html">
@@ -402,6 +402,7 @@
     }());
   </script>
 
+  <script src="assets/js/qr.js?v=220a5a3b"></script>
   <script src="assets/js/ncan-account.js?v=8bdbf88e"></script>
   <script src="assets/js/club-champs-review.js?v=12388763"></script>
   <script>
@@ -1017,8 +1018,20 @@
           table.appendChild(tbody);
           sheet.appendChild(table);
         }
-        sheet.appendChild(text('p', 'champs-print__foot',
-          'Placings count North Canterbury athletes only, within each grade. ncan.nz/club-champs.html'));
+        // back to this season's page: the address in words and as a QR code to scan
+        var seasonId = (controls('season')[0] || {}).value || '';
+        var url = 'https://ncan.nz/club-champs.html' + (seasonId ? '?season=' + encodeURIComponent(seasonId) : '');
+        var foot = text('div', 'champs-print__foot');
+        var words2 = text('div', 'champs-print__foot-words');
+        words2.appendChild(text('p', 'champs-print__foot-lead',
+          'Every result and the standings' + (data && data.season ? ' for ' + data.season : '') + ':'));
+        words2.appendChild(text('p', 'champs-print__url', url.replace(/^https:\/\//, '')));
+        words2.appendChild(text('p', null, 'Placings count North Canterbury athletes only, within each grade.'));
+        foot.appendChild(words2);
+        if (window.NCANQR) {
+          try { foot.appendChild(NCANQR.svg(url, { size: '28mm' })); } catch (e) { /* the address in words is enough */ }
+        }
+        sheet.appendChild(foot);
 
         document.body.classList.add('champs-printing');
         window.print();

@@ -3068,7 +3068,22 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 .champs-print__band th { padding-top: 4mm; font-size: 12pt; color: #0b3b2e; border-bottom: 2px solid #0b3b2e; break-after: avoid; }
 .champs-print__table tr { break-inside: avoid; }
 .champs-print__who { font-weight: 700; }
-.champs-print__foot { margin-top: 6mm; font-size: 9pt; color: #444; }
+.champs-print__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6mm;
+  margin-top: 8mm;
+  padding-top: 4mm;
+  border-top: 2px solid #0b3b2e;
+  font-size: 9pt;
+  color: #444;
+  break-inside: avoid;
+}
+.champs-print__foot p { margin: 0 0 1mm; }
+.champs-print__foot-lead { font-size: 11pt; color: #000; }
+.champs-print__url { font-size: 13pt; font-weight: 700; color: #0b3b2e; }
+.champs-print__foot svg { flex: none; }
 
 /* ================= Admin page: the club members list ================= */
 .roll { margin-top: clamp(2rem, 4vw, 3rem); }
