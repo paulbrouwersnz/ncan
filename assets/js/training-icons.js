@@ -97,12 +97,14 @@
       '<path class="dl" d="M2 19.6Q12 16.6 22 19.6M2 22.6Q12 19.6 22 22.6" stroke-width="1.4"/>' +
       LIMBS('M12.2 6.2l-1 5.6M12 7.8l2.6 1.8 1.6-1.6M12 7.8l-2.6 1.4-1 2M11.2 11.8l3 2.4-.4 3.6M11.2 11.8l-2.6 2.8-2.4.2') +
       HEAD(12.6, 3.8),
-    // long run: a runner, and the road going on into the distance
+    // long run: a runner on a track bend, the lane sweeping round and back along
+    // the far side, narrowing as it goes
     'long run':
-      '<path class="dl" d="M11 22 18.2 9.4M22.6 22l-2.6-12.6" stroke-width="1.5"/>' +
-      '<path class="d" d="M18 21.4l-.6-2.6M17.3 17.2l-.4-1.8M16.8 14l-.3-1.2" stroke-width="1.4"/>' +
-      LIMBS('M7 6.2l-.8 5.4M6.8 7.8l2.4 1.6 1.2-1.4M6.8 7.8l-2.2 1.6-.6 1.8M6.2 11.6l2.6 2.6-.4 3.8M6.2 11.6l-2.2 3-2 .4') +
-      HEAD(7.4, 3.8),
+      '<path class="d" d="M1 22.6H15.4C20.6 22.6 23 20.4 23 18.2 23 15.8 20.4 14.6 16.4 14.4L4 14.6 16 15.4' +
+      'C19 15.8 20 17 20 18 20 19 18.6 19.4 15.4 19.4H1z" stroke="none"/>' +
+      '<g transform="translate(-4.8 3.4) scale(.86)">' +
+      '<path d="M12.2 6.2l-1 5.6M12 7.8l2.6 1.8 1.6-1.6M12 7.8l-2.6 1.4-1 2M11.2 11.8l3 2.4-.4 3.6M11.2 11.8l-2.6 2.8-2.4.2" ' +
+      'stroke-width="2.33"/><circle cx="12.6" cy="3.8" r="2.56" fill="currentColor" stroke="none"/></g>',
     // games: kicking a ball
     games:
       GROUND + '<circle cx="19" cy="16.6" r="2.4" fill="currentColor" stroke="none"/>' +
