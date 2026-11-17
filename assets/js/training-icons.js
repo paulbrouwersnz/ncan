@@ -10,8 +10,9 @@
   colour: the club green on screen (a lighter green in dark mode), black in print.
 
   NCANTrainingIcons.icon(activity) -> an <svg> element, or null when there's no
-  icon for it. An activity typed in gets one when its name contains a known
-  event ("Hurdles drills", "Shot put technique").
+  activity. An activity typed in gets an event's icon when its name contains one
+  ("Hurdles drills", "Shot put technique"); any other gets the coach with a
+  clipboard ("Agility ladder", "Stretching").
 */
 (function () {
   'use strict';
@@ -114,6 +115,13 @@
     'cool down':
       GROUND + LIMBS('M11 6.2l.4 6.2M11.4 12.4 11 20.8M11.4 12.4l1.2 4.6 2.2-4.4M11.2 8l3.4 4.2M11.2 8l-4.8.8') +
       HEAD(11, 3.8),
+    // any other activity: a coach with a clipboard of ticked-off plans
+    other:
+      GROUND + '<rect x="13.2" y="7.4" width="6" height="7.6" rx=".8" stroke-width="1.5"/>' +
+      '<path d="M14.9 7.4V6.4h2.6v1" stroke-width="1.4"/>' +
+      '<path class="dl" d="M14.6 10.2l.7.7 1.3-1.4M14.6 12.8l.7.7 1.3-1.4" stroke-width="1.1"/>' +
+      LIMBS('M9.6 6.4v6.8M9.6 8.2l3.6 2.6M9.6 8.2 7 12M9.6 13.2l-2.4 7.2M9.6 13.2l2.4 7.2') +
+      HEAD(9.6, 4),
     // pack down: carrying the gear away in a box
     'pack down':
       GROUND + '<rect x="13.2" y="8.6" width="6.4" height="5.4" rx=".6" fill="currentColor" stroke="none"/>' +
@@ -140,7 +148,7 @@
     for (var i = 0; i < MATCH.length; i++) {
       if (MATCH[i][1].test(name)) { return MATCH[i][0]; }
     }
-    return null;
+    return 'other';
   }
 
   function icon(activity) {
