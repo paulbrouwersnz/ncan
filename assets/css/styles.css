@@ -3067,6 +3067,190 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 /* the header's logo for dark mode (see Dark mode) */
 .brand__logo-dark { display: none; }
 
+/* ---------- Training plans (Tuesday training page; assets/js/training.js) ---------- */
+.training-tools { display: flex; flex-wrap: wrap; gap: .6rem; margin: 0 0 1.5rem; }
+.training-tools[hidden], .training-signin[hidden] { display: none; }
+.training-list { display: grid; gap: 1.5rem; }
+.training-signin { margin-top: 1.5rem; }
+/* the sign-in line is styled for the green page heads; here it sits on the page */
+.account-line.training-account { color: var(--text-soft); }
+.training-account .account-line__admin { color: var(--link); }
+.training-account .account-line__out { color: var(--link); }
+.training-account .account-line__out:hover { color: var(--accent); }
+
+.plan {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-top: 4px solid var(--yellow-500);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  padding: clamp(1.1rem, 2.5vw, 1.6rem);
+}
+.plan--draft { border-top-color: var(--line-strong); }
+.plan--cancelled { border-top-color: var(--danger); }
+.plan__head { display: flex; flex-wrap: wrap; align-items: baseline; gap: .4rem 1rem; margin-bottom: .6rem; }
+.plan__title { margin: 0; font-size: clamp(1.15rem, 1.8vw, 1.4rem); }
+.plan__status {
+  display: inline-block; padding: .1rem .6rem; border-radius: 999px;
+  font-family: var(--font-display); font-size: .72rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+  background: var(--surface-strong); color: var(--link);
+}
+.plan__status--released { background: var(--yellow-500); color: var(--green-900); }
+.plan__status--cancelled { background: var(--danger); color: var(--bg); }
+.plan__cancelled { margin: 0 0 .8rem; padding: .7rem .9rem; border-left: 4px solid var(--danger); background: var(--surface-tint); }
+.plan__notes, .plan__slot-note { white-space: pre-line; }
+.plan__notes { margin: 0 0 1rem; }
+.plan__wrap { margin: 0; }
+.plan__table { width: 100%; border-collapse: collapse; }
+.plan__table thead th {
+  text-align: left; padding: .6rem .9rem; background: var(--surface-tint); color: var(--link);
+  font-family: var(--font-display); font-size: .74rem; letter-spacing: .08em; text-transform: uppercase;
+  border-bottom: 1px solid var(--line);
+}
+.plan__table tbody th, .plan__table td { padding: .7rem .9rem; vertical-align: top; text-align: left; }
+.plan__table tbody tr + tr > * { border-top: 1px solid var(--line); }
+.plan__time { white-space: nowrap; color: var(--heading); font-family: var(--font-display); width: 1%; }
+.plan__groups { display: flex; flex-wrap: wrap; gap: .5rem; }
+.plan__group {
+  display: grid; gap: .1rem; min-width: 9rem; padding: .45rem .7rem;
+  border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: var(--radius-sm);
+  background: var(--surface-tint);
+}
+.plan__group--everyone { border-left-color: var(--yellow-500); }
+.plan__who { font-size: .82rem; font-weight: 700; color: var(--link); }
+.plan__what { font-family: var(--font-display); font-weight: 700; color: var(--heading); }
+.plan__note { font-size: .85rem; color: var(--text-soft); }
+.plan__slot-note { margin: .5rem 0 0; font-size: .9rem; color: var(--text-soft); }
+.plan__by { margin: .8rem 0 0; font-size: .85rem; color: var(--text-soft); }
+/* coaches-only notes: staff see them, marked out with a dashed edge */
+.plan__coach {
+  display: block; margin: .3rem 0 0; padding: .3rem .55rem; font-size: .85rem; color: var(--text);
+  background: var(--surface-warm); border: 1px dashed var(--line-strong); border-radius: 8px;
+}
+p.plan__coach { margin: .5rem 0 1rem; }
+.plan__coach strong { color: var(--heading); }
+.plan-editor__coach label { color: var(--text-soft); }
+.plan-editor__coach input, .plan-editor__coach textarea, .plan-group__coach {
+  background: var(--surface-warm) !important; border-style: dashed !important;
+}
+.plan__actions { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .9rem; }
+.plan__actions[hidden] { display: none; }
+.plan__said { margin: .5rem 0 0; font-weight: 600; color: var(--heading); }
+.plan__said:empty { display: none; }
+.plan__delete { color: var(--danger); }
+.plan__cancel-form { display: grid; gap: .5rem; margin-top: .9rem; max-width: 36rem; }
+.training-past > summary { cursor: pointer; font-family: var(--font-display); font-weight: 700; color: var(--heading); margin-bottom: 1rem; }
+.training-past > .plan + .plan { margin-top: 1.5rem; }
+
+/* phones: each time slot's groups under its time */
+@media (max-width: 40rem) {
+  .plan__table thead { display: none; }
+  .plan__table tbody tr { display: block; }
+  .plan__table tbody th, .plan__table td { display: block; width: auto; }
+  .plan__table tbody th { padding-bottom: .2rem; }
+  .plan__table tbody td { padding-top: 0; }
+  .plan__group { min-width: 0; flex: 1 1 100%; }
+}
+
+/* the planner */
+.plan-editor {
+  margin: 0 0 2rem; padding: clamp(1.1rem, 2.5vw, 1.6rem);
+  background: var(--surface); border: 2px solid var(--accent); border-radius: var(--radius); box-shadow: var(--shadow);
+  display: grid; gap: 1rem;
+}
+.plan-editor[hidden] { display: none; }
+.plan-editor__head { display: flex; flex-wrap: wrap; align-items: baseline; gap: .4rem 1rem; }
+.plan-editor__head h3 { margin: 0; }
+.plan-editor .records-field input[type="date"], .plan-editor .records-field input[type="time"] { width: auto; }
+.plan-editor textarea {
+  font: inherit; font-size: .95rem; padding: .6rem .75rem; width: 100%;
+  border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); color: inherit; resize: vertical;
+}
+.plan-editor__hint { margin: 0; font-size: .9rem; color: var(--text-soft); }
+.plan-editor.is-placing .plan-editor__hint { color: var(--heading); font-weight: 600; }
+
+.plan-palette {
+  position: sticky; top: 84px; z-index: 5;
+  display: grid; gap: .6rem; padding: .8rem; border-radius: var(--radius-sm);
+  background: var(--surface-tint); border: 1px solid var(--line);
+}
+.plan-palette__group { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem .6rem; }
+.plan-palette__title {
+  margin: 0; min-width: 4.5rem; font-family: var(--font-display); font-size: .72rem; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--link);
+}
+.plan-palette__chips { display: flex; flex-wrap: wrap; gap: .35rem; }
+.plan-palette__own { display: flex; gap: .4rem; flex-wrap: wrap; }
+.plan-palette__own input {
+  font: inherit; font-size: .9rem; padding: .35rem .6rem; border: 1px solid var(--line); border-radius: 999px;
+  background: var(--surface); color: inherit; min-width: 0; flex: 0 1 14rem;
+}
+.plan-chip {
+  font: inherit; font-size: .85rem; font-weight: 600; padding: .3rem .7rem; cursor: grab;
+  border-radius: 999px; border: 1px solid var(--line-strong); background: var(--surface); color: var(--heading);
+}
+.plan-chip:active { cursor: grabbing; }
+.plan-chip--sex, .plan-chip--everyone { background: var(--surface-warm); }
+.plan-chip--event { background: var(--surface-strong); }
+.plan-chip:hover { border-color: var(--accent); }
+.plan-chip[aria-pressed="true"] { background: var(--yellow-500); color: var(--green-900); border-color: var(--yellow-500); }
+
+.plan-editor__slots { display: grid; gap: .8rem; }
+.plan-slot {
+  display: grid; grid-template-columns: auto 1fr; gap: .6rem 1rem; padding: .8rem;
+  border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-tint);
+}
+.plan-slot__times { display: flex; flex-direction: column; gap: .4rem; }
+.plan-slot__groups { display: flex; flex-wrap: wrap; align-items: stretch; gap: .5rem; min-height: 3rem; border-radius: var(--radius-sm); }
+.plan-slot__foot { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: end; gap: .6rem; }
+.plan-slot__moves { display: flex; gap: .4rem; flex-wrap: wrap; }
+.plan-slot__new {
+  font: inherit; font-size: .85rem; font-weight: 600; cursor: pointer; padding: .5rem .9rem; min-width: 8rem;
+  border: 2px dashed var(--line-strong); border-radius: var(--radius-sm); background: transparent; color: var(--link);
+}
+.plan-group {
+  position: relative; display: grid; gap: .35rem; flex: 0 1 15rem; min-width: 12rem; padding: .55rem .6rem;
+  border: 1px solid var(--line-strong); border-left: 4px solid var(--accent); border-radius: var(--radius-sm);
+  background: var(--surface);
+}
+.plan-group--everyone { border-left-color: var(--yellow-500); }
+.plan-group__who strong { display: block; padding-right: 1.6rem; font-size: .88rem; color: var(--heading); }
+.plan-group__tokens { display: flex; flex-wrap: wrap; gap: .25rem; margin-top: .25rem; }
+.plan-group__token {
+  font: inherit; font-size: .75rem; padding: .05rem .45rem; border-radius: 999px; cursor: pointer;
+  border: 1px solid var(--line); background: var(--surface-strong); color: var(--heading);
+}
+.plan-group__sex {
+  font: inherit; font-size: .78rem; padding: .05rem .3rem; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--surface); color: inherit;
+}
+.plan-group__event, .plan-group__note {
+  font: inherit; font-size: .9rem; padding: .35rem .5rem; width: 100%; min-width: 0;
+  border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: inherit;
+}
+.plan-group__event { font-weight: 700; }
+.plan-group__remove {
+  position: absolute; top: .3rem; right: .3rem; width: 1.6rem; height: 1.6rem; padding: 0; overflow: hidden;
+  font-size: 0; border: 0; border-radius: 999px; background: transparent; color: var(--text-soft); cursor: pointer;
+}
+.plan-group__remove::before { content: "\00d7"; font-size: 1.2rem; line-height: 1.6rem; }
+.plan-group__remove:hover { background: var(--surface-strong); color: var(--danger); }
+/* where a dragged or picked chip can go */
+.plan-editor.is-dragging .plan-group, .plan-editor.is-placing .plan-group,
+.plan-editor.is-dragging .plan-slot__new, .plan-editor.is-placing .plan-slot__new { outline: 2px dashed var(--accent); outline-offset: 2px; }
+.plan-editor.is-placing .plan-group, .plan-editor.is-placing .plan-slot__new { cursor: copy; }
+.plan-group.is-over, .plan-slot__new.is-over, .plan-slot__groups.is-over { outline: 3px solid var(--yellow-500); outline-offset: 2px; }
+.plan-editor__save { position: sticky; bottom: 0; padding: .7rem 0; margin: 0; background: var(--surface); border-top: 1px solid var(--line); }
+@media (max-width: 40rem) {
+  .plan-slot { grid-template-columns: 1fr; }
+  .plan-slot__times { flex-direction: row; }
+  .plan-group { flex: 1 1 100%; min-width: 0; }
+  .plan-palette, .plan-editor__save { position: static; }
+}
+@media print {
+  .training-tools, .plan__actions, .plan__by, .training-signin, .training-account, .plan-editor { display: none !important; }
+}
+
 /* ---------- Reveal on scroll ---------- */
 [data-reveal] {
   opacity: 0;
