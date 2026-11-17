@@ -11,7 +11,8 @@
   window.NCAN:
     get(path)              -> Promise of the JSON. A failed request rejects with
                               err.status (401 = not signed in, 403 = not allowed,
-                              404 = not found, or not one you can see).
+                              404 = not found, or not one you can see), and
+                              err.body, the API's reply (its "error", and more).
     send(path, data)       -> Promise of {status, body}: a POST of JSON.
     me()                   -> Promise of {email, role, athletes}, or null.
     signIn(el, intro)      -> fills el with a sign-in form.
@@ -37,7 +38,12 @@
       .catch(function () { throw failure(0, 'The results service could not be reached.'); })
       .then(function (res) {
         if (res.ok) { return res.json(); }
-        throw failure(res.status);
+        // the API's own words about why (err.body), e.g. a training plan that was removed
+        return res.json().catch(function () { return {}; }).then(function (body) {
+          var err = failure(res.status, body && body.error);
+          err.body = body || {};
+          throw err;
+        });
       });
   }
 

@@ -7,10 +7,13 @@
   GET /v1/training, GET|POST /v1/training/<date>[/release|draft|cancel|delete]).
 
   Everyone sees released plans, and sessions that have been cancelled (with
-  why). Club administrators, coaches and the committee, once signed in, also
+  why). A released or cancelled plan has a share link,
+  /tuesday-training/#/plan/2026-12-01: that plan on its own, to read and print,
+  with nothing to edit (and no coaches' notes, whoever opens it). If it has gone,
+  the link says so: removed (and when), moved (it follows), or being changed. Club administrators, coaches and the committee, once signed in, also
   see drafts and can make, change, release, cancel and delete plans.
 
-  Making a plan: drag a grade (7-14), Girls / Boys / Girls & Boys / Everyone, or
+  Making a plan: drag a grade (7-14), Girls / Boys / Girls & Boys / All athletes, or
   an event from the palette onto a group in the table, or onto a time slot to
   start a new group there. On a phone, or with a keyboard: tap (or press) a
   chip, then tap the group it goes on. A group block moves (or, holding Ctrl or
@@ -80,7 +83,7 @@
   var SEX = { girls: 'Girls', boys: 'Boys', both: 'Girls & Boys' };
   function groupLabel(g) {
     if (g.parents) { return 'Parents & guardians'; }
-    if (g.everyone) { return 'Everyone'; }
+    if (g.everyone) { return 'All athletes'; }      // "everyone" in the data: every athlete, not the parents
     if (!g.grades.length) { return g.sex === 'both' ? 'Group' : SEX[g.sex]; }
     return 'Grade ' + g.grades.join(', ') + ' ' + SEX[g.sex];
   }
@@ -177,6 +180,7 @@
       else if (plan.status !== 'cancelled') { card.appendChild(el('p', 'note', 'No time slots yet.')); }
     }
     if (plan.status !== 'cancelled' && plan.slots && plan.slots.length) { card.appendChild(printButtons(plan)); }
+    if (!sharedView && (plan.status === 'released' || plan.status === 'cancelled')) { card.appendChild(shareRow(plan)); }
     if (state.canEdit) {
       if (plan.updated_by) {
         card.appendChild(el('p', 'plan__by', 'Last changed by ' + plan.updated_by + ', ' +
@@ -248,8 +252,8 @@
   }
 
   /* A group's whole session, lit up on the plan (the rest fades back): the blocks
-     with any of the same athletes, and the Everyone blocks; for Everyone, every
-     block; for the parents and guardians, the parents' blocks. The same again
+     with any of the same athletes, and the All athletes blocks; for All athletes,
+     every athlete's block (not the parents'); for the parents and guardians, the parents' blocks. The same again
      (or Escape) puts the plan back. */
   function lightUp(wrap, plan, si, gi) {
     var key = si + '-' + gi;
@@ -257,7 +261,7 @@
     var chosen = plan.slots[si].groups[gi];
     var cells = (!chosen.everyone && !chosen.parents) ? cellsOf(chosen) : null;
     function includes(g) {
-      if (chosen.everyone) { return true; }
+      if (chosen.everyone) { return !g.parents; }
       if (chosen.parents) { return !!g.parents; }
       if (g.parents) { return false; }
       if (g.everyone) { return true; }
@@ -577,7 +581,7 @@
     }
     group('Grades', state.grades.map(function (n) { return { kind: 'grade', value: n, label: 'Grade ' + n }; }));
     group('Who', [{ kind: 'sex', value: 'girls', label: 'Girls' }, { kind: 'sex', value: 'boys', label: 'Boys' },
-                  { kind: 'sex', value: 'both', label: 'Girls & Boys' }, { kind: 'everyone', value: true, label: 'Everyone' },
+                  { kind: 'sex', value: 'both', label: 'Girls & Boys' }, { kind: 'everyone', value: true, label: 'All athletes' },
                   { kind: 'parents', value: true, label: 'Parents & guardians' }]);
     var events = group('Events', state.events.map(function (e) { return { kind: 'event', value: e, label: e }; }));
     // an event of their own
@@ -646,7 +650,7 @@
     var hint = document.getElementById('plan-hint');
     var bar = document.getElementById('plan-placing');
     if (!hint) { return; }
-    hint.textContent = 'Drag a grade, Girls / Boys / Everyone or an event onto a group, or onto a time slot’s ' +
+    hint.textContent = 'Drag a grade, Girls / Boys / All athletes or an event onto a group, or onto a time slot’s ' +
       '“New group” to start one. Or tap chips (several if you like: Grade 7, Grade 8, Girls), then each group ' +
       'they go on.';
     if (!bar) { return; }
@@ -1049,6 +1053,107 @@
     }).catch(function (err) { said.textContent = err.message; });
   }
 
+  // ------------------------------------------------------------ sharing
+
+  var sharedView = false;      // showing one plan from a share link
+  function shareUrl(date) { return location.origin + '/tuesday-training/#/plan/' + date; }
+
+  // "Share link": the phone's share menu where there is one, else copied, and shown to copy by hand
+  function shareRow(plan) {
+    var row = el('div', 'plan-share');
+    var said = el('span', 'plan-share__said');
+    said.setAttribute('role', 'status');
+    var url = shareUrl(plan.date);
+    row.appendChild(button('Share link', null, function () {
+      var title = 'Training plan, ' + longDate(plan.date);
+      var shown = function (text) {
+        said.textContent = text;
+        var box = row.querySelector('.plan-share__url') || el('input', 'plan-share__url');
+        box.value = url;
+        box.readOnly = true;
+        box.setAttribute('aria-label', 'The link to share');
+        box.addEventListener('focus', function () { box.select(); });
+        row.appendChild(box);
+      };
+      if (navigator.share && /Mobi|Android/i.test(navigator.userAgent)) {
+        navigator.share({ title: title, url: url }).catch(function () { /* closed: nothing to do */ });
+        return;
+      }
+      var copy = navigator.clipboard && navigator.clipboard.writeText ? navigator.clipboard.writeText(url)
+                                                                     : Promise.reject(new Error('no clipboard'));
+      copy.then(function () { shown('Link copied. Anyone with it can see this plan, but not change it.'); },
+                function () { shown('Copy this link. Anyone with it can see this plan, but not change it.'); });
+    }));
+    row.appendChild(said);
+    return row;
+  }
+
+  // "Wednesday 18 November 2026 at 9:12 am", from the API's "2026-11-18T09:12:00"
+  function whenText(stamp) {
+    if (!stamp || !/^\d{4}-\d{2}-\d{2}/.test(stamp)) { return 'recently'; }
+    var t = stamp.slice(11, 16);
+    if (!/^\d{2}:\d{2}$/.test(t)) { return longDate(stamp.slice(0, 10)); }
+    var c = clock(t);
+    return longDate(stamp.slice(0, 10)) + ' at ' + c.text + (c.pm ? ' pm' : ' am');
+  }
+
+  // One plan, from a share link: to read and print, nothing to edit, no coaches' notes.
+  function showShared(date, movedFrom, hops) {
+    sharedView = true;
+    state.canEdit = false;
+    tools.hidden = true;
+    editorBox.hidden = true;
+    signInBox.hidden = true;
+    accountBox.hidden = true;
+    listBox.textContent = '';
+    listBox.appendChild(el('p', 'note', 'Loading the training plan…'));
+    var all = el('a', null, 'See all the Tuesday training plans');
+    all.href = '/tuesday-training/';
+    function finish(nodes) {
+      listBox.textContent = '';
+      nodes.forEach(function (n) { listBox.appendChild(n); });
+      var back = el('p', 'training-shared__all');
+      back.appendChild(all);
+      listBox.appendChild(back);
+    }
+    function message(text) { return el('p', 'training-shared__gone', text); }
+    return NCAN.get('/training/' + date).then(function (plan) {
+      var nodes = [];
+      if (movedFrom) { nodes.push(el('p', 'training-shared__moved', 'This plan has moved here from ' + longDate(movedFrom) + '.')); }
+      nodes.push(planCard(publicCopy(plan), true));
+      finish(nodes);
+    }, function (err) {
+      var body = err.body || {};
+      if (body.moved_to && (hops || 0) < 5) {
+        if (window.history && history.replaceState) { history.replaceState(null, '', '#/plan/' + body.moved_to); }
+        return showShared(body.moved_to, movedFrom || date, (hops || 0) + 1);
+      }
+      if (err.status === 410) {
+        return finish([message('The training plan for ' + longDate(date) + ' was removed on ' + whenText(body.removed) + '.')]);
+      }
+      if (body.state === 'draft') {
+        return finish([message('The training plan for ' + longDate(date) + ' is being changed. Please check back soon.')]);
+      }
+      if (err.status === 404) {
+        return finish([message('There’s no training plan for ' + longDate(date) + '.')]);
+      }
+      finish([message('The training plan can’t be loaded just now. Please try again later.')]);
+    });
+  }
+
+  // what a share link shows, whoever opens it: no coaches' notes, no who changed it
+  function publicCopy(plan) {
+    var p = JSON.parse(JSON.stringify(plan));
+    delete p.coach_notes;
+    delete p.updated_by;
+    delete p.created_by;
+    (p.slots || []).forEach(function (s) {
+      delete s.coach_note;
+      (s.groups || []).forEach(function (g) { delete g.coach_note; });
+    });
+    return p;
+  }
+
   // ------------------------------------------------------------ printing
 
   // Print plan (everyone); staff also: with the coaches' notes, and strips to cut up
@@ -1140,11 +1245,11 @@
 
   /* Strips: the plan cut up by who does what. Each athlete is a grade and a sex
      ("girls 7"); their path through the session is which group they're in at each
-     time slot (Everyone counts for all). Athletes with the same path get one strip,
+     time slot (All athletes counts for every athlete). Athletes with the same path get one strip,
      so there are as few strips as the plan allows: e.g. grade 10-12 and 13-14 are
      split when they do different things at 5:15, even if they're together for
      relays later. Grades no group names don't get a strip. The parents and
-     guardians get one of their own (Everyone means the athletes), last, with only
+     guardians get one of their own (All athletes means the athletes), last, with only
      the time slots they have something in. */
   var SEXES = ['girls', 'boys'];
   function cellsOf(g) {
@@ -1165,7 +1270,7 @@
       });
     });
     if (order.indexOf('parents') !== -1) { order.splice(order.indexOf('parents'), 1); order.push('parents'); }
-    if (!order.length) { return [{ label: 'Everyone', path: plan.slots.map(function (s) { return s.groups; }) }]; }
+    if (!order.length) { return [{ label: 'All athletes', path: plan.slots.map(function (s) { return s.groups; }) }]; }
     var bySignature = {};
     var out = [];
     order.forEach(function (c) {
@@ -1264,6 +1369,16 @@
   window.addEventListener('beforeunload', function (e) {
     if (editing && dirty) { e.preventDefault(); e.returnValue = ''; }
   });
+
+  var shared = /^#\/plan\/(\d{4}-\d{2}-\d{2})$/.exec(location.hash);
+  window.addEventListener('hashchange', function () {
+    var now = /^#\/plan\//.test(location.hash);
+    if (now || sharedView) { location.reload(); }
+  });
+  if (shared) {
+    showShared(shared[1]);
+    return;
+  }
 
   NCAN.me().then(function (who) {
     var staff = who && /^(admin|coach|committee)$/.test(who.role);
