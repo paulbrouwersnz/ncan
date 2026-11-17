@@ -179,8 +179,19 @@
       if (plan.slots && plan.slots.length) { card.appendChild(planTable(plan)); }
       else if (plan.status !== 'cancelled') { card.appendChild(el('p', 'note', 'No time slots yet.')); }
     }
-    if (plan.status !== 'cancelled' && plan.slots && plan.slots.length) { card.appendChild(printButtons(plan)); }
-    if (!sharedView && (plan.status === 'released' || plan.status === 'cancelled')) { card.appendChild(shareRow(plan)); }
+    var printable = plan.status !== 'cancelled' && plan.slots && plan.slots.length;
+    var shareable = !sharedView && (plan.status === 'released' || plan.status === 'cancelled');
+    if (printable || shareable) {
+      var row = printable ? printButtons(plan) : el('div', 'plan__print');
+      if (shareable) {
+        var share = shareParts(plan);
+        row.insertBefore(share.button, row.firstChild);      // Share link first, on the left
+        card.appendChild(row);
+        card.appendChild(share.out);
+      } else {
+        card.appendChild(row);
+      }
+    }
     if (state.canEdit) {
       if (plan.updated_by) {
         card.appendChild(el('p', 'plan__by', 'Last changed by ' + plan.updated_by + ', ' +
@@ -1107,13 +1118,14 @@
   var sharedView = false;      // showing one plan from a share link
   function shareUrl(date) { return location.origin + '/tuesday-training/#/plan/' + date; }
 
-  // "Share link": the phone's share menu where there is one, else copied, and shown to copy by hand
-  function shareRow(plan) {
+  // "Share link": the phone's share menu where there is one, else copied, and shown to copy
+  // by hand. {button, out}: the button goes with the print buttons, `out` (what it says) under them.
+  function shareParts(plan) {
     var row = el('div', 'plan-share');
     var said = el('span', 'plan-share__said');
     said.setAttribute('role', 'status');
     var url = shareUrl(plan.date);
-    row.appendChild(button('Share link', null, function () {
+    var shareButton = button('Share link', null, function () {
       var title = 'Training plan, ' + longDate(plan.date);
       var shown = function (text) {
         said.textContent = text;
@@ -1132,9 +1144,9 @@
                                                                      : Promise.reject(new Error('no clipboard'));
       copy.then(function () { shown('Link copied. Anyone with it can see this plan, but not change it.'); },
                 function () { shown('Copy this link. Anyone with it can see this plan, but not change it.'); });
-    }));
+    });
     row.appendChild(said);
-    return row;
+    return { button: shareButton, out: row };
   }
 
   // "Wednesday 18 November 2026 at 9:12 am", from the API's "2026-11-18T09:12:00"

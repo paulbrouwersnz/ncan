@@ -3124,6 +3124,7 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 .plan__wrap.is-focused .plan__group.is-lit { opacity: 1; background: var(--surface-warm); box-shadow: 0 0 0 2px var(--yellow-500); }
 .plan__wrap.is-focused .plan__slot-note { opacity: .5; }
 .plan__tip { margin: .4rem 0 0; font-size: .82rem; color: var(--text-soft); }
+@media print { .plan__print { display: none !important; } }
 /* the plan's activities: tap one to see the groups doing it */
 .plan__events { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .7rem; }
 .plan__events[hidden] { display: none; }
@@ -3137,7 +3138,8 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 .plan__event-name { display: inline-flex; align-items: center; gap: .3rem; font-weight: 600; }
 @media print { .plan__events, .plan__tip { display: none !important; } }
 /* the share link, and a plan seen from one */
-.plan-share { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem .8rem; margin-top: .6rem; }
+.plan-share { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem .8rem; margin-top: .5rem; }
+.plan-share:not(:has(.plan-share__said:not(:empty))) { display: none; }   /* nothing said yet */
 .plan-share__said { font-size: .88rem; color: var(--text-soft); }
 .plan-share__said:empty { display: none; }
 .plan-share__url {
