@@ -259,8 +259,8 @@
     var box = el('div', 'plan__body');
     box.appendChild(wrap);
     box.appendChild(activityStrip(wrap, plan));
-    box.appendChild(el('p', 'plan__tip', 'Tap a group to light up its whole session, or an activity to see who does it. ' +
-      'Tap it again to show the whole plan.'));
+    box.appendChild(el('p', 'plan__tip', 'Tap a group to light up its whole session, or activities to see who does them. ' +
+      'Tap again to undo.'));
     return box;
   }
 
@@ -288,19 +288,23 @@
     return strip;
   }
 
-  // the groups doing activity `name`, lit up (the same again puts the plan back)
+  // The groups doing any of the tapped activities, lit up: each tap adds an activity or,
+  // tapped again, takes it off; with none left the plan's back to normal.
   function lightEvent(wrap, plan, name) {
-    var key = 'event:' + name;
-    var off = wrap.getAttribute('data-lit') === key;
-    if (off) { wrap.removeAttribute('data-lit'); } else { wrap.setAttribute('data-lit', key); }
+    var names = /^event:/.test(wrap.getAttribute('data-lit') || '') ? (wrap._events || []).slice() : [];
+    var at = names.indexOf(name);
+    if (at === -1) { names.push(name); } else { names.splice(at, 1); }
+    var off = !names.length;
+    wrap._events = names;
+    if (off) { wrap.removeAttribute('data-lit'); } else { wrap.setAttribute('data-lit', 'event:' + names.join('|')); }
     wrap.classList.toggle('is-focused', !off);
     Array.prototype.forEach.call(wrap.querySelectorAll('.plan__group'), function (li) {
       var g = plan.slots[+li.getAttribute('data-slot')].groups[+li.getAttribute('data-group')];
-      li.classList.toggle('is-lit', !off && eventsOf(g).indexOf(name) !== -1);
+      li.classList.toggle('is-lit', eventsOf(g).some(function (n) { return names.indexOf(n) !== -1; }));
       li.setAttribute('aria-pressed', 'false');
     });
-    pressEvent(wrap, off ? null : name);
-    litFor(wrap, off ? null : name);
+    pressEvent(wrap, names);
+    litFor(wrap, off ? null : names.join(', '));
   }
 
   // What's lit up, by name ("Grade 7 Girls", "Sprints"), for "Print selected": the button
@@ -311,11 +315,13 @@
     var b = card && card.querySelector('.plan__print-selected');
     if (b) { b.hidden = !label; }
   }
-  function pressEvent(wrap, name) {
+  // the activities pressed in the strip (`names`; none when null)
+  function pressEvent(wrap, names) {
+    if (!names) { wrap._events = []; }
     var strip = wrap.parentNode && wrap.parentNode.querySelector('.plan__events');
     if (!strip) { return; }
     Array.prototype.forEach.call(strip.querySelectorAll('.plan__event'), function (b) {
-      b.setAttribute('aria-pressed', String(b.textContent === name));
+      b.setAttribute('aria-pressed', String(!!names && names.indexOf(b.textContent) !== -1));
     });
   }
 
