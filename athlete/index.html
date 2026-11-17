@@ -87,7 +87,7 @@
         </p>
         <div class="btn-row">
           <a class="btn btn--accent" href="#track">Track &amp; field</a>
-          <a class="btn btn--ghost-light" href="#off-track">Cross country &amp; road</a>
+          <a class="btn btn--ghost-light" href="#out-of-stadia">Cross country &amp; road</a>
           <a class="btn btn--ghost-light" href="/athletes/">All athletes</a>
         </div>
         <p class="account-line" id="account" hidden></p>
@@ -263,11 +263,11 @@
     </section>
 
     <!-- ================= Cross country and road ================= -->
-    <section class="section section--tint" id="off-track" aria-labelledby="offtrack-heading" hidden>
+    <section class="section section--tint" id="out-of-stadia" aria-labelledby="out-of-stadia-heading" hidden>
       <div class="wrap">
         <div class="section-head section-head--wide">
           <p class="eyebrow">Out of Stadia</p>
-          <h2 id="offtrack-heading">Cross country, road and relays</h2>
+          <h2 id="out-of-stadia-heading">Cross country, road and relays</h2>
           <p class="lede">
             Newest first. Cross country times depend on the course and the conditions, so they
             aren&rsquo;t compared as personal bests: the place in the race tells more. A relay shows
@@ -548,8 +548,8 @@
          "not found". The athlete is in the address after #/: a URL-safe version
          of their name (/athlete/#/sam-brown), given by the API, never a number
          (Privacy Act IPP 13), and the part after # never reaches the web server.
-         A section of the page follows it (/athlete/#/sam-brown/off-track); an
-         in-page link (#off-track) is kept in that form. An old link's number
+         A section of the page follows it (/athlete/#/sam-brown/out-of-stadia); an
+         in-page link (#out-of-stadia) is kept in that form. An old link's number
          (#/24222905) still works and is swapped for the name.
 
          The filters (season, team, wind, events) feed every section: the
@@ -1312,7 +1312,7 @@
       function renderOffTrack(list) {
         var body = $('offtrack-body');
         body.textContent = '';
-        $('off-track').hidden = !list.length;
+        $('out-of-stadia').hidden = !list.length;
         list.slice().sort(function (a, b) { return a.date < b.date ? 1 : a.date > b.date ? -1 : 0; })
           .forEach(function (r) {
             var tr = document.createElement('tr');
@@ -1588,11 +1588,19 @@
 
       NCAN.me().then(function (who) { NCAN.account($('account'), who); }, function () { /* shown below */ });
 
-      // The address: /athlete/#/sam-brown, or /athlete/#/sam-brown/off-track for a section.
-      // (An old link, athlete.html?a=sam-brown#off-track, is turned into this before it
+      // The address: /athlete/#/sam-brown, or /athlete/#/sam-brown/out-of-stadia for a section.
+      // (An old link, athlete.html?a=sam-brown#out-of-stadia, is turned into this before it
       // gets here: by athlete.html, or by 404.html; the same is done for one on this page.)
+      // A section renamed: links made before keep working (off-track was renamed out-of-stadia in Nov 2026).
+      var RENAMED = { 'off-track': 'out-of-stadia' };
       function route() {
+        var plain = RENAMED[location.hash.slice(1)];
+        if (plain) { history.replaceState(null, '', '#' + plain); }
         var m = /^#\/([a-z0-9]+(?:-[a-z0-9]+)*)(?:\/([A-Za-z][\w-]*))?$/.exec(location.hash);
+        if (m && RENAMED[m[2]]) {
+          history.replaceState(null, '', '#/' + m[1] + '/' + RENAMED[m[2]]);
+          return { id: m[1], section: RENAMED[m[2]] };
+        }
         return m ? { id: m[1], section: m[2] || '' } : null;
       }
       var here = route();
@@ -1615,7 +1623,7 @@
         if (el && !el.hidden) { el.scrollIntoView(arriving ? { behavior: 'instant' } : undefined); }
       }
       // another athlete: load the page afresh; another section: scroll there. A plain
-      // in-page link (#off-track, the skip link's #main) keeps the athlete in the address.
+      // in-page link (#out-of-stadia, the skip link's #main) keeps the athlete in the address.
       window.addEventListener('hashchange', function () {
         var now = route();
         if (!now) {
@@ -1653,7 +1661,7 @@
           athlete.offTrack = offTrack;
           renderOffTrack(offTrack);
           // the heading's buttons go only to sections that have results
-          jump('#off-track', offTrack.length > 0);
+          jump('#out-of-stadia', offTrack.length > 0);
           // Odd distances run only at October's opening meetings (145m, 600m...) are
           // hidden unless asked for; the choice is kept on this device.
           athlete.everything = json.results;
