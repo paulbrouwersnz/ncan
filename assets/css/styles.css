@@ -3126,9 +3126,20 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 .plan-icon .dl { fill: none; stroke: currentColor; opacity: .4; }   /* shaded lines (arm circles) */
 .plan__what, .plan-print__what, .plan-chip--event { display: inline-flex; align-items: center; gap: .35em; }
 .plan-chip--event .plan-icon { width: 1.15em; height: 1.15em; }
-.plan-group__event-row { display: flex; align-items: center; gap: .4rem; }
-.plan-group__event-row .plan-icon { width: 1.6rem; height: 1.6rem; }
-.plan-group__event-icon[hidden] { display: none; }
+/* a group's activities, side by side, each with its icon */
+.plan__whats, .plan-print__whats { display: inline-flex; flex-wrap: wrap; align-items: center; gap: .1rem .8rem; }
+.plan-group__acts { display: flex; flex-wrap: wrap; gap: .3rem; }
+.plan-group__acts:empty { display: none; }
+.plan-group__act {
+  display: inline-flex; align-items: center; gap: .2rem; padding: .15rem .2rem .15rem .5rem;
+  border: 1px solid var(--line); border-radius: 999px; background: var(--surface-strong);
+}
+.plan-group__act-name { display: inline-flex; align-items: center; gap: .3rem; font-weight: 700; color: var(--heading); font-size: .9rem; }
+.plan-group__act-off {
+  font: inherit; font-size: 1rem; line-height: 1; width: 1.4rem; height: 1.4rem; padding: 0; border: 0; border-radius: 999px;
+  background: transparent; color: var(--text-soft); cursor: pointer;
+}
+.plan-group__act-off:hover { background: var(--surface); color: var(--danger); }
 .plan__note { font-size: .85rem; color: var(--text-soft); }
 .plan__slot-note { margin: .5rem 0 0; font-size: .9rem; color: var(--text-soft); }
 .plan__by { margin: .8rem 0 0; font-size: .85rem; color: var(--text-soft); }
