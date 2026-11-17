@@ -831,10 +831,16 @@
 
   function seasonsOf(m) { return m.seasons || []; }
 
-  function regWords(list) {
-    return (list || []).map(function (k) {
-      return typeof k === 'string' ? k : k.type + (k.ordered ? ' (' + k.ordered + ')' : '');
-    }).join(', ') || '–';
+  // a season's registrations with one body, into a table cell: each type, with the date
+  // it was ordered on a line of its own under it (an older import has types only)
+  function regCell(td, list) {
+    if (!(list || []).length) { td.textContent = '–'; return; }
+    list.forEach(function (k) {
+      k = typeof k === 'string' ? { type: k, ordered: null } : k;
+      var one = el('span', 'reg-item', k.type);
+      if (k.ordered) { one.appendChild(el('span', 'reg-item__date', k.ordered)); }
+      td.appendChild(one);
+    });
   }
 
   function rollMember(m) {
@@ -881,7 +887,7 @@
         var tr = el('tr');
         var th = el('th', null, r.season); th.setAttribute('scope', 'row'); tr.appendChild(th);
         [['Club', r.club], ['Athletics Canterbury', r.centre], ['Athletics NZ', r.national]].forEach(function (c) {
-          var td = el('td', null, regWords(c[1])); td.setAttribute('data-label', c[0]); tr.appendChild(td);
+          var td = el('td'); regCell(td, c[1]); td.setAttribute('data-label', c[0]); tr.appendChild(td);
         });
         tbody.appendChild(tr);
       });
