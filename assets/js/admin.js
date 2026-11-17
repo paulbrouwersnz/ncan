@@ -1057,6 +1057,20 @@
       ul.appendChild(li);
     });
     body.appendChild(ul);
+    // the numbers an old link (athlete.html?id=) still opens the page with: shown, not chosen
+    if ((p.numbers || []).length) {
+      var nums = el('p', 'access-how addr-numbers', 'Old number links (still work for anyone signed in who may see the page): ');
+      p.numbers.forEach(function (n, i) {
+        if (i) { nums.appendChild(document.createTextNode(', ')); }
+        var a = el('a', null, String(n.number));
+        a.href = 'athlete.html?id=' + n.number;
+        a.target = '_blank';
+        a.rel = 'noopener';
+        nums.appendChild(a);
+        nums.appendChild(document.createTextNode(n.own ? ' (the page’s own)' : ' (joined into it)'));
+      });
+      body.appendChild(nums);
+    }
     if (p.primary_chosen) {
       body.appendChild(button('Use the address from their name again', function (b) {
         b.disabled = true;
