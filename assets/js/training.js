@@ -1305,6 +1305,10 @@
   function printPlan(plan, coaches, only) {
     var box = sheet(only ? 'Training plan: ' + only.label :
       coaches ? 'Training plan (with coaches’ notes)' : 'Training plan', plan);
+    if (only) {
+      box.appendChild(el('p', 'plan-print__part', 'This is part of the session’s plan: only the blocks for ' + only.label +
+        '. The whole plan is at the address at the foot of the page.'));
+    }
     if (plan.notes) { box.appendChild(el('p', 'plan-print__notes', plan.notes)); }
     if (coaches && plan.coach_notes) { box.appendChild(el('p', 'plan-print__notes', '')).appendChild(printNote(plan.coach_notes, true)); }
     var table = el('table', 'plan-print__table');
@@ -1340,7 +1344,25 @@
     });
     table.appendChild(tbody);
     box.appendChild(table);
+    box.appendChild(wholePlanFoot(plan, !!only));
     go(box);
+  }
+
+  // the foot of a printed plan: where it is online, in words and as a QR code (for a
+  // part of the plan, where the whole plan is)
+  function wholePlanFoot(plan, part) {
+    var url = shareUrl(plan.date);
+    var foot = el('div', 'plan-print__foot');
+    var words = el('div');
+    words.appendChild(el('p', 'plan-print__foot-lead', (part ? 'The whole plan for ' : 'This plan online, for ') +
+      longDate(plan.date) + (plan.status === 'draft' ? ' (once it’s released)' : '') + ':'));
+    words.appendChild(el('p', 'plan-print__url', url.replace(/^https?:\/\//, '')));
+    words.appendChild(el('p', null, 'Or scan the code with a phone’s camera.'));
+    foot.appendChild(words);
+    if (window.NCANQR) {
+      try { foot.appendChild(NCANQR.svg(url, { size: '26mm' })); } catch (e) { /* the address in words is enough */ }
+    }
+    return foot;
   }
 
   /* Strips: the plan cut up by who does what. Each athlete is a grade and a sex

@@ -3394,6 +3394,17 @@ html:has(.plan-editor:not([hidden])) { scroll-padding-bottom: 5rem; }
 .plan-print__title { margin: 0; font-size: 18pt; color: #0b3b2e; }
 .plan-print__date { margin: .5mm 0 0; font-size: 12pt; font-weight: 700; }
 .plan-print__notes { margin: 0 0 3mm; }
+/* Print selected: a part of the plan, and where the whole plan is */
+.plan-print__part { margin: 0 0 3mm; padding: 1.5mm 3mm; border-left: 3px solid #f5c518; background: #fff8dc; font-size: 10pt; }
+.plan-print__foot {
+  display: flex; align-items: center; justify-content: space-between; gap: 6mm;
+  margin-top: 6mm; padding-top: 4mm; border-top: 2px solid #0b3b2e;
+  font-size: 9pt; color: #444; break-inside: avoid;
+}
+.plan-print__foot p { margin: 0 0 1mm; }
+.plan-print__foot-lead { font-size: 11pt; color: #000; }
+.plan-print__url { font-size: 12pt; font-weight: 700; color: #0b3b2e; word-break: break-all; }
+.plan-print__foot svg { flex: none; }
 .plan-print__table, .plan-strip__table { width: 100%; border-collapse: collapse; }
 .plan-print__table th, .plan-print__table td,
 .plan-strip__table th, .plan-strip__table td { padding: 1.6mm 2mm; text-align: left; vertical-align: top; border-top: 1px solid #bbb; }
