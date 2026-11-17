@@ -179,8 +179,19 @@
       if (plan.slots && plan.slots.length) { card.appendChild(planTable(plan)); }
       else if (plan.status !== 'cancelled') { card.appendChild(el('p', 'note', 'No time slots yet.')); }
     }
-    if (plan.status !== 'cancelled' && plan.slots && plan.slots.length) { card.appendChild(printButtons(plan)); }
-    if (!sharedView && (plan.status === 'released' || plan.status === 'cancelled')) { card.appendChild(shareRow(plan)); }
+    var printable = plan.status !== 'cancelled' && plan.slots && plan.slots.length;
+    var shareable = !sharedView && (plan.status === 'released' || plan.status === 'cancelled');
+    if (printable || shareable) {
+      var row = printable ? printButtons(plan) : el('div', 'plan__print');
+      if (shareable) {
+        var share = shareParts(plan);
+        row.insertBefore(share.button, row.firstChild);      // Share link first, on the left
+        card.appendChild(row);
+        card.appendChild(share.out);
+      } else {
+        card.appendChild(row);
+      }
+    }
     if (state.canEdit) {
       if (plan.updated_by) {
         card.appendChild(el('p', 'plan__by', 'Last changed by ' + plan.updated_by + ', ' +
@@ -247,8 +258,55 @@
     wrap.appendChild(table);
     var box = el('div', 'plan__body');
     box.appendChild(wrap);
-    box.appendChild(el('p', 'plan__tip', 'Tap a group to light up its whole session. Tap it again to show the whole plan.'));
+    box.appendChild(activityStrip(wrap, plan));
+    box.appendChild(el('p', 'plan__tip', 'Tap a group to light up its whole session, or an activity to see who does it. ' +
+      'Tap it again to show the whole plan.'));
     return box;
+  }
+
+  // The plan's activities, in the order they first come, each with its icon: tapping
+  // one lights up the groups doing it.
+  function activityStrip(wrap, plan) {
+    var names = [];
+    plan.slots.forEach(function (s) {
+      s.groups.forEach(function (g) {
+        eventsOf(g).forEach(function (n) { if (names.indexOf(n) === -1) { names.push(n); } });
+      });
+    });
+    var strip = el('div', 'plan__events');
+    if (!names.length) { strip.hidden = true; return strip; }
+    strip.setAttribute('role', 'group');
+    strip.setAttribute('aria-label', 'Activities in this plan');
+    names.forEach(function (n) {
+      var b = el('button', 'plan__event');
+      b.type = 'button';
+      b.setAttribute('aria-pressed', 'false');
+      b.appendChild(activity('plan__event-name', n));
+      b.addEventListener('click', function () { lightEvent(wrap, plan, n); });
+      strip.appendChild(b);
+    });
+    return strip;
+  }
+
+  // the groups doing activity `name`, lit up (the same again puts the plan back)
+  function lightEvent(wrap, plan, name) {
+    var key = 'event:' + name;
+    var off = wrap.getAttribute('data-lit') === key;
+    if (off) { wrap.removeAttribute('data-lit'); } else { wrap.setAttribute('data-lit', key); }
+    wrap.classList.toggle('is-focused', !off);
+    Array.prototype.forEach.call(wrap.querySelectorAll('.plan__group'), function (li) {
+      var g = plan.slots[+li.getAttribute('data-slot')].groups[+li.getAttribute('data-group')];
+      li.classList.toggle('is-lit', !off && eventsOf(g).indexOf(name) !== -1);
+      li.setAttribute('aria-pressed', 'false');
+    });
+    pressEvent(wrap, off ? null : name);
+  }
+  function pressEvent(wrap, name) {
+    var strip = wrap.parentNode && wrap.parentNode.querySelector('.plan__events');
+    if (!strip) { return; }
+    Array.prototype.forEach.call(strip.querySelectorAll('.plan__event'), function (b) {
+      b.setAttribute('aria-pressed', String(b.textContent === name));
+    });
   }
 
   /* A group's whole session, lit up on the plan (the rest fades back): the blocks
@@ -269,6 +327,7 @@
     }
     if (off) { wrap.removeAttribute('data-lit'); } else { wrap.setAttribute('data-lit', key); }
     wrap.classList.toggle('is-focused', !off);
+    pressEvent(wrap, null);
     Array.prototype.forEach.call(wrap.querySelectorAll('.plan__group'), function (li) {
       var s = +li.getAttribute('data-slot'), g = +li.getAttribute('data-group');
       var lit = !off && ((s === si && g === gi) || includes(plan.slots[s].groups[g]));
@@ -281,6 +340,7 @@
     Array.prototype.forEach.call(document.querySelectorAll('.plan__wrap.is-focused'), function (w) {
       w.classList.remove('is-focused');
       w.removeAttribute('data-lit');
+      pressEvent(w, null);
       Array.prototype.forEach.call(w.querySelectorAll('.plan__group'), function (li) {
         li.classList.remove('is-lit');
         li.setAttribute('aria-pressed', 'false');
@@ -1058,13 +1118,14 @@
   var sharedView = false;      // showing one plan from a share link
   function shareUrl(date) { return location.origin + '/tuesday-training/#/plan/' + date; }
 
-  // "Share link": the phone's share menu where there is one, else copied, and shown to copy by hand
-  function shareRow(plan) {
+  // "Share link": the phone's share menu where there is one, else copied, and shown to copy
+  // by hand. {button, out}: the button goes with the print buttons, `out` (what it says) under them.
+  function shareParts(plan) {
     var row = el('div', 'plan-share');
     var said = el('span', 'plan-share__said');
     said.setAttribute('role', 'status');
     var url = shareUrl(plan.date);
-    row.appendChild(button('Share link', null, function () {
+    var shareButton = button('Share link', null, function () {
       var title = 'Training plan, ' + longDate(plan.date);
       var shown = function (text) {
         said.textContent = text;
@@ -1083,9 +1144,9 @@
                                                                      : Promise.reject(new Error('no clipboard'));
       copy.then(function () { shown('Link copied. Anyone with it can see this plan, but not change it.'); },
                 function () { shown('Copy this link. Anyone with it can see this plan, but not change it.'); });
-    }));
+    });
     row.appendChild(said);
-    return row;
+    return { button: shareButton, out: row };
   }
 
   // "Wednesday 18 November 2026 at 9:12 am", from the API's "2026-11-18T09:12:00"
