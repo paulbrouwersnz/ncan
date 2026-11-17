@@ -3106,6 +3106,7 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 /* the admin page's athlete addresses: a retired one is struck through */
 .addr-retired { text-decoration: line-through; color: var(--text-soft); }
 .addr-add { margin-top: .8rem; }
+.addr-numbers { display: block; margin: .6rem 0 0; font-size: .92rem; }
 .roll-statement { display: flex; flex-wrap: wrap; align-items: flex-start; gap: .5rem; margin: .6rem 0 0; }
 .roll-statement textarea { flex: 1 1 22rem; min-height: 3.2rem; padding: .5rem .7rem; font: inherit; font-size: .95rem;
                            border: 1px solid var(--line-strong); border-radius: var(--radius-sm); }
