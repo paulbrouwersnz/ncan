@@ -35,6 +35,15 @@ is the home page. `tools/pages.py` is the one place the tools learn this.
   it sends an old address on for good.
 - **A new page** is a new folder with an `index.html`, copied from a page like it
   (with the partial markers), then the tools in "added a new page" below.
+- **Colours and dark mode**: `assets/css/styles.css` uses colours by role
+  (`--bg`, `--surface`, `--heading`, `--text`, `--line`, ...; listed at its top), not
+  the brand colours directly, except where a colour must never change (the green
+  bands, text on yellow). Each role's dark colour is in one place, the "Dark mode"
+  block at the end. The site follows the device's light or dark setting; the
+  "Switch to dark mode" button in the footer (`assets/js/theme.js`) overrides it
+  for that browser. When adding a style, use the roles, and look at the page in
+  both modes. The header logo has a dark version (`assets/img/logo-dark.svg`: the
+  same drawing with a lighter green), to be redone if the logo changes.
 - **Files at the root that browsers and others look for by name**:
   `favicon.ico` and `apple-touch-icon.png` (made by `build-icons.py`),
   `site.webmanifest` (the name and icons when the site is added to a phone's home
@@ -75,7 +84,7 @@ browser's console on the Athletics NZ eLearning library (see below).
 | a club championships Saturday has finished | add its meeting on the results sources page, then confirm it under "Review results" on the club champs page |
 | a meeting's results are out, or a family asks for a page to be removed | in the private ncan-api project: `ncan add-meeting` / `ncan opt-out`, then `ncan collect` |
 | new records to check against official results | `verify-records.py` |
-| changed the logo (`assets/img/logo.svg`) | `build-icons.py` |
+| changed the logo (`assets/img/logo.svg`) | `build-icons.py`, and redo `assets/img/logo-dark.svg` (the logo with `#164724` as `#3A8F5C` and white as `#0c1813`) |
 | it's November (`security.txt` expires on 17 November each year) | move the `Expires` date in `.well-known/security.txt` on a year |
 | added characters the site's fonts may not have (e.g. a new macron) | `build-fonts.py` |
 

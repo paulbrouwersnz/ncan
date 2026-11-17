@@ -71,6 +71,24 @@
   --shadow-lg: 0 24px 60px rgba(6, 42, 32, .18);
 
   --ease: cubic-bezier(.22, .61, .36, 1);
+
+  /* Colours by role. Pages use these, not the brand colours above, so a role can
+     take a different colour in dark mode (the light-dark() block below). The brand
+     colours themselves stay fixed: they are used directly where a colour must not
+     change, e.g. the green bands, and text on yellow. */
+  --bg: var(--white);                /* the page */
+  --surface: var(--white);           /* cards, panels, inputs */
+  --surface-tint: var(--green-050);  /* tinted sections, table heads, hovers */
+  --surface-strong: var(--green-100);/* chips, tags, bands */
+  --surface-warm: var(--yellow-100); /* the summer band */
+  --heading: var(--green-800);       /* headings and strong text */
+  --link: var(--green-700);          /* links and emphasis */
+  --accent: var(--green-600);        /* small labels, counts, chart lines */
+  --solid: var(--green-800);         /* filled buttons and controls */
+  --header-bg: rgba(255, 255, 255, .92);
+  --veil: rgba(255, 255, 255, .78);  /* covers a block while it's busy */
+  --danger: #8c2f2f;
+  --warn: #8a2c0d;
 }
 
 /* ---------- Base ---------- */
@@ -80,7 +98,7 @@ html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; scroll-padding-t
 
 body {
   margin: 0;
-  background: var(--white);
+  background: var(--bg);
   color: var(--text);
   font-family: var(--font-sans);
   font-size: clamp(1rem, .25vw + .96rem, 1.0625rem);
@@ -90,12 +108,12 @@ body {
 
 img, svg { display: block; max-width: 100%; height: auto; }
 
-a { color: var(--green-700); text-decoration-color: var(--yellow-500); text-underline-offset: 3px; }
-a:hover { color: var(--green-600); }
+a { color: var(--link); text-decoration-color: var(--yellow-500); text-underline-offset: 3px; }
+a:hover { color: var(--accent); }
 
 h1, h2, h3, h4 {
   font-family: var(--font-display);
-  color: var(--green-800);
+  color: var(--heading);
   line-height: 1.08;
   letter-spacing: -.02em;
   margin: 0 0 .6em;
@@ -126,7 +144,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 }
 
 .section { padding-block: var(--section-y); }
-.section--tint { background: var(--green-050); }
+.section--tint { background: var(--surface-tint); }
 .section--dark { background: var(--green-800); color: var(--text-on-dark); }
 .section--dark h2, .section--dark h3 { color: var(--white); }
 .section--dark .lede { color: var(--text-on-dark); }
@@ -162,7 +180,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   font-weight: 700;
   letter-spacing: .16em;
   text-transform: uppercase;
-  color: var(--green-600);
+  color: var(--accent);
   margin: 0 0 1rem;
 }
 .eyebrow::before {
@@ -203,7 +221,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 
 /* ---------- Buttons ---------- */
 .btn {
-  --btn-bg: var(--green-800);
+  --btn-bg: var(--solid);
   --btn-fg: var(--white);
   display: inline-flex;
   align-items: center;
@@ -229,8 +247,8 @@ ul { margin: 0; padding: 0; list-style: none; }
 .btn--accent { --btn-bg: var(--yellow-500); --btn-fg: var(--green-900); }
 .btn--accent:hover { --btn-bg: var(--yellow-400); }
 
-.btn--ghost { --btn-bg: transparent; --btn-fg: var(--green-800); border-color: var(--line-strong); }
-.btn--ghost:hover { --btn-bg: var(--green-800); --btn-fg: var(--white); border-color: var(--green-800); }
+.btn--ghost { --btn-bg: transparent; --btn-fg: var(--heading); border-color: var(--line-strong); }
+.btn--ghost:hover { --btn-bg: var(--solid); --btn-fg: var(--white); border-color: var(--solid); }
 
 .btn--ghost-light { --btn-bg: transparent; --btn-fg: var(--white); border-color: rgba(255, 255, 255, .4); }
 .btn--ghost-light:hover { --btn-bg: var(--white); --btn-fg: var(--green-800); border-color: var(--white); }
@@ -258,7 +276,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   font-family: var(--font-display);
   font-weight: 700;
   text-decoration: none;
-  color: var(--green-700);
+  color: var(--link);
 }
 .link-arrow span { transition: transform .18s var(--ease); }
 .link-arrow:hover span { transform: translateX(4px); }
@@ -268,7 +286,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(255, 255, 255, .92);
+  background: var(--header-bg);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid transparent;
   transition: box-shadow .2s var(--ease), border-color .2s var(--ease);
@@ -291,7 +309,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   flex: 0 0 auto;
   gap: .75rem;
   text-decoration: none;
-  color: var(--green-800);
+  color: var(--heading);
   margin-right: auto;
 }
 .brand img { height: 46px; width: auto; }
@@ -310,14 +328,14 @@ ul { margin: 0; padding: 0; list-style: none; }
   font-size: .68rem;
   letter-spacing: .14em;
   text-transform: uppercase;
-  color: var(--green-600);
+  color: var(--accent);
 }
 
 .nav-toggle {
   display: none;
   align-items: center;
   gap: .55rem;
-  background: var(--green-800);
+  background: var(--solid);
   color: var(--white);
   border: 0;
   border-radius: 999px;
@@ -356,7 +374,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   font-weight: 600;
   font-size: clamp(.86rem, .72vw + .38rem, .95rem);
   white-space: nowrap;
-  color: var(--green-800);
+  color: var(--heading);
   text-decoration: none;
 }
 .nav a::after {
@@ -385,7 +403,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   .nav {
     position: absolute;
     inset: 100% 0 auto;
-    background: var(--white);
+    background: var(--surface);
     border-bottom: 1px solid var(--line);
     box-shadow: var(--shadow);
     display: none;
@@ -493,7 +511,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 .hero__badge {
   position: absolute;
   right: 1.25rem; top: 1.25rem;
-  background: var(--white);
+  background: var(--surface);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   padding: 1rem 1.25rem;
@@ -506,13 +524,13 @@ ul { margin: 0; padding: 0; list-style: none; }
   font-family: var(--font-display);
   font-size: 1.9rem;
   line-height: 1;
-  color: var(--green-800);
+  color: var(--heading);
 }
 .hero__badge span { font-size: .82rem; line-height: 1.35; color: var(--text-soft); }
 @media (max-width: 560px) { .hero__badge { right: .85rem; top: .85rem; padding: .8rem 1rem; } }
 
 /* ---------- Stats ---------- */
-.stats { background: var(--white); }
+.stats { background: var(--bg); }
 .stats__grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
@@ -524,18 +542,18 @@ ul { margin: 0; padding: 0; list-style: none; }
   margin-block: clamp(2.5rem, 6vw, 4rem);
   box-shadow: var(--shadow-sm);
 }
-.stat { background: var(--white); padding: clamp(1.4rem, 2.5vw, 2rem); margin: 0; }
+.stat { background: var(--surface); padding: clamp(1.4rem, 2.5vw, 2rem); margin: 0; }
 .stat dt {
   font-family: var(--font-display);
   font-size: clamp(2rem, 3.2vw, 2.8rem);
   font-weight: 800;
   line-height: 1;
-  color: var(--green-800);
+  color: var(--heading);
   letter-spacing: -.03em;
 }
 .stat dt sup { font-size: .5em; }
 .stat dd { margin: .6rem 0 0; font-size: .9rem; color: var(--text-soft); }
-.stat dd b { display: block; color: var(--green-700); font-family: var(--font-display); font-size: 1rem; }
+.stat dd b { display: block; color: var(--link); font-family: var(--font-display); font-size: 1rem; }
 /* 1st, 2nd and 3rd places: the medal beside the count */
 .stats__grid[hidden] { display: none; }   /* the grid's display would otherwise show it */
 /* a podium: 2nd, 1st, 3rd from the left, 1st highest, 3rd lowest, on one base
@@ -627,7 +645,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   width: 58%;
   aspect-ratio: 4 / 3;
   object-fit: cover;
-  border: 7px solid var(--green-050);
+  border: 7px solid var(--surface-tint);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
 }
@@ -670,7 +688,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   position: relative;
   display: flex;
   flex-direction: column;
-  background: var(--white);
+  background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--radius);
   overflow: hidden;
@@ -709,19 +727,19 @@ ul { margin: 0; padding: 0; list-style: none; }
   padding-top: 1rem;
   font-size: .84rem;
   font-weight: 600;
-  color: var(--green-700);
+  color: var(--link);
 }
 /* Stretched link: the heading link covers the whole card */
 .card__link { color: inherit; text-decoration: none; }
 .card__link::after { content: ""; position: absolute; inset: 0; z-index: 1; }
-.card__link:hover { color: var(--green-600); }
+.card__link:hover { color: var(--accent); }
 .news-card__date {
   font-family: var(--font-display);
   font-size: .78rem;
   font-weight: 700;
   letter-spacing: .1em;
   text-transform: uppercase;
-  color: var(--green-600);
+  color: var(--accent);
 }
 
 /* ---------- Banner photo ---------- */
@@ -821,7 +839,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 .lib-folder {
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  background: var(--white);
+  background: var(--surface);
   margin: 0 0 .6rem;
   overflow: hidden;
 }
@@ -833,7 +851,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   cursor: pointer;
   list-style: none;
   font-family: var(--font-display);
-  color: var(--green-800);
+  color: var(--heading);
 }
 .lib-folder__head::-webkit-details-marker { display: none; }
 .lib-folder__head::before {        /* folder glyph, rotates when open */
@@ -851,7 +869,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   mask-image: var(--icon-folder-open);
   opacity: 1;
 }
-.lib-folder__head:hover { background: var(--green-050); }
+.lib-folder__head:hover { background: var(--surface-tint); }
 .lib-folder__head:focus-visible {
   outline: 3px solid var(--yellow-500);
   outline-offset: -3px;
@@ -887,15 +905,15 @@ ul { margin: 0; padding: 0; list-style: none; }
 }
 /* Coloured by family, not by extension, so a format we have not seen
    before still lands in a sensible bucket. */
-.lib-type--pdf { background: #fdeaea; color: #8c2f2f; }
+.lib-type--pdf { background: #fdeaea; color: var(--danger); }
 .lib-type--doc { background: #e9eefb; color: #2b4a8b; }
 .lib-type--sheet { background: #e8f3ec; color: #1f6b43; }
 .lib-type--slides { background: #fdf0e3; color: #8a5120; }
-.lib-type--video { background: var(--green-100); color: var(--green-700); }
+.lib-type--video { background: var(--surface-strong); color: var(--link); }
 .lib-type--image { background: #f3ecfa; color: #5b3a8c; }
 .lib-type--archive,
-.lib-type--other { background: var(--green-050); color: var(--text-soft); }
-.lib-partial { display: block; margin-top: .35rem; color: #8c2f2f; }
+.lib-type--other { background: var(--surface-tint); color: var(--text-soft); }
+.lib-partial { display: block; margin-top: .35rem; color: var(--danger); }
 
 @media (max-width: 760px) {
   .lib-actions { flex: 1 1 100%; }
@@ -930,7 +948,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   font-weight: 700;
   letter-spacing: .1em;
   text-transform: uppercase;
-  color: var(--green-700);
+  color: var(--link);
 }
 .records-field select,
 .records-field input {
@@ -939,7 +957,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   padding: .6rem .75rem;
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
-  background: var(--white);
+  background: var(--surface);
   color: inherit;
   min-width: 10rem;
   width: 100%;
@@ -960,7 +978,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 .records-field input:focus-visible {
   outline: 3px solid var(--yellow-500);
   outline-offset: 1px;
-  border-color: var(--green-600);
+  border-color: var(--accent);
 }
 .records-status,
 .records-note { color: var(--text-soft); font-size: .92rem; }
@@ -969,7 +987,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 .records-grade__head {
   margin: 0 0 .7rem;
   font-size: clamp(1.25rem, 2vw, 1.55rem);
-  color: var(--green-800);
+  color: var(--heading);
 }
 .records-grade .table-wrap + .table-wrap { margin-top: .9rem; }
 .records-table { min-width: 640px; }
@@ -1037,7 +1055,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 .records-grade .champs-grid > .table-wrap + .table-wrap { margin-top: 0; }
 table.schedule.champs-table { min-width: 0; }
 .champs-num { font-variant-numeric: tabular-nums; white-space: nowrap; }
-.champs-points { font-weight: 700; color: var(--green-800); }
+.champs-points { font-weight: 700; color: var(--heading); }
 .champs-events { font-size: .9rem; color: var(--text-soft); }
 /* "Discus (10)" reads as one item, so it never breaks across lines */
 .champs-event { white-space: nowrap; }
@@ -1070,8 +1088,8 @@ table.schedule.champs-table { min-width: 0; }
   display: inline-block;
   padding: .12rem .45rem;
   border-radius: 5px;
-  background: var(--green-100);
-  color: var(--green-700);
+  background: var(--surface-strong);
+  color: var(--link);
   font-family: var(--font-display);
   font-size: .66rem;
   font-weight: 700;
@@ -1091,7 +1109,7 @@ table.schedule.champs-table { min-width: 0; }
 .ath-check[hidden] { display: none; }   /* e.g. no early-season results to show */
 /* the table's checkboxes on a line of their own under its dropdowns */
 .ath-checks { flex-basis: 100%; display: flex; flex-wrap: wrap; gap: .4rem 1.4rem; }
-.ath-check input { width: 1.15rem; height: 1.15rem; accent-color: var(--green-700); }
+.ath-check input { width: 1.15rem; height: 1.15rem; accent-color: var(--link); }
 .ath-check label { text-transform: none; letter-spacing: 0; font-size: .95rem; color: inherit; font-family: inherit; font-weight: 600; }
 .ath-stats { margin-block: clamp(1rem, 2.4vw, 1.6rem); }
 .ath-stats .stat dt { font-size: clamp(1.7rem, 2.6vw, 2.3rem); }
@@ -1106,26 +1124,26 @@ table.schedule.champs-table { min-width: 0; }
 }
 .ath-pb {
   padding: 1rem 1.1rem;
-  background: var(--white);
+  background: var(--surface);
   border: 1px solid var(--line);
   border-top: 3px solid var(--yellow-500);
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-sm);
 }
-.ath-pb__event { margin: 0 0 .3rem; font-size: .95rem; color: var(--green-700); }
+.ath-pb__event { margin: 0 0 .3rem; font-size: .95rem; color: var(--link); }
 .ath-pb__mark {
   margin: 0;
   font-family: var(--font-display);
   font-size: 1.6rem;
   font-weight: 800;
   font-variant-numeric: tabular-nums;
-  color: var(--green-800);
+  color: var(--heading);
 }
 .ath-pb__mark a { color: inherit; text-decoration: none; }
 .ath-pb__mark a:hover { text-decoration: underline; text-decoration-color: var(--yellow-500); }
 .ath-pb__mark--none { font-size: 1.1rem; color: var(--text-soft); }
 .ath-pb__meta, .ath-pb__trend { margin: .25rem 0 0; font-size: .85rem; color: var(--text-soft); }
-.ath-pb__trend { color: var(--green-700); font-weight: 600; }
+.ath-pb__trend { color: var(--link); font-weight: 600; }
 /* a wind-assisted best: dashed top edge, the reading, and the best legal mark */
 .ath-pb--wind { border-top-style: dashed; }
 .ath-pb__wind {
@@ -1133,8 +1151,8 @@ table.schedule.champs-table { min-width: 0; }
   margin: .4rem 0 0;
   padding: .1rem .45rem;
   border-radius: 5px;
-  background: var(--green-100);
-  color: var(--green-800);
+  background: var(--surface-strong);
+  color: var(--heading);
   font-size: .78rem;
   font-weight: 700;
 }
@@ -1157,13 +1175,13 @@ table.schedule.champs-table { min-width: 0; }
   width: .8rem;
   height: .8rem;
   border-radius: 999px;
-  background: var(--green-700);
-  border: 2px solid var(--white);
-  box-shadow: 0 0 0 1px var(--green-700);
+  background: var(--link);
+  border: 2px solid var(--surface);
+  box-shadow: 0 0 0 1px var(--link);
 }
-.ath-key__mark--pb { width: 1rem; height: 1rem; background: var(--yellow-500); box-shadow: 0 0 0 2px var(--green-800); }
-.ath-key__mark--rep { border-radius: 2px; transform: rotate(45deg); background: var(--green-600); }
-.ath-key__mark--wind { background: var(--white); box-shadow: 0 0 0 2px var(--green-700); }
+.ath-key__mark--pb { width: 1rem; height: 1rem; background: var(--yellow-500); box-shadow: 0 0 0 2px var(--heading); }
+.ath-key__mark--rep { border-radius: 2px; transform: rotate(45deg); background: var(--accent); }
+.ath-key__mark--wind { background: var(--surface); box-shadow: 0 0 0 2px var(--link); }
 .ath-key__mark--newpb { box-shadow: 0 0 0 3px var(--yellow-500); }
 /* sortable results headings: look like the heading, with an arrow */
 .ath-sort { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: .3rem; font: inherit; color: inherit; text-transform: inherit; letter-spacing: inherit; }
@@ -1171,8 +1189,8 @@ table.schedule.champs-table { min-width: 0; }
 .ath-sort__arrow { font-size: .75em; opacity: .4; }
 .ath-sort.is-active .ath-sort__arrow, .ath-sort:hover .ath-sort__arrow { opacity: 1; }
 .ath-sort__n { font-size: .7em; font-weight: 700; background: var(--yellow-500); color: var(--green-900); border-radius: 999px; min-width: 1.2em; padding: 0 .3em; text-align: center; }
-.ath-sorted { font-size: .9rem; color: var(--text-muted, #4b6157); margin: 0 0 .6rem; }
-.ath-sorted__reset { all: unset; cursor: pointer; color: var(--green-700); text-decoration: underline; text-decoration-color: var(--yellow-500); text-underline-offset: 3px; }
+.ath-sorted { font-size: .9rem; color: var(--text-soft); margin: 0 0 .6rem; }
+.ath-sorted__reset { all: unset; cursor: pointer; color: var(--link); text-decoration: underline; text-decoration-color: var(--yellow-500); text-underline-offset: 3px; }
 .ath-sorted__reset:focus-visible { outline: 2px solid var(--yellow-500); outline-offset: 2px; }
 
 /* one chart per event */
@@ -1185,14 +1203,14 @@ table.schedule.champs-table { min-width: 0; }
   position: relative;
   margin: 0;
   padding: 1rem 1rem .8rem;
-  background: var(--white);
+  background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--radius);
   box-shadow: var(--shadow-sm);
 }
 .ath-chart__title { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem;
-  margin: 0 0 .4rem; font-family: var(--font-display); font-weight: 700; color: var(--green-800); }
-.ath-chart__dir { font-family: var(--font-sans); font-size: .78rem; font-weight: 700; color: var(--green-600); }
+  margin: 0 0 .4rem; font-family: var(--font-display); font-weight: 700; color: var(--heading); }
+.ath-chart__dir { font-family: var(--font-sans); font-size: .78rem; font-weight: 700; color: var(--accent); }
 .ath-chart__svg { display: block; width: 100%; height: auto; overflow: visible; }
 .ath-chart__empty, .ath-chart__note { margin: .4rem 0 0; font-size: .82rem; color: var(--text-soft); }
 .ath-grid { stroke: var(--line); stroke-width: 1; }
@@ -1200,21 +1218,21 @@ table.schedule.champs-table { min-width: 0; }
 .ath-axis { font-family: var(--font-sans); font-size: 12px; fill: var(--text-soft); }
 .ath-axis--y { text-anchor: end; font-variant-numeric: tabular-nums; }
 .ath-axis--x { text-anchor: middle; }
-.ath-axis--grade { text-anchor: middle; font-weight: 700; fill: var(--green-600); font-size: 11px; }
-.ath-line { fill: none; stroke: var(--green-600); stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; }
-.ath-point { fill: var(--green-700); stroke: var(--white); stroke-width: 2; }
-.ath-point--rep { fill: var(--green-600); }
-.ath-point--wind { fill: var(--white); stroke: var(--green-700); stroke-width: 2.5; }
-.ath-point--pb { fill: var(--yellow-500); stroke: var(--green-800); stroke-width: 2.5; }
+.ath-axis--grade { text-anchor: middle; font-weight: 700; fill: var(--accent); font-size: 11px; }
+.ath-line { fill: none; stroke: var(--accent); stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; }
+.ath-point { fill: var(--link); stroke: var(--surface); stroke-width: 2; }
+.ath-point--rep { fill: var(--accent); }
+.ath-point--wind { fill: var(--surface); stroke: var(--link); stroke-width: 2.5; }
+.ath-point--pb { fill: var(--yellow-500); stroke: var(--heading); stroke-width: 2.5; }
 .ath-point--pb-wind { stroke-dasharray: 3 2.5; stroke-width: 3; }
 /* a result that was a new PB when it happened: a yellow ring */
 .ath-point--newpb { stroke: var(--yellow-500); stroke-width: 3; }
 .ath-badge--newpb { opacity: .8; }
-.ath-key__mark--pb-wind { box-shadow: none; outline: 2px dashed var(--green-800); outline-offset: 0; border-color: var(--yellow-500); }
+.ath-key__mark--pb-wind { box-shadow: none; outline: 2px dashed var(--heading); outline-offset: 0; border-color: var(--yellow-500); }
 .ath-point-link { cursor: pointer; }
 .ath-point-link:focus { outline: none; }
 .ath-point-link:focus-visible .ath-point,
-.ath-point-link:hover .ath-point { stroke: var(--green-800); stroke-width: 3.5; }
+.ath-point-link:hover .ath-point { stroke: var(--heading); stroke-width: 3.5; }
 .ath-tip {
   position: absolute;
   z-index: 5;
@@ -1237,7 +1255,7 @@ table.schedule.champs-table { min-width: 0; }
 /* in the results table, a mark's tags stack under it to keep the column narrow */
 .ath-table .records-perf .ath-badge { display: block; width: fit-content; margin: .3rem 0 0; }
 .ath-table td .ath-wind { margin-left: 0; letter-spacing: .02em; border: 2px solid transparent; }
-.ath-table td .ath-wind--assisted { background: var(--white); border-color: var(--green-700); color: var(--green-800); }
+.ath-table td .ath-wind--assisted { background: var(--surface); border-color: var(--link); color: var(--heading); }
 /* "Pentathlon" under an event that was part of a multi-event */
 .ath-combined { display: block; font-size: .78rem; color: var(--text-soft); }
 .ath-index th[scope="row"] a { font-weight: 700; }
@@ -1258,7 +1276,7 @@ table.schedule.champs-table { min-width: 0; }
 }
 .champs-day__head::-webkit-details-marker { display: none; }
 .champs-day__head::marker { content: ""; }
-.champs-day__head:hover { border-bottom-color: var(--green-600); }
+.champs-day__head:hover { border-bottom-color: var(--accent); }
 .champs-day__head:focus-visible {
   outline: 3px solid var(--yellow-500);
   outline-offset: 4px;
@@ -1273,19 +1291,19 @@ table.schedule.champs-table { min-width: 0; }
   height: 2rem;
   border: 2px solid var(--line-strong);
   border-radius: 999px;
-  background: var(--white) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230B3B2E' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") center / .85rem auto no-repeat;
+  background: var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230B3B2E' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") center / .85rem auto no-repeat;
   transition: transform .25s var(--ease), border-color .16s var(--ease), background-color .16s var(--ease);
 }
 .champs-day[open] > .champs-day__head::after { transform: rotate(180deg); }
-.champs-day__head:hover::after { border-color: var(--green-600); background-color: var(--green-050); }
-.champs-day__title { margin: 0; font-size: clamp(1.15rem, 1.8vw, 1.4rem); color: var(--green-800); }
+.champs-day__head:hover::after { border-color: var(--accent); background-color: var(--surface-tint); }
+.champs-day__title { margin: 0; font-size: clamp(1.15rem, 1.8vw, 1.4rem); color: var(--heading); }
 .champs-day__count {
   font-family: var(--font-display);
   font-size: .74rem;
   font-weight: 700;
   letter-spacing: .1em;
   text-transform: uppercase;
-  color: var(--green-600);
+  color: var(--accent);
 }
 .champs-day__all { font-size: .9rem; }
 .champs-day__body { margin-top: .9rem; }
@@ -1344,7 +1362,7 @@ table.schedule.champs-table { min-width: 0; }
   padding: .3rem;
   overflow-y: auto;
   list-style: none;
-  background: var(--white);
+  background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow);
@@ -1357,7 +1375,7 @@ table.schedule.champs-table { min-width: 0; }
   cursor: pointer;
 }
 .champs-combo__option:hover,
-.champs-combo__option[aria-selected="true"] { background: var(--green-100); color: var(--green-800); }
+.champs-combo__option[aria-selected="true"] { background: var(--surface-strong); color: var(--heading); }
 .champs-combo__option.is-current { font-weight: 700; }
 @media (max-width: 760px) {
   /* "Girls 10–14" needs a wider label column than the stacked tables' default */
@@ -1369,7 +1387,7 @@ table.schedule.champs-table { min-width: 0; }
   overflow-x: auto;
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  background: var(--white);
+  background: var(--surface);
   box-shadow: var(--shadow-sm);
 }
 table.schedule { width: 100%; border-collapse: collapse; min-width: 580px; }
@@ -1378,47 +1396,47 @@ table.schedule caption {
   padding: 1.15rem 1.25rem;
   font-family: var(--font-display);
   font-weight: 700;
-  color: var(--green-800);
+  color: var(--heading);
   border-bottom: 1px solid var(--line);
 }
 table.schedule th, table.schedule td { padding: .9rem 1.25rem; text-align: left; font-size: .94rem; }
 table.schedule thead th {
-  background: var(--green-050);
+  background: var(--surface-tint);
   font-family: var(--font-display);
   font-size: .76rem;
   letter-spacing: .1em;
   text-transform: uppercase;
-  color: var(--green-700);
+  color: var(--link);
   border-bottom: 1px solid var(--line);
 }
 table.schedule tbody tr + tr th,
 table.schedule tbody tr + tr td { border-top: 1px solid var(--line); }
-table.schedule tbody th { font-weight: 700; color: var(--green-800); }
+table.schedule tbody th { font-weight: 700; color: var(--heading); }
 table.schedule tbody tr:not(.schedule__band):hover th,
-table.schedule tbody tr:not(.schedule__band):hover td { background: var(--green-050); }
+table.schedule tbody tr:not(.schedule__band):hover td { background: var(--surface-tint); }
 
 /* season groups */
 table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(--line-strong); }
 .schedule__band th {
   padding: .8rem 1.25rem;
-  background: var(--green-100);
-  box-shadow: inset 5px 0 0 var(--green-600);
+  background: var(--surface-strong);
+  box-shadow: inset 5px 0 0 var(--accent);
 }
 /* a band within a band (club champs results: an event within a grade) */
 .schedule__band--sub th {
   padding: .5rem 1.25rem .5rem 2rem;
-  background: var(--green-050);
-  box-shadow: inset 5px 0 0 var(--green-100);
+  background: var(--surface-tint);
+  box-shadow: inset 5px 0 0 var(--surface-strong);
   font-size: .9rem;
-  color: var(--green-800);
+  color: var(--heading);
 }
 .schedule__group--summer .schedule__band th {
-  background: var(--yellow-100);
+  background: var(--surface-warm);
   box-shadow: inset 5px 0 0 var(--yellow-500);
 }
 .schedule__group--winter .schedule__band th {
-  background: var(--green-050);
-  box-shadow: inset 5px 0 0 var(--green-800);
+  background: var(--surface-tint);
+  box-shadow: inset 5px 0 0 var(--heading);
 }
 .schedule__season {
   font-family: var(--font-display);
@@ -1426,7 +1444,7 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
   font-weight: 800;
   letter-spacing: .12em;
   text-transform: uppercase;
-  color: var(--green-800);
+  color: var(--heading);
 }
 .schedule__months {
   margin-left: .7rem;
@@ -1478,7 +1496,7 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
     display: block;
     margin-top: .7rem;
     padding: .95rem 1.1rem 1.05rem;
-    background: var(--white);
+    background: var(--surface);
     border: 1px solid var(--line);
     border-radius: var(--radius-sm);
     box-shadow: var(--shadow-sm);
@@ -1489,7 +1507,7 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
     border-top: 0;
     font-family: var(--font-display);
     font-size: 1.08rem;
-    color: var(--green-800);
+    color: var(--heading);
   }
   /* Block, not grid: a grid container would blockify inline children such as
      links into separate grid items, breaking them onto their own row. */
@@ -1516,7 +1534,7 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
     font-weight: 700;
     letter-spacing: .1em;
     text-transform: uppercase;
-    color: var(--green-600);
+    color: var(--accent);
   }
   table.schedule tbody > tr:not(.schedule__band):hover th,
   table.schedule tbody > tr:not(.schedule__band):hover td { background: transparent; }
@@ -1720,7 +1738,7 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
   border: 1px solid var(--line);
   border-radius: var(--radius);
   overflow: hidden;
-  background: var(--white);
+  background: var(--surface);
   box-shadow: var(--shadow);
 }
 .feed__frame {
@@ -1757,7 +1775,7 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
   flex-direction: column;
   gap: .7rem;
   padding: 1.4rem;
-  background: var(--white);
+  background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--radius);
   box-shadow: var(--shadow-sm);
@@ -1769,10 +1787,10 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
   font-family: var(--font-display);
   font-weight: 700;
   font-size: .95rem;
-  color: var(--green-800);
+  color: var(--heading);
   text-decoration: none;
 }
-.post .author a:hover { color: var(--green-600); }
+.post .author a:hover { color: var(--accent); }
 
 .post .post-head {
   display: flex;
@@ -1789,7 +1807,7 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
   font-weight: 700;
   letter-spacing: .08em;
   text-transform: uppercase;
-  color: var(--green-600);
+  color: var(--accent);
 }
 .post .permalink {
   font-family: var(--font-display);
@@ -1818,7 +1836,7 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
   max-height: 320px;
   object-fit: cover;
   border-radius: var(--radius-sm);
-  background: var(--green-050);
+  background: var(--surface-tint);
 }
 
 /* a post that quotes another page's post */
@@ -1828,7 +1846,7 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
   gap: .55rem;
   margin-top: auto;
   padding: .9rem 1rem;
-  background: var(--green-050);
+  background: var(--surface-tint);
   border: 1px solid var(--line);
   border-left: 3px solid var(--yellow-500);
   border-radius: var(--radius-sm);
@@ -1841,7 +1859,7 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
   font-family: var(--font-display);
   font-weight: 700;
   text-decoration: none;
-  color: var(--green-700);
+  color: var(--link);
 }
 .post .shared-text {
   font-size: .89rem;
@@ -2001,7 +2019,7 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
   gap: clamp(1rem, 2vw, 1.25rem);
 }
 .contact-card {
-  background: var(--white);
+  background: var(--surface);
   border: 1px solid var(--line);
   border-left: 4px solid var(--yellow-500);
   border-radius: var(--radius);
@@ -2052,7 +2070,7 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
   flex-direction: column;
   gap: .35rem;
   padding: 1.4rem;
-  background: var(--white);
+  background: var(--surface);
   border: 1px solid var(--line);
   border-top: 4px solid var(--yellow-500);
   border-radius: var(--radius);
@@ -2067,7 +2085,7 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
   font-weight: 700;
   letter-spacing: .12em;
   text-transform: uppercase;
-  color: var(--green-600);
+  color: var(--accent);
 }
 .person__name { margin: 0; font-size: 1.15rem; }
 .person__note { margin: .2rem 0 0; font-size: .92rem; color: var(--text-soft); }
@@ -2093,9 +2111,9 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
   justify-content: space-between;
   gap: 1rem;
   padding: 1.1rem 1.35rem;
-  background: var(--white);
+  background: var(--surface);
   border: 1px solid var(--line);
-  border-left: 4px solid var(--green-600);
+  border-left: 4px solid var(--accent);
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-sm);
   transition: transform .18s var(--ease), box-shadow .18s var(--ease), border-color .18s var(--ease);
@@ -2109,8 +2127,8 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 .doc__type {
   flex: 0 0 auto;
   padding: .2rem .55rem;
-  background: var(--green-100);
-  color: var(--green-700);
+  background: var(--surface-strong);
+  color: var(--link);
   border-radius: 5px;
   font-family: var(--font-display);
   font-size: .68rem;
@@ -2126,7 +2144,7 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
   gap: 1rem clamp(1.5rem, 3vw, 2.5rem);
   align-items: center;
   padding: 1.25rem 1.5rem;
-  background: var(--white);
+  background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--radius);
   box-shadow: var(--shadow-sm);
@@ -2147,7 +2165,7 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
   width: fit-content;
   padding: .8rem 1.4rem;
   background: transparent;
-  color: var(--green-800);
+  color: var(--heading);
   border: 2px solid var(--line-strong);
   border-radius: 999px;
   font-family: var(--font-display);
@@ -2160,9 +2178,9 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 .agm-more > summary::-webkit-details-marker { display: none; }   /* Safari */
 .agm-more > summary::marker { content: ""; }
 .agm-more > summary:hover {
-  background: var(--green-800);
+  background: var(--solid);
   color: var(--white);
-  border-color: var(--green-800);
+  border-color: var(--solid);
 }
 .agm-more > summary:focus-visible {
   outline: 3px solid var(--yellow-500);
@@ -2187,7 +2205,7 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 /* `.agm-list` sets display:grid, which would override the UA stylesheet's
    display:none for closed <details> content - so hide it explicitly. */
 .agm-more:not([open]) .agm-list--earlier { display: none; }
-.agm-list--earlier .agm { background: var(--green-050); }
+.agm-list--earlier .agm { background: var(--surface-tint); }
 
 @media (max-width: 720px) {
   .agm-more > summary { width: 100%; justify-content: center; flex-wrap: wrap; }
@@ -2211,9 +2229,9 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 }
 .fact {
   padding: 1.3rem 1.4rem;
-  background: var(--white);
+  background: var(--surface);
   border: 1px solid var(--line);
-  border-left: 4px solid var(--green-600);
+  border-left: 4px solid var(--accent);
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-sm);
 }
@@ -2223,7 +2241,7 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
   font-weight: 700;
   letter-spacing: .12em;
   text-transform: uppercase;
-  color: var(--green-600);
+  color: var(--accent);
 }
 .fact dd { margin: .4rem 0 0; font-size: .96rem; color: var(--text-soft); }
 
@@ -2235,7 +2253,7 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 }
 .honour {
   padding: 1.25rem 1.35rem;
-  background: var(--white);
+  background: var(--surface);
   border: 1px solid var(--line);
   border-top: 4px solid var(--yellow-500);
   border-radius: var(--radius);
@@ -2248,7 +2266,7 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 .subhead {
   margin: clamp(2rem, 4vw, 2.75rem) 0 clamp(.9rem, 2vw, 1.2rem);
   font-size: clamp(1.15rem, 1.8vw, 1.35rem);
-  color: var(--green-800);
+  color: var(--heading);
 }
 .honour p { margin: 0; font-size: .93rem; color: var(--text-soft); }
 
@@ -2277,7 +2295,7 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
   width: 12px; height: 12px;
   border-radius: 50%;
   background: var(--yellow-500);
-  border: 2px solid var(--white);
+  border: 2px solid var(--surface);
   box-shadow: 0 0 0 2px var(--line);
 }
 .timeline__year {
@@ -2285,7 +2303,7 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
   font-family: var(--font-display);
   font-size: 1.05rem;
   font-weight: 800;
-  color: var(--green-800);
+  color: var(--heading);
   letter-spacing: -.01em;
 }
 .timeline__body p { font-size: .97rem; color: var(--text-soft); }
@@ -2314,7 +2332,7 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
   transition: border-color .2s var(--ease);
 }
 .album__head::-webkit-details-marker { display: none; }
-.album__head:hover { border-bottom-color: var(--green-600); }
+.album__head:hover { border-bottom-color: var(--accent); }
 .album__head:focus-visible {
   outline: 3px solid var(--yellow-500);
   outline-offset: 4px;
@@ -2329,12 +2347,12 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
   height: 2rem;
   border: 2px solid var(--line-strong);
   border-radius: 999px;
-  background: var(--white) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230B3B2E' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") center / .85rem auto no-repeat;
+  background: var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230B3B2E' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") center / .85rem auto no-repeat;
   transition: transform .25s var(--ease), border-color .16s var(--ease),
               background-color .16s var(--ease);
 }
 .album[open] > .album__head::after { transform: rotate(180deg); }
-.album__head:hover::after { border-color: var(--green-600); background-color: var(--green-050); }
+.album__head:hover::after { border-color: var(--accent); background-color: var(--surface-tint); }
 .album__head h2 { margin: 0; font-size: clamp(1.4rem, 2.2vw, 1.8rem); }
 .album__count {
   margin: 0;
@@ -2344,7 +2362,7 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
   font-weight: 700;
   letter-spacing: .1em;
   text-transform: uppercase;
-  color: var(--green-600);
+  color: var(--accent);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -2391,7 +2409,7 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 .album__intro h6 {
   margin: 1.2rem 0 .5rem;
   font-family: var(--font-display);
-  color: var(--green-800);
+  color: var(--heading);
 }
 .album__intro h3 { font-size: 1.1rem; }
 .album__intro h4 { font-size: 1rem; }
@@ -2402,13 +2420,13 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 .album__intro ol { margin: 0 0 .8rem; padding-left: 1.25rem; }
 .album__intro ul { list-style: disc; }
 .album__intro ol { list-style: decimal; }
-.album__intro li::marker { color: var(--green-600); }
+.album__intro li::marker { color: var(--accent); }
 .album__intro li { margin-bottom: .25rem; }
-.album__intro a { color: var(--green-800); }
+.album__intro a { color: var(--heading); }
 .album__intro code {
   padding: .1em .35em;
   border-radius: var(--radius-sm);
-  background: var(--green-050);
+  background: var(--surface-tint);
   font-size: .9em;
 }
 .album__intro blockquote {
@@ -2429,7 +2447,7 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
   position: relative;
   overflow: hidden;
   border-radius: var(--radius-sm);
-  background: var(--green-050);
+  background: var(--surface-tint);
 }
 .album__item img {
   width: 100%;
@@ -2572,7 +2590,7 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
   font-weight: 700;
   letter-spacing: .1em;
   text-transform: uppercase;
-  color: var(--green-700);
+  color: var(--link);
 }
 .cal-search__row { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
 .cal-search__input {
@@ -2581,7 +2599,7 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
   padding: .6rem .75rem;
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
-  background: var(--white);
+  background: var(--surface);
   color: inherit;
   flex: 1 1 18rem;
   min-width: 0;
@@ -2589,7 +2607,7 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 .cal-search__input:focus-visible {
   outline: 3px solid var(--yellow-500);
   outline-offset: 1px;
-  border-color: var(--green-600);
+  border-color: var(--accent);
 }
 
 .cal-filter { margin-bottom: clamp(1.5rem, 3vw, 2.25rem); }
@@ -2600,23 +2618,23 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
   font-weight: 700;
   letter-spacing: .1em;
   text-transform: uppercase;
-  color: var(--green-600);
+  color: var(--accent);
 }
 .cal-filter__chips { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
 
 .cal-filter__chip {
-  --cal-colour: var(--green-600);
+  --cal-colour: var(--accent);
   display: inline-flex;
   align-items: center;
   gap: .5rem;
   padding: .45rem .9rem;
-  background: var(--white);
+  background: var(--surface);
   border: 2px solid var(--line-strong);
   border-radius: 999px;
   font-family: var(--font-display);
   font-size: .85rem;
   font-weight: 700;
-  color: var(--green-800);
+  color: var(--heading);
   cursor: pointer;
   transition: border-color .16s var(--ease), background .16s var(--ease),
               opacity .16s var(--ease);
@@ -2628,7 +2646,7 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
   background: transparent;
   text-decoration: line-through;
 }
-.cal-filter__chip:hover { background: var(--green-050); }
+.cal-filter__chip:hover { background: var(--surface-tint); }
 .cal-filter__chip:focus-visible { outline: 3px solid var(--yellow-500); outline-offset: 2px; }
 
 .cal-filter__dot {
@@ -2653,11 +2671,11 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
   font-family: var(--font-display);
   font-size: .82rem;
   font-weight: 700;
-  color: var(--green-600);
+  color: var(--accent);
   text-decoration: underline;
   cursor: pointer;
 }
-.cal-filter__reset:hover:not(:disabled) { color: var(--green-800); }
+.cal-filter__reset:hover:not(:disabled) { color: var(--heading); }
 /* disabled means it would change nothing: everything is already on, or off */
 .cal-filter__reset:disabled {
   opacity: .4;
@@ -2683,14 +2701,14 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
   border-bottom: 2px solid var(--line);
   font-family: var(--font-display);
   font-size: clamp(1.1rem, 1.8vw, 1.3rem);
-  color: var(--green-800);
+  color: var(--heading);
 }
 .agenda__month-count {
   font-size: .72rem;
   font-weight: 700;
   letter-spacing: .1em;
   text-transform: uppercase;
-  color: var(--green-600);
+  color: var(--accent);
 }
 .agenda > .agenda__month:first-child { margin-top: 0; }
 
@@ -2698,14 +2716,14 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 
 .agenda__item {
   /* --cal-colour is set per row from the calendar's entry in calendars.json */
-  --cal-colour: var(--green-600);
+  --cal-colour: var(--accent);
   position: relative;
   display: grid;
   grid-template-columns: 3.6rem minmax(0, 1fr);
   gap: 1rem;
   align-items: start;
   padding: 1rem 1.2rem;
-  background: var(--white);
+  background: var(--surface);
   border: 1px solid var(--line);
   border-left: 4px solid var(--cal-colour);
   border-radius: var(--radius-sm);
@@ -2723,7 +2741,7 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
   width: fit-content;
   padding: .7rem 1.25rem;
   background: transparent;
-  color: var(--green-800);
+  color: var(--heading);
   border: 2px solid var(--line-strong);
   border-radius: 999px;
   font-family: var(--font-display);
@@ -2736,9 +2754,9 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 .agenda-past > summary::-webkit-details-marker { display: none; }   /* Safari */
 .agenda-past > summary::marker { content: ""; }
 .agenda-past > summary:hover {
-  background: var(--green-800);
+  background: var(--solid);
   color: var(--white);
-  border-color: var(--green-800);
+  border-color: var(--solid);
 }
 .agenda-past > summary:focus-visible { outline: 3px solid var(--yellow-500); outline-offset: 3px; }
 .agenda-past__meta { font-family: var(--font-sans); font-weight: 500; opacity: .75; }
@@ -2755,13 +2773,13 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 /* an author display would beat the UA's display:none, so scope it to [open] */
 .agenda-past__body { margin-top: 1.25rem; }
 .agenda-past:not([open]) .agenda-past__body { display: none; }
-.agenda-past .agenda__item { background: var(--green-050); }
+.agenda-past .agenda__item { background: var(--surface-tint); }
 /* the far-future block is upcoming, not history, so it keeps normal weight */
 .agenda-later { margin: clamp(1.5rem, 3vw, 2.25rem) 0 0; }
-.agenda-later .agenda__item { background: var(--white); }
+.agenda-later .agenda__item { background: var(--surface); }
 .agenda-later .agenda__day,
 .agenda-later .agenda__title { color: inherit; }
-.agenda-later .agenda__title { color: var(--green-800); }
+.agenda-later .agenda__title { color: var(--heading); }
 .agenda-past .agenda__day,
 .agenda-past .agenda__title { color: var(--text-soft); }
 
@@ -2782,18 +2800,18 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
   font-weight: 700;
   letter-spacing: .05em;
   text-transform: uppercase;
-  color: var(--cal-colour);
+  color: var(--cal-ink);
 }
 
 /* the subscribe list is colour-keyed to match the agenda */
-#calendar-files .doc { border-left-color: var(--cal-colour, var(--green-600)); }
-#calendar-files .doc:hover { border-left-color: var(--cal-colour, var(--green-600)); }
+#calendar-files .doc { border-left-color: var(--cal-colour, var(--accent)); }
+#calendar-files .doc:hover { border-left-color: var(--cal-colour, var(--accent)); }
 
 /* the same treatment the agenda gives a linked event title, so a calendar
    reads as the same thing in both places. Scoped to this list: the .doc
    component is shared with the document lists on other pages. */
 #calendar-files .doc__title a {
-  color: var(--cal-colour, var(--green-800));
+  color: var(--cal-ink, var(--heading));
   text-decoration: underline;
   text-decoration-thickness: 1.5px;
   text-underline-offset: 3px;
@@ -2805,7 +2823,7 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 
 /* and the type badge, so each row carries its colour top to bottom */
 #calendar-files .doc__type {
-  color: var(--cal-colour, var(--green-600));
+  color: var(--cal-ink, var(--accent));
   border: 1px solid currentColor;
   background: transparent;
 }
@@ -2827,14 +2845,14 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
   font-weight: 700;
   letter-spacing: .08em;
   text-transform: uppercase;
-  color: var(--green-600);
+  color: var(--accent);
 }
 .agenda__day {
   display: block;
   font-family: var(--font-display);
   font-size: 1.7rem;
   font-weight: 800;
-  color: var(--green-800);
+  color: var(--heading);
 }
 
 .agenda__body { min-width: 0; padding-right: 2.4rem; }
@@ -2851,8 +2869,8 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
   padding: 0;
   border: 1px solid var(--line);
   border-radius: 999px;
-  background: var(--white);
-  color: var(--cal-colour, var(--green-600));
+  background: var(--surface);
+  color: var(--cal-ink, var(--accent));
   cursor: pointer;
   opacity: .55;
   transition: opacity .16s var(--ease), border-color .16s var(--ease),
@@ -2868,7 +2886,7 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
   stroke-linejoin: round;
 }
 .agenda__item:hover .agenda__save { opacity: 1; border-color: currentColor; }
-.agenda__save:hover { opacity: 1; border-color: currentColor; background: var(--green-050); }
+.agenda__save:hover { opacity: 1; border-color: currentColor; background: var(--surface-tint); }
 .agenda__save:focus-visible {
   opacity: 1;
   outline: 3px solid var(--yellow-500);
@@ -2889,7 +2907,7 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
    one. An underline plus an outbound arrow says both "clickable" and "leaves
    the site". */
 .agenda__title a {
-  color: var(--cal-colour, var(--green-800));
+  color: var(--cal-ink, var(--heading));
   text-decoration: underline;
   text-decoration-thickness: 1.5px;
   text-underline-offset: 3px;
@@ -2923,7 +2941,7 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
   font-size: .8rem;
   font-weight: 700;
   letter-spacing: .04em;
-  color: var(--green-600);
+  color: var(--accent);
 }
 .agenda__note {
   margin: .45rem 0 0;
@@ -3028,6 +3046,27 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 .site-footer__base ul { display: flex; flex-wrap: wrap; gap: 1.25rem; }
 .site-footer__base li + li { margin-top: 0; }
 
+/* A calendar's colour as text (light on a dark page: see Dark mode). Unset where a
+   row has no colour of its own, so the fallback after it is used. */
+.agenda__item, .cal-filter__chip, #calendar-files .doc, .agenda__source { --cal-ink: var(--cal-colour); }
+
+/* a yellow button that is also an arrow link keeps dark text */
+.btn--accent.link-arrow:not(:hover) { color: var(--green-700); }
+
+/* The colour scheme switch, beside "Back to top" (assets/js/theme.js) */
+.theme-switch {
+  font: inherit;
+  color: rgba(255, 255, 255, .78);
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+.theme-switch:hover { color: var(--yellow-500); }
+
+/* the header's logo for dark mode (see Dark mode) */
+.brand__logo-dark { display: none; }
+
 /* ---------- Reveal on scroll ---------- */
 [data-reveal] {
   opacity: 0;
@@ -3099,8 +3138,8 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 #merge-list[hidden] { display: none; }
 /* a button's own display would otherwise show it while hidden */
 .btn[hidden] { display: none; }
-.roll__head { margin: 0 0 .4rem; font-size: clamp(1.25rem, 2vw, 1.55rem); color: var(--green-800); }
-.roll__sub { margin: 1rem 0 .4rem; font-size: .95rem; color: var(--green-800); }
+.roll__head { margin: 0 0 .4rem; font-size: clamp(1.25rem, 2vw, 1.55rem); color: var(--heading); }
+.roll__sub { margin: 1rem 0 .4rem; font-size: .95rem; color: var(--heading); }
 .roll-member .champs-day__body .table-wrap { margin-bottom: .6rem; }
 .roll-table { min-width: 560px; }
 .roll-emails { margin: 0; padding-left: 1.1rem; font-size: .95rem; }
@@ -3124,17 +3163,17 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 .src-meeting .champs-day__head { border-bottom-width: 1px; }
 .src-meeting__title { font-size: clamp(1rem, 1.5vw, 1.15rem); flex: 1 1 18rem; }
 .src-facts { display: grid; grid-template-columns: max-content 1fr; gap: .35rem 1.2rem; margin: 0 0 1rem; font-size: .95rem; }
-.src-facts dt { font-family: var(--font-display); font-weight: 700; font-size: .74rem; letter-spacing: .08em; text-transform: uppercase; color: var(--green-600); padding-top: .15rem; }
+.src-facts dt { font-family: var(--font-display); font-weight: 700; font-size: .74rem; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); padding-top: .15rem; }
 .src-facts dd { margin: 0; }
 .src-athletes { list-style: none; margin: 0; padding: 0; columns: 14rem auto; column-gap: 1.5rem; font-size: .95rem; }
 .src-athletes li { break-inside: avoid; padding: .15rem 0; }
-.src-athletes__n { color: var(--green-600); font-size: .85em; }
+.src-athletes__n { color: var(--accent); font-size: .85em; }
 @media (max-width: 520px) { .src-facts { grid-template-columns: 1fr; } }
 .src-meeting__link { margin: 0 0 .6rem; font-size: .95rem; }
 .src-results { list-style: none; margin: 0; padding: 0; font-size: .95rem; }
 .src-results li { padding: .2rem 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: .2rem .5rem; }
 .src-results__event { min-width: 8rem; font-weight: 600; }
-.src-results__meta { color: var(--green-600); font-size: .9em; }
+.src-results__meta { color: var(--accent); font-size: .9em; }
 
 /* Signing in (assets/js/ncan-account.js): the box shown instead of results, and
    the "Signed in as ..." line in the page head */
@@ -3145,12 +3184,12 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
   padding: clamp(1.2rem, 3vw, 1.8rem);
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  background: var(--white);
+  background: var(--surface);
 }
 .signin[hidden] { display: none; }
-.signin__head { margin: 0 0 .5rem; color: var(--green-800); }
+.signin__head { margin: 0 0 .5rem; color: var(--heading); }
 .signin__form { display: flex; flex-wrap: wrap; align-items: flex-end; gap: .8rem; margin-top: 1rem; }
-.signin__status { margin: .9rem 0 0; font-weight: 600; color: var(--green-800); }
+.signin__status { margin: .9rem 0 0; font-weight: 600; color: var(--heading); }
 .signin__status:empty { display: none; }
 .signin__privacy { margin: .9rem 0 0; font-size: .88rem; color: var(--text-soft); }
 .account-line { margin: 1.2rem 0 0; font-size: .95rem; color: rgba(255, 255, 255, .85); }
@@ -3172,11 +3211,11 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 .src-add { display: grid; gap: .9rem; max-width: 52rem; }
 .src-add > .records-field { margin: 0; }
 .src-add > #add-check { justify-self: start; }
-.src-add__found { padding: 1rem 1.2rem; background: var(--white); border: 1px solid var(--line); border-radius: var(--radius-sm); }
+.src-add__found { padding: 1rem 1.2rem; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-sm); }
 .src-add__found[hidden] { display: none; }
 .src-add__found > p { margin: 0 0 .9rem; }
 .src-add__fields { display: flex; flex-wrap: wrap; align-items: flex-end; gap: .8rem; }
-.src-add__status { margin: 0; font-weight: 600; color: var(--green-800); }
+.src-add__status { margin: 0; font-weight: 600; color: var(--heading); }
 .src-add__status:empty { display: none; }
 .src-remove { margin: .2rem 0 1rem; }
 .src-remove__ask { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem .6rem; max-width: 40rem; }
@@ -3188,7 +3227,7 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 .src-type-form { display: flex; flex-wrap: wrap; align-items: flex-end; gap: .6rem .75rem;
   margin: .9rem 0 .75rem; padding-top: .9rem; border-top: 1px solid var(--line); }
 .src-type-form .records-field { flex: 0 1 15rem; }
-.src-type-form__said { flex-basis: 100%; font-size: .9rem; color: var(--text-muted, #4b6157); }
+.src-type-form__said { flex-basis: 100%; font-size: .9rem; color: var(--text-soft); }
 .src-type-form__said:empty { display: none; }
 .src-add__help { margin-top: 1rem; font-size: .9rem; color: var(--text-soft); }
 .src-add__help p { margin: 0 0 .4rem; }
@@ -3198,7 +3237,7 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 /* Reviewing the club championships (club-champs.html, administrators and coaches) */
 #champs-review[hidden] { display: none; }
 .review-day { margin-bottom: .8rem; }
-.review-sub { margin: 1.2rem 0 .4rem; font-size: 1rem; color: var(--green-800); }
+.review-sub { margin: 1.2rem 0 .4rem; font-size: 1rem; color: var(--heading); }
 .review-list { margin: 0; padding-left: 1.2rem; list-style: disc; }
 .review-list li { margin: .35rem 0; }
 .review-fix { display: flex; flex-wrap: wrap; gap: .5rem; margin: .35rem 0 .2rem; }
@@ -3211,9 +3250,9 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 .access-list li { display: flex; flex-wrap: wrap; align-items: center; gap: .3rem .8rem; padding: .7rem 0; border-bottom: 1px solid var(--line); }
 .access-list strong { font-weight: 600; word-break: break-all; }
 .access-how { flex: 1 1 14rem; color: var(--text-soft); font-size: .9rem; }
-.access-sub { margin: 1rem 0 .3rem; font-size: 1rem; color: var(--green-800); }
+.access-sub { margin: 1rem 0 .3rem; font-size: 1rem; color: var(--heading); }
 .access-add { display: flex; flex-wrap: wrap; align-items: flex-end; gap: .8rem; max-width: 46rem; }
-.access-status { margin: .8rem 0 0; font-weight: 600; color: var(--green-800); }
+.access-status { margin: .8rem 0 0; font-weight: 600; color: var(--heading); }
 .access-status:empty { display: none; }
 
 /* Club admin (admin.html) */
@@ -3222,9 +3261,9 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 .review-list { list-style: none; margin: 0 0 1.5rem; padding: 0; max-width: 60rem; }
 .review-group { max-width: 60rem; border-bottom: 1px solid var(--line); }
 .review-group__head { display: flex; align-items: center; gap: .6rem; padding: .9rem 0; cursor: pointer;
-  font-family: var(--font-display); font-weight: 700; color: var(--green-800); }
+  font-family: var(--font-display); font-weight: 700; color: var(--heading); }
 .review-group__count { min-width: 1.8rem; padding: .05rem .5rem; border-radius: 999px; text-align: center;
-  font-size: .85rem; background: var(--green-100); }
+  font-size: .85rem; background: var(--surface-strong); }
 .review-group[open] > .review-list { margin-top: 0; }
 .review-group__head { list-style: none; }
 .review-group__head::-webkit-details-marker { display: none; }
@@ -3236,14 +3275,14 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 @media (prefers-reduced-motion: reduce) { .review-item.is-settled { transition: none; } }
 .review-item { position: relative; }
 .review-item__cover { position: absolute; inset: 0; z-index: 2; display: flex; align-items: center; justify-content: center;
-  gap: .6rem; background: rgba(255, 255, 255, .78); font-weight: 700; color: var(--green-800); }
+  gap: .6rem; background: var(--veil); font-weight: 700; color: var(--heading); }
 .review-item__cover .review-pending__spin { width: 1.6rem; height: 1.6rem; border-width: 3px; }
 .review-pending { display: flex; align-items: center; gap: .6rem; max-width: 60rem; margin: 0 0 1rem;
-  padding: .7rem .9rem; border-radius: var(--radius-sm); background: var(--green-050); color: var(--green-800);
+  padding: .7rem .9rem; border-radius: var(--radius-sm); background: var(--surface-tint); color: var(--heading);
   font-weight: 600; }
 .review-pending[hidden] { display: none; }
-.review-pending__spin { flex: none; width: 1rem; height: 1rem; border: 2px solid var(--green-100);
-  border-top-color: var(--green-700); border-radius: 50%; animation: review-spin .9s linear infinite; }
+.review-pending__spin { flex: none; width: 1rem; height: 1rem; border: 2px solid var(--surface-strong);
+  border-top-color: var(--link); border-radius: 50%; animation: review-spin .9s linear infinite; }
 @keyframes review-spin { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .review-pending__spin { animation: none; } }
 .review-item__text { margin: 0 0 .6rem; }
@@ -3251,17 +3290,17 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 .review-form { margin-top: .8rem; }
 #merge-status:not(:empty) { margin-bottom: 1.2rem; }
 .upload-how { max-width: 46rem; margin: 0 0 1.5rem; }
-.upload-how summary { cursor: pointer; font-weight: 600; color: var(--green-800); }
+.upload-how summary { cursor: pointer; font-weight: 600; color: var(--heading); }
 .upload-how ol { margin: .8rem 0; padding-left: 1.3rem; }
 .upload-how li { margin: .3rem 0; }
 .upload-form { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 1rem; }
 .upload-list { max-width: 50rem; margin: 0 0 1.2rem; padding-left: 1.2rem; }
 .upload-list li { margin: .35rem 0; }
-.upload-list--bad li, .upload-list--warn li { color: #8a2c0d; font-weight: 600; }
-.upload-bad { color: #8a2c0d; }
+.upload-list--bad li, .upload-list--warn li { color: var(--warn); font-weight: 600; }
+.upload-bad { color: var(--warn); }
 .upload-go { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; margin-top: .5rem; }
 .review-results { margin: 0 0 .8rem; font-size: .92rem; }
-.review-results__head { margin: 0 0 .2rem; font-weight: 600; color: var(--green-800); }
+.review-results__head { margin: 0 0 .2rem; font-weight: 600; color: var(--heading); }
 .review-results ul { list-style: none; margin: 0; padding: 0; }
 .review-results li { padding: .15rem 0; }
 .review-results__date { display: inline-block; min-width: 6.2rem; color: var(--text-soft); }
@@ -3273,12 +3312,12 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 .suggest__list {
   position: absolute; z-index: 20; left: 0; right: 0; top: 100%; margin-top: .2rem;
   display: block; max-height: 16rem; overflow-y: auto;
-  background: var(--white); border: 1px solid var(--line); border-radius: var(--radius-sm);
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-sm);
   box-shadow: var(--shadow-sm);
 }
 .suggest__list[hidden] { display: none; }
 .suggest__item { display: block; padding: .45rem .75rem; cursor: pointer; }
-.suggest__item:hover, .suggest__item.is-active { background: var(--green-050); }
+.suggest__item:hover, .suggest__item.is-active { background: var(--surface-tint); }
 
 /* Sortable column headings (athletes.html) */
 .th-sort { padding: 0; border: 0; background: none; font: inherit; letter-spacing: inherit;
@@ -3296,7 +3335,7 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 .ath-sub[hidden] { display: none; }
 .ath-sub + .ath-sub { margin-top: 3.5rem; }
 .ath-sub + .ath-sub > .wrap { padding-top: 3rem; border-top: 1px solid var(--line); }
-.ath-sub__title { margin: 0 0 .6rem; font-size: clamp(1.35rem, 2.4vw, 1.7rem); color: var(--green-800); }
+.ath-sub__title { margin: 0 0 .6rem; font-size: clamp(1.35rem, 2.4vw, 1.7rem); color: var(--heading); }
 .ath-sub__title--plain { margin-top: 1.5rem; }
 
 /* Cross country, road and relays (athlete.html) */
@@ -3315,3 +3354,81 @@ table.schedule.manage-mem { min-width: 640px; }
 .manage-mem-item { display: block; }
 .manage-mem-item + .manage-mem-item { margin-top: .5rem; }
 #blocks-heading { margin-top: 2.5rem; }
+
+/* =========================================================
+   Dark mode
+   Follows the device's setting, unless someone picks one with the switch in the
+   footer (assets/js/theme.js sets data-theme="light" or "dark" on <html>, and an
+   inline script in partials/head.html does it again on every page before it draws).
+
+   Each colour role (--bg, --heading, ... at the top) gets its dark colour here, in
+   one place, with light-dark(): it takes the first colour on a light page and the
+   second on a dark one. Browsers too old for light-dark() skip the whole block
+   and stay light. The green bands (hero, page heads, the join band, the footer)
+   are dark already and don't change.
+
+   A part that must stay light on a dark page sets color-scheme: light (the medal
+   tiles). The few changes that aren't a colour (icons drawn in a fixed colour, the
+   logo, the supporters' logos) are listed twice below, once for the device's
+   setting and once for the switch: keep the two lists the same.
+   ========================================================= */
+@supports (color: light-dark(#000, #fff)) {
+  :root {
+    color-scheme: light dark;
+    --bg: light-dark(var(--white), #0c1813);
+    --surface: light-dark(var(--white), #142620);
+    --surface-tint: light-dark(var(--green-050), #10201a);
+    --surface-strong: light-dark(var(--green-100), #1f3b30);
+    --surface-warm: light-dark(var(--yellow-100), #3a3416);
+    --heading: light-dark(var(--green-800), #e8f3ee);
+    --link: light-dark(var(--green-700), #8fd4b1);
+    --accent: light-dark(var(--green-600), #7cc7a0);
+    --solid: light-dark(var(--green-800), var(--green-600));
+    --text: light-dark(#14261F, #d6e4dd);
+    --text-soft: light-dark(#4B6157, #a3b8ae);
+    --line: light-dark(rgba(11, 59, 46, .12), rgba(255, 255, 255, .11));
+    --line-strong: light-dark(rgba(11, 59, 46, .22), rgba(255, 255, 255, .22));
+    --header-bg: light-dark(rgba(255, 255, 255, .92), rgba(12, 24, 19, .92));
+    --veil: light-dark(rgba(255, 255, 255, .78), rgba(12, 24, 19, .78));
+    --danger: light-dark(#8c2f2f, #ff9d8f);
+    --warn: light-dark(#8a2c0d, #ffae8a);
+    --shadow-sm: 0 1px 2px light-dark(rgba(6, 42, 32, .06), rgba(0, 0, 0, .3)),
+                 0 4px 12px light-dark(rgba(6, 42, 32, .06), rgba(0, 0, 0, .25));
+    --shadow: 0 10px 30px light-dark(rgba(6, 42, 32, .10), rgba(0, 0, 0, .4));
+    --shadow-lg: 0 24px 60px light-dark(rgba(6, 42, 32, .18), rgba(0, 0, 0, .5));
+  }
+  :root[data-theme="light"] { color-scheme: light; }
+  :root[data-theme="dark"] { color-scheme: dark; }
+
+  /* the medal tiles are coloured objects: they keep their light look */
+  .ath-medals .stat { color-scheme: light; }
+
+  /* a calendar's colour as text: half way to white on a dark page */
+  .agenda__item, .cal-filter__chip, #calendar-files .doc, .agenda__source {
+    --cal-ink: light-dark(var(--cal-colour), color-mix(in srgb, var(--cal-colour) 50%, white));
+  }
+
+  /* not colours: dark mode by the device's setting ... */
+  @media screen and (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .champs-day__head::after, :root:not([data-theme="light"]) .album__head::after { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23D6E4DD' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); }
+    :root:not([data-theme="light"]) .records-field select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%23D6E4DD' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); }
+    :root:not([data-theme="light"]) .brand__logo { display: none; }
+    :root:not([data-theme="light"]) .brand__logo-dark { display: block; }
+    /* supporters' logos are drawn for a white page */
+    :root:not([data-theme="light"]) .sponsors__row img { box-sizing: content-box; padding: .45rem .7rem; background: #fff; border-radius: var(--radius-sm); }
+  }
+  /* ... and by the switch */
+  @media screen {
+    :root[data-theme="dark"] .champs-day__head::after, :root[data-theme="dark"] .album__head::after { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23D6E4DD' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); }
+    :root[data-theme="dark"] .records-field select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%23D6E4DD' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); }
+    :root[data-theme="dark"] .brand__logo { display: none; }
+    :root[data-theme="dark"] .brand__logo-dark { display: block; }
+    /* supporters' logos are drawn for a white page */
+    :root[data-theme="dark"] .sponsors__row img { box-sizing: content-box; padding: .45rem .7rem; background: #fff; border-radius: var(--radius-sm); }
+  }
+
+  /* paper is white */
+  @media print {
+    :root, :root[data-theme] { color-scheme: light; }
+  }
+}
