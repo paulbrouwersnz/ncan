@@ -3117,6 +3117,14 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
   background: var(--surface-tint);
 }
 .plan__group--everyone { border-left-color: var(--yellow-500); }
+/* tapping a group lights up its whole session; the rest fades back */
+.plan__group { cursor: pointer; transition: opacity .15s var(--ease), box-shadow .15s var(--ease); }
+.plan__group:focus-visible { outline: 3px solid var(--yellow-500); outline-offset: 2px; }
+.plan__wrap.is-focused .plan__group { opacity: .35; }
+.plan__wrap.is-focused .plan__group.is-lit { opacity: 1; background: var(--surface-warm); box-shadow: 0 0 0 2px var(--yellow-500); }
+.plan__wrap.is-focused .plan__slot-note { opacity: .5; }
+.plan__tip { margin: .4rem 0 0; font-size: .82rem; color: var(--text-soft); }
+@media (prefers-reduced-motion: reduce) { .plan__group { transition: none; } }
 .plan__group--parents, .plan-group--parents { border-left-color: var(--text-soft); border-left-style: dotted; }
 .plan__who { font-size: .82rem; font-weight: 700; color: var(--link); }
 .plan__what { font-family: var(--font-display); font-weight: 700; color: var(--heading); }

@@ -207,15 +207,26 @@
     thead.appendChild(hr);
     table.appendChild(thead);
     var tbody = el('tbody');
-    plan.slots.forEach(function (slot) {
+    var wrap = el('div', 'table-wrap plan__wrap');
+    plan.slots.forEach(function (slot, si) {
       var tr = el('tr');
       var th = el('th', 'plan__time', timeRange(slot.start, slot.end));
       th.scope = 'row';
       tr.appendChild(th);
       var td = el('td');
       var groups = el('ul', 'plan__groups');
-      slot.groups.forEach(function (g) {
+      slot.groups.forEach(function (g, gi) {
         var li = el('li', 'plan__group' + (g.everyone ? ' plan__group--everyone' : g.parents ? ' plan__group--parents' : ''));
+        // tap (or Enter) to light up this group's whole session
+        li.tabIndex = 0;
+        li.setAttribute('role', 'button');
+        li.setAttribute('aria-pressed', 'false');
+        li.setAttribute('data-slot', si);
+        li.setAttribute('data-group', gi);
+        li.addEventListener('click', function () { lightUp(wrap, plan, si, gi); });
+        li.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); lightUp(wrap, plan, si, gi); }
+        });
         li.appendChild(el('span', 'plan__who', groupLabel(g)));
         if (eventsOf(g).length) { li.appendChild(activities('plan__what', g)); }
         if (g.note) { li.appendChild(el('span', 'plan__note', g.note)); }
@@ -229,10 +240,49 @@
       tbody.appendChild(tr);
     });
     table.appendChild(tbody);
-    var wrap = el('div', 'table-wrap plan__wrap');
     wrap.appendChild(table);
-    return wrap;
+    var box = el('div', 'plan__body');
+    box.appendChild(wrap);
+    box.appendChild(el('p', 'plan__tip', 'Tap a group to light up its whole session. Tap it again to show the whole plan.'));
+    return box;
   }
+
+  /* A group's whole session, lit up on the plan (the rest fades back): the blocks
+     with any of the same athletes, and the Everyone blocks; for Everyone, every
+     block; for the parents and guardians, the parents' blocks. The same again
+     (or Escape) puts the plan back. */
+  function lightUp(wrap, plan, si, gi) {
+    var key = si + '-' + gi;
+    var off = wrap.getAttribute('data-lit') === key;
+    var chosen = plan.slots[si].groups[gi];
+    var cells = (!chosen.everyone && !chosen.parents) ? cellsOf(chosen) : null;
+    function includes(g) {
+      if (chosen.everyone) { return true; }
+      if (chosen.parents) { return !!g.parents; }
+      if (g.parents) { return false; }
+      if (g.everyone) { return true; }
+      return cellsOf(g).some(function (c) { return cells.indexOf(c) !== -1; });
+    }
+    if (off) { wrap.removeAttribute('data-lit'); } else { wrap.setAttribute('data-lit', key); }
+    wrap.classList.toggle('is-focused', !off);
+    Array.prototype.forEach.call(wrap.querySelectorAll('.plan__group'), function (li) {
+      var s = +li.getAttribute('data-slot'), g = +li.getAttribute('data-group');
+      var lit = !off && ((s === si && g === gi) || includes(plan.slots[s].groups[g]));
+      li.classList.toggle('is-lit', lit);
+      li.setAttribute('aria-pressed', String(!off && s === si && g === gi));
+    });
+  }
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape') { return; }
+    Array.prototype.forEach.call(document.querySelectorAll('.plan__wrap.is-focused'), function (w) {
+      w.classList.remove('is-focused');
+      w.removeAttribute('data-lit');
+      Array.prototype.forEach.call(w.querySelectorAll('.plan__group'), function (li) {
+        li.classList.remove('is-lit');
+        li.setAttribute('aria-pressed', 'false');
+      });
+    });
+  });
 
   function staffActions(plan) {
     var bar = el('div', 'plan__actions');
