@@ -300,6 +300,16 @@
       li.setAttribute('aria-pressed', 'false');
     });
     pressEvent(wrap, off ? null : name);
+    litFor(wrap, off ? null : name);
+  }
+
+  // What's lit up, by name ("Grade 7 Girls", "Sprints"), for "Print selected": the button
+  // shows only while something is lit
+  function litFor(wrap, label) {
+    if (label) { wrap.setAttribute('data-lit-label', label); } else { wrap.removeAttribute('data-lit-label'); }
+    var card = wrap.closest('.plan');
+    var b = card && card.querySelector('.plan__print-selected');
+    if (b) { b.hidden = !label; }
   }
   function pressEvent(wrap, name) {
     var strip = wrap.parentNode && wrap.parentNode.querySelector('.plan__events');
@@ -334,6 +344,7 @@
       li.classList.toggle('is-lit', lit);
       li.setAttribute('aria-pressed', String(!off && s === si && g === gi));
     });
+    litFor(wrap, off ? null : groupLabel(chosen));
   }
   document.addEventListener('keydown', function (e) {
     if (e.key !== 'Escape') { return; }
@@ -341,6 +352,7 @@
       w.classList.remove('is-focused');
       w.removeAttribute('data-lit');
       pressEvent(w, null);
+      litFor(w, null);
       Array.prototype.forEach.call(w.querySelectorAll('.plan__group'), function (li) {
         li.classList.remove('is-lit');
         li.setAttribute('aria-pressed', 'false');
@@ -1225,6 +1237,20 @@
       row.appendChild(button('Print with coaches’ notes', null, function () { printPlan(plan, true); }));
       row.appendChild(button('Print strips for each group', null, function () { printStrips(plan); }));
     }
+    // only the lit-up blocks (a group's session, or who does an activity), shown while there are some
+    var picked = button('Print selected', null, function () {
+      var card = picked.closest('.plan');
+      var wrap = card && card.querySelector('.plan__wrap');
+      if (!wrap || !wrap.getAttribute('data-lit-label')) { return; }
+      var lit = {};
+      Array.prototype.forEach.call(wrap.querySelectorAll('.plan__group.is-lit'), function (li) {
+        lit[li.getAttribute('data-slot') + '-' + li.getAttribute('data-group')] = true;
+      });
+      printPlan(plan, false, { label: wrap.getAttribute('data-lit-label'), has: function (s, g) { return lit[s + '-' + g]; } });
+    });
+    picked.classList.add('plan__print-selected');
+    picked.hidden = true;
+    row.appendChild(picked);
     return row;
   }
 
@@ -1269,13 +1295,20 @@
   }
 
   // the whole plan: a row per time slot, each group's activity in it
-  function printPlan(plan, coaches) {
-    var box = sheet(coaches ? 'Training plan (with coaches’ notes)' : 'Training plan', plan);
+  // `only` ({label, has(slot, group)}): just those blocks, and the time slots they're in
+  function printPlan(plan, coaches, only) {
+    var box = sheet(only ? 'Training plan: ' + only.label :
+      coaches ? 'Training plan (with coaches’ notes)' : 'Training plan', plan);
     if (plan.notes) { box.appendChild(el('p', 'plan-print__notes', plan.notes)); }
     if (coaches && plan.coach_notes) { box.appendChild(el('p', 'plan-print__notes', '')).appendChild(printNote(plan.coach_notes, true)); }
     var table = el('table', 'plan-print__table');
     var tbody = el('tbody');
-    plan.slots.forEach(function (slot) {
+    plan.slots.forEach(function (whole, si) {
+      var slot = whole;
+      if (only) {
+        slot = Object.assign({}, whole, { groups: whole.groups.filter(function (g, gi) { return only.has(si, gi); }) });
+        if (!slot.groups.length) { return; }
+      }
       var tr = el('tr');
       // the start at the top of the cell and the end at the bottom ("5:15" ... "5:30"),
       // so the column is narrow and the groups have the room
