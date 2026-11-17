@@ -14,7 +14,9 @@
   an event from the palette onto a group in the table, or onto a time slot to
   start a new group there. On a phone, or with a keyboard: tap (or press) a
   chip, then tap the group it goes on. Groups carry an activity and a note; each
-  time slot and the plan as a whole can have a note too.
+  time slot and the plan as a whole can have a note too. Each note has a
+  coaches-only twin: the API gives those only to admins, coaches and the
+  committee, so they never reach the public page.
 */
 (function () {
   'use strict';
@@ -140,6 +142,7 @@
       card.appendChild(why);
     }
     if (plan.notes) { card.appendChild(el('p', 'plan__notes', plan.notes)); }
+    if (plan.coach_notes) { card.appendChild(coachNote(plan.coach_notes, 'p')); }
     if (plan.status !== 'cancelled' || state.canEdit) {
       if (plan.slots && plan.slots.length) { card.appendChild(planTable(plan)); }
       else if (plan.status !== 'cancelled') { card.appendChild(el('p', 'note', 'No time slots yet.')); }
@@ -152,6 +155,14 @@
       card.appendChild(staffActions(plan));
     }
     return card;
+  }
+
+  // a coaches-only note (the API sends these to staff only), marked as such
+  function coachNote(text, tag) {
+    var n = el(tag, 'plan__coach');
+    n.appendChild(el('strong', null, 'Coaches only: '));
+    n.appendChild(document.createTextNode(text));
+    return n;
   }
 
   // The plan as a table: a row per time slot, its groups side by side (wrapping on a phone).
@@ -178,10 +189,12 @@
         li.appendChild(el('span', 'plan__who', groupLabel(g)));
         if (g.event) { li.appendChild(el('span', 'plan__what', g.event)); }
         if (g.note) { li.appendChild(el('span', 'plan__note', g.note)); }
+        if (g.coach_note) { li.appendChild(coachNote(g.coach_note, 'span')); }
         groups.appendChild(li);
       });
       td.appendChild(groups);
       if (slot.note) { td.appendChild(el('p', 'plan__slot-note', slot.note)); }
+      if (slot.coach_note) { td.appendChild(coachNote(slot.coach_note, 'p')); }
       tr.appendChild(td);
       tbody.appendChild(tr);
     });
@@ -224,7 +237,8 @@
       }));
     }
     bar.appendChild(button('Copy to a new date', null, function () {
-      openEditor({ date: nextDate(plan.date), notes: plan.notes, slots: plan.slots, status: 'draft' }, true);
+      openEditor({ date: nextDate(plan.date), notes: plan.notes, coach_notes: plan.coach_notes, slots: plan.slots,
+                   status: 'draft' }, true);
     }));
     bar.appendChild(button('Delete', 'btn btn--ghost btn--sm plan__delete', function () {
       if (window.confirm('Delete the training plan for ' + longDate(plan.date) + '? This can’t be undone.')) {
@@ -282,21 +296,23 @@
 
   function blankPlan() {
     return { notes: '', slots: [
-      { start: '17:00', end: '17:15', note: '', groups: [{ everyone: true, grades: [], sex: 'both', event: 'Warm up', note: '' }] },
+      { start: '17:00', end: '17:15', note: '', groups: [{ everyone: true, grades: [], sex: 'both', event: 'Warm up', note: '', coach_note: '' }] },
       { start: '17:15', end: '17:30', note: '', groups: [] }
     ] };
   }
 
   function copySlots(slots) {
     return (slots || []).map(function (s) {
-      return { start: s.start, end: s.end, note: s.note || '', groups: s.groups.map(function (g) {
-        return { everyone: !!g.everyone, grades: g.grades.slice(), sex: g.sex || 'both', event: g.event || '', note: g.note || '' };
+      return { start: s.start, end: s.end, note: s.note || '', coach_note: s.coach_note || '', groups: s.groups.map(function (g) {
+        return { everyone: !!g.everyone, grades: g.grades.slice(), sex: g.sex || 'both', event: g.event || '',
+                 note: g.note || '', coach_note: g.coach_note || '' };
       }) };
     });
   }
 
   function openEditor(plan, isNew) {
-    editing = { date: plan.date, notes: plan.notes || '', slots: copySlots(plan.slots), status: plan.status || 'draft',
+    editing = { date: plan.date, notes: plan.notes || '', coach_notes: plan.coach_notes || '',
+                slots: copySlots(plan.slots), status: plan.status || 'draft',
                 isNew: isNew };
     dirty = isNew;
     picked = null;
@@ -382,6 +398,19 @@
     notes.appendChild(nl);
     notes.appendChild(nt);
     editorBox.appendChild(notes);
+    var cnotes = el('p', 'records-field records-field--grow plan-editor__notes plan-editor__coach');
+    var cl = el('label', null, 'Coaches-only notes for the session (not shown to the public)');
+    var ct = el('textarea');
+    ct.id = 'plan-coach-notes';
+    ct.rows = 2;
+    ct.maxLength = 2000;
+    ct.value = plan.coach_notes;
+    ct.placeholder = 'e.g. Sam is away; Alex takes the hurdles group.';
+    cl.htmlFor = ct.id;
+    ct.addEventListener('input', function () { plan.coach_notes = ct.value; changed(); });
+    cnotes.appendChild(cl);
+    cnotes.appendChild(ct);
+    editorBox.appendChild(cnotes);
 
     // save
     var bar = el('div', 'plan__actions plan-editor__save');
@@ -488,7 +517,7 @@
   }
 
   function newGroup(slot, c) {
-    var g = { everyone: false, grades: [], sex: 'both', event: '', note: '' };
+    var g = { everyone: false, grades: [], sex: 'both', event: '', note: '', coach_note: '' };
     if (c) { apply(g, c); }
     slot.groups.push(g);
     changed();
@@ -566,6 +595,17 @@
     np.appendChild(nl);
     np.appendChild(ni);
     foot.appendChild(np);
+    var cp = el('p', 'records-field records-field--grow plan-editor__coach');
+    var cl = el('label', null, 'Coaches-only note');
+    var ci = el('input');
+    ci.id = 'slot-' + i + '-coach-note';
+    ci.maxLength = 300;
+    ci.value = slot.coach_note || '';
+    cl.htmlFor = ci.id;
+    ci.addEventListener('input', function () { slot.coach_note = ci.value; changed(); });
+    cp.appendChild(cl);
+    cp.appendChild(ci);
+    foot.appendChild(cp);
     var moves = el('div', 'plan-slot__moves');
     moves.appendChild(button('Copy slot', null, function () {
       var length = minutes(slot.end) - minutes(slot.start);
@@ -633,6 +673,13 @@
     note.setAttribute('aria-label', 'Note for ' + groupLabel(g));
     note.addEventListener('input', function () { g.note = note.value; changed(); });
     cell.appendChild(note);
+    var coach = el('input', 'plan-group__note plan-group__coach');
+    coach.value = g.coach_note || '';
+    coach.maxLength = 300;
+    coach.placeholder = 'Coaches-only note';
+    coach.setAttribute('aria-label', 'Coaches-only note for ' + groupLabel(g) + ', not shown to the public');
+    coach.addEventListener('input', function () { g.coach_note = coach.value; changed(); });
+    cell.appendChild(coach);
     cell.appendChild(button('Remove group', 'plan-group__remove', function (e) {
       e.stopPropagation();
       slot.groups.splice(gi, 1);
@@ -658,7 +705,7 @@
     var bad = plan.slots.filter(function (s) { return s.end <= s.start; })[0];
     if (bad) { said.textContent = 'A time slot ends before it starts (' + bad.start + '–' + bad.end + ').'; return; }
     said.textContent = 'Saving…';
-    NCAN.send('/training/' + plan.date, { notes: plan.notes, slots: plan.slots }).then(function (res) {
+    NCAN.send('/training/' + plan.date, { notes: plan.notes, coach_notes: plan.coach_notes, slots: plan.slots }).then(function (res) {
       if (res.status !== 200) { said.textContent = apiError(res); return null; }
       if (!release) { return res; }
       return NCAN.send('/training/' + plan.date + '/release', {});
@@ -690,7 +737,8 @@
     var latest = [].concat(state.upcoming, state.past).filter(function (p) { return p.slots && p.slots.length; })
       .sort(function (a, b) { return a.date < b.date ? 1 : -1; })[0];
     if (!latest) { openEditor(Object.assign({ date: nextDate(), status: 'draft' }, blankPlan()), true); return; }
-    openEditor({ date: nextDate(), notes: latest.notes, slots: latest.slots, status: 'draft' }, true);
+    openEditor({ date: nextDate(), notes: latest.notes, coach_notes: latest.coach_notes, slots: latest.slots,
+                 status: 'draft' }, true);
   });
 
   document.addEventListener('keydown', function (e) {
