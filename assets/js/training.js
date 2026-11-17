@@ -1254,6 +1254,8 @@
     editorBox.hidden = true;
     signInBox.hidden = true;
     accountBox.hidden = true;
+    var link = document.getElementById('training-signin-link');
+    if (link) { link.hidden = true; }
     listBox.textContent = '';
     listBox.appendChild(el('p', 'note', 'Loading the training plan…'));
     var all = el('a', null, 'See all the Tuesday training plans');
@@ -1602,6 +1604,18 @@
       });
       signInBox.appendChild(open);
       signInBox.hidden = false;
+      // the link in the page's header: straight to the form, ready to type
+      var link = document.getElementById('training-signin-link');
+      if (link && !sharedView) {
+        link.hidden = false;
+        link.querySelector('a').addEventListener('click', function (e) {
+          e.preventDefault();
+          if (open.parentNode) { open.click(); }
+          signInBox.scrollIntoView({ block: 'center' });
+          var input = signInBox.querySelector('input[type=email]');
+          if (input) { input.focus({ preventScroll: true }); }
+        });
+      }
     }
   }).catch(function () { /* the plans still show */ }).then(function () {
     list.textContent = '';
