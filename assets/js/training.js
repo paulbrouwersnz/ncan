@@ -35,7 +35,10 @@
   var state = { canEdit: false, events: [], grades: [7, 8, 9, 10, 11, 12, 13, 14], upcoming: [], past: [] };
   var editing = null;        // the plan in the editor: {date, notes, slots, status, isNew}
   var dirty = false;
-  var picked = null;         // a chip picked by tapping: {kind, value, label}
+  // What's picked by tapping: chips, several at once ({kind: 'chips', items: [chip...],
+  // label}), each applied to every group tapped; or a group block to move or copy
+  // ({kind: 'group', ...}).
+  var picked = null;
 
   // ------------------------------------------------------------ small helpers
 
@@ -561,23 +564,30 @@
     }(b));
     b.type = 'button';
     b.draggable = true;
-    b.setAttribute('aria-pressed', String(!!picked && picked.kind === c.kind && picked.value === c.value));
+    b.setAttribute('aria-pressed', String(inSelection(c)));
     b.addEventListener('dragstart', function (e) {
-      e.dataTransfer.setData('text/plain', JSON.stringify(c));
+      e.dataTransfer.setData('text/plain', JSON.stringify(inSelection(c) ? picked : c));
       e.dataTransfer.effectAllowed = 'copy';
       editorBox.classList.add('is-dragging');
     });
     b.addEventListener('dragend', function () { editorBox.classList.remove('is-dragging'); });
+    // tapping adds the chip to the selection, or takes it out again
     b.addEventListener('click', function () {
-      var same = picked && picked.kind === c.kind && picked.value === c.value;
-      picked = same ? null : c;
-      Array.prototype.forEach.call(editorBox.querySelectorAll('.plan-chip'), function (x) {
-        x.setAttribute('aria-pressed', String(!same && x === b));
-      });
+      if (picked && picked.kind === 'group') { unpick(); }
+      var items = picked && picked.kind === 'chips' ? picked.items : [];
+      var was = inSelection(c);
+      items = was ? items.filter(function (x) { return !(x.kind === c.kind && x.value === c.value); })
+                  : items.concat([c]);
+      picked = items.length ? { kind: 'chips', items: items,
+                                label: items.map(function (x) { return x.label; }).join(', ') } : null;
+      b.setAttribute('aria-pressed', String(!was));
       editorBox.classList.toggle('is-placing', !!picked);
       showHint();
     });
     return b;
+  }
+  function inSelection(c) {
+    return !!picked && picked.kind === 'chips' && picked.items.some(function (x) { return x.kind === c.kind && x.value === c.value; });
   }
 
   function showHint() {
@@ -585,7 +595,8 @@
     var bar = document.getElementById('plan-placing');
     if (!hint) { return; }
     hint.textContent = 'Drag a grade, Girls / Boys / Everyone or an event onto a group, or onto a time slot’s ' +
-      '“New group” to start one. On a phone, tap a chip, then each group it goes on.';
+      '“New group” to start one. Or tap chips (several if you like: Grade 7, Grade 8, Girls), then each group ' +
+      'they go on.';
     if (!bar) { return; }
     bar.hidden = !picked;
     var text = bar.querySelector('.plan-placing__text');
@@ -598,7 +609,9 @@
     } else if (picked) {
       text.appendChild(document.createTextNode('Placing '));
       text.appendChild(el('strong', null, picked.label));
-      text.appendChild(document.createTextNode(': tap each group it goes on, or a time slot’s “New group”.'));
+      text.appendChild(document.createTextNode(picked.items.length > 1
+        ? ': tap each group they all go on, or a time slot’s “New group”. Tap a chip again to take it out.'
+        : ': tap each group it goes on, or a time slot’s “New group”. Tap more chips to add them.'));
     }
   }
 
@@ -617,6 +630,7 @@
 
   // what a chip does to a group
   function apply(g, c) {
+    if (c.kind === 'chips') { c.items.forEach(function (x) { apply(g, x); }); return; }
     if (c.kind === 'grade') {
       g.everyone = false;
       g.parents = false;
