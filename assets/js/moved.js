@@ -4,7 +4,7 @@
   new one, keeping what came after it:
 
     calendar.html#june                       -> /calendar/#june
-    athlete.html?a=sam-brown#off-track       -> /athlete/#/sam-brown/off-track
+    athlete.html?a=sam-brown#out-of-stadia   -> /athlete/#/sam-brown/out-of-stadia
     athlete.html?id=24222905                 -> /athlete/#/24222905
     club-champs.html?season=2026-27#res-...  -> /club-champs/#/season/2026-27/res-...
     index.html#join                          -> /#join

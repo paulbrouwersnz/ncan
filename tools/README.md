@@ -22,9 +22,9 @@ is the home page. `tools/pages.py` is the one place the tools learn this.
   Pages opened straight from the disk (`file://`) don't work any more: use the
   local preview (`python -m http.server 8123`).
 - **The athlete page and club champs keep their place after `#/`**:
-  `/athlete/#/sam-brown` (a section follows: `/athlete/#/sam-brown/off-track`)
+  `/athlete/#/sam-brown` (a section follows: `/athlete/#/sam-brown/out-of-stadia`)
   and `/club-champs/#/season/2026-27` (with `/club-champs/` alone opening the
-  newest season). An in-page link (`#off-track`) is turned into that form by
+  newest season). An in-page link (`#out-of-stadia`) is turned into that form by
   the page. The part after `#` never reaches the web server.
 - **The old addresses (moved November 2026)**: each `something.html` at the root
   only sends visitors on to `/something/`, keeping what came after `?` and `#`
