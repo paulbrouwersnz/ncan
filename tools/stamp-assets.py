@@ -35,10 +35,10 @@ import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# (path on disk, how it is written in the pages)
+# (path on disk, how it is written in the pages: from the site root, as pages live in folders)
 ASSETS = [
-    (os.path.join('assets', 'css', 'styles.css'), 'assets/css/styles.css'),
-] + [(os.path.join('assets', 'js', f), 'assets/js/' + f)
+    (os.path.join('assets', 'css', 'styles.css'), '/assets/css/styles.css'),
+] + [(os.path.join('assets', 'js', f), '/assets/js/' + f)
      for f in sorted(os.listdir(os.path.join(ROOT, 'assets', 'js'))) if f.endswith('.js')]
 
 HASH_LENGTH = 8
@@ -69,8 +69,9 @@ def targets():
     The pages, plus the head partial they are generated from: both have to
     carry the same stamp or they will fight each other.
     """
-    found = [(f, os.path.join(ROOT, f))
-             for f in sorted(os.listdir(ROOT)) if f.endswith('.html')]
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    from pages import page_files
+    found = page_files(ROOT)
     partial = os.path.join(ROOT, 'partials', 'head.html')
     if os.path.exists(partial):
         found.append((os.path.join('partials', 'head.html'), partial))

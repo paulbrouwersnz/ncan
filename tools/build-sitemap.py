@@ -49,12 +49,12 @@ ROBOTS = os.path.join(ROOT, 'robots.txt')
 # pages to leave out of the sitemap
 # The athlete pages show results only to someone signed in (they read from the
 # club's API, api.ncan.nz), so search engines have nothing to index there; the
-# pages also carry a noindex tag. (results-sources.html is public.) admin.html is for
+# pages also carry a noindex tag. (results-sources/ is public.) admin/ is for
 # club administrators, signed in.
-SKIP = {'admin.html', 'athlete.html', 'athletes.html'}
+SKIP = {'admin', 'athlete', 'athletes'}
 
-# index.html is the site root, not a page of its own
-HOME = 'index.html'
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from pages import pages as site_pages  # noqa: E402
 
 
 def say(text):
@@ -66,16 +66,17 @@ def say(text):
 
 
 def pages():
-    found = sorted(f for f in os.listdir(ROOT)
-                   if f.lower().endswith('.html') and f not in SKIP)
-    return found
+    """[(address, file)] of every page in the sitemap: index.html is the bare domain,
+    calendar/index.html is /calendar/ (see tools/pages.py)."""
+    return [(address, os.path.relpath(path, ROOT).replace(os.sep, '/'))
+            for name, address, path in site_pages(ROOT) if name not in SKIP]
 
 
 def last_changed(name):
-    """The date of the last commit touching this file, or today if untracked."""
+    """The date of the last commit touching this file (following a move), or today if untracked."""
     try:
         out = subprocess.check_output(
-            ['git', 'log', '-1', '--format=%cs', '--', name],
+            ['git', 'log', '-1', '--follow', '--format=%cs', '--', name],
             cwd=ROOT, stderr=subprocess.DEVNULL).decode().strip()
         if out:
             return out
@@ -85,16 +86,16 @@ def last_changed(name):
     return datetime.date.fromtimestamp(stamp).isoformat()
 
 
-def loc_for(name):
-    return SITE + '/' if name == HOME else SITE + '/' + name
+def loc_for(address):
+    return SITE + address
 
 
 def build_sitemap(names):
     lines = ['<?xml version="1.0" encoding="UTF-8"?>',
              '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
-    for name in names:
+    for address, name in names:
         lines.append('  <url>')
-        lines.append('    <loc>%s</loc>' % loc_for(name))
+        lines.append('    <loc>%s</loc>' % loc_for(address))
         lines.append('    <lastmod>%s</lastmod>' % last_changed(name))
         lines.append('  </url>')
     lines.append('</urlset>')
@@ -138,12 +139,12 @@ def main():
 
     names = pages()
     if not names:
-        say('no .html pages found at %s' % ROOT)
+        say('no pages found at %s' % ROOT)
         return 1
 
     say('%d page(s):' % len(names))
-    for name in names:
-        say('   %-40s %s  %s' % (loc_for(name), last_changed(name), name))
+    for address, name in names:
+        say('   %-40s %s  %s' % (loc_for(address), last_changed(name), name))
     if SKIP:
         say('skipped: %s' % ', '.join(sorted(SKIP)))
 

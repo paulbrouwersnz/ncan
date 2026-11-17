@@ -1,5 +1,5 @@
 /*
-  admin.js - the club admin page (admin.html), for club administrators only.
+  admin.js - the club admin page (/admin/), for club administrators only.
 
   Everything comes from the club's API (see assets/js/ncan-account.js), which
   answers only an administrator; anyone else sees a sign-in box or a note.
@@ -34,7 +34,7 @@
   var addresses = {};     // page number -> its address (the athlete's name), from the API
   function pageLink(id, words) {
     var a = el('a', null, words || 'number ' + id);
-    a.href = addresses[id] ? 'athlete.html?a=' + addresses[id] : 'athlete.html?id=' + id;
+    a.href = '/athlete/#/' + (addresses[id] || id);
     a.target = '_blank';
     a.rel = 'noopener';
     return a;
@@ -379,7 +379,7 @@
         }
         if (kind === 'champs') {
           var go = el('a', 'btn btn--accent btn--sm', 'Review ' + item.date);
-          go.href = 'club-champs.html?season=' + encodeURIComponent(item.season) + '#champs-review';
+          go.href = '/club-champs/#/season/' + encodeURIComponent(item.season) + '/champs-review';
           acts.appendChild(go);
         }
         if (kind === 'not_member') {
@@ -1044,7 +1044,7 @@
         what.appendChild(el('span', 'addr-retired', a.address));
       } else {
         var link = el('a', null, a.address);
-        link.href = 'athlete.html?a=' + a.address;
+        link.href = '/athlete/#/' + a.address;
         link.target = '_blank';
         link.rel = 'noopener';
         what.appendChild(link);
@@ -1078,7 +1078,7 @@
       p.numbers.forEach(function (n, i) {
         if (i) { nums.appendChild(document.createTextNode(', ')); }
         var a = el('a', null, String(n.number));
-        a.href = 'athlete.html?id=' + n.number;
+        a.href = '/athlete/#/' + n.number;
         a.target = '_blank';
         a.rel = 'noopener';
         nums.appendChild(a);

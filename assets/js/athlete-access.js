@@ -1,5 +1,5 @@
 /*
-  athlete-access.js - "Who can see this page" on athlete.html.
+  athlete-access.js - "Who can see this page" on the athlete page (/athlete/).
 
   Shown only to someone who may change it: the athlete's contacts from the
   club's membership system (GameDay), and club administrators. The club's API
@@ -16,9 +16,9 @@
 (function () {
   'use strict';
 
-  // the page's address (?a=sam-brown), or a number in an old link (?id=12345678)
-  var query = new URLSearchParams(location.search);
-  var id = query.get('a') || query.get('id');
+  // the athlete in the page's address: /athlete/#/sam-brown (or a number, from an old link)
+  var route = /^#\/([a-z0-9]+(?:-[a-z0-9]+)*)/.exec(location.hash);
+  var id = route ? route[1] : '';
   var $ = function (x) { return document.getElementById(x); };
   if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(id || '')) { return; }
 

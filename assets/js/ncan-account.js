@@ -1,6 +1,6 @@
 /*
   ncan-account.js - signing in, for the pages that read from the club's API
-  (athletes.html, athlete.html, results-sources.html).
+  (/athletes/, /athlete/, /results-sources/).
 
   Athlete results are not part of this website: they come from the API at
   https://api.ncan.nz/v1/ (the private ncan-api project), and only to someone
@@ -106,7 +106,7 @@
     // what the email is used for (Privacy Act IPP 3): sign-in links, nothing else
     var note = el('p', 'signin__privacy', 'We use your email address only to send sign-in links. ');
     var more = el('a', null, 'How the club handles your information');
-    more.href = 'privacy.html';
+    more.href = '/privacy/';
     note.appendChild(more);
     note.appendChild(document.createTextNode('.'));
     box.appendChild(note);
@@ -142,9 +142,9 @@
     box.classList.add('account-line');
     box.appendChild(document.createTextNode('Signed in as ' + who.email +
       (ROLES[who.role] ? ' (' + ROLES[who.role] + ')' : '') + '. '));
-    if (who.role === 'admin' && !/\/admin\.html$/.test(location.pathname)) {
+    if (who.role === 'admin' && !/\/admin\/?(index\.html)?$/.test(location.pathname)) {
       var adm = el('a', 'account-line__admin', 'Club admin');
-      adm.href = 'admin.html';
+      adm.href = '/admin/';
       box.appendChild(adm);
       box.appendChild(document.createTextNode(' · '));
     }

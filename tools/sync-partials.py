@@ -19,12 +19,16 @@ The stylesheet link carries a cache-busting stamp, so partials/head.html is
 stamped too - see tools/stamp-assets.py. Run sync-partials first, then
 stamp-assets, and both end up carrying the same hash.
 
-Links in the partials are written as if from a page other than the home page
-(index.html#training). When writing into index.html those are rewritten to
-plain anchors (#training) so in-page links do not reload the page. The nav link
-matching the page being written gets aria-current="page".
+Links in the partials are written from the site root (/#training, /calendar/),
+because the pages live in folders (calendar/index.html; see tools/pages.py).
+When writing into the home page, /#training becomes a plain anchor (#training)
+so in-page links do not reload the page. The nav link matching the page being
+written gets aria-current="page".
 """
 import io, os, re, sys, time
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from pages import pages as site_pages  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # head first, so a page reads in the order it is written
@@ -55,15 +59,16 @@ def read(path):
 
 
 def localise(markup, page):
-    """Rewrite links in the partial for the page it is being written into."""
-    if page == 'index.html':
-        markup = markup.replace('href="index.html#', 'href="#')
-        markup = markup.replace('href="index.html"', 'href="#top"')
+    """Rewrite links in the partial for the page it is being written into
+    (page: its address, '/' or '/calendar/')."""
+    if page == '/':
+        markup = markup.replace('href="/#', 'href="#')
+        markup = markup.replace('href="/"', 'href="#top"')
 
     # mark the current page in the nav
     def mark(m):
         tag, href = m.group(0), m.group(1)
-        if href.split('#')[0] == page or (page == 'index.html' and href in ('#top', '')):
+        if href.split('#')[0] == page or (page == '/' and href in ('#top', '')):
             return tag  # the brand link is not a nav item; leave it alone
         return tag
 
@@ -91,8 +96,7 @@ def write_atomic(path, text, attempts=ATTEMPTS):
         raise
 
 
-def sync(page_path):
-    page = os.path.basename(page_path)
+def sync(page_path, page):
     html = read(page_path)
     changed = []
 
@@ -120,19 +124,18 @@ def sync(page_path):
 
 
 def main():
-    pages = [os.path.join(ROOT, f) for f in sorted(os.listdir(ROOT))
-             if f.endswith('.html')]
+    pages = site_pages(ROOT)
     print('syncing partials into %d page(s):' % len(pages))
     any_changed = False
     failed = []
-    for p in pages:
+    for _, address, p in pages:
         # a page we cannot read or write is reported and skipped - stopping here
         # would leave some pages synced and the rest stale, which is worse
         try:
-            any_changed |= sync(p)
+            any_changed |= sync(p, address)
         except OSError as err:
-            failed.append(os.path.basename(p))
-            print('   ! %s: %s' % (os.path.basename(p), err))
+            failed.append(address)
+            print('   ! %s: %s' % (address, err))
 
     if failed:
         print('done, but %d page(s) were not synced: %s'

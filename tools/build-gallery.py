@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Rebuild the photo gallery in gallery.html from assets/img/gallery/.
+"""Rebuild the photo gallery in gallery/index.html from assets/img/gallery/.
 
 One folder per album. Folders may be nested to any depth - any folder that
 directly contains images becomes an album:
@@ -77,7 +77,7 @@ FULL_BASE = 'https://ncan.brouwers.nz/gallery/'
 # recorded by --check-zips, because not every album has been zipped and a
 # link to a missing file is worse than no link.
 ZIP_INDEX = os.path.join(GALLERY_DIR, 'zips.json')
-PAGE = os.path.join(ROOT, 'gallery.html')
+PAGE = os.path.join(ROOT, 'gallery', 'index.html')
 OPEN, CLOSE = '<!-- @generated:gallery -->', '<!-- /@generated:gallery -->'
 
 EXTS = ('.jpg', '.jpeg', '.png', '.webp', '.avif')
@@ -731,7 +731,7 @@ def build(order=False, check=False):
 
         items = []
         for f in photos:
-            src = 'assets/img/gallery/%s/%s' % (folder, quote(f))
+            src = '/assets/img/gallery/%s/%s' % (folder, quote(f))
             full = FULL_BASE + '%s/%s' % (quote(folder), quote(f))
             cap = caption_for(f)
             dims = dimensions(os.path.join(GALLERY_DIR, folder, f))

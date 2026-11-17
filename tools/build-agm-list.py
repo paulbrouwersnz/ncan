@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Rebuild the AGM list in committee.html from the files in assets/docs/agm/.
+"""Rebuild the AGM list in committee/index.html from the files in assets/docs/agm/.
 
 Drop PDFs into assets/docs/agm/<year>/ and run:
 
@@ -17,7 +17,7 @@ from urllib.parse import quote
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 AGM_DIR = os.path.join(ROOT, 'assets', 'docs', 'agm')
-PAGE = os.path.join(ROOT, 'committee.html')
+PAGE = os.path.join(ROOT, 'committee', 'index.html')
 
 OPEN, CLOSE = '<!-- @generated:agm -->', '<!-- /@generated:agm -->'
 DEFAULT_RECENT = 5
@@ -65,7 +65,7 @@ def collect():
         docs = []
         for f in files:
             label, order = describe(f)
-            docs.append((order, label, 'assets/docs/agm/%s/%s' % (year, quote(f))))
+            docs.append((order, label, '/assets/docs/agm/%s/%s' % (year, quote(f))))
         docs.sort(key=lambda d: (d[0], d[1].lower()))
         found.append((year, docs))
     return found, empty
@@ -124,7 +124,7 @@ def build(recent):
 
     html = io.open(PAGE, encoding='utf-8').read()
     if OPEN not in html or CLOSE not in html:
-        print('markers not found in committee.html - add:\n  %s\n  %s' % (OPEN, CLOSE))
+        print('markers not found in committee/index.html - add:\n  %s\n  %s' % (OPEN, CLOSE))
         return 1
 
     start, end = html.index(OPEN) + len(OPEN), html.index(CLOSE)
