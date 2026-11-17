@@ -727,7 +727,7 @@
     group('Who', [{ kind: 'sex', value: 'girls', label: 'Girls' }, { kind: 'sex', value: 'boys', label: 'Boys' },
                   { kind: 'sex', value: 'both', label: 'Girls & Boys' }, { kind: 'everyone', value: true, label: 'All athletes' },
                   { kind: 'parents', value: true, label: 'Parents & guardians' }]);
-    var events = group('Events', state.events.map(function (e) { return { kind: 'event', value: e, label: e }; }));
+    var events = group('Activities',state.events.map(function (e) { return { kind: 'event', value: e, label: e }; }));
     // an event of their own
     var own = el('form', 'plan-palette__own');
     var oi = el('input');
@@ -794,7 +794,7 @@
     var hint = document.getElementById('plan-hint');
     var bar = document.getElementById('plan-placing');
     if (!hint) { return; }
-    hint.textContent = 'Drag a grade, Girls / Boys / All athletes or an event onto a group, or onto a time slot’s ' +
+    hint.textContent = 'Drag a grade, Girls / Boys / All athletes or an activity onto a group, or onto a time slot’s ' +
       '“New group” to start one. Or tap chips (several if you like: Grade 7, Grade 8, Girls), then each group ' +
       'they go on.';
     if (!bar) { return; }
