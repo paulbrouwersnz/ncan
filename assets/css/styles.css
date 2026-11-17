@@ -3117,6 +3117,7 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
   background: var(--surface-tint);
 }
 .plan__group--everyone { border-left-color: var(--yellow-500); }
+.plan__group--parents, .plan-group--parents { border-left-color: var(--text-soft); border-left-style: dotted; }
 .plan__who { font-size: .82rem; font-weight: 700; color: var(--link); }
 .plan__what { font-family: var(--font-display); font-weight: 700; color: var(--heading); }
 .plan__note { font-size: .85rem; color: var(--text-soft); }
@@ -3327,9 +3328,12 @@ html:has(.plan-editor:not([hidden])) { scroll-padding-bottom: 5rem; }
 .plan-strip__table th, .plan-strip__table td { padding: 1.6mm 2mm; text-align: left; vertical-align: top; border-top: 1px solid #bbb; }
 .plan-print__table tr { break-inside: avoid; }
 .plan-print__time { width: 1%; white-space: nowrap; font-weight: 700; }
+/* times line up down the column: every digit the same width */
+.plan-print__time, .plan__time, .plan-time__input, .plan-date__input { font-variant-numeric: tabular-nums; }
 .plan-print__groups { display: flex; flex-wrap: wrap; gap: 1.5mm; }
 .plan-print__group { flex: 1 1 24mm; min-width: 0; padding: 1mm 1.8mm; border: 1px solid #999; border-left: 3px solid #0b3b2e; border-radius: 1.5mm; }
 .plan-print__group--everyone { border-left-color: #c49000; }
+.plan-print__group--parents { border-left: 3px dotted #555; }
 .plan-print__who { display: block; font-size: 8.5pt; font-weight: 700; color: #333; }
 .plan-print__what { font-weight: 700; }
 .plan-print__note, .plan-print__coach { display: block; font-size: 9pt; color: #333; }

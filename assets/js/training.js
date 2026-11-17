@@ -73,6 +73,7 @@
 
   var SEX = { girls: 'Girls', boys: 'Boys', both: 'Girls & Boys' };
   function groupLabel(g) {
+    if (g.parents) { return 'Parents & guardians'; }
     if (g.everyone) { return 'Everyone'; }
     if (!g.grades.length) { return g.sex === 'both' ? 'Group' : SEX[g.sex]; }
     return 'Grade ' + g.grades.join(', ') + ' ' + SEX[g.sex];
@@ -187,7 +188,7 @@
       var td = el('td');
       var groups = el('ul', 'plan__groups');
       slot.groups.forEach(function (g) {
-        var li = el('li', 'plan__group' + (g.everyone ? ' plan__group--everyone' : ''));
+        var li = el('li', 'plan__group' + (g.everyone ? ' plan__group--everyone' : g.parents ? ' plan__group--parents' : ''));
         li.appendChild(el('span', 'plan__who', groupLabel(g)));
         if (g.event) { li.appendChild(el('span', 'plan__what', g.event)); }
         if (g.note) { li.appendChild(el('span', 'plan__note', g.note)); }
@@ -298,7 +299,9 @@
 
   function blankPlan() {
     return { notes: '', slots: [
-      { start: '17:00', end: '17:15', note: '', groups: [{ everyone: true, grades: [], sex: 'both', event: 'Warm up', note: '', coach_note: '' }] },
+      { start: '17:00', end: '17:15', note: '', groups: [
+        { everyone: true, parents: false, grades: [], sex: 'both', event: 'Warm up', note: '', coach_note: '' },
+        { everyone: false, parents: true, grades: [], sex: 'both', event: 'Set up', note: '', coach_note: '' }] },
       { start: '17:15', end: '17:30', note: '', groups: [] }
     ] };
   }
@@ -306,7 +309,7 @@
   function copySlots(slots) {
     return (slots || []).map(function (s) {
       return { start: s.start, end: s.end, note: s.note || '', coach_note: s.coach_note || '', groups: s.groups.map(function (g) {
-        return { everyone: !!g.everyone, grades: g.grades.slice(), sex: g.sex || 'both', event: g.event || '',
+        return { everyone: !!g.everyone, parents: !!g.parents, grades: g.grades.slice(), sex: g.sex || 'both', event: g.event || '',
                  note: g.note || '', coach_note: g.coach_note || '' };
       }) };
     });
@@ -495,7 +498,8 @@
     }
     group('Grades', state.grades.map(function (n) { return { kind: 'grade', value: n, label: 'Grade ' + n }; }));
     group('Who', [{ kind: 'sex', value: 'girls', label: 'Girls' }, { kind: 'sex', value: 'boys', label: 'Boys' },
-                  { kind: 'sex', value: 'both', label: 'Girls & Boys' }, { kind: 'everyone', value: true, label: 'Everyone' }]);
+                  { kind: 'sex', value: 'both', label: 'Girls & Boys' }, { kind: 'everyone', value: true, label: 'Everyone' },
+                  { kind: 'parents', value: true, label: 'Parents & guardians' }]);
     var events = group('Events', state.events.map(function (e) { return { kind: 'event', value: e, label: e }; }));
     // an event of their own
     var own = el('form', 'plan-palette__own');
@@ -576,12 +580,15 @@
   function apply(g, c) {
     if (c.kind === 'grade') {
       g.everyone = false;
+      g.parents = false;
       if (g.grades.indexOf(c.value) === -1) { g.grades.push(c.value); g.grades.sort(function (a, b) { return a - b; }); }
     } else if (c.kind === 'sex') {
       g.everyone = false;
+      g.parents = false;
       g.sex = c.value;
-    } else if (c.kind === 'everyone') {
-      g.everyone = true;
+    } else if (c.kind === 'everyone' || c.kind === 'parents') {
+      g.everyone = c.kind === 'everyone';     // everyone: all the athletes
+      g.parents = c.kind === 'parents';       // the parents and guardians (setting up, packing down)
       g.grades = [];
       g.sex = 'both';
     } else if (c.kind === 'event') {
@@ -591,7 +598,7 @@
   }
 
   function newGroup(slot, c) {
-    var g = { everyone: false, grades: [], sex: 'both', event: '', note: '', coach_note: '' };
+    var g = { everyone: false, parents: false, grades: [], sex: 'both', event: '', note: '', coach_note: '' };
     if (c) { apply(g, c); }
     slot.groups.push(g);
     changed();
@@ -725,7 +732,7 @@
   }
 
   function groupCell(slot, g, gi) {
-    var cell = el('div', 'plan-group' + (g.everyone ? ' plan-group--everyone' : ''));
+    var cell = el('div', 'plan-group' + (g.everyone ? ' plan-group--everyone' : g.parents ? ' plan-group--parents' : ''));
     cell.tabIndex = 0;
     cell.setAttribute('aria-label', groupLabel(g) + (g.event ? ', ' + g.event : '') + '. Drop or place a chip here.');
     var who = el('div', 'plan-group__who');
@@ -740,7 +747,7 @@
         renderEditor();
       }));
     });
-    if (!g.everyone) {
+    if (!g.everyone && !g.parents) {
       var sex = el('select', 'plan-group__sex');
       sex.setAttribute('aria-label', 'Girls, boys or both');
       [['both', 'Girls & Boys'], ['girls', 'Girls'], ['boys', 'Boys']].forEach(function (o) {
@@ -890,7 +897,7 @@
       var td = el('td');
       var list = el('div', 'plan-print__groups');
       slot.groups.forEach(function (g) {
-        var cell = el('div', 'plan-print__group' + (g.everyone ? ' plan-print__group--everyone' : ''));
+        var cell = el('div', 'plan-print__group' + (g.everyone ? ' plan-print__group--everyone' : g.parents ? ' plan-print__group--parents' : ''));
         cell.appendChild(el('span', 'plan-print__who', groupLabel(g)));
         cell.appendChild(el('span', 'plan-print__what', g.event || '—'));
         if (g.note) { cell.appendChild(printNote(g.note, false)); }
@@ -913,10 +920,13 @@
      time slot (Everyone counts for all). Athletes with the same path get one strip,
      so there are as few strips as the plan allows: e.g. grade 10-12 and 13-14 are
      split when they do different things at 5:15, even if they're together for
-     relays later. Grades no group names don't get a strip. */
+     relays later. Grades no group names don't get a strip. The parents and
+     guardians get one of their own (Everyone means the athletes), last, with only
+     the time slots they have something in. */
   var SEXES = ['girls', 'boys'];
   function cellsOf(g) {
-    if (g.everyone) { return null; }                          // everyone: all of them
+    if (g.parents) { return ['parents']; }
+    if (g.everyone) { return null; }                          // everyone: all the athletes
     var sexes = g.sex === 'both' ? SEXES : [g.sex];
     var grades = g.grades.length ? g.grades : (g.sex === 'both' ? [] : state.grades);   // "Girls": every grade
     var out = [];
@@ -931,12 +941,16 @@
         (cellsOf(g) || []).forEach(function (c) { if (order.indexOf(c) === -1) { order.push(c); } });
       });
     });
+    if (order.indexOf('parents') !== -1) { order.splice(order.indexOf('parents'), 1); order.push('parents'); }
     if (!order.length) { return [{ label: 'Everyone', path: plan.slots.map(function (s) { return s.groups; }) }]; }
     var bySignature = {};
     var out = [];
     order.forEach(function (c) {
       var path = plan.slots.map(function (slot) {
-        return slot.groups.filter(function (g) { var cells = cellsOf(g); return !cells || cells.indexOf(c) !== -1; });
+        return slot.groups.filter(function (g) {
+          var cells = cellsOf(g);
+          return cells ? cells.indexOf(c) !== -1 : c !== 'parents';
+        });
       });
       var sig = path.map(function (gs, i) {
         return gs.map(function (g) { return plan.slots[i].groups.indexOf(g); }).join('+');
@@ -944,12 +958,13 @@
       if (!bySignature[sig]) { bySignature[sig] = { cells: [], path: path }; out.push(bySignature[sig]); }
       bySignature[sig].cells.push(c);
     });
-    out.forEach(function (st) { st.label = stripLabel(st.cells); });
+    out.forEach(function (st) { st.label = stripLabel(st.cells); st.parents = st.cells[0] === 'parents'; });
     return out;
   }
 
   // "Grade 7, 8, 9 Girls", "Grade 10, 11, 12 Girls & Boys", "Grade 7 Girls and Grade 8 Boys"
   function stripLabel(cells) {
+    if (cells[0] === 'parents') { return 'Parents & guardians'; }
     function grades(sex) {
       return cells.filter(function (c) { return c.indexOf(sex + ' ') === 0; })
         .map(function (c) { return +c.split(' ')[1]; }).sort(function (a, b) { return a - b; });
@@ -980,6 +995,7 @@
         tr.appendChild(el('th', 'plan-print__time', timeRange(slot.start, slot.end)));
         var td = el('td');
         var gs = st.path[i];
+        if (!gs.length && st.parents) { return; }             // the parents: only their own slots
         if (!gs.length) { td.appendChild(el('span', 'plan-print__note', '—')); }
         gs.forEach(function (g, k) {
           if (k) { td.appendChild(document.createTextNode(' / ')); }
