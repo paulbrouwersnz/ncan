@@ -3072,7 +3072,9 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 .training-tools[hidden], .training-signin[hidden] { display: none; }
 .training-list { display: grid; gap: 1.5rem; }
 .training-signin { margin-top: 1.5rem; }
-.training-account { color: var(--text-soft); }
+/* the sign-in line is styled for the green page heads; here it sits on the page */
+.account-line.training-account { color: var(--text-soft); }
+.training-account .account-line__admin { color: var(--link); }
 .training-account .account-line__out { color: var(--link); }
 .training-account .account-line__out:hover { color: var(--accent); }
 
