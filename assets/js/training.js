@@ -405,10 +405,14 @@
     var bar = el('div', 'plan__actions plan-editor__save');
     var said = el('p', 'plan__said');
     said.setAttribute('role', 'status');
-    var saveLabel = plan.status === 'released' ? 'Save (stays released)' : 'Save as a draft';
-    bar.appendChild(button(saveLabel, 'btn btn--sm', function () { save(false, said); }));
-    if (plan.status !== 'released') {
-      bar.appendChild(button('Save and release', 'btn btn--accent btn--sm', function () { save(true, said); }));
+    // A released plan: save it as it is (still public), or save it as a draft, which
+    // takes it off the public page until it's released again.
+    if (plan.status === 'released') {
+      bar.appendChild(button('Save (stays released)', 'btn btn--accent btn--sm', function () { save(null, said); }));
+      bar.appendChild(button('Save as a draft', 'btn btn--sm', function () { save('draft', said); }));
+    } else {
+      bar.appendChild(button('Save as a draft', 'btn btn--sm', function () { save(null, said); }));
+      bar.appendChild(button('Save and release', 'btn btn--accent btn--sm', function () { save('release', said); }));
     }
     bar.appendChild(button('Close without saving', null, closeEditor));
     editorBox.appendChild(bar);
@@ -788,7 +792,8 @@
     return cell;
   }
 
-  function save(release, said) {
+  // save the plan, then (`then`) release it or take it back to a draft
+  function save(then, said) {
     var plan = editing;
     if (!plan.date) { said.textContent = 'Choose the session’s date.'; return; }
     if (plan.isNew && [].concat(state.upcoming, state.past).some(function (p) { return p.date === plan.date; }) &&
@@ -798,11 +803,16 @@
     said.textContent = 'Saving…';
     NCAN.send('/training/' + plan.date, { notes: plan.notes, coach_notes: plan.coach_notes, slots: plan.slots }).then(function (res) {
       if (res.status !== 200) { said.textContent = apiError(res); return null; }
-      if (!release) { return res; }
-      return NCAN.send('/training/' + plan.date + '/release', {});
+      if (!then) { return res; }
+      return NCAN.send('/training/' + plan.date + '/' + then, {});
     }).then(function (res) {
       if (!res) { return; }
-      if (res.status !== 200) { said.textContent = 'Saved as a draft, but not released: ' + apiError(res); dirty = false; return; }
+      if (res.status !== 200) {
+        said.textContent = (then === 'release' ? 'Saved as a draft, but not released: '
+                                                : 'Saved, but still released: ') + apiError(res);
+        dirty = false;
+        return;
+      }
       dirty = false;
       editing = null;
       editorBox.hidden = true;
