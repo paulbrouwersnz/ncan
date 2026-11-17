@@ -5,6 +5,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#0B3B2E">
+<!-- a colour scheme picked with the switch in the footer, before the page draws (assets/js/theme.js) -->
+<script>try { var t = localStorage.getItem('ncan-theme'); if (t === 'light' || t === 'dark') { document.documentElement.setAttribute('data-theme', t); } } catch (e) {}</script>
+<script src="/assets/js/theme.js?v=7bdda2a4" defer></script>
 
 <meta property="og:type" content="website">
 <meta property="og:image" content="/assets/img/logo.svg">
@@ -17,7 +20,7 @@
 <link rel="manifest" href="/site.webmanifest">
 <link rel="preload" href="/assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/archivo-variable.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/assets/css/styles.css?v=b29d9c2f">
+<link rel="stylesheet" href="/assets/css/styles.css?v=208bdff5">
 <!-- /@partial:head -->
 
 <link rel="canonical" href="https://ncan.nz/gallery/">
@@ -36,7 +39,8 @@
 <header class="site-header" id="site-header">
   <div class="wrap site-header__bar">
     <a class="brand" href="/" aria-label="North Canterbury Athletic Club — home">
-      <img src="/assets/img/logo.svg" alt="" width="888" height="508">
+      <img class="brand__logo" src="/assets/img/logo.svg" alt="" width="888" height="508">
+      <img class="brand__logo-dark" src="/assets/img/logo-dark.svg" alt="" width="888" height="508">
       <span class="brand__name">
         North Canterbury<br>Athletic Club
       </span>
@@ -40532,6 +40536,7 @@
     <div class="site-footer__base">
       <p>&copy; 2026 <a href="/">North Canterbury Athletic Club Incorporated</a>. All rights reserved.</p>
       <ul>
+        <li><button class="theme-switch" type="button" id="theme-switch" hidden>Switch to dark mode</button></li>
         <li><a href="/">Back to top</a></li>
       </ul>
     </div>
