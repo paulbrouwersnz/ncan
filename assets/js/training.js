@@ -73,11 +73,21 @@
 
   var SEX = { girls: 'Girls', boys: 'Boys', both: 'Girls & Boys' };
   function groupLabel(g) {
+    if (g.parents) { return 'Parents & guardians'; }
     if (g.everyone) { return 'Everyone'; }
     if (!g.grades.length) { return g.sex === 'both' ? 'Group' : SEX[g.sex]; }
     return 'Grade ' + g.grades.join(', ') + ' ' + SEX[g.sex];
   }
   var STATUS = { draft: 'Draft', released: 'Released', cancelled: 'Cancelled' };
+
+  // an activity's name with its icon in front (assets/js/training-icons.js), if it has one
+  function activity(cls, name) {
+    var span = el('span', cls);
+    var pic = window.NCANTrainingIcons && name && NCANTrainingIcons.icon(name);
+    if (pic) { span.appendChild(pic); }
+    span.appendChild(document.createTextNode(name || '—'));
+    return span;
+  }
 
   function apiError(res, fallback) {
     return (res && res.body && res.body.error) || fallback || 'Sorry, that didn’t work. Please try again.';
@@ -88,6 +98,7 @@
   function load() {
     return NCAN.get('/training').then(function (data) {
       state.canEdit = !!data.can_edit;
+      state.squad = data.squad;
       state.events = data.events || [];
       state.grades = data.grades || state.grades;
       state.upcoming = data.upcoming || [];
@@ -147,6 +158,7 @@
       if (plan.slots && plan.slots.length) { card.appendChild(planTable(plan)); }
       else if (plan.status !== 'cancelled') { card.appendChild(el('p', 'note', 'No time slots yet.')); }
     }
+    if (plan.status !== 'cancelled' && plan.slots && plan.slots.length) { card.appendChild(printButtons(plan)); }
     if (state.canEdit) {
       if (plan.updated_by) {
         card.appendChild(el('p', 'plan__by', 'Last changed by ' + plan.updated_by + ', ' +
@@ -185,9 +197,9 @@
       var td = el('td');
       var groups = el('ul', 'plan__groups');
       slot.groups.forEach(function (g) {
-        var li = el('li', 'plan__group' + (g.everyone ? ' plan__group--everyone' : ''));
+        var li = el('li', 'plan__group' + (g.everyone ? ' plan__group--everyone' : g.parents ? ' plan__group--parents' : ''));
         li.appendChild(el('span', 'plan__who', groupLabel(g)));
-        if (g.event) { li.appendChild(el('span', 'plan__what', g.event)); }
+        if (g.event) { li.appendChild(activity('plan__what', g.event)); }
         if (g.note) { li.appendChild(el('span', 'plan__note', g.note)); }
         if (g.coach_note) { li.appendChild(coachNote(g.coach_note, 'span')); }
         groups.appendChild(li);
@@ -296,7 +308,9 @@
 
   function blankPlan() {
     return { notes: '', slots: [
-      { start: '17:00', end: '17:15', note: '', groups: [{ everyone: true, grades: [], sex: 'both', event: 'Warm up', note: '', coach_note: '' }] },
+      { start: '17:00', end: '17:15', note: '', groups: [
+        { everyone: true, parents: false, grades: [], sex: 'both', event: 'Warm up', note: '', coach_note: '' },
+        { everyone: false, parents: true, grades: [], sex: 'both', event: 'Set up', note: '', coach_note: '' }] },
       { start: '17:15', end: '17:30', note: '', groups: [] }
     ] };
   }
@@ -304,7 +318,7 @@
   function copySlots(slots) {
     return (slots || []).map(function (s) {
       return { start: s.start, end: s.end, note: s.note || '', coach_note: s.coach_note || '', groups: s.groups.map(function (g) {
-        return { everyone: !!g.everyone, grades: g.grades.slice(), sex: g.sex || 'both', event: g.event || '',
+        return { everyone: !!g.everyone, parents: !!g.parents, grades: g.grades.slice(), sex: g.sex || 'both', event: g.event || '',
                  note: g.note || '', coach_note: g.coach_note || '' };
       }) };
     });
@@ -344,28 +358,17 @@
     editorBox.appendChild(head);
 
     // the date (a new plan only: a saved plan's date is its name)
-    if (plan.isNew) {
-      var dateField = el('p', 'records-field');
-      var dl = el('label', null, 'Session date');
-      var di = el('input');
-      di.type = 'date';
-      di.id = 'plan-date';
-      di.value = plan.date;
-      di.required = true;
-      dl.htmlFor = di.id;
-      di.addEventListener('change', function () { plan.date = di.value; changed(); });
-      dateField.appendChild(dl);
-      dateField.appendChild(di);
-      editorBox.appendChild(dateField);
-    }
+    if (plan.isNew) { editorBox.appendChild(dateField(plan)); }
 
+    // the chips, with how to use them; while one is picked by tapping, a slim bar
+    // stays in view (pinned under the site header) saying which, until Done
     editorBox.appendChild(palette());
+    var placing = el('div', 'plan-placing');
+    placing.id = 'plan-placing';
+    placing.appendChild(el('p', 'plan-placing__text'));
+    placing.appendChild(button('Done', 'btn btn--accent btn--sm', function () { unpick(); }));
+    editorBox.appendChild(placing);
     editorBox.classList.toggle('is-placing', !!picked);
-
-    var hint = el('p', 'plan-editor__hint');
-    hint.id = 'plan-hint';
-    hint.setAttribute('role', 'status');
-    editorBox.appendChild(hint);
     showHint();
 
     // the table
@@ -416,14 +419,78 @@
     var bar = el('div', 'plan__actions plan-editor__save');
     var said = el('p', 'plan__said');
     said.setAttribute('role', 'status');
-    var saveLabel = plan.status === 'released' ? 'Save (stays released)' : 'Save as a draft';
-    bar.appendChild(button(saveLabel, 'btn btn--sm', function () { save(false, said); }));
-    if (plan.status !== 'released') {
-      bar.appendChild(button('Save and release', 'btn btn--accent btn--sm', function () { save(true, said); }));
+    // A released plan: save it as it is (still public), or save it as a draft, which
+    // takes it off the public page until it's released again.
+    if (plan.status === 'released') {
+      bar.appendChild(button('Save (stays released)', 'btn btn--accent btn--sm', function () { save(null, said); }));
+      bar.appendChild(button('Save as a draft', 'btn btn--sm', function () { save('draft', said); }));
+    } else {
+      bar.appendChild(button('Save as a draft', 'btn btn--sm', function () { save(null, said); }));
+      bar.appendChild(button('Save and release', 'btn btn--accent btn--sm', function () { save('release', said); }));
     }
     bar.appendChild(button('Close without saving', null, closeEditor));
     editorBox.appendChild(bar);
     editorBox.appendChild(said);
+  }
+
+  // The session's date: a week back or on with the arrows (sessions are weekly), or
+  // any date from the calendar, which opens from anywhere on the box. Under it, the
+  // date in words, and a word if it isn't a Tuesday or already has a plan.
+  function dateField(plan) {
+    var box = el('div', 'plan-date');
+    var label = el('label', 'plan-date__label', 'Session date');
+    var input = el('input', 'plan-date__input');
+    input.type = 'date';
+    input.id = 'plan-date';
+    input.value = plan.date;
+    input.required = true;
+    label.htmlFor = input.id;
+    var said = el('p', 'plan-date__said');
+    said.setAttribute('aria-live', 'polite');
+
+    function show() {
+      said.textContent = '';
+      if (!plan.date) { said.appendChild(el('span', 'plan-date__warn', 'Choose a date.')); return; }
+      said.appendChild(el('strong', null, longDate(plan.date)));
+      if (parseDate(plan.date).getDay() !== 2) {
+        said.appendChild(el('span', 'plan-date__warn', 'Not a Tuesday'));
+      }
+      if ([].concat(state.upcoming, state.past).some(function (p) { return p.date === plan.date; })) {
+        said.appendChild(el('span', 'plan-date__warn', 'Already has a plan: saving replaces it'));
+      }
+    }
+    function set(value) {
+      plan.date = value;
+      input.value = value;
+      changed();
+      show();
+    }
+    function step(days) {
+      var d = parseDate(plan.date || iso(new Date()));
+      d.setDate(d.getDate() + days);
+      set(iso(d));
+    }
+    input.addEventListener('change', function () { set(input.value); });
+    // the whole box opens the calendar, not just its icon (where the browser can)
+    input.addEventListener('click', function () {
+      try { if (input.showPicker) { input.showPicker(); } } catch (e) { /* not allowed here: typing still works */ }
+    });
+
+    var row = el('div', 'plan-date__row');
+    var back = button('‹', 'plan-date__step', function () { step(-7); });
+    back.setAttribute('aria-label', 'A week earlier');
+    back.title = 'A week earlier';
+    var on = button('›', 'plan-date__step', function () { step(7); });
+    on.setAttribute('aria-label', 'A week later');
+    on.title = 'A week later';
+    row.appendChild(back);
+    row.appendChild(input);
+    row.appendChild(on);
+    box.appendChild(label);
+    box.appendChild(row);
+    box.appendChild(said);
+    show();
+    return box;
   }
 
   // the chips to drag (or tap) onto the table
@@ -440,7 +507,8 @@
     }
     group('Grades', state.grades.map(function (n) { return { kind: 'grade', value: n, label: 'Grade ' + n }; }));
     group('Who', [{ kind: 'sex', value: 'girls', label: 'Girls' }, { kind: 'sex', value: 'boys', label: 'Boys' },
-                  { kind: 'sex', value: 'both', label: 'Girls & Boys' }, { kind: 'everyone', value: true, label: 'Everyone' }]);
+                  { kind: 'sex', value: 'both', label: 'Girls & Boys' }, { kind: 'everyone', value: true, label: 'Everyone' },
+                  { kind: 'parents', value: true, label: 'Parents & guardians' }]);
     var events = group('Events', state.events.map(function (e) { return { kind: 'event', value: e, label: e }; }));
     // an event of their own
     var own = el('form', 'plan-palette__own');
@@ -462,11 +530,20 @@
       oi.value = '';
     });
     box.appendChild(own);
+    var hint = el('p', 'plan-editor__hint');
+    hint.id = 'plan-hint';
+    hint.setAttribute('role', 'status');
+    box.appendChild(hint);
     return box;
   }
 
   function chip(c) {
-    var b = el('button', 'plan-chip plan-chip--' + c.kind, c.label);
+    var b = c.kind === 'event' ? activity('plan-chip plan-chip--event', c.label) : el('span', 'plan-chip plan-chip--' + c.kind, c.label);
+    b = (function (span) {         // the chip is a button holding the icon and name
+      var btn = el('button', span.className);
+      while (span.firstChild) { btn.appendChild(span.firstChild); }
+      return btn;
+    }(b));
     b.type = 'button';
     b.draggable = true;
     b.setAttribute('aria-pressed', String(!!picked && picked.kind === c.kind && picked.value === c.value));
@@ -490,24 +567,42 @@
 
   function showHint() {
     var hint = document.getElementById('plan-hint');
+    var bar = document.getElementById('plan-placing');
     if (!hint) { return; }
-    hint.textContent = picked
-      ? 'Now tap each group to give “' + picked.label + '” to, or a time slot’s “New group” to start one. ' +
-        'Tap the chip again, or press Escape, when you’re done.'
-      : 'Drag a grade, Girls / Boys / Everyone or an event onto a group, or onto a time slot to start a new group. ' +
-        'On a phone, tap a chip and then the group.';
+    hint.textContent = 'Drag a grade, Girls / Boys / Everyone or an event onto a group, or onto a time slot’s ' +
+      '“New group” to start one. On a phone, tap a chip, then each group it goes on.';
+    if (!bar) { return; }
+    bar.hidden = !picked;
+    var text = bar.querySelector('.plan-placing__text');
+    text.textContent = '';
+    if (picked) {
+      text.appendChild(document.createTextNode('Placing '));
+      text.appendChild(el('strong', null, picked.label));
+      text.appendChild(document.createTextNode(': tap each group it goes on, or a time slot’s “New group”.'));
+    }
+  }
+
+  // stop placing a tapped chip
+  function unpick() {
+    picked = null;
+    editorBox.classList.remove('is-placing');
+    Array.prototype.forEach.call(editorBox.querySelectorAll('.plan-chip'), function (x) { x.setAttribute('aria-pressed', 'false'); });
+    showHint();
   }
 
   // what a chip does to a group
   function apply(g, c) {
     if (c.kind === 'grade') {
       g.everyone = false;
+      g.parents = false;
       if (g.grades.indexOf(c.value) === -1) { g.grades.push(c.value); g.grades.sort(function (a, b) { return a - b; }); }
     } else if (c.kind === 'sex') {
       g.everyone = false;
+      g.parents = false;
       g.sex = c.value;
-    } else if (c.kind === 'everyone') {
-      g.everyone = true;
+    } else if (c.kind === 'everyone' || c.kind === 'parents') {
+      g.everyone = c.kind === 'everyone';     // everyone: all the athletes
+      g.parents = c.kind === 'parents';       // the parents and guardians (setting up, packing down)
       g.grades = [];
       g.sex = 'both';
     } else if (c.kind === 'event') {
@@ -517,7 +612,7 @@
   }
 
   function newGroup(slot, c) {
-    var g = { everyone: false, grades: [], sex: 'both', event: '', note: '', coach_note: '' };
+    var g = { everyone: false, parents: false, grades: [], sex: 'both', event: '', note: '', coach_note: '' };
     if (c) { apply(g, c); }
     slot.groups.push(g);
     changed();
@@ -538,7 +633,7 @@
       if (c && c.kind) { onChip(c); renderEditor(); }
     });
     node.addEventListener('click', function (e) {
-      if (!picked || e.target.closest('input, textarea, select, button:not(.plan-slot__new)')) { return; }
+      if (!picked || e.target.closest('input, textarea, select, .plan-slot__times, button:not(.plan-slot__new)')) { return; }
       e.stopPropagation();          // a group inside a time slot: only the group gets it
       onChip(picked);
       renderEditor();
@@ -548,27 +643,50 @@
   function slotRow(slot, i) {
     var plan = editing;
     var row = el('div', 'plan-slot');
+    // The slot's times, on one slim line above its groups: start – end, and how
+    // long the slot is. Moving the start moves the end with it, so the slot
+    // keeps its length; the end can then be changed on its own.
     var times = el('div', 'plan-slot__times');
+    times.appendChild(el('span', 'plan-date__label', 'Time'));
+    var box = el('div', 'plan-time');
+    var length = el('p', 'plan-time__length');
+    function showLength() {
+      var mins = minutes(slot.end) - minutes(slot.start);
+      length.textContent = mins > 0 ? mins + ' minutes' : 'Ends before it starts';
+      length.classList.toggle('plan-date__warn', mins <= 0);
+    }
     function timeInput(which, label) {
-      var p = el('p', 'records-field');
-      var l = el('label', null, label);
-      var t = el('input');
+      var t = el('input', 'plan-time__input');
       t.type = 'time';
       t.step = 300;
       t.id = 'slot-' + i + '-' + which;
       t.value = slot[which];
+      var l = el('label', 'visually-hidden', label + ', ' + timeRange(slot.start, slot.end) + ' slot');
       l.htmlFor = t.id;
       t.addEventListener('change', function () {
         if (!t.value) { t.value = slot[which]; return; }
+        if (which === 'start') {
+          var keep = minutes(slot.end) - minutes(slot.start);
+          slot.end = addMinutes(t.value, keep > 0 ? keep : 15);
+          endInput.value = slot.end;
+        }
         slot[which] = t.value;
         changed();
+        showLength();
       });
-      p.appendChild(l);
-      p.appendChild(t);
-      return p;
+      t.addEventListener('click', function () {
+        try { if (t.showPicker) { t.showPicker(); } } catch (e) { /* typing still works */ }
+      });
+      box.appendChild(l);
+      box.appendChild(t);
+      return t;
     }
-    times.appendChild(timeInput('start', 'From'));
-    times.appendChild(timeInput('end', 'To'));
+    timeInput('start', 'Starts');
+    box.appendChild(el('span', 'plan-time__dash', '–'));
+    var endInput = timeInput('end', 'Ends');
+    times.appendChild(box);
+    times.appendChild(length);
+    showLength();
     row.appendChild(times);
 
     var groups = el('div', 'plan-slot__groups');
@@ -628,7 +746,7 @@
   }
 
   function groupCell(slot, g, gi) {
-    var cell = el('div', 'plan-group' + (g.everyone ? ' plan-group--everyone' : ''));
+    var cell = el('div', 'plan-group' + (g.everyone ? ' plan-group--everyone' : g.parents ? ' plan-group--parents' : ''));
     cell.tabIndex = 0;
     cell.setAttribute('aria-label', groupLabel(g) + (g.event ? ', ' + g.event : '') + '. Drop or place a chip here.');
     var who = el('div', 'plan-group__who');
@@ -643,7 +761,7 @@
         renderEditor();
       }));
     });
-    if (!g.everyone) {
+    if (!g.everyone && !g.parents) {
       var sex = el('select', 'plan-group__sex');
       sex.setAttribute('aria-label', 'Girls, boys or both');
       [['both', 'Girls & Boys'], ['girls', 'Girls'], ['boys', 'Boys']].forEach(function (o) {
@@ -658,14 +776,25 @@
     who.appendChild(tokens);
     cell.appendChild(who);
 
+    var whatRow = el('div', 'plan-group__event-row');
+    var whatIcon = el('span', 'plan-group__event-icon');
+    function showIcon() {
+      whatIcon.textContent = '';
+      var pic = window.NCANTrainingIcons && NCANTrainingIcons.icon(g.event);
+      if (pic) { whatIcon.appendChild(pic); }
+      whatIcon.hidden = !pic;
+    }
     var what = el('input', 'plan-group__event');
     what.value = g.event;
     what.maxLength = 60;
     what.placeholder = 'Activity';
     what.setAttribute('aria-label', 'Activity for ' + groupLabel(g));
     what.setAttribute('list', 'plan-events');
-    what.addEventListener('input', function () { g.event = what.value; changed(); });
-    cell.appendChild(what);
+    what.addEventListener('input', function () { g.event = what.value; changed(); showIcon(); });
+    showIcon();
+    whatRow.appendChild(whatIcon);
+    whatRow.appendChild(what);
+    cell.appendChild(whatRow);
     var note = el('input', 'plan-group__note');
     note.value = g.note;
     note.maxLength = 300;
@@ -697,7 +826,8 @@
     return cell;
   }
 
-  function save(release, said) {
+  // save the plan, then (`then`) release it or take it back to a draft
+  function save(then, said) {
     var plan = editing;
     if (!plan.date) { said.textContent = 'Choose the session’s date.'; return; }
     if (plan.isNew && [].concat(state.upcoming, state.past).some(function (p) { return p.date === plan.date; }) &&
@@ -707,11 +837,16 @@
     said.textContent = 'Saving…';
     NCAN.send('/training/' + plan.date, { notes: plan.notes, coach_notes: plan.coach_notes, slots: plan.slots }).then(function (res) {
       if (res.status !== 200) { said.textContent = apiError(res); return null; }
-      if (!release) { return res; }
-      return NCAN.send('/training/' + plan.date + '/release', {});
+      if (!then) { return res; }
+      return NCAN.send('/training/' + plan.date + '/' + then, {});
     }).then(function (res) {
       if (!res) { return; }
-      if (res.status !== 200) { said.textContent = 'Saved as a draft, but not released: ' + apiError(res); dirty = false; return; }
+      if (res.status !== 200) {
+        said.textContent = (then === 'release' ? 'Saved as a draft, but not released: '
+                                                : 'Saved, but still released: ') + apiError(res);
+        dirty = false;
+        return;
+      }
       dirty = false;
       editing = null;
       editorBox.hidden = true;
@@ -722,6 +857,189 @@
       });
     }).catch(function (err) { said.textContent = err.message; });
   }
+
+  // ------------------------------------------------------------ printing
+
+  // Print plan (everyone); staff also: with the coaches' notes, and strips to cut up
+  function printButtons(plan) {
+    var row = el('div', 'plan__print');
+    row.appendChild(button('Print plan', null, function () { printPlan(plan, false); }));
+    if (state.canEdit) {
+      row.appendChild(button('Print with coaches’ notes', null, function () { printPlan(plan, true); }));
+      row.appendChild(button('Print strips for each group', null, function () { printStrips(plan); }));
+    }
+    return row;
+  }
+
+  // The sheet that's printed: built on demand, shown only in print (body.plan-printing)
+  function sheet(title, plan) {
+    var old = document.getElementById('plan-print');
+    if (old) { old.remove(); }
+    var box = el('div', 'plan-print');
+    box.id = 'plan-print';
+    var head = el('div', 'plan-print__head');
+    var logo = el('img', 'plan-print__logo');
+    logo.src = '/assets/img/logo.svg';
+    logo.alt = '';
+    head.appendChild(logo);
+    var words = el('div');
+    words.appendChild(el('p', 'plan-print__club', 'North Canterbury Athletic Club · ' + (state.squad || 'Children’s 7–14 team')));
+    words.appendChild(el('h1', 'plan-print__title', title));
+    words.appendChild(el('p', 'plan-print__date', longDate(plan.date)));
+    head.appendChild(words);
+    box.appendChild(head);
+    return box;
+  }
+
+  function go(box) {
+    document.body.appendChild(box);
+    document.body.classList.add('plan-printing');
+    window.print();
+  }
+  window.addEventListener('afterprint', function () {
+    document.body.classList.remove('plan-printing');
+    var old = document.getElementById('plan-print');
+    if (old) { old.remove(); }
+  });
+
+  function printNote(text, coach) {
+    var n = el('span', coach ? 'plan-print__coach' : 'plan-print__note');
+    if (coach) { n.appendChild(el('strong', null, 'Coaches: ')); }
+    n.appendChild(document.createTextNode(text));
+    return n;
+  }
+
+  // the whole plan: a row per time slot, each group's activity in it
+  function printPlan(plan, coaches) {
+    var box = sheet(coaches ? 'Training plan (with coaches’ notes)' : 'Training plan', plan);
+    if (plan.notes) { box.appendChild(el('p', 'plan-print__notes', plan.notes)); }
+    if (coaches && plan.coach_notes) { box.appendChild(el('p', 'plan-print__notes', '')).appendChild(printNote(plan.coach_notes, true)); }
+    var table = el('table', 'plan-print__table');
+    var tbody = el('tbody');
+    plan.slots.forEach(function (slot) {
+      var tr = el('tr');
+      tr.appendChild(el('th', 'plan-print__time', timeRange(slot.start, slot.end)));
+      var td = el('td');
+      var list = el('div', 'plan-print__groups');
+      slot.groups.forEach(function (g) {
+        var cell = el('div', 'plan-print__group' + (g.everyone ? ' plan-print__group--everyone' : g.parents ? ' plan-print__group--parents' : ''));
+        cell.appendChild(el('span', 'plan-print__who', groupLabel(g)));
+        cell.appendChild(activity('plan-print__what', g.event));
+        if (g.note) { cell.appendChild(printNote(g.note, false)); }
+        if (coaches && g.coach_note) { cell.appendChild(printNote(g.coach_note, true)); }
+        list.appendChild(cell);
+      });
+      td.appendChild(list);
+      if (slot.note) { td.appendChild(printNote(slot.note, false)); }
+      if (coaches && slot.coach_note) { td.appendChild(printNote(slot.coach_note, true)); }
+      tr.appendChild(td);
+      tbody.appendChild(tr);
+    });
+    table.appendChild(tbody);
+    box.appendChild(table);
+    go(box);
+  }
+
+  /* Strips: the plan cut up by who does what. Each athlete is a grade and a sex
+     ("girls 7"); their path through the session is which group they're in at each
+     time slot (Everyone counts for all). Athletes with the same path get one strip,
+     so there are as few strips as the plan allows: e.g. grade 10-12 and 13-14 are
+     split when they do different things at 5:15, even if they're together for
+     relays later. Grades no group names don't get a strip. The parents and
+     guardians get one of their own (Everyone means the athletes), last, with only
+     the time slots they have something in. */
+  var SEXES = ['girls', 'boys'];
+  function cellsOf(g) {
+    if (g.parents) { return ['parents']; }
+    if (g.everyone) { return null; }                          // everyone: all the athletes
+    var sexes = g.sex === 'both' ? SEXES : [g.sex];
+    var grades = g.grades.length ? g.grades : (g.sex === 'both' ? [] : state.grades);   // "Girls": every grade
+    var out = [];
+    sexes.forEach(function (x) { grades.forEach(function (n) { out.push(x + ' ' + n); }); });
+    return out;
+  }
+
+  function strips(plan) {
+    var order = [];                                           // athletes, in the order the plan names them
+    plan.slots.forEach(function (slot) {
+      slot.groups.forEach(function (g) {
+        (cellsOf(g) || []).forEach(function (c) { if (order.indexOf(c) === -1) { order.push(c); } });
+      });
+    });
+    if (order.indexOf('parents') !== -1) { order.splice(order.indexOf('parents'), 1); order.push('parents'); }
+    if (!order.length) { return [{ label: 'Everyone', path: plan.slots.map(function (s) { return s.groups; }) }]; }
+    var bySignature = {};
+    var out = [];
+    order.forEach(function (c) {
+      var path = plan.slots.map(function (slot) {
+        return slot.groups.filter(function (g) {
+          var cells = cellsOf(g);
+          return cells ? cells.indexOf(c) !== -1 : c !== 'parents';
+        });
+      });
+      var sig = path.map(function (gs, i) {
+        return gs.map(function (g) { return plan.slots[i].groups.indexOf(g); }).join('+');
+      }).join('|');
+      if (!bySignature[sig]) { bySignature[sig] = { cells: [], path: path }; out.push(bySignature[sig]); }
+      bySignature[sig].cells.push(c);
+    });
+    out.forEach(function (st) { st.label = stripLabel(st.cells); st.parents = st.cells[0] === 'parents'; });
+    return out;
+  }
+
+  // "Grade 7, 8, 9 Girls", "Grade 10, 11, 12 Girls & Boys", "Grade 7 Girls and Grade 8 Boys"
+  function stripLabel(cells) {
+    if (cells[0] === 'parents') { return 'Parents & guardians'; }
+    function grades(sex) {
+      return cells.filter(function (c) { return c.indexOf(sex + ' ') === 0; })
+        .map(function (c) { return +c.split(' ')[1]; }).sort(function (a, b) { return a - b; });
+    }
+    var girls = grades('girls'), boys = grades('boys');
+    if (girls.length && girls.join() === boys.join()) { return 'Grade ' + girls.join(', ') + ' Girls & Boys'; }
+    var parts = [];
+    if (girls.length) { parts.push('Grade ' + girls.join(', ') + ' Girls'); }
+    if (boys.length) { parts.push('Grade ' + boys.join(', ') + ' Boys'); }
+    return parts.join(' and ');
+  }
+
+  function printStrips(plan) {
+    var box = sheet('Training plan: group strips', plan);
+    box.classList.add('plan-print--strips');
+    var list = strips(plan);
+    box.appendChild(el('p', 'plan-print__notes', list.length + ' groups. Cut along the dashed lines, one strip for each group.'));
+    list.forEach(function (st) {
+      var strip = el('section', 'plan-strip');
+      var head = el('div', 'plan-strip__head');
+      head.appendChild(el('strong', 'plan-strip__who', st.label));
+      head.appendChild(el('span', 'plan-strip__date', longDate(plan.date)));
+      strip.appendChild(head);
+      var table = el('table', 'plan-strip__table');
+      var tbody = el('tbody');
+      plan.slots.forEach(function (slot, i) {
+        var tr = el('tr');
+        tr.appendChild(el('th', 'plan-print__time', timeRange(slot.start, slot.end)));
+        var td = el('td');
+        var gs = st.path[i];
+        if (!gs.length && st.parents) { return; }             // the parents: only their own slots
+        if (!gs.length) { td.appendChild(el('span', 'plan-print__note', '—')); }
+        gs.forEach(function (g, k) {
+          if (k) { td.appendChild(document.createTextNode(' / ')); }
+          td.appendChild(activity('plan-print__what', g.event));
+          if (g.note) { td.appendChild(printNote(g.note, false)); }
+        });
+        if (slot.note) { td.appendChild(printNote(slot.note, false)); }
+        tr.appendChild(td);
+        tbody.appendChild(tr);
+      });
+      table.appendChild(tbody);
+      strip.appendChild(table);
+      box.appendChild(strip);
+    });
+    go(box);
+  }
+
+  // for checking the strips without printing (see the tests in the page's console)
+  window.NCANTraining = { strips: strips, stripLabel: stripLabel };
 
   // ------------------------------------------------------------ start
 
@@ -742,12 +1060,7 @@
   });
 
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && picked) {
-      picked = null;
-      editorBox.classList.remove('is-placing');
-      Array.prototype.forEach.call(editorBox.querySelectorAll('.plan-chip'), function (x) { x.setAttribute('aria-pressed', 'false'); });
-      showHint();
-    }
+    if (e.key === 'Escape' && picked) { unpick(); }
   });
   window.addEventListener('beforeunload', function (e) {
     if (editing && dirty) { e.preventDefault(); e.returnValue = ''; }
