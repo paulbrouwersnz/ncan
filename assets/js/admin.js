@@ -699,6 +699,15 @@
       return x.name + ' −' + x.removed.join(', '); })) || 'nobody')));
     out.appendChild(diff);
 
+    // what the reader decided along the way, e.g. a membership counted in the season of the
+    // Athletics Canterbury and NZ registrations bought with it, not the one its name gives
+    if ((rep.notes || []).length) {
+      out.appendChild(el('h3', 'access-sub', 'Notes from reading the files'));
+      var nl = el('ul', 'upload-list');
+      rep.notes.forEach(function (n) { nl.appendChild(el('li', null, n)); });
+      out.appendChild(nl);
+    }
+
     var form = el('form', 'upload-go');
     var tick = null;
     if (rep.warnings.length) {
