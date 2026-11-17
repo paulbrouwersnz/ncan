@@ -56,11 +56,11 @@ def write_atomic(path, text):
 
 
 def content_hash(path):
-    digest = hashlib.sha256()
+    """The file's hash, the same on every computer: line endings count as \\n, so a
+    Windows checkout (git turns \\n into \\r\\n there) stamps what the site serves."""
     with open(path, 'rb') as fh:
-        for chunk in iter(lambda: fh.read(1 << 16), b''):
-            digest.update(chunk)
-    return digest.hexdigest()[:HASH_LENGTH]
+        data = fh.read().replace(b'\r\n', b'\n')
+    return hashlib.sha256(data).hexdigest()[:HASH_LENGTH]
 
 
 def targets():
