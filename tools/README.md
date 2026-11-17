@@ -42,7 +42,9 @@ is the home page. `tools/pages.py` is the one place the tools learn this.
   block at the end. The site follows the device's light or dark setting; the
   "Switch to dark mode" button in the footer (`assets/js/theme.js`) overrides it
   for that browser. When adding a style, use the roles, and look at the page in
-  both modes. The header logo has a dark version (`assets/img/logo-dark.svg`: the
+  both modes. Every page has `<meta name="darkreader-lock">`, so the Dark Reader
+  browser extension leaves the site to its own dark mode rather than recolouring it.
+  The header logo has a dark version (`assets/img/logo-dark.svg`: the
   same drawing with a lighter green), to be redone if the logo changes.
 - **Files at the root that browsers and others look for by name**:
   `favicon.ico` and `apple-touch-icon.png` (made by `build-icons.py`),
@@ -110,7 +112,8 @@ Adds a content hash to the stylesheet link (`styles.css?v=1a2b3c4d`) and to
 every script from `assets/js/` (`admin.js?v=...`) in every page and in
 `partials/head.html`, so browsers fetch the new file after it changes, rather
 than running an old script against the club's updated API. Changes one line
-per file reference.
+per file reference. The hash ignores line endings, so a Windows checkout (where
+git gives files Windows line endings) stamps the same as the files the site serves.
 
 ```bash
 python tools/stamp-assets.py            # stamp
