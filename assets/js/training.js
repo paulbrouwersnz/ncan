@@ -80,6 +80,18 @@
   }
   var STATUS = { draft: 'Draft', released: 'Released', cancelled: 'Cancelled' };
 
+  // A group's activities: up to four in a time slot (starts, then sprints). Plans
+  // saved before that have one ("event").
+  var MAX_EVENTS = 4;
+  function eventsOf(g) { return g.events || (g.event ? [g.event] : []); }
+  // all of a group's activities, each with its icon
+  function activities(cls, g) {
+    var box = el('span', cls + 's');
+    eventsOf(g).forEach(function (name) { box.appendChild(activity(cls, name)); });
+    if (!box.firstChild) { box.appendChild(activity(cls, '')); }
+    return box;
+  }
+
   // an activity's name with its icon in front (assets/js/training-icons.js), if it has one
   function activity(cls, name) {
     var span = el('span', cls);
@@ -199,7 +211,7 @@
       slot.groups.forEach(function (g) {
         var li = el('li', 'plan__group' + (g.everyone ? ' plan__group--everyone' : g.parents ? ' plan__group--parents' : ''));
         li.appendChild(el('span', 'plan__who', groupLabel(g)));
-        if (g.event) { li.appendChild(activity('plan__what', g.event)); }
+        if (eventsOf(g).length) { li.appendChild(activities('plan__what', g)); }
         if (g.note) { li.appendChild(el('span', 'plan__note', g.note)); }
         if (g.coach_note) { li.appendChild(coachNote(g.coach_note, 'span')); }
         groups.appendChild(li);
@@ -309,8 +321,8 @@
   function blankPlan() {
     return { notes: '', slots: [
       { start: '17:00', end: '17:15', note: '', groups: [
-        { everyone: true, parents: false, grades: [], sex: 'both', event: 'Warm up', note: '', coach_note: '' },
-        { everyone: false, parents: true, grades: [], sex: 'both', event: 'Set up', note: '', coach_note: '' }] },
+        { everyone: true, parents: false, grades: [], sex: 'both', events: ['Warm up'], note: '', coach_note: '' },
+        { everyone: false, parents: true, grades: [], sex: 'both', events: ['Set up'], note: '', coach_note: '' }] },
       { start: '17:15', end: '17:30', note: '', groups: [] }
     ] };
   }
@@ -318,7 +330,7 @@
   function copySlots(slots) {
     return (slots || []).map(function (s) {
       return { start: s.start, end: s.end, note: s.note || '', coach_note: s.coach_note || '', groups: s.groups.map(function (g) {
-        return { everyone: !!g.everyone, parents: !!g.parents, grades: g.grades.slice(), sex: g.sex || 'both', event: g.event || '',
+        return { everyone: !!g.everyone, parents: !!g.parents, grades: g.grades.slice(), sex: g.sex || 'both', events: eventsOf(g).slice(),
                  note: g.note || '', coach_note: g.coach_note || '' };
       }) };
     });
@@ -606,13 +618,14 @@
       g.grades = [];
       g.sex = 'both';
     } else if (c.kind === 'event') {
-      g.event = c.value;
+      g.events = eventsOf(g);
+      if (g.events.indexOf(c.value) === -1 && g.events.length < MAX_EVENTS) { g.events.push(c.value); }
     }
     changed();
   }
 
   function newGroup(slot, c) {
-    var g = { everyone: false, parents: false, grades: [], sex: 'both', event: '', note: '', coach_note: '' };
+    var g = { everyone: false, parents: false, grades: [], sex: 'both', events: [], note: '', coach_note: '' };
     if (c) { apply(g, c); }
     slot.groups.push(g);
     changed();
@@ -748,7 +761,7 @@
   function groupCell(slot, g, gi) {
     var cell = el('div', 'plan-group' + (g.everyone ? ' plan-group--everyone' : g.parents ? ' plan-group--parents' : ''));
     cell.tabIndex = 0;
-    cell.setAttribute('aria-label', groupLabel(g) + (g.event ? ', ' + g.event : '') + '. Drop or place a chip here.');
+    cell.setAttribute('aria-label', groupLabel(g) + (eventsOf(g).length ? ', ' + eventsOf(g).join(', ') : '') + '. Drop or place a chip here.');
     var who = el('div', 'plan-group__who');
     who.appendChild(el('strong', null, groupLabel(g)));
     // take a grade off again
@@ -776,25 +789,39 @@
     who.appendChild(tokens);
     cell.appendChild(who);
 
-    var whatRow = el('div', 'plan-group__event-row');
-    var whatIcon = el('span', 'plan-group__event-icon');
-    function showIcon() {
-      whatIcon.textContent = '';
-      var pic = window.NCANTrainingIcons && NCANTrainingIcons.icon(g.event);
-      if (pic) { whatIcon.appendChild(pic); }
-      whatIcon.hidden = !pic;
+    g.events = eventsOf(g);
+    var acts = el('div', 'plan-group__acts');
+    g.events.forEach(function (name, k) {
+      var tag = el('span', 'plan-group__act');
+      tag.appendChild(activity('plan-group__act-name', name));
+      var off = button('×', 'plan-group__act-off', function (e) {
+        e.stopPropagation();
+        g.events.splice(k, 1);
+        changed();
+        renderEditor();
+      });
+      off.setAttribute('aria-label', 'Remove ' + name + ' from ' + groupLabel(g));
+      tag.appendChild(off);
+      acts.appendChild(tag);
+    });
+    cell.appendChild(acts);
+    if (g.events.length < MAX_EVENTS) {
+      var what = el('input', 'plan-group__event');
+      what.maxLength = 60;
+      what.placeholder = g.events.length ? 'Add another activity' : 'Activity';
+      what.setAttribute('aria-label', (g.events.length ? 'Another activity for ' : 'Activity for ') + groupLabel(g));
+      what.setAttribute('list', 'plan-events');
+      // added when the typing is done: Enter, or leaving the box
+      var add = function () {
+        var v = what.value.trim();
+        if (!v) { return; }
+        if (g.events.indexOf(v) === -1) { g.events.push(v); changed(); }
+        renderEditor();
+      };
+      what.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); add(); } });
+      what.addEventListener('change', add);
+      cell.appendChild(what);
     }
-    var what = el('input', 'plan-group__event');
-    what.value = g.event;
-    what.maxLength = 60;
-    what.placeholder = 'Activity';
-    what.setAttribute('aria-label', 'Activity for ' + groupLabel(g));
-    what.setAttribute('list', 'plan-events');
-    what.addEventListener('input', function () { g.event = what.value; changed(); showIcon(); });
-    showIcon();
-    whatRow.appendChild(whatIcon);
-    whatRow.appendChild(what);
-    cell.appendChild(whatRow);
     var note = el('input', 'plan-group__note');
     note.value = g.note;
     note.maxLength = 300;
@@ -872,11 +899,13 @@
   }
 
   // The sheet that's printed: built on demand, shown only in print (body.plan-printing)
+  // the sheet, with the club's header (logo, title, date) unless `title` is null
   function sheet(title, plan) {
     var old = document.getElementById('plan-print');
     if (old) { old.remove(); }
     var box = el('div', 'plan-print');
     box.id = 'plan-print';
+    if (title === null) { return box; }
     var head = el('div', 'plan-print__head');
     var logo = el('img', 'plan-print__logo');
     logo.src = '/assets/img/logo.svg';
@@ -918,13 +947,18 @@
     var tbody = el('tbody');
     plan.slots.forEach(function (slot) {
       var tr = el('tr');
-      tr.appendChild(el('th', 'plan-print__time', timeRange(slot.start, slot.end)));
+      // the start at the top of the cell and the end at the bottom ("5:15" ... "5:30"),
+      // so the column is narrow and the groups have the room
+      var when = el('th', 'plan-print__time plan-print__time--wrap');
+      when.appendChild(el('span', null, clock(slot.start).text));
+      when.appendChild(el('span', 'plan-print__until', clock(slot.end).text));
+      tr.appendChild(when);
       var td = el('td');
       var list = el('div', 'plan-print__groups');
       slot.groups.forEach(function (g) {
         var cell = el('div', 'plan-print__group' + (g.everyone ? ' plan-print__group--everyone' : g.parents ? ' plan-print__group--parents' : ''));
         cell.appendChild(el('span', 'plan-print__who', groupLabel(g)));
-        cell.appendChild(activity('plan-print__what', g.event));
+        cell.appendChild(activities('plan-print__what', g));
         if (g.note) { cell.appendChild(printNote(g.note, false)); }
         if (coaches && g.coach_note) { cell.appendChild(printNote(g.coach_note, true)); }
         list.appendChild(cell);
@@ -1003,10 +1037,11 @@
   }
 
   function printStrips(plan) {
-    var box = sheet('Training plan: group strips', plan);
+    // no page header: each strip carries its group and the date, and the page
+    // starts with the first one (more strips to a page)
+    var box = sheet(null, plan);
     box.classList.add('plan-print--strips');
     var list = strips(plan);
-    box.appendChild(el('p', 'plan-print__notes', list.length + ' groups. Cut along the dashed lines, one strip for each group.'));
     list.forEach(function (st) {
       var strip = el('section', 'plan-strip');
       var head = el('div', 'plan-strip__head');
@@ -1017,14 +1052,14 @@
       var tbody = el('tbody');
       plan.slots.forEach(function (slot, i) {
         var tr = el('tr');
-        tr.appendChild(el('th', 'plan-print__time', timeRange(slot.start, slot.end)));
+        tr.appendChild(el('th', 'plan-print__time', clock(slot.start).text));   // the start only: the next row's is the end
         var td = el('td');
         var gs = st.path[i];
         if (!gs.length && st.parents) { return; }             // the parents: only their own slots
         if (!gs.length) { td.appendChild(el('span', 'plan-print__note', '—')); }
         gs.forEach(function (g, k) {
           if (k) { td.appendChild(document.createTextNode(' / ')); }
-          td.appendChild(activity('plan-print__what', g.event));
+          td.appendChild(activities('plan-print__what', g));
           if (g.note) { td.appendChild(printNote(g.note, false)); }
         });
         if (slot.note) { td.appendChild(printNote(slot.note, false)); }

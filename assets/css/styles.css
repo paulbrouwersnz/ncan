@@ -3126,9 +3126,20 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 .plan-icon .dl { fill: none; stroke: currentColor; opacity: .4; }   /* shaded lines (arm circles) */
 .plan__what, .plan-print__what, .plan-chip--event { display: inline-flex; align-items: center; gap: .35em; }
 .plan-chip--event .plan-icon { width: 1.15em; height: 1.15em; }
-.plan-group__event-row { display: flex; align-items: center; gap: .4rem; }
-.plan-group__event-row .plan-icon { width: 1.6rem; height: 1.6rem; }
-.plan-group__event-icon[hidden] { display: none; }
+/* a group's activities, side by side, each with its icon */
+.plan__whats, .plan-print__whats { display: inline-flex; flex-wrap: wrap; align-items: center; gap: .1rem .8rem; }
+.plan-group__acts { display: flex; flex-wrap: wrap; gap: .3rem; }
+.plan-group__acts:empty { display: none; }
+.plan-group__act {
+  display: inline-flex; align-items: center; gap: .2rem; padding: .15rem .2rem .15rem .5rem;
+  border: 1px solid var(--line); border-radius: 999px; background: var(--surface-strong);
+}
+.plan-group__act-name { display: inline-flex; align-items: center; gap: .3rem; font-weight: 700; color: var(--heading); font-size: .9rem; }
+.plan-group__act-off {
+  font: inherit; font-size: 1rem; line-height: 1; width: 1.4rem; height: 1.4rem; padding: 0; border: 0; border-radius: 999px;
+  background: transparent; color: var(--text-soft); cursor: pointer;
+}
+.plan-group__act-off:hover { background: var(--surface); color: var(--danger); }
 .plan__note { font-size: .85rem; color: var(--text-soft); }
 .plan__slot-note { margin: .5rem 0 0; font-size: .9rem; color: var(--text-soft); }
 .plan__by { margin: .8rem 0 0; font-size: .85rem; color: var(--text-soft); }
@@ -3337,6 +3348,9 @@ html:has(.plan-editor:not([hidden])) { scroll-padding-bottom: 5rem; }
 .plan-strip__table th, .plan-strip__table td { padding: 1.6mm 2mm; text-align: left; vertical-align: top; border-top: 1px solid #bbb; }
 .plan-print__table tr { break-inside: avoid; }
 .plan-print__time { width: 1%; white-space: nowrap; font-weight: 700; }
+.plan-print__time--wrap { position: relative; padding-bottom: calc(1.6mm + 1.4em); }
+.plan-print__time--wrap span { display: block; }
+.plan-print__until { position: absolute; left: 2mm; bottom: 1.6mm; }
 /* times line up down the column: every digit the same width */
 .plan-print__time, .plan__time, .plan-time__input, .plan-date__input { font-variant-numeric: tabular-nums; }
 .plan-print__groups { display: flex; flex-wrap: wrap; gap: 1.5mm; }
@@ -3349,12 +3363,25 @@ html:has(.plan-editor:not([hidden])) { scroll-padding-bottom: 5rem; }
 .plan-print__note, .plan-print__coach { display: block; font-size: 9pt; color: #333; }
 .plan-print__coach { margin-top: .6mm; padding: .4mm 1mm; border: 1px dashed #777; }
 /* strips: one for each group, with dashed lines to cut along */
-.plan-strip { break-inside: avoid; padding: 3mm 0; border-top: 1.5px dashed #000; }
-.plan-strip:last-child { border-bottom: 1.5px dashed #000; }
-.plan-strip__head { display: flex; justify-content: space-between; align-items: baseline; gap: 4mm; margin-bottom: 1.5mm; }
-.plan-strip__who { font-size: 13pt; color: #0b3b2e; }
-.plan-strip__date { font-size: 9pt; color: #333; }
-.plan-strip__table td .plan-print__note { display: inline; margin-left: 2mm; }
+.plan-strip { position: relative; break-inside: avoid; padding: 3mm 0 2.6mm; border-top: 1.5px dashed #bbb; }
+.plan-strip:last-child { border-bottom: 1.5px dashed #bbb; }
+/* scissors at the right end of each cut line, blades pointing left: they print as
+   content, so they show even with the browser's background graphics switched off */
+.plan-strip::before, .plan-strip:last-child::after {
+  content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='15' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='1.8' stroke-linecap='round'%3E%3Ccircle cx='19' cy='6.5' r='3'/%3E%3Ccircle cx='19' cy='17.5' r='3'/%3E%3Cpath d='M16.4 8.1 3.5 15.6M16.4 15.9 3.5 8.4'/%3E%3C/svg%3E");
+  position: absolute; right: 1.5mm; line-height: 0;   /* inside the printable area */
+}
+.plan-strip::before { top: -8px; }
+.plan-strip:last-child::after { bottom: -8px; }
+.plan-strip__head { display: flex; justify-content: space-between; align-items: baseline; gap: 4mm; margin-bottom: .6mm; }
+.plan-strip__who { font-size: 11.5pt; color: #0b3b2e; }
+.plan-strip__date { font-size: 8.5pt; color: #333; }
+/* compact rows, so a session's strips fit on a page */
+.plan-strip__table th, .plan-strip__table td { padding: .7mm 2mm; vertical-align: middle; }
+.plan-strip__table .plan-icon { width: 1.15em; height: 1.15em; }
+/* a note sits on the same line as the activity, centred with it */
+.plan-strip__table td > .plan-print__whats, .plan-strip__table td > .plan-print__note { vertical-align: middle; }
+.plan-strip__table td .plan-print__note { display: inline; margin-left: 2.5mm; }
 .plan-print--strips .plan-print__head { margin-bottom: 2mm; }
 .plan-print--strips .plan-print__logo { width: 18mm; }
 .plan-print--strips .plan-print__title { font-size: 14pt; }
