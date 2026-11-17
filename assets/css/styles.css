@@ -3179,6 +3179,16 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 .plan-group__act-off:hover { background: var(--surface); color: var(--danger); }
 .plan__note { font-size: .85rem; color: var(--text-soft); }
 .plan__slot-note { margin: .5rem 0 0; font-size: .9rem; color: var(--text-soft); }
+/* the notes for the plan's activities, under the activity strip */
+.plan__event-notes-head {
+  margin: 1rem 0 .45rem; font-size: .78rem; font-weight: 700; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--heading);
+}
+.plan__event-notes { list-style: none; margin: 0; padding: 0; display: grid; gap: .45rem; }
+.plan__event-note { display: flex; flex-wrap: wrap; align-items: baseline; gap: .2rem .6rem; font-size: .92rem; }
+.plan__event-note-name { display: inline-flex; align-items: center; gap: .3rem; font-weight: 700; color: var(--heading); align-self: center; }
+.plan__event-note-text { white-space: pre-line; }
+.plan__event-note .plan__coach { flex-basis: 100%; margin-top: 0; }
 .plan__by { margin: .8rem 0 0; font-size: .85rem; color: var(--text-soft); }
 /* coaches-only notes: staff see them, marked out with a dashed edge */
 .plan__coach {
@@ -3355,6 +3365,24 @@ p.plan__coach { margin: .5rem 0 1rem; }
   border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: inherit;
 }
 .plan-group__event { font-weight: 700; }
+/* the editor: a note (public) and a coaches' note for each of the plan's activities */
+.plan-editor__acts { border: 0; padding: 0; margin: 1.1rem 0 0; min-width: 0; }
+.plan-editor__acts legend {
+  padding: 0; margin-bottom: .5rem; font-size: .78rem; font-weight: 700; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--heading);
+}
+.plan-act-note { display: grid; grid-template-columns: 9.5rem 1fr 1fr; gap: .4rem .6rem; align-items: center; }
+.plan-act-note + .plan-act-note { margin-top: .4rem; }
+.plan-act-note__name { display: inline-flex; align-items: center; gap: .35rem; font-weight: 700; color: var(--heading); font-size: .9rem; }
+.plan-act-note input {
+  font: inherit; font-size: .9rem; padding: .4rem .55rem; width: 100%; min-width: 0;
+  border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: inherit;
+}
+.plan-act-note .plan-act-note__coach { background: var(--surface-warm); border-style: dashed; border-color: var(--line-strong); }
+@media (max-width: 640px) {
+  .plan-act-note { grid-template-columns: 1fr; padding: .5rem 0; border-top: 1px solid var(--line); }
+  .plan-act-note + .plan-act-note { margin-top: 0; }
+}
 .plan-group__remove {
   position: absolute; top: .3rem; right: .3rem; width: 1.6rem; height: 1.6rem; padding: 0; overflow: hidden;
   font-size: 0; border: 0; border-radius: 999px; background: transparent; color: var(--text-soft); cursor: pointer;
@@ -3424,6 +3452,13 @@ html:has(.plan-editor:not([hidden])) { scroll-padding-bottom: 5rem; }
 .plan-print .plan-icon { color: #000; width: 1.35em; height: 1.35em; }
 .plan-print__note, .plan-print__coach { display: block; font-size: 9pt; color: #333; }
 .plan-print__coach { margin-top: .6mm; padding: .4mm 1mm; border: 1px dashed #777; }
+/* the notes for the activities printed, under the table */
+.plan-print__acts { margin-top: 4mm; break-inside: avoid; }
+.plan-print__acts-head { margin: 0 0 1.5mm; font-size: 10pt; font-weight: 700; color: #0b3b2e; }
+.plan-print__act { display: grid; grid-template-columns: 34mm 1fr; column-gap: 3mm; padding: 1.2mm 0; border-top: 1px solid #ddd; }
+.plan-print__act-name { display: inline-flex; align-items: center; gap: 1mm; font-weight: 700; grid-row: span 2; }
+.plan-print__act .plan-print__note, .plan-print__act .plan-print__coach { grid-column: 2; }
+.plan-print__act .plan-print__note { font-size: 10pt; color: #000; }
 /* strips: one for each group, with dashed lines to cut along between them (not at
    the page's top and bottom, where the paper ends anyway) */
 .plan-strip { position: relative; break-inside: avoid; padding: 3mm 0 2.6mm; }

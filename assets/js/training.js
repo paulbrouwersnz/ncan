@@ -93,6 +93,26 @@
   // saved before that have one ("event").
   var MAX_EVENTS = 4;
   function eventsOf(g) { return g.events || (g.event ? [g.event] : []); }
+  // the plan's activities, in the order they first come
+  function planEvents(slots) {
+    var names = [];
+    (slots || []).forEach(function (s) {
+      s.groups.forEach(function (g) {
+        eventsOf(g).forEach(function (n) { if (names.indexOf(n) === -1) { names.push(n); } });
+      });
+    });
+    return names;
+  }
+  // the plan's notes for its activities ({event, note, coach_note}), in the plan's order;
+  // `coaches`: those with a coaches' note count too
+  function eventNotes(plan, coaches, only) {
+    var by = {};
+    (plan.event_notes || []).forEach(function (n) { by[n.event] = n; });
+    return planEvents(plan.slots).filter(function (name) {
+      var n = by[name];
+      return n && (n.note || (coaches && n.coach_note)) && (!only || only.indexOf(name) !== -1);
+    }).map(function (name) { return by[name]; });
+  }
   // all of a group's activities, each with its icon
   function activities(cls, g) {
     var box = el('span', cls + 's');
@@ -261,18 +281,30 @@
     box.appendChild(activityStrip(wrap, plan));
     box.appendChild(el('p', 'plan__tip', 'Tap a group to light up its whole session, or activities to see who does them. ' +
       'Tap again to undo.'));
+    // the notes for the plan's activities (the coaches' ones only come to staff)
+    var notes = eventNotes(plan, true);
+    if (notes.length) {
+      var head = el('h4', 'plan__event-notes-head', 'Activity notes');
+      head.id = 'plan-acts-' + plan.date;
+      box.appendChild(head);
+      var list = el('ul', 'plan__event-notes');
+      list.setAttribute('aria-labelledby', head.id);
+      notes.forEach(function (n) {
+        var li = el('li', 'plan__event-note');
+        li.appendChild(activity('plan__event-note-name', n.event));
+        if (n.note) { li.appendChild(el('span', 'plan__event-note-text', n.note)); }
+        if (n.coach_note) { li.appendChild(coachNote(n.coach_note, 'span')); }
+        list.appendChild(li);
+      });
+      box.appendChild(list);
+    }
     return box;
   }
 
   // The plan's activities, in the order they first come, each with its icon: tapping
   // one lights up the groups doing it.
   function activityStrip(wrap, plan) {
-    var names = [];
-    plan.slots.forEach(function (s) {
-      s.groups.forEach(function (g) {
-        eventsOf(g).forEach(function (n) { if (names.indexOf(n) === -1) { names.push(n); } });
-      });
-    });
+    var names = planEvents(plan.slots);
     var strip = el('div', 'plan__events');
     if (!names.length) { strip.hidden = true; return strip; }
     strip.setAttribute('role', 'group');
@@ -400,7 +432,7 @@
     }
     bar.appendChild(button('Copy to a new date', null, function () {
       openEditor({ date: nextDate(plan.date), notes: plan.notes, coach_notes: plan.coach_notes, slots: plan.slots,
-                   status: 'draft' }, true);
+                   event_notes: plan.event_notes, status: 'draft' }, true);
     }));
     bar.appendChild(button('Delete', 'btn btn--ghost btn--sm plan__delete', function () {
       if (window.confirm('Delete the training plan for ' + longDate(plan.date) + '? This can’t be undone.')) {
@@ -477,6 +509,11 @@
   function openEditor(plan, isNew) {
     editing = { date: plan.date, notes: plan.notes || '', coach_notes: plan.coach_notes || '',
                 slots: copySlots(plan.slots), status: plan.status || 'draft',
+                // by activity, {note, coach_note}: kept while an activity's off the plan, in case it comes back
+                eventNotes: (plan.event_notes || []).reduce(function (by, n) {
+                  by[n.event] = { note: n.note || '', coach_note: n.coach_note || '' };
+                  return by;
+                }, {}),
                 isNew: isNew, from: isNew ? null : plan.date };
     dirty = isNew;
     picked = null;
@@ -536,6 +573,35 @@
       if (rows.length) { rows[rows.length - 1].querySelector('input').focus(); }
     });
     editorBox.appendChild(add);
+
+    // notes for each of the plan's activities, for the whole session
+    var names = planEvents(plan.slots);
+    if (names.length) {
+      var acts = el('fieldset', 'plan-editor__acts');
+      acts.appendChild(el('legend', null, 'Notes for each activity (optional)'));
+      names.forEach(function (name, k) {
+        var n = plan.eventNotes[name] || (plan.eventNotes[name] = { note: '', coach_note: '' });
+        var row = el('div', 'plan-act-note');
+        row.appendChild(activity('plan-act-note__name', name));
+        var pub = el('input', 'plan-act-note__note');
+        pub.id = 'plan-act-note-' + k;
+        pub.maxLength = 300;
+        pub.value = n.note;
+        pub.placeholder = k ? 'Note (shown with the plan)' : 'Shown with the plan, e.g. Bring your own spikes';
+        pub.setAttribute('aria-label', 'Note for ' + name + ', shown with the plan');
+        pub.addEventListener('input', function () { n.note = pub.value; changed(); });
+        var coach = el('input', 'plan-act-note__coach');
+        coach.maxLength = 300;
+        coach.value = n.coach_note;
+        coach.placeholder = k ? 'Coaches-only note' : 'Coaches only, e.g. Equipment is in the blue bin';
+        coach.setAttribute('aria-label', 'Coaches-only note for ' + name);
+        coach.addEventListener('input', function () { n.coach_note = coach.value; changed(); });
+        row.appendChild(pub);
+        row.appendChild(coach);
+        acts.appendChild(row);
+      });
+      editorBox.appendChild(acts);
+    }
 
     // the plan's own notes
     var notes = el('p', 'records-field records-field--grow plan-editor__notes');
@@ -1099,7 +1165,11 @@
     if (bad) { said.textContent = 'A time slot ends before it starts (' + bad.start + '–' + bad.end + ').'; return; }
     said.textContent = 'Saving…';
     NCAN.send('/training/' + (moving ? plan.from : plan.date),
-              { notes: plan.notes, coach_notes: plan.coach_notes, slots: plan.slots }).then(function (res) {
+              { notes: plan.notes, coach_notes: plan.coach_notes, slots: plan.slots,
+                event_notes: planEvents(plan.slots).map(function (name) {
+                  var n = plan.eventNotes[name] || {};
+                  return { event: name, note: n.note || '', coach_note: n.coach_note || '' };
+                }) }).then(function (res) {
       if (res.status !== 200) { said.textContent = apiError(res); return null; }
       if (!moving) { return res; }
       // then to its new date, as it is
@@ -1224,6 +1294,7 @@
   function publicCopy(plan) {
     var p = JSON.parse(JSON.stringify(plan));
     delete p.coach_notes;
+    (p.event_notes || []).forEach(function (n) { delete n.coach_note; });
     delete p.updated_by;
     delete p.created_by;
     (p.slots || []).forEach(function (s) {
@@ -1313,12 +1384,14 @@
     if (coaches && plan.coach_notes) { box.appendChild(el('p', 'plan-print__notes', '')).appendChild(printNote(plan.coach_notes, true)); }
     var table = el('table', 'plan-print__table');
     var tbody = el('tbody');
+    var shown = [];                                           // the slots printed (a part: only theirs)
     plan.slots.forEach(function (whole, si) {
       var slot = whole;
       if (only) {
         slot = Object.assign({}, whole, { groups: whole.groups.filter(function (g, gi) { return only.has(si, gi); }) });
         if (!slot.groups.length) { return; }
       }
+      shown.push(slot);
       var tr = el('tr');
       // the start at the top of the cell and the end at the bottom ("5:15" ... "5:30"),
       // so the column is narrow and the groups have the room
@@ -1344,6 +1417,20 @@
     });
     table.appendChild(tbody);
     box.appendChild(table);
+    // the notes for the activities printed
+    var notes = eventNotes(plan, coaches, planEvents(shown));
+    if (notes.length) {
+      var acts = el('div', 'plan-print__acts');
+      acts.appendChild(el('p', 'plan-print__acts-head', 'Activity notes'));
+      notes.forEach(function (n) {
+        var row = el('div', 'plan-print__act');
+        row.appendChild(activity('plan-print__act-name', n.event));
+        if (n.note) { row.appendChild(printNote(n.note, false)); }
+        if (coaches && n.coach_note) { row.appendChild(printNote(n.coach_note, true)); }
+        acts.appendChild(row);
+      });
+      box.appendChild(acts);
+    }
     box.appendChild(wholePlanFoot(plan, !!only));
     go(box);
   }
@@ -1482,7 +1569,7 @@
       .sort(function (a, b) { return a.date < b.date ? 1 : -1; })[0];
     if (!latest) { openEditor(Object.assign({ date: nextDate(), status: 'draft' }, blankPlan()), true); return; }
     openEditor({ date: nextDate(), notes: latest.notes, coach_notes: latest.coach_notes, slots: latest.slots,
-                 status: 'draft' }, true);
+                 event_notes: latest.event_notes, status: 'draft' }, true);
   });
 
   document.addEventListener('keydown', function (e) {
