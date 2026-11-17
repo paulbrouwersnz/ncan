@@ -207,15 +207,26 @@
     thead.appendChild(hr);
     table.appendChild(thead);
     var tbody = el('tbody');
-    plan.slots.forEach(function (slot) {
+    var wrap = el('div', 'table-wrap plan__wrap');
+    plan.slots.forEach(function (slot, si) {
       var tr = el('tr');
       var th = el('th', 'plan__time', timeRange(slot.start, slot.end));
       th.scope = 'row';
       tr.appendChild(th);
       var td = el('td');
       var groups = el('ul', 'plan__groups');
-      slot.groups.forEach(function (g) {
+      slot.groups.forEach(function (g, gi) {
         var li = el('li', 'plan__group' + (g.everyone ? ' plan__group--everyone' : g.parents ? ' plan__group--parents' : ''));
+        // tap (or Enter) to light up this group's whole session
+        li.tabIndex = 0;
+        li.setAttribute('role', 'button');
+        li.setAttribute('aria-pressed', 'false');
+        li.setAttribute('data-slot', si);
+        li.setAttribute('data-group', gi);
+        li.addEventListener('click', function () { lightUp(wrap, plan, si, gi); });
+        li.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); lightUp(wrap, plan, si, gi); }
+        });
         li.appendChild(el('span', 'plan__who', groupLabel(g)));
         if (eventsOf(g).length) { li.appendChild(activities('plan__what', g)); }
         if (g.note) { li.appendChild(el('span', 'plan__note', g.note)); }
@@ -229,10 +240,49 @@
       tbody.appendChild(tr);
     });
     table.appendChild(tbody);
-    var wrap = el('div', 'table-wrap plan__wrap');
     wrap.appendChild(table);
-    return wrap;
+    var box = el('div', 'plan__body');
+    box.appendChild(wrap);
+    box.appendChild(el('p', 'plan__tip', 'Tap a group to light up its whole session. Tap it again to show the whole plan.'));
+    return box;
   }
+
+  /* A group's whole session, lit up on the plan (the rest fades back): the blocks
+     with any of the same athletes, and the Everyone blocks; for Everyone, every
+     block; for the parents and guardians, the parents' blocks. The same again
+     (or Escape) puts the plan back. */
+  function lightUp(wrap, plan, si, gi) {
+    var key = si + '-' + gi;
+    var off = wrap.getAttribute('data-lit') === key;
+    var chosen = plan.slots[si].groups[gi];
+    var cells = (!chosen.everyone && !chosen.parents) ? cellsOf(chosen) : null;
+    function includes(g) {
+      if (chosen.everyone) { return true; }
+      if (chosen.parents) { return !!g.parents; }
+      if (g.parents) { return false; }
+      if (g.everyone) { return true; }
+      return cellsOf(g).some(function (c) { return cells.indexOf(c) !== -1; });
+    }
+    if (off) { wrap.removeAttribute('data-lit'); } else { wrap.setAttribute('data-lit', key); }
+    wrap.classList.toggle('is-focused', !off);
+    Array.prototype.forEach.call(wrap.querySelectorAll('.plan__group'), function (li) {
+      var s = +li.getAttribute('data-slot'), g = +li.getAttribute('data-group');
+      var lit = !off && ((s === si && g === gi) || includes(plan.slots[s].groups[g]));
+      li.classList.toggle('is-lit', lit);
+      li.setAttribute('aria-pressed', String(!off && s === si && g === gi));
+    });
+  }
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape') { return; }
+    Array.prototype.forEach.call(document.querySelectorAll('.plan__wrap.is-focused'), function (w) {
+      w.classList.remove('is-focused');
+      w.removeAttribute('data-lit');
+      Array.prototype.forEach.call(w.querySelectorAll('.plan__group'), function (li) {
+        li.classList.remove('is-lit');
+        li.setAttribute('aria-pressed', 'false');
+      });
+    });
+  });
 
   function staffActions(plan) {
     var bar = el('div', 'plan__actions');
@@ -345,7 +395,7 @@
   function openEditor(plan, isNew) {
     editing = { date: plan.date, notes: plan.notes || '', coach_notes: plan.coach_notes || '',
                 slots: copySlots(plan.slots), status: plan.status || 'draft',
-                isNew: isNew };
+                isNew: isNew, from: isNew ? null : plan.date };
     dirty = isNew;
     picked = null;
     showList();
@@ -376,7 +426,7 @@
     editorBox.appendChild(head);
 
     // the date (a new plan only: a saved plan's date is its name)
-    if (plan.isNew) { editorBox.appendChild(dateField(plan)); }
+    editorBox.appendChild(dateField(plan));      // a saved plan's too: saving moves it
 
     // the chips, with how to use them; while one is picked by tapping, a slim bar
     // stays in view (pinned under the site header) saying which, until Done
@@ -473,8 +523,10 @@
       if (parseDate(plan.date).getDay() !== 2) {
         said.appendChild(el('span', 'plan-date__warn', 'Not a Tuesday'));
       }
-      if ([].concat(state.upcoming, state.past).some(function (p) { return p.date === plan.date; })) {
+      if (taken(plan)) {
         said.appendChild(el('span', 'plan-date__warn', 'Already has a plan: saving replaces it'));
+      } else if (plan.from && plan.date !== plan.from) {
+        said.appendChild(el('span', 'plan-date__warn', 'Saving moves the plan from ' + longDate(plan.from)));
       }
     }
     function set(value) {
@@ -950,16 +1002,32 @@
   }
 
   // save the plan, then (`then`) release it or take it back to a draft
+  // whether another plan already has the plan's date (not its own, when it's being moved)
+  function taken(plan) {
+    return [].concat(state.upcoming, state.past).some(function (p) { return p.date === plan.date && p.date !== plan.from; });
+  }
+
   function save(then, said) {
     var plan = editing;
     if (!plan.date) { said.textContent = 'Choose the session’s date.'; return; }
-    if (plan.isNew && [].concat(state.upcoming, state.past).some(function (p) { return p.date === plan.date; }) &&
-        !window.confirm('There is already a plan for ' + longDate(plan.date) + '. Replace it?')) { return; }
+    var replace = taken(plan);
+    if (replace && !window.confirm('There is already a plan for ' + longDate(plan.date) + '. Replace it?')) { return; }
+    var moving = !!plan.from && plan.date !== plan.from;
     var bad = plan.slots.filter(function (s) { return s.end <= s.start; })[0];
     if (bad) { said.textContent = 'A time slot ends before it starts (' + bad.start + '–' + bad.end + ').'; return; }
     said.textContent = 'Saving…';
-    NCAN.send('/training/' + plan.date, { notes: plan.notes, coach_notes: plan.coach_notes, slots: plan.slots }).then(function (res) {
+    NCAN.send('/training/' + (moving ? plan.from : plan.date),
+              { notes: plan.notes, coach_notes: plan.coach_notes, slots: plan.slots }).then(function (res) {
       if (res.status !== 200) { said.textContent = apiError(res); return null; }
+      if (!moving) { return res; }
+      // then to its new date, as it is
+      return NCAN.send('/training/' + plan.from + '/move', { to: plan.date, replace: replace }).then(function (moved) {
+        if (moved.status !== 200) { said.textContent = 'Saved, but not moved: ' + apiError(moved); dirty = false; return null; }
+        plan.from = plan.date;
+        return moved;
+      });
+    }).then(function (res) {
+      if (!res) { return null; }
       if (!then) { return res; }
       return NCAN.send('/training/' + plan.date + '/' + then, {});
     }).then(function (res) {
