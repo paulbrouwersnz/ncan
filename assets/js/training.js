@@ -616,8 +616,8 @@
   function slotRow(slot, i) {
     var plan = editing;
     var row = el('div', 'plan-slot');
-    // The slot's times, in one box like the session's date: start – end, and under
-    // it how long the slot is. Moving the start moves the end with it, so the slot
+    // The slot's times, on one slim line above its groups: start – end, and how
+    // long the slot is. Moving the start moves the end with it, so the slot
     // keeps its length; the end can then be changed on its own.
     var times = el('div', 'plan-slot__times');
     times.appendChild(el('span', 'plan-date__label', 'Time'));
@@ -655,13 +655,14 @@
       return t;
     }
     timeInput('start', 'Starts');
-    box.appendChild(el('span', 'plan-time__dash', 'to'));
+    box.appendChild(el('span', 'plan-time__dash', '–'));
     var endInput = timeInput('end', 'Ends');
     times.appendChild(box);
     times.appendChild(length);
     showLength();
+    row.appendChild(times);
+
     var groups = el('div', 'plan-slot__groups');
-    groups.appendChild(times);        // first in the row: the groups flow beside it and wrap under it
     slot.groups.forEach(function (g, gi) { groups.appendChild(groupCell(slot, g, gi)); });
     var fresh = button('New group', 'plan-slot__new', function () {
       if (picked) { return; }       // handled by target()
