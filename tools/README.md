@@ -11,6 +11,31 @@ This page is the map: what each one is for, and which to run when.
 > **Keep this file current.** When a tool is added, removed or changes how it
 > is used, update its entry here in the same change.
 
+## How the site is laid out
+
+Every page is a folder holding an `index.html`, so its address has no `.html`:
+`calendar/index.html` is `https://ncan.nz/calendar/`, and `index.html` at the root
+is the home page. `tools/pages.py` is the one place the tools learn this.
+
+- **Links between pages and to `assets/` are written from the site root**
+  (`/calendar/`, `/assets/css/styles.css`, `/#join`), so they work from any folder.
+  Pages opened straight from the disk (`file://`) don't work any more: use the
+  local preview (`python -m http.server 8123`).
+- **The athlete page and club champs keep their place after `#/`**:
+  `/athlete/#/sam-brown` (a section follows: `/athlete/#/sam-brown/off-track`)
+  and `/club-champs/#/season/2026-27` (with `/club-champs/` alone opening the
+  newest season). An in-page link (`#off-track`) is turned into that form by
+  the page. The part after `#` never reaches the web server.
+- **The old addresses (moved November 2026)**: each `something.html` at the root
+  only sends visitors on to `/something/`, keeping what came after `?` and `#`
+  (`assets/js/moved.js`; it turns `athlete.html?a=...` and
+  `club-champs.html?season=...` into the new form). **Delete them a few months
+  after the move** (the files at the root other than `index.html` and `404.html`).
+  `404.html` stays: GitHub Pages shows it for any address that doesn't exist, and
+  it sends an old address on for good.
+- **A new page** is a new folder with an `index.html`, copied from a page like it
+  (with the partial markers), then the tools in "added a new page" below.
+
 ## Requirements
 
 Python 3 (currently run with 3.14). Most tools use only the standard library;
@@ -32,7 +57,7 @@ browser's console on the Athletics NZ eLearning library (see below).
 |---|---|
 | edited `assets/css/styles.css` or a script in `assets/js/` | `stamp-assets.py` |
 | edited anything in `partials/` | `sync-partials.py`, then `stamp-assets.py` |
-| added a new page | `sync-partials.py`, `stamp-assets.py`, `build-sitemap.py`, then `indexnow.py <page>` |
+| added a new page (a folder with an `index.html`) | `sync-partials.py`, `stamp-assets.py`, `build-sitemap.py`, then `indexnow.py <page>` |
 | changed a page's content and want search engines to notice | `indexnow.py <page>` |
 | added photos or albums to the gallery | `shrink-gallery.py` (after the originals are on the mirror), then `build-gallery.py` |
 | added or changed a calendar in `assets/calendar/` | `build-calendar-list.py` |
@@ -49,7 +74,8 @@ browser's console on the Athletics NZ eLearning library (see below).
 Copies `partials/head.html`, `header.html` and `footer.html` into every page,
 between marker comments such as `<!-- @partial:header -->`. Edit the partial,
 never the copy in a page. Marks the current page's own nav link with
-`aria-current`.
+`aria-current`. Links in the partials are written from the site root (`/#join`);
+in the home page they become plain anchors (`#join`).
 
 ```bash
 python tools/sync-partials.py
@@ -86,10 +112,10 @@ python tools/build-fonts.py --report-chars   # list the characters and where the
 ## Search engines
 
 ### `build-sitemap.py`
-Writes `sitemap.xml` and `robots.txt`, listing every `.html` page at the site
-root (the home page as `https://ncan.nz/`). Add a filename to `SKIP` in the
-script to leave a page out; `athlete.html`, `athletes.html` and `admin.html`
-are skipped, as they show nothing until someone signs in (and carry a noindex tag). The sitemap was submitted once in Google Search
+Writes `sitemap.xml` and `robots.txt`, listing every page (the home page as
+`https://ncan.nz/`, the others as `https://ncan.nz/calendar/` and so on). Add a
+page's folder name to `SKIP` in the script to leave it out; `athlete`, `athletes`
+and `admin` are skipped, as they show nothing until someone signs in (and carry a noindex tag). The sitemap was submitted once in Google Search
 Console; Google re-reads it by itself.
 
 ```bash
@@ -103,9 +129,9 @@ changed. Checks each page and the key file are live first, and sends nothing
 if one isn't.
 
 ```bash
-python tools/indexnow.py club-champs.html records.html
+python tools/indexnow.py club-champs records     # /club-champs/ and /records/
 python tools/indexnow.py /                       # the home page
-python tools/indexnow.py --dry-run calendar.html
+python tools/indexnow.py --dry-run calendar
 ```
 
 ## Gallery
@@ -126,7 +152,7 @@ Options: `--max-edge`, `--quality`, `--jobs`, `--sample`, and
 `--skip-remote-check` (not advised).
 
 ### `build-gallery.py`
-Rebuilds `gallery.html` from the folders in `assets/img/gallery/`: one album
+Rebuilds `gallery/index.html` from the folders in `assets/img/gallery/`: one album
 per folder, a `title.txt` to rename it, a `README.md` for an intro, and
 `order.txt` for album order. Each thumbnail links to its full-size copy on the
 mirror.
@@ -151,7 +177,7 @@ python tools/build-training-calendar.py --list         # show the dates
 ```
 
 ### `build-calendar-list.py`
-Maintains `assets/calendar/calendars.json`, the list `calendar.html` reads.
+Maintains `assets/calendar/calendars.json`, the list the calendar page (`/calendar/`) reads.
 Picks up `.ics` files in the folder, keeping names and colours already set,
 and can mirror calendars published elsewhere.
 
@@ -192,7 +218,7 @@ Options: `--cache` (folder for downloaded PDFs), `--refetch`, `--limit`.
 
 ## Children's club championships
 
-`club-champs.html` holds no results itself. It reads each season from the club's
+The club champs page (`/club-champs/`) holds no results itself. It reads each season from the club's
 API (`https://api.ncan.nz/v1/club-champs`), with no sign-in needed. The API works
 the results out from the meetings it collects: add a Saturday's interclub on the
 results sources page, and its club championship results are proposed. A club
@@ -206,7 +232,7 @@ procedures in its `docs/DATA.md`.
 
 ## Athlete pages
 
-`athletes.html` and `athlete.html?id=<number>` hold no results themselves. They
+The athletes page (`/athletes/`) and each athlete's page (`/athlete/#/<their name>`) hold no results themselves. They
 read them from the club's API at `https://api.ncan.nz`, and only for someone
 signed in: a family sees their own children, coaches and the committee see
 everyone. Both show totals for what's shown (results, meetings, events,
@@ -214,13 +240,13 @@ distances), with 1st, 2nd and 3rd places in a row of medal blocks of their own
 (only when there's a podium; a relay team's place counts once), and the
 athletes page counts the athletes on the podium.
 
-`results-sources.html` is public: it lists every meeting collected, with how
+The results sources page (`/results-sources/`) is public: it lists every meeting collected, with how
 many of our athletes and results each added, and shows the athletes' names only
 to coaches and the committee. Signed in, administrators, coaches and the
 committee add meetings there; administrators also change a meeting's type and
 remove meetings.
 
-`admin.html` (Club admin) is for club administrators: what the last collect
+The Club admin page (`/admin/`) is for club administrators: what the last collect
 found that needs a look, merges, membership changes, the members list upload,
 corrections and site-wide blocks (`assets/js/admin.js`); administrators get a
 "Club admin" link on the "Signed in as" line. Each athlete page also has a
@@ -239,12 +265,12 @@ repository. No athlete data belongs here.
 
 To try the pages on this computer, run ncan-api's API locally on port 8765,
 allowing this site's address (see `docs/API.md` in ncan-api), then open
-`http://localhost:8123/athletes.html`.
+`http://localhost:8123/athletes/`.
 
 ## Committee page
 
 ### `build-agm-list.py`
-Rebuilds the AGM papers list in `committee.html` from the PDFs in
+Rebuilds the AGM papers list in `committee/index.html` from the PDFs in
 `assets/docs/agm/<year>/`. Recent years are listed; older ones fold away.
 
 ```bash
@@ -256,7 +282,7 @@ python tools/build-agm-list.py --recent 3
 
 ### `refresh-library-inventory.js`
 Refreshes `assets/data/athletics-nz-library-inventory.json`, which
-`athletics-nz-library-inventory.html` reads. It needs your Athletics NZ login,
+the library page (`/athletics-nz-library-inventory/`) reads. It needs your Athletics NZ login,
 so it runs in your browser rather than from here:
 
 1. Log in at https://athleticsnz.elearning.worldathletics.org/library

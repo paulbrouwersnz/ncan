@@ -4,15 +4,15 @@ indexnow.py
 
 Tell search engines that particular pages have changed. You say which.
 
-    python tools/indexnow.py index.html calendar.html
-    python tools/indexnow.py records.html
+    python tools/indexnow.py index calendar
+    python tools/indexnow.py records
     python tools/indexnow.py /                     # the home page
-    python tools/indexnow.py --dry-run index.html  # show, do not send
+    python tools/indexnow.py --dry-run index       # show, do not send
 
-Arguments are paths below https://ncan.nz/, so "calendar.html", not the whole
-address - though a full URL is accepted and trimmed, and a leading slash is
-fine. "index.html" and "/" both mean the home page, which is submitted as
-https://ncan.nz/ because that is what the page's canonical says it is.
+Arguments are pages: "calendar", "/calendar/" or the old "calendar.html" all
+mean https://ncan.nz/calendar/ (each page is a folder; see tools/pages.py). A
+full URL is accepted and trimmed. "index" and "/" both mean the home page, which
+is submitted as https://ncan.nz/ because that is what its canonical says it is.
 
 Both the pages and the key file are checked on a dry run as well as a real
 one, so --dry-run tells you whether the submission would actually succeed.
@@ -33,10 +33,14 @@ every submission is refused and the reason is not obvious.
 
 import argparse
 import json
+import os
 import re
 import sys
 import urllib.error
 import urllib.request
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from pages import address as page_address  # noqa: E402
 
 SITE = 'https://ncan.nz'
 HOST = 'ncan.nz'
@@ -80,20 +84,19 @@ def unmangle(arg):
     if not WINDOWS_PATH.match(arg):
         return arg, False
     tail = arg.replace(chr(92), '/').rstrip('/').rsplit('/', 1)[-1]
-    return (tail if tail.lower().endswith('.html') else ''), True
+    return ('' if tail.lower() == 'git' else tail), True
 
 
 def to_url(arg):
-    """'calendar.html', '/calendar.html' or the full address -> the full address."""
+    """'calendar', '/calendar/', 'calendar.html' or the full address -> the full address."""
     path = arg.strip()
     for prefix in ('https://' + HOST, 'http://' + HOST, HOST):
         if path.lower().startswith(prefix.lower()):
             path = path[len(prefix):]
             break
-    path = path.lstrip('/')
-    if path.lower() in [h.lstrip('/').lower() for h in HOME]:
-        return SITE + '/'
-    return SITE + '/' + path
+    if '?' in path or '#' in path:
+        return SITE + '/' + path.lstrip('/')
+    return SITE + page_address(path)
 
 
 def fetch_status(url):
@@ -146,9 +149,9 @@ def submit(urls):
 def main():
     ap = argparse.ArgumentParser(
         description='Submit named pages to IndexNow.',
-        epilog='example: python tools/indexnow.py index.html calendar.html')
+        epilog='example: python tools/indexnow.py index calendar')
     ap.add_argument('pages', nargs='+', metavar='PAGE',
-                    help='page path below https://ncan.nz/, e.g. calendar.html')
+                    help='a page, e.g. calendar (or /calendar/)')
     ap.add_argument('--dry-run', action='store_true',
                     help='check the pages and show the list, but send nothing')
     args = ap.parse_args()
@@ -165,7 +168,7 @@ def main():
 
     if mangled:
         say('note: your shell rewrote a leading "/" into a Windows path; '
-            'read as the home page. Pass index.html to avoid the guesswork.' + chr(10))
+            'read as the home page. Pass index to avoid the guesswork.' + chr(10))
 
     say('checking %d page(s) on the live site:' % len(urls))
     missing = []

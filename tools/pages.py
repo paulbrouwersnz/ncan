@@ -1,0 +1,49 @@
+# -*- coding: utf-8 -*-
+"""The site's pages, for the tools: where each one lives and its address.
+
+Every page is a folder with an index.html, so its address has no .html:
+
+    index.html                  https://ncan.nz/
+    calendar/index.html         https://ncan.nz/calendar/
+    athlete/index.html          https://ncan.nz/athlete/#/sam-brown
+
+The .html files left at the root (calendar.html and so on) only send visitors
+on to the new address; they carry <meta name="ncan-redirect">, and the tools
+leave them alone. 404.html does the same for any old address once they're gone.
+"""
+import os
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+SITE = 'https://ncan.nz'
+# folders at the root that hold the site's files, not pages
+NOT_PAGES = {'assets', 'partials', 'tools', 'actions', '.git', '.github', '.claude', 'node_modules'}
+REDIRECT_MARK = '<meta name="ncan-redirect"'
+
+
+def pages(root=ROOT):
+    """[(name, address, path)] for every page: ('index', '/', .../index.html),
+    ('calendar', '/calendar/', .../calendar/index.html) ... the home page first."""
+    out = []
+    home = os.path.join(root, 'index.html')
+    if os.path.exists(home):
+        out.append(('index', '/', home))
+    for name in sorted(os.listdir(root)):
+        path = os.path.join(root, name, 'index.html')
+        if name not in NOT_PAGES and not name.startswith('.') and os.path.isfile(path):
+            out.append((name, '/%s/' % name, path))
+    return out
+
+
+def page_files(root=ROOT):
+    """(relative path, full path) of every page, for the tools that edit them."""
+    return [(os.path.relpath(path, root).replace(os.sep, '/'), path) for _, _, path in pages(root)]
+
+
+def address(name):
+    """'calendar' or 'calendar.html' -> '/calendar/'; 'index' -> '/'."""
+    name = name.strip('/')
+    if name.endswith('.html'):
+        name = name[:-5]
+    if name.endswith('/index'):
+        name = name[:-6]
+    return '/' if name in ('', 'index') else '/%s/' % name

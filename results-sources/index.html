@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en-NZ">
+
+<head>
+<!-- @partial:head -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0B3B2E">
+
+<meta property="og:type" content="website">
+<meta property="og:image" content="/assets/img/logo.svg">
+<meta property="og:image:alt" content="North Canterbury Athletic Club">
+<meta property="og:locale" content="en_NZ">
+
+<link rel="icon" href="/assets/img/logo.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/img/logo.png">
+<link rel="preload" href="/assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/archivo-variable.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/css/styles.css?v=b29d9c2f">
+<!-- /@partial:head -->
+
+<link rel="canonical" href="https://ncan.nz/results-sources/">
+
+<title>Results Sources &mdash; North Canterbury Athletic Club</title>
+<meta name="description" content="Every meeting the North Canterbury Athletic Club athlete pages are built from, and what each one added.">
+<meta property="og:title" content="Results Sources &mdash; North Canterbury Athletic Club">
+<meta property="og:description" content="The meetings behind the North Canterbury athlete pages.">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<!-- @partial:header -->
+<!-- ================= Header ================= -->
+<header class="site-header" id="site-header">
+  <div class="wrap site-header__bar">
+    <a class="brand" href="/" aria-label="North Canterbury Athletic Club — home">
+      <img src="/assets/img/logo.svg" alt="" width="888" height="508">
+      <span class="brand__name">
+        North Canterbury<br>Athletic Club
+      </span>
+    </a>
+
+    <button class="nav-toggle" type="button" id="nav-toggle" aria-expanded="false" aria-controls="primary-nav">
+      <span class="nav-toggle__bars" aria-hidden="true"><i></i></span>
+      Menu
+    </button>
+
+    <nav class="nav" id="primary-nav" aria-label="Primary">
+      <ul>
+        <li><a href="/#why">Why NCAN</a></li>
+        <li><a href="/#programmes">Programmes</a></li>
+        <li><a href="/#training">Training</a></li>
+        <li><a href="/calendar/">Calendar</a></li>
+        <li><a href="/#news">Community</a></li>
+        <li><a href="/gallery/">Gallery</a></li>
+        <li><a href="/#contact">Contact</a></li>
+        <li class="nav__cta"><a class="btn btn--accent" href="/#join">Join the club</a></li>
+      </ul>
+    </nav>
+
+    <div class="site-header__cta">
+      <a class="btn btn--accent btn--sm" href="/#join">Join the club</a>
+    </div>
+  </div>
+</header>
+<!-- /@partial:header -->
+
+
+  <main id="main">
+    <span id="top"></span>
+
+    <!-- ================= Page head ================= -->
+    <section class="page-head" aria-labelledby="page-heading">
+      <div class="wrap">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="/">Home</a> <span aria-hidden="true">/</span>
+          <a href="/athletes/">Athletes</a> <span aria-hidden="true">/</span> <span>Results sources</span>
+        </nav>
+        <p class="eyebrow eyebrow--light">Behind the athlete pages</p>
+        <h1 id="page-heading">Results sources</h1>
+        <p class="lede">
+          Every meeting the athlete pages are built from, with what each one added. Most come from
+          <a href="https://live.athletic.net">AthleticLIVE</a> (athletic.net); a few, such as primary
+          school sports, were entered manually from the results the organisers published
+          (<span aria-hidden="true">&#9997;&#65039;</span>), and results checked where no member competed are listed too.
+        </p>
+        <p class="lede">
+          Know of a meeting that&rsquo;s missing, or earlier results? The club would love to hear about it.
+        </p>
+        <div class="btn-row">
+          <a class="btn btn--accent" href="#meetings">Browse meetings</a>
+          <a class="btn btn--ghost-light" href="/athletes/">All athletes</a>
+          <a class="btn btn--ghost-light" href="/#contact">Suggest a source</a>
+        </div>
+        <p class="account-line" id="account" hidden></p>
+      </div>
+    </section>
+
+    <!-- Adding meetings: only for club administrators, coaches and the committee, signed in -->
+    <section class="section section--tint" id="add-meeting" aria-labelledby="add-heading" hidden>
+      <div class="wrap">
+        <div class="section-head section-head--wide">
+          <p class="eyebrow">For coaches and the committee</p>
+          <h2 id="add-heading">Add a meeting</h2>
+          <p class="lede">
+            Open the meeting on <a href="https://athleticscanterbury.anet.live/meet-list">AthleticLIVE</a>,
+            add <code>/teams</code> to its address, choose a club that has results (North Canterbury if it
+            competed; any club works, as the whole meeting is read) and copy that page&rsquo;s address.
+            Add a meeting once its results are complete: what&rsquo;s published when it&rsquo;s collected is kept.
+            Choose the type <strong>Cross country</strong> or <strong>Road</strong> for an out-of-stadia
+            meeting, including cross country and road relays: those results are shown in a section of
+            their own on athletes&rsquo; pages (each runner&rsquo;s relay leg included), apart from track and field.
+          </p>
+        </div>
+        <form class="src-add" id="src-add" novalidate>
+          <p class="records-field records-field--grow">
+            <label for="add-url">Team page address</label>
+            <input type="url" id="add-url" required placeholder="https://athleticscanterbury.anet.live/meets/80234/teams/1855906" autocomplete="off">
+          </p>
+          <button type="button" class="btn btn--ghost" id="add-check">Check</button>
+          <div class="src-add__found" id="add-found" hidden>
+            <p id="add-about"></p>
+            <div class="src-add__fields">
+              <p class="records-field records-field--grow">
+                <label for="add-name">Name on the pages</label>
+                <input type="text" id="add-name" maxlength="120" aria-describedby="add-name-help"
+                       placeholder="e.g. Canterbury Children&rsquo;s Interclub, Programme 4">
+              </p>
+              <p class="records-field">
+                <label for="add-type">Type</label>
+                <select id="add-type"></select>
+              </p>
+              <button type="submit" class="btn btn--accent" id="add-go">Add meeting</button>
+            </div>
+            <div class="src-add__help" id="add-name-help">
+              <p>Name it in the club&rsquo;s style, so the list reads consistently. The AthleticLIVE tab&rsquo;s
+                title shows its name to start from: tidy the spelling and punctuation.</p>
+              <ul>
+                <li><strong>Interclub rounds:</strong> by series and round, with no year (the dates tell
+                  seasons apart): &ldquo;Canterbury Children&rsquo;s Interclub, Programme 4&rdquo;,
+                  &ldquo;AC Senior Interclub 3&rdquo;</li>
+                <li><strong>Twilights:</strong> number, then year: &ldquo;AC Twilight 1, 2026&rdquo;</li>
+                <li><strong>Championships, games and one-off meetings:</strong> the full name with the year:
+                  &ldquo;Canterbury Children&rsquo;s Championships 2026&rdquo;, &ldquo;NZ Track and Field
+                  Championships 2026&rdquo;, &ldquo;South Island Colgate Games 2026&rdquo;</li>
+                <li><strong>One day of a longer meeting:</strong> add it after a comma:
+                  &ldquo;Canterbury Secondary Schools Championships 2026, Day 1&rdquo;</li>
+                <li>Use <strong>AC</strong> for Athletics Canterbury, <strong>NZ</strong> for New Zealand,
+                  and full words otherwise.</li>
+              </ul>
+            </div>
+          </div>
+          <p class="src-add__status" id="add-status" role="status"></p>
+        </form>
+        <p class="records-note" id="collect-status"></p>
+      </div>
+    </section>
+
+    <section class="section" id="meetings" aria-labelledby="meetings-heading">
+      <div class="wrap">
+        <div class="section-head section-head--wide" data-reveal>
+          <p class="eyebrow">Meetings collected</p>
+          <h2 id="meetings-heading">Meetings</h2>
+          <p class="lede">
+            Newest first, by season. Open a meeting to see its dates, the events, and how many North
+            Canterbury athletes and results it added (coaches and the committee, signed in, also see who).
+            A meeting with no results here was read, but none of our members competed at it (or only before
+            or after their membership).
+          </p>
+        </div>
+        <dl class="stats__grid ath-stats" id="src-stats" hidden></dl>
+
+        <div class="records-bar champs-bar" data-reveal>
+          <div class="records-filters">
+            <p class="records-field">
+              <label for="src-season">Season</label>
+              <select id="src-season"><option value="">All seasons</option></select>
+            </p>
+            <p class="records-field">
+              <label for="src-type">Type</label>
+              <select id="src-type"><option value="">All types</option></select>
+            </p>
+            <p class="records-field">
+              <label for="src-from">Source</label>
+              <select id="src-from">
+                <option value="">Any</option>
+                <option value="AthleticLIVE">AthleticLIVE</option>
+                <option value="By hand">Manually entered</option>
+              </select>
+            </p>
+            <p class="records-field records-field--grow">
+              <label for="src-text">Search</label>
+              <input type="search" id="src-text" placeholder="meeting or athlete" autocomplete="off">
+            </p>
+            <div class="ath-checks">
+              <p class="records-field ath-check">
+                <input type="checkbox" id="src-ours">
+                <label for="src-ours">Only meetings with our athletes</label>
+              </p>
+            </div>
+          </div>
+          <div class="records-actions">
+            <button type="button" class="btn btn--ghost" id="src-clear">Clear filters</button>
+          </div>
+        </div>
+
+        <div class="src-status-row">
+          <p class="records-status" id="src-status" role="status">Loading the meetings&hellip;</p>
+          <p class="src-folds" id="src-folds" hidden>
+            <button type="button" class="btn btn--ghost btn--small" id="src-open-all">Expand all seasons</button>
+            <button type="button" class="btn btn--ghost btn--small" id="src-fold-all">Collapse all seasons</button>
+          </p>
+        </div>
+        <div id="src-out"></div>
+        <p class="records-note" id="src-updated"></p>
+      </div>
+    </section>
+  </main>
+
+  <!-- @partial:footer -->
+<!-- ================= Footer ================= -->
+<footer class="site-footer" aria-labelledby="footer-heading">
+  <div class="wrap">
+    <h2 class="visually-hidden" id="footer-heading">Site footer</h2>
+
+    <div class="site-footer__grid">
+      <div>
+        <div class="footer-brand">
+          <img src="/assets/img/logo.svg" alt="" width="888" height="508">
+          <div>
+            <strong><a href="/">North Canterbury<br>Athletic Club</a></strong>
+            <span>Rangiora, New Zealand</span>
+          </div>
+        </div>
+        <p>A volunteer-run club affiliated with <a href="https://athletics.org.nz/">Athletics New Zealand</a> and <a href="https://athleticscanterbury.org.nz/">Athletics Canterbury</a>, welcoming athletes of every age and ability since 1978.</p>
+
+        <div class="socials">
+          <a href="https://www.facebook.com/NorthCanterburyAthleticClub" aria-label="North Canterbury Athletic Club on Facebook">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 22v-8h2.8l.4-3.2h-3.2V8.7c0-.9.3-1.5 1.6-1.5h1.7V4.1A22 22 0 0 0 14.4 4C12 4 10.3 5.5 10.3 8.3v2.5H7.6V14h2.7v8Z"/></svg>
+            <span>Club</span>
+          </a>
+          <a href="https://www.facebook.com/NorthCanterburyChildrensAthletics" aria-label="Children's Athletics on Facebook">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 22v-8h2.8l.4-3.2h-3.2V8.7c0-.9.3-1.5 1.6-1.5h1.7V4.1A22 22 0 0 0 14.4 4C12 4 10.3 5.5 10.3 8.3v2.5H7.6V14h2.7v8Z"/></svg>
+            <span>Children&rsquo;s</span>
+          </a>
+        </div>
+      </div>
+      <div>
+        <h3>Quick links</h3>
+        <ul>
+          <li><a href="/#programmes">Our programmes</a></li>
+          <li><a href="/#training">Training times</a></li>
+          <li><a href="/#join">Register &amp; fees</a></li>
+          <li><a href="/#news">News &amp; results</a></li>
+          <li><a href="/gallery/">Photo gallery</a></li>
+          <li><a href="/#contact">Contact the club</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3>Get involved</h3>
+        <ul>
+          <li><a href="/#join">Become a member</a></li>
+          <li><a href="/calendar/">Club calendar</a></li>
+          <li><a href="/coaches-officials-volunteers/#volunteer">Volunteer roles</a></li>
+          <li><a href="/coaches-officials-volunteers/#coaching">Coaching development</a></li>
+          <li><a href="/coaches-officials-volunteers/#officials">Officials training</a></li>
+          <li><a href="/#sponsors">Sponsor the club</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3>Club information</h3>
+        <ul>
+          <li><a href="/committee/">Committee and documents</a></li>
+          <li><a href="/safeguarding/">Child safeguarding</a></li>
+          <li><a href="/privacy/">Privacy</a></li>
+          <li><a href="/records/">Children&rsquo;s records</a></li>
+          <li><a href="/history/">History</a></li>
+          <li><a href="https://codesport.co.nz/catalog/%20NorthCanterburyAthleticsClub%20-1107550.htmx">Uniform and apparel</a></li>
+          <li><a href="/resources/">Athletics resources</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="site-footer__base">
+      <p>&copy; 2026 <a href="/">North Canterbury Athletic Club Incorporated</a>. All rights reserved.</p>
+      <ul>
+        <li><a href="/">Back to top</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+<!-- /@partial:footer -->
+
+  <script>
+    (function () {
+      'use strict';
+
+      /* Mobile navigation ------------------------------------------------ */
+      var toggle = document.getElementById('nav-toggle');
+      var nav = document.getElementById('primary-nav');
+
+      function closeNav() {
+        nav.removeAttribute('data-open');
+        toggle.setAttribute('aria-expanded', 'false');
+      }
+
+      toggle.addEventListener('click', function () {
+        if (nav.getAttribute('data-open') === 'true') {
+          closeNav();
+        } else {
+          nav.setAttribute('data-open', 'true');
+          toggle.setAttribute('aria-expanded', 'true');
+        }
+      });
+
+      nav.addEventListener('click', function (event) {
+        if (event.target.closest('a')) { closeNav(); }
+      });
+
+      document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && nav.getAttribute('data-open') === 'true') {
+          closeNav();
+          toggle.focus();
+        }
+      });
+
+      /* Header shadow once scrolled ------------------------------------- */
+      var header = document.getElementById('site-header');
+      var onScroll = function () {
+        header.classList.toggle('is-stuck', window.scrollY > 8);
+      };
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+
+      /* Reveal on scroll ------------------------------------------------- */
+      var targets = document.querySelectorAll('[data-reveal]');
+
+      if (!('IntersectionObserver' in window) ||
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        Array.prototype.forEach.call(targets, function (el) { el.classList.add('is-visible'); });
+        return;
+      }
+
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { rootMargin: '0px 0px -8% 0px', threshold: 0.12 });
+
+      Array.prototype.forEach.call(targets, function (el) { observer.observe(el); });
+    }());
+  </script>
+
+  <script src="/assets/js/ncan-account.js?v=9a9f7eb6"></script>
+  <script>
+    (function () {
+      'use strict';
+
+      /* Results sources -----------------------------------------------------
+         Reads every meeting collected, newest first, from the club's API
+         (GET /v1/meetings; see assets/js/ncan-account.js). Public, without
+         athletes' names; coaches and administrators signed in also see them. */
+
+      var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July',
+                    'August', 'September', 'October', 'November', 'December'];
+      var $ = function (id) { return document.getElementById(id); };
+      var all = [];
+
+      function text(tag, cls, value) {
+        var el = document.createElement(tag);
+        if (cls) { el.className = cls; }
+        if (value !== undefined && value !== null) { el.textContent = value; }
+        return el;
+      }
+      function longDate(iso) {
+        var p = iso.split('-');
+        return +p[2] + ' ' + MONTHS[+p[1] - 1] + ' ' + p[0];
+      }
+      function dates(m) {
+        if (!m.first) { return 'No results read'; }
+        if (m.first === m.last) { return longDate(m.first); }
+        var a = m.first.split('-'), b = m.last.split('-');
+        if (a[0] === b[0] && a[1] === b[1]) { return +a[2] + '–' + longDate(m.last); }
+        return longDate(m.first) + ' – ' + longDate(m.last);
+      }
+      var n = function (v) { return v.toLocaleString('en-NZ'); };
+
+      function filters() {
+        return {
+          season: $('src-season').value, type: $('src-type').value, from: $('src-from').value,
+          ours: $('src-ours').checked,
+          needle: $('src-text').value.replace(/\s+/g, ' ').trim().toLowerCase()
+        };
+      }
+
+      function matches(m, f) {
+        if (f.season && m.season !== f.season) { return false; }
+        if (f.type && m.type !== f.type) { return false; }
+        if (f.from && m.from !== f.from) { return false; }
+        if (f.ours && !m.results) { return false; }
+        if (f.needle) {
+          var hay = (m.name + ' ' + (m.athletes || []).map(function (a) { return a.name; }).join(' ')).toLowerCase();
+          if (hay.indexOf(f.needle) === -1) { return false; }
+        }
+        return true;
+      }
+
+      function renderStats(ms) {
+        var dl = $('src-stats');
+        dl.textContent = '';
+        var results = 0, ours = 0, live = 0, hand = 0;
+        ms.forEach(function (m) {
+          results += m.results;
+          if (m.results) { ours++; }
+          if (m.from === 'AthleticLIVE') { live++; } else { hand++; }
+        });
+        [[n(ms.length), 'Meetings'], [n(ours), 'With our athletes'], [n(results), 'Results added'],
+         [n(live), 'From AthleticLIVE'], hand ? [n(hand), 'Manually entered'] : null]
+          .filter(Boolean).forEach(function (x) {
+            var div = text('div', 'stat');
+            div.appendChild(text('dt', null, x[0]));
+            div.appendChild(text('dd', null, x[1]));
+            dl.appendChild(div);
+          });
+        dl.hidden = !ms.length;
+      }
+
+      function athleteCount(m) {
+        return m.athletes ? m.athletes.length : (m.athlete_count || 0);
+      }
+
+      function meeting(m) {
+        var block = text('details', 'champs-day src-meeting');
+        var head = text('summary', 'champs-day__head');
+        var title = text('h4', 'champs-day__title src-meeting__title', m.name);
+        if (m.from !== 'AthleticLIVE') {
+          // entered manually from the published results, not from AthleticLIVE
+          var hand = text('span', 'ath-manual', '✍️');
+          hand.title = 'Entered manually from the published results';
+          hand.setAttribute('role', 'img');
+          hand.setAttribute('aria-label', 'Entered manually');
+          title.appendChild(hand);
+        }
+        head.appendChild(title);
+        head.appendChild(text('span', 'champs-day__count', dates(m) + (m.type ? ' · ' + m.type : '')));
+        head.appendChild(text('span', 'champs-tag ath-badge' + (m.results ? ' champs-tag--next' : ''),
+          m.results ? n(m.results) + ' result' + (m.results === 1 ? '' : 's') : 'None of ours'));
+        block.appendChild(head);
+
+        var body = text('div', 'champs-day__body src-meeting__body');
+        var facts = text('dl', 'src-facts');
+        // the meeting's results: on AthleticLIVE, or each published file (kids' and adults', say)
+        var files = (m.links && m.links.length) ? m.links
+          : [{ link: m.link, label: m.from === 'AthleticLIVE' ? 'Meeting on AthleticLIVE' : 'Published results' }];
+        var link = text('span', 'src-links');
+        files.forEach(function (f, i) {
+          if (i) { link.appendChild(document.createTextNode(' · ')); }
+          var a = text('a', 'records-source', f.label);
+          a.href = f.link; a.target = '_blank'; a.rel = 'noopener';
+          link.appendChild(a);
+        });
+        [[files.length > 1 ? 'Sources' : 'Source', link],
+         ['Dates', dates(m)],
+         m.competitors ? ['Competitors', n(m.competitors) + ' across all clubs and schools'] : null,
+         ['Our athletes', athleteCount(m) ? n(athleteCount(m)) : 'None'],
+         m.events.length ? ['Events', m.events.join(', ')] : null].filter(Boolean).forEach(function (f) {
+          facts.appendChild(text('dt', null, f[0]));
+          var dd = text('dd');
+          if (typeof f[1] === 'string') { dd.textContent = f[1]; } else { dd.appendChild(f[1]); }
+          facts.appendChild(dd);
+        });
+        body.appendChild(facts);
+        // a club administrator can change an AthleticLIVE meeting's type, or take it off the list
+        if (CAN_REMOVE && m.from === 'AthleticLIVE') {
+          body.appendChild(typeForm(m));
+          body.appendChild(removeControl(m));
+        }
+        // names only for coaches and administrators: the public list has just the count
+        if (m.athletes && m.athletes.length) {
+          var ul = text('ul', 'src-athletes');
+          m.athletes.forEach(function (a) {
+            var li = text('li');
+            var al = text('a', null, a.name);
+            al.href = '/athlete/#/' + (a.slug || a.id);
+            li.appendChild(al);
+            li.appendChild(text('span', 'src-athletes__n', ' ' + a.results));
+            ul.appendChild(li);
+          });
+          body.appendChild(ul);
+        }
+        block.appendChild(body);
+        return block;
+      }
+
+      function render() {
+        var f = filters();
+        $('src-clear').disabled = !(f.season || f.type || f.from || f.ours || f.needle);
+        var ms = all.filter(function (m) { return matches(m, f); });
+        renderStats(ms);
+        $('src-status').textContent = ms.length === all.length
+          ? all.length + ' meetings.' : 'Showing ' + ms.length + ' of ' + all.length + ' meetings.';
+        var out = $('src-out');
+        out.textContent = '';
+        var seasons = [];
+        ms.forEach(function (m) { var s = m.season || 'Not dated'; if (seasons.indexOf(s) === -1) { seasons.push(s); } });
+        var filtered = !!(f.season || f.type || f.from || f.ours || f.needle);
+        seasons.forEach(function (s, i) {
+          var these = ms.filter(function (m) { return (m.season || 'Not dated') === s; });
+          // each season folds away: the newest starts open, older ones folded, and one
+          // opened or folded by hand stays that way. With a filter or search on, every
+          // season with a match opens.
+          var group = text('details', 'champs-day src-season');
+          group.open = filtered || (s in seasonOpen ? seasonOpen[s] : i === 0);
+          var head = text('summary', 'champs-day__head src-season__head');
+          head.appendChild(text('h3', 'records-grade__head', s === 'Not dated' ? s : s + ' season'));
+          var ours = these.filter(function (m) { return m.results; }).length;
+          head.appendChild(text('span', 'champs-day__count',
+            these.length + ' meeting' + (these.length === 1 ? '' : 's') + (ours ? ' · ' + ours + ' with our athletes' : '')));
+          group.appendChild(head);
+          if (!filtered) { group.addEventListener('toggle', function () { seasonOpen[s] = group.open; }); }
+          var body = text('div', 'champs-day__body src-season__body');
+          these.forEach(function (m) { body.appendChild(meeting(m)); });
+          group.appendChild(body);
+          out.appendChild(group);
+        });
+        $('src-folds').hidden = seasons.length < 2;
+      }
+
+      var seasonOpen = {};    // seasons opened or folded by hand, by season
+
+      function foldAll(open) {
+        Array.prototype.forEach.call(document.querySelectorAll('#src-out .src-season'), function (d) { d.open = open; });
+      }
+
+      // Public: anyone sees the meetings and how many of our athletes each added.
+      // Coaches and administrators, signed in, also get the athletes' names.
+      /* Adding and removing meetings ----------------------------------------
+         For club administrators, coaches and the committee, signed in: the API
+         (POST /v1/sources) checks the address with AthleticLIVE, adds it to the
+         list and collects the results in the background. Only administrators
+         remove (POST /v1/sources/remove) or change a meeting's type (POST /v1/sources/type). */
+
+      var CAN_REMOVE = false;
+      var TYPES = [];         // the meeting types, from GET /v1/sources
+      var checked = null;     // the meeting the Check button found
+
+      function collectWords(c) {
+        if (!c || !c.state) { return ''; }
+        var at = function (t) { return t ? longDate(t.slice(0, 10)) + ' at ' + t.slice(11, 16) : ''; };
+        if (c.state === 'running') { return 'Collecting results now (started ' + c.started.slice(11, 16) + '). This takes 5–10 minutes; this page updates when it’s done.'; }
+        if (c.state === 'done') { return 'Results last collected ' + at(c.finished) + ': ' + (c.message || '') ; }
+        return 'The last collect, ' + at(c.finished || c.started) + ', didn’t finish: ' + (c.message || '') + ' Ask a club administrator.';
+      }
+
+      // after a change: show the collect's progress, and reload the list once it's done
+      function watchCollect() {
+        NCAN.get('/sources').then(function (info) {
+          $('collect-status').textContent = collectWords(info.collect);
+          if (info.collect && info.collect.state === 'running') { setTimeout(watchCollect, 15000); }
+          else { location.reload(); }
+        }, function () { setTimeout(watchCollect, 30000); });
+      }
+
+      function setUpAdding() {
+        NCAN.get('/sources').then(function (info) {
+          $('add-meeting').hidden = false;
+          TYPES = info.types;
+          info.types.forEach(function (t) { var o = text('option', null, t); o.value = t; $('add-type').appendChild(o); });
+          $('collect-status').textContent = collectWords(info.collect);
+          if (info.collect && info.collect.state === 'running') { setTimeout(watchCollect, 15000); }
+          if (info.can_remove) { CAN_REMOVE = true; if (all.length) { render(); } }
+        }, function () { /* not staff after all: nothing to show */ });
+
+        $('add-url').addEventListener('input', function () { checked = null; $('add-found').hidden = true; });
+        $('add-check').addEventListener('click', function () {
+          var url = $('add-url').value.trim();
+          if (!url) { $('add-status').textContent = 'Paste the team page address first.'; return; }
+          $('add-status').textContent = 'Checking with AthleticLIVE…';
+          $('add-found').hidden = true;
+          NCAN.send('/sources/check', { url: url }).then(function (r) {
+            if (r.status !== 200) { $('add-status').textContent = r.body.error || 'Sorry, that didn’t work.'; return; }
+            var m = r.body;
+            if (m.already) {
+              $('add-status').textContent = 'That meeting is already listed, as “' + m.already.name + '”.';
+              return;
+            }
+            checked = m;
+            var when = m.dates.length ? ' on ' + m.dates.map(function (d) { return longDate(d); }).join(' and ') : '';
+            $('add-about').textContent = 'AthleticLIVE meeting ' + m.meet + when + ': ' + m.results + ' result' + (m.results === 1 ? '' : 's') + ' for ' + m.team + '.' +
+              (m.recent ? ' This meeting is recent: if its results are still coming in, wait until they’re complete.' : '');
+            $('add-found').hidden = false;
+            $('add-status').textContent = 'Give it a name and type, then add it.';
+            $('add-name').focus();
+          }, function (err) { $('add-status').textContent = err.message; });
+        });
+        $('src-add').addEventListener('submit', function (e) {
+          e.preventDefault();
+          if (!checked) { $('add-status').textContent = 'Check the address first.'; return; }
+          $('add-go').disabled = true;
+          $('add-status').textContent = 'Adding…';
+          NCAN.send('/sources', { url: checked.url, name: $('add-name').value, type: $('add-type').value }).then(function (r) {
+            $('add-go').disabled = false;
+            if (r.status !== 201) { $('add-status').textContent = r.body.error || 'Sorry, that didn’t work.'; return; }
+            $('add-status').textContent = 'Added “' + r.body.meeting.name + '”. Its results are being collected now.';
+            $('src-add').reset();
+            $('add-found').hidden = true;
+            checked = null;
+            setTimeout(watchCollect, 3000);
+          }, function (err) { $('add-go').disabled = false; $('add-status').textContent = err.message; });
+        });
+      }
+
+      // the meeting's type: changing it collects again, as cross country and road are read differently
+      function typeForm(m) {
+        var form = text('form', 'src-type-form');
+        var id = 'src-type-' + (m.link || '').replace(/\D+/g, '-');
+        var label = text('label', null, 'Meeting type');
+        label.htmlFor = id;
+        var pick = text('select');
+        pick.id = id;
+        TYPES.forEach(function (t) { var o = text('option', null, t); o.value = t; pick.appendChild(o); });
+        if (m.type && TYPES.indexOf(m.type) === -1) { var o = text('option', null, m.type); o.value = m.type; pick.appendChild(o); }
+        pick.value = m.type || '';
+        var go = text('button', 'btn btn--ghost', 'Change type');
+        go.type = 'submit';
+        go.disabled = true;
+        var said = text('span', 'src-type-form__said');
+        said.setAttribute('role', 'status');
+        pick.addEventListener('change', function () { go.disabled = pick.value === m.type; said.textContent = ''; });
+        form.addEventListener('submit', function (e) {
+          e.preventDefault();
+          if (pick.value === m.type) { return; }
+          go.disabled = pick.disabled = true;
+          said.textContent = 'Saving…';
+          NCAN.send('/sources/type', { url: m.link, type: pick.value }).then(function (r) {
+            if (r.status !== 200) { go.disabled = pick.disabled = false; said.textContent = r.body.error || 'Sorry, that didn’t work.'; return; }
+            said.textContent = 'Now ' + r.body.meeting.type + ': updating the results…';
+            $('collect-status').textContent = 'Collecting results now. This takes 5–10 minutes; this page updates when it’s done.';
+            setTimeout(watchCollect, 3000);
+          }, function (err) { go.disabled = pick.disabled = false; said.textContent = err.message; });
+        });
+        var field = text('p', 'records-field');
+        field.appendChild(label);
+        field.appendChild(pick);
+        [field, go, said].forEach(function (x) { form.appendChild(x); });
+        return form;
+      }
+
+      // "Remove this meeting", asked and answered on the page itself (a browser's
+      // confirm box can be switched off, and then it says no without showing)
+      function removeControl(m) {
+        var box = text('div', 'src-remove');
+        var rm = text('button', 'btn btn--ghost btn--sm', 'Remove this meeting');
+        rm.type = 'button';
+        var ask = text('div', 'src-remove__ask');
+        ask.hidden = true;
+        ask.appendChild(text('p', 'src-remove__q', 'Remove “' + m.name + '”? Its results come off the athlete pages ' +
+          'when the results are collected again, which starts now. It can be added again later.'));
+        var yes = text('button', 'btn btn--accent btn--sm', 'Yes, remove it');
+        var no = text('button', 'btn btn--ghost btn--sm', 'Keep it');
+        yes.type = no.type = 'button';
+        ask.appendChild(yes); ask.appendChild(no);
+        var said = text('p', 'src-remove__said');
+        said.setAttribute('role', 'status');
+        rm.addEventListener('click', function () { rm.hidden = true; ask.hidden = false; said.textContent = ''; yes.focus(); });
+        no.addEventListener('click', function () { ask.hidden = true; rm.hidden = false; rm.focus(); });
+        yes.addEventListener('click', function () {
+          yes.disabled = no.disabled = true;
+          said.textContent = 'Removing…';
+          NCAN.send('/sources/remove', { url: m.link }).then(function (r) {
+            yes.disabled = no.disabled = false;
+            if (r.status !== 200) { said.textContent = (r.body && r.body.error) || 'Sorry, that didn’t work.'; return; }
+            ask.hidden = true;
+            said.textContent = 'Removed. The results are being collected again: this meeting goes from the list when that’s done.';
+            $('collect-status').textContent = 'Collecting results now. This takes 5–10 minutes; this page updates when it’s done.';
+            setTimeout(watchCollect, 3000);
+          }, function (err) { yes.disabled = no.disabled = false; said.textContent = err.message; });
+        });
+        box.appendChild(rm); box.appendChild(ask); box.appendChild(said);
+        return box;
+      }
+
+      NCAN.me().then(function (who) {
+        NCAN.account($('account'), who);
+        if (who && who.role !== 'family') { setUpAdding(); }
+      }, function () { /* shown below */ });
+
+      NCAN.get('/meetings')
+        .then(function (json) {
+          all = json.meetings || [];
+          var names = all.some(function (m) { return m.athletes; });
+          $('src-text').placeholder = names ? 'meeting or athlete' : 'meeting';
+          var seasons = {}, types = {};
+          all.forEach(function (m) { if (m.season) { seasons[m.season] = 1; } if (m.type) { types[m.type] = 1; } });
+          Object.keys(seasons).sort().reverse().forEach(function (s) {
+            var o = text('option', null, s); o.value = s; $('src-season').appendChild(o);
+          });
+          Object.keys(types).sort().forEach(function (t) {
+            var o = text('option', null, t); o.value = t; $('src-type').appendChild(o);
+          });
+          ['src-season', 'src-type', 'src-from', 'src-ours'].forEach(function (id) { $(id).addEventListener('change', render); });
+          $('src-text').addEventListener('input', render);
+          $('src-clear').addEventListener('click', function () {
+            ['src-season', 'src-type', 'src-from', 'src-text'].forEach(function (id) { $(id).value = ''; });
+            $('src-ours').checked = false;
+            render();
+          });
+          $('src-open-all').addEventListener('click', function () { foldAll(true); });
+          $('src-fold-all').addEventListener('click', function () { foldAll(false); });
+          if (json.updated) { $('src-updated').textContent = 'Last updated ' + longDate(json.updated) + '.'; }
+          render();
+        })
+        .catch(function () {
+          $('src-status').textContent = 'Sorry, the meetings could not be loaded. Please try again later.';
+        });
+    }());
+  </script>
+
+</body>
+
+</html>

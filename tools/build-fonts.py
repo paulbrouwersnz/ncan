@@ -124,7 +124,7 @@ def scan_sources():
                 continue
             origins.setdefault(ch, set()).add(where)
 
-    for path in sorted(glob.glob(os.path.join(ROOT, '*.html'))):
+    for path in sorted(glob.glob(os.path.join(ROOT, '*.html')) + glob.glob(os.path.join(ROOT, '*', 'index.html'))):
         note(read_text(path), os.path.basename(path))
 
     if os.path.isdir(CALENDAR_DIR):
@@ -211,7 +211,7 @@ def main():
         return 0
 
     print('subset: %d character(s) from %d page(s) plus the baseline'
-          % (len(chars), len(glob.glob(os.path.join(ROOT, '*.html')))))
+          % (len(chars), len(glob.glob(os.path.join(ROOT, '*.html')) + glob.glob(os.path.join(ROOT, '*', 'index.html')))))
 
     total_new = 0
     changed = False

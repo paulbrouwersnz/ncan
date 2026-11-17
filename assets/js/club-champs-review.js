@@ -1,6 +1,6 @@
 /*
   club-champs-review.js - reviewing and confirming the club championships, on
-  club-champs.html, for club administrators and coaches signed in.
+  /club-champs/, for club administrators and coaches signed in.
 
   The club's API proposes each Saturday's results from the meeting's results
   (GET /v1/club-champs/<season>/review): North Canterbury athletes in the

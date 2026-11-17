@@ -1041,8 +1041,10 @@ table.schedule.champs-table { min-width: 0; }
 .champs-events { font-size: .9rem; color: var(--text-soft); }
 /* "Discus (10)" reads as one item, so it never breaks across lines */
 .champs-event { white-space: nowrap; }
-/* the result a standings link jumped to stands out for a moment */
-.champs-results tbody > tr:target > * { animation: champs-flash 2.4s ease-out; }
+/* the result a standings link jumped to stands out for a moment (marked by the
+   page's script: the address is #/season/2026-27/res-..., not the row's own id) */
+.champs-results tbody > tr:target > *,
+.champs-results tbody > tr.is-target > * { animation: champs-flash 2.4s ease-out; }
 /* on top of the page's 96px, so the "Girls · grade 11" band stays in view even a
    couple of rows above */
 .champs-results tbody > tr[id] { scroll-margin-top: 130px; }
@@ -1051,7 +1053,8 @@ table.schedule.champs-table { min-width: 0; }
   100% { background: transparent; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .champs-results tbody > tr:target > * {
+  .champs-results tbody > tr:target > *,
+  .champs-results tbody > tr.is-target > * {
     animation: none;
     background: color-mix(in srgb, var(--yellow-500) 22%, transparent);
   }

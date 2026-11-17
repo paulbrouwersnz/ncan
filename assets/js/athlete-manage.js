@@ -1,5 +1,5 @@
 /*
-  athlete-manage.js - "Manage this athlete" on athlete.html, for club
+  athlete-manage.js - "Manage this athlete" on the athlete page (/athlete/), for club
   administrators only. Everyone else never sees it: the club's API answers only
   an administrator (GET /v1/athletes/<id>/manage), and the section stays hidden.
 
@@ -21,9 +21,9 @@
 (function () {
   'use strict';
 
-  // the page's address (?a=sam-brown), or a number in an old link (?id=12345678)
-  var query = new URLSearchParams(location.search);
-  var id = query.get('a') || query.get('id');
+  // the athlete in the page's address: /athlete/#/sam-brown (or a number, from an old link)
+  var route = /^#\/([a-z0-9]+(?:-[a-z0-9]+)*)/.exec(location.hash);
+  var id = route ? route[1] : '';
   var $ = function (x) { return document.getElementById(x); };
   if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(id || '')) { return; }
 
