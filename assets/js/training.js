@@ -80,6 +80,15 @@
   }
   var STATUS = { draft: 'Draft', released: 'Released', cancelled: 'Cancelled' };
 
+  // an activity's name with its icon in front (assets/js/training-icons.js), if it has one
+  function activity(cls, name) {
+    var span = el('span', cls);
+    var pic = window.NCANTrainingIcons && name && NCANTrainingIcons.icon(name);
+    if (pic) { span.appendChild(pic); }
+    span.appendChild(document.createTextNode(name || '—'));
+    return span;
+  }
+
   function apiError(res, fallback) {
     return (res && res.body && res.body.error) || fallback || 'Sorry, that didn’t work. Please try again.';
   }
@@ -190,7 +199,7 @@
       slot.groups.forEach(function (g) {
         var li = el('li', 'plan__group' + (g.everyone ? ' plan__group--everyone' : g.parents ? ' plan__group--parents' : ''));
         li.appendChild(el('span', 'plan__who', groupLabel(g)));
-        if (g.event) { li.appendChild(el('span', 'plan__what', g.event)); }
+        if (g.event) { li.appendChild(activity('plan__what', g.event)); }
         if (g.note) { li.appendChild(el('span', 'plan__note', g.note)); }
         if (g.coach_note) { li.appendChild(coachNote(g.coach_note, 'span')); }
         groups.appendChild(li);
@@ -529,7 +538,12 @@
   }
 
   function chip(c) {
-    var b = el('button', 'plan-chip plan-chip--' + c.kind, c.label);
+    var b = c.kind === 'event' ? activity('plan-chip plan-chip--event', c.label) : el('span', 'plan-chip plan-chip--' + c.kind, c.label);
+    b = (function (span) {         // the chip is a button holding the icon and name
+      var btn = el('button', span.className);
+      while (span.firstChild) { btn.appendChild(span.firstChild); }
+      return btn;
+    }(b));
     b.type = 'button';
     b.draggable = true;
     b.setAttribute('aria-pressed', String(!!picked && picked.kind === c.kind && picked.value === c.value));
@@ -762,14 +776,25 @@
     who.appendChild(tokens);
     cell.appendChild(who);
 
+    var whatRow = el('div', 'plan-group__event-row');
+    var whatIcon = el('span', 'plan-group__event-icon');
+    function showIcon() {
+      whatIcon.textContent = '';
+      var pic = window.NCANTrainingIcons && NCANTrainingIcons.icon(g.event);
+      if (pic) { whatIcon.appendChild(pic); }
+      whatIcon.hidden = !pic;
+    }
     var what = el('input', 'plan-group__event');
     what.value = g.event;
     what.maxLength = 60;
     what.placeholder = 'Activity';
     what.setAttribute('aria-label', 'Activity for ' + groupLabel(g));
     what.setAttribute('list', 'plan-events');
-    what.addEventListener('input', function () { g.event = what.value; changed(); });
-    cell.appendChild(what);
+    what.addEventListener('input', function () { g.event = what.value; changed(); showIcon(); });
+    showIcon();
+    whatRow.appendChild(whatIcon);
+    whatRow.appendChild(what);
+    cell.appendChild(whatRow);
     var note = el('input', 'plan-group__note');
     note.value = g.note;
     note.maxLength = 300;
@@ -899,7 +924,7 @@
       slot.groups.forEach(function (g) {
         var cell = el('div', 'plan-print__group' + (g.everyone ? ' plan-print__group--everyone' : g.parents ? ' plan-print__group--parents' : ''));
         cell.appendChild(el('span', 'plan-print__who', groupLabel(g)));
-        cell.appendChild(el('span', 'plan-print__what', g.event || '—'));
+        cell.appendChild(activity('plan-print__what', g.event));
         if (g.note) { cell.appendChild(printNote(g.note, false)); }
         if (coaches && g.coach_note) { cell.appendChild(printNote(g.coach_note, true)); }
         list.appendChild(cell);
@@ -999,7 +1024,7 @@
         if (!gs.length) { td.appendChild(el('span', 'plan-print__note', '—')); }
         gs.forEach(function (g, k) {
           if (k) { td.appendChild(document.createTextNode(' / ')); }
-          td.appendChild(el('span', 'plan-print__what', g.event || '—'));
+          td.appendChild(activity('plan-print__what', g.event));
           if (g.note) { td.appendChild(printNote(g.note, false)); }
         });
         if (slot.note) { td.appendChild(printNote(slot.note, false)); }

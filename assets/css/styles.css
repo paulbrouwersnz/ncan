@@ -3112,7 +3112,7 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 .plan__time { white-space: nowrap; color: var(--heading); font-family: var(--font-display); width: 1%; }
 .plan__groups { display: flex; flex-wrap: wrap; gap: .5rem; }
 .plan__group {
-  display: grid; gap: .1rem; min-width: 9rem; padding: .45rem .7rem;
+  display: grid; gap: .1rem; align-content: start; min-width: 9rem; padding: .45rem .7rem;
   border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: var(--radius-sm);
   background: var(--surface-tint);
 }
@@ -3120,6 +3120,14 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 .plan__group--parents, .plan-group--parents { border-left-color: var(--text-soft); border-left-style: dotted; }
 .plan__who { font-size: .82rem; font-weight: 700; color: var(--link); }
 .plan__what { font-family: var(--font-display); font-weight: 700; color: var(--heading); }
+/* activity icons (assets/js/training-icons.js): in the club green, sized to the text */
+.plan-icon { flex: none; width: 1.3em; height: 1.3em; color: var(--accent); }
+.plan-icon .d { fill: currentColor; stroke: currentColor; opacity: .28; }
+.plan__what, .plan-print__what, .plan-chip--event { display: inline-flex; align-items: center; gap: .35em; }
+.plan-chip--event .plan-icon { width: 1.15em; height: 1.15em; }
+.plan-group__event-row { display: flex; align-items: center; gap: .4rem; }
+.plan-group__event-row .plan-icon { width: 1.6rem; height: 1.6rem; }
+.plan-group__event-icon[hidden] { display: none; }
 .plan__note { font-size: .85rem; color: var(--text-soft); }
 .plan__slot-note { margin: .5rem 0 0; font-size: .9rem; color: var(--text-soft); }
 .plan__by { margin: .8rem 0 0; font-size: .85rem; color: var(--text-soft); }
@@ -3336,6 +3344,7 @@ html:has(.plan-editor:not([hidden])) { scroll-padding-bottom: 5rem; }
 .plan-print__group--parents { border-left: 3px dotted #555; }
 .plan-print__who { display: block; font-size: 8.5pt; font-weight: 700; color: #333; }
 .plan-print__what { font-weight: 700; }
+.plan-print .plan-icon { color: #000; width: 1.35em; height: 1.35em; }
 .plan-print__note, .plan-print__coach { display: block; font-size: 9pt; color: #333; }
 .plan-print__coach { margin-top: .6mm; padding: .4mm 1mm; border: 1px dashed #777; }
 /* strips: one for each group, with dashed lines to cut along */
