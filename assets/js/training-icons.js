@@ -3,12 +3,11 @@
   page (assets/js/training.js): on the plan, the planner's chips and groups, and
   printed plans and strips.
 
-  The athlete pictograms (warm up, sprints, hurdles, relays, race walking, the jumps and
-  throws, vortex) were drawn for the club, on a 24 x 24 grid: a 2.2 head, limbs 2 wide with round
-  ends, and the ground or equipment shaded (class "d": a quarter of the colour;
-  "dl" for shaded lines that mustn't be filled).
-  They draw in currentColor, so they follow the text's colour (green on screen,
-  black in print, and in dark mode).
+  Every icon is an athlete pictogram drawn for the club, as one family, on a
+  24 x 24 grid: a 2.2 head, limbs 2 wide with round ends, and the ground or
+  equipment shaded (class "d": a quarter of the colour; "dl" for shaded lines
+  that mustn't be filled). They draw in currentColor, so they follow the text's
+  colour: the club green on screen (a lighter green in dark mode), black in print.
 
   NCANTrainingIcons.icon(activity) -> an <svg> element, or null when there's no
   icon for it. An activity typed in gets one when its name contains a known
@@ -19,6 +18,7 @@
 
   var HEAD = function (x, y) { return '<circle cx="' + x + '" cy="' + y + '" r="2.2" fill="currentColor" stroke="none"/>'; };
   var LIMBS = function (d) { return '<path d="' + d + '"/>'; };
+  var GROUND = '<path class="d" d="M2.5 21.4h19" stroke-width="1.6"/>';
 
   // the drawings: what goes inside <svg viewBox="0 0 24 24">, limbs stroked
   var DRAWN = {
@@ -80,7 +80,44 @@
     javelin:
       '<path d="M2.5 14 22 3" stroke-width="1.6"/>' +
       LIMBS('M8.8 8l1 5.6M9 9.6l-3.8 2.8M9 9.6l4-1.4M9.8 13.6l-3 6.2M9.8 13.6l4 5.2') +
-      HEAD(8.6, 5.6)
+      HEAD(8.6, 5.6),
+    // set up: putting out a cone
+    'set up':
+      GROUND + '<path d="M17.6 14.4 15.2 20.8h4.8z" fill="currentColor" stroke-width="1.2"/>' +
+      '<path class="d" d="M14.2 21.2h6.8" stroke-width="2"/>' +
+      LIMBS('M12.8 9.2 8.6 13M12.4 9.6l3.8 4M12.4 9.6l-1.6 3.2M8.6 13l-1.6 7.6M8.6 13l2.8 7.4') +
+      HEAD(14.6, 7.4),
+    // starts: the "set" position, the back foot on a block
+    starts:
+      GROUND + '<path class="d" d="M3 21 5.8 18l1.1 3z" stroke="none"/>' +
+      LIMBS('M10.6 11.6 16 14.2M16 14.2l.6 6.6M10.6 11.6l2.2 5-2.4 4.2M10.6 11.6 8 16.2l-2.4 4.4') +
+      HEAD(18.4, 13.6),
+    // middle distance: an upright runner on the track's lanes
+    'middle distance':
+      '<path class="dl" d="M2 19.6Q12 16.6 22 19.6M2 22.6Q12 19.6 22 22.6" stroke-width="1.4"/>' +
+      LIMBS('M12.2 6.2l-1 5.6M12 7.8l2.6 1.8 1.6-1.6M12 7.8l-2.6 1.4-1 2M11.2 11.8l3 2.4-.4 3.6M11.2 11.8l-2.6 2.8-2.4.2') +
+      HEAD(12.6, 3.8),
+    // long run: a runner, and the road going on into the distance
+    'long run':
+      '<path class="dl" d="M11 22 18.2 9.4M22.6 22l-2.6-12.6" stroke-width="1.5"/>' +
+      '<path class="d" d="M18 21.4l-.6-2.6M17.3 17.2l-.4-1.8M16.8 14l-.3-1.2" stroke-width="1.4"/>' +
+      LIMBS('M7 6.2l-.8 5.4M6.8 7.8l2.4 1.6 1.2-1.4M6.8 7.8l-2.2 1.6-.6 1.8M6.2 11.6l2.6 2.6-.4 3.8M6.2 11.6l-2.2 3-2 .4') +
+      HEAD(7.4, 3.8),
+    // games: kicking a ball
+    games:
+      GROUND + '<circle cx="19" cy="16.6" r="2.4" fill="currentColor" stroke="none"/>' +
+      LIMBS('M9.2 6.4l.6 5.6M9.4 8l-3.4 1.6M9.4 8l3.4-.4M9.8 12l-1.4 8.6M9.8 12l4.6 3.6 1.6-1') +
+      HEAD(9, 4),
+    // cool down: a standing quad stretch
+    'cool down':
+      GROUND + LIMBS('M11 6.2l.4 6.2M11.4 12.4 11 20.8M11.4 12.4l1.2 4.6 2.2-4.4M11.2 8l3.4 4.2M11.2 8l-4.8.8') +
+      HEAD(11, 3.8),
+    // pack down: carrying the gear away in a box
+    'pack down':
+      GROUND + '<rect x="13.2" y="8.6" width="6.4" height="5.4" rx=".6" fill="currentColor" stroke="none"/>' +
+      '<path class="d" d="M13.2 10.6h6.4" stroke-width="1"/>' +
+      LIMBS('M10 6.4V13M10 8.2l3.6 2.4M10 8.2l3 3.8M10 13l-2.4 7.6M10 13l2.8 7.4') +
+      HEAD(10, 4)
   };
 
   // which icon an activity gets: its name, or a known event inside a name typed in
@@ -104,19 +141,13 @@
     return null;
   }
 
-  // icons from a library (Phosphor, MIT licence), added to OTHER when they're in the project
-  var OTHER = window.NCANTrainingIconsMore || {};
-
   function icon(activity) {
     var k = key(activity);
-    var inner = k && (DRAWN[k] || OTHER[k]);
+    var inner = k && DRAWN[k];
     if (!inner) { return null; }
     var box = document.createElement('span');
-    var other = !DRAWN[k];
-    box.innerHTML = other
-      ? '<svg class="plan-icon" viewBox="0 0 256 256" aria-hidden="true" focusable="false" fill="currentColor">' + inner + '</svg>'
-      : '<svg class="plan-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" ' +
-        'stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + inner + '</svg>';
+    box.innerHTML = '<svg class="plan-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" ' +
+      'stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + inner + '</svg>';
     return box.firstChild;
   }
 
