@@ -3123,6 +3123,7 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 /* activity icons (assets/js/training-icons.js): in the club green, sized to the text */
 .plan-icon { flex: none; width: 1.3em; height: 1.3em; color: var(--accent); }
 .plan-icon .d { fill: currentColor; stroke: currentColor; opacity: .28; }
+.plan-icon .dl { fill: none; stroke: currentColor; opacity: .4; }   /* shaded lines (arm circles) */
 .plan__what, .plan-print__what, .plan-chip--event { display: inline-flex; align-items: center; gap: .35em; }
 .plan-chip--event .plan-icon { width: 1.15em; height: 1.15em; }
 .plan-group__event-row { display: flex; align-items: center; gap: .4rem; }

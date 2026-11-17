@@ -3,9 +3,10 @@
   page (assets/js/training.js): on the plan, the planner's chips and groups, and
   printed plans and strips.
 
-  The athlete pictograms (sprints, hurdles, relays, race walking, the jumps and
+  The athlete pictograms (warm up, sprints, hurdles, relays, race walking, the jumps and
   throws, vortex) were drawn for the club, on a 24 x 24 grid: a 2.2 head, limbs 2 wide with round
-  ends, and the ground or equipment shaded (class "d": a quarter of the colour).
+  ends, and the ground or equipment shaded (class "d": a quarter of the colour;
+  "dl" for shaded lines that mustn't be filled).
   They draw in currentColor, so they follow the text's colour (green on screen,
   black in print, and in dark mode).
 
@@ -61,6 +62,12 @@
       '<path class="d" d="M2.5 21.4h19" stroke-width="1.6"/>' +
       LIMBS('M12 6.4 11.6 12.4M11.6 12.4l4 7.9 2-1M11.6 12.4l-4 7.3-2 .9M11.9 8l1.9 2.6 2.6-1.9M11.9 8 9.6 10.4l-1.2 2.4') +
       HEAD(12.2, 4),
+    // warm up: arm circles, a loop with an arrow round each hand
+    'warm up':
+      '<path class="d" d="M3 21.4h18" stroke-width="1.6"/>' +
+      '<path class="dl" d="M5.6 5.4A2.8 2.8 0 1 0 8.4 8.2l-1.3-.9M8.4 8.2l.9-1.2M18.4 5.4a2.8 2.8 0 1 1-2.8 2.8l1.3-.9M15.6 8.2l-.9-1.2" stroke-width="1.5"/>' +
+      LIMBS('M12 6.4v7M12 8.2H5.6M12 8.2h6.8M12 13.4l-2.6 7M12 13.4l2.6 7') +
+      HEAD(12, 4),
     // vortex: a thrower following through, the howler (a finned foam dart) in flight
     vortex:
       '<ellipse class="d" cx="9" cy="20.8" rx="6.5" ry="1.4" stroke="none"/>' +
