@@ -395,7 +395,7 @@
   function openEditor(plan, isNew) {
     editing = { date: plan.date, notes: plan.notes || '', coach_notes: plan.coach_notes || '',
                 slots: copySlots(plan.slots), status: plan.status || 'draft',
-                isNew: isNew };
+                isNew: isNew, from: isNew ? null : plan.date };
     dirty = isNew;
     picked = null;
     showList();
@@ -426,7 +426,7 @@
     editorBox.appendChild(head);
 
     // the date (a new plan only: a saved plan's date is its name)
-    if (plan.isNew) { editorBox.appendChild(dateField(plan)); }
+    editorBox.appendChild(dateField(plan));      // a saved plan's too: saving moves it
 
     // the chips, with how to use them; while one is picked by tapping, a slim bar
     // stays in view (pinned under the site header) saying which, until Done
@@ -523,8 +523,10 @@
       if (parseDate(plan.date).getDay() !== 2) {
         said.appendChild(el('span', 'plan-date__warn', 'Not a Tuesday'));
       }
-      if ([].concat(state.upcoming, state.past).some(function (p) { return p.date === plan.date; })) {
+      if (taken(plan)) {
         said.appendChild(el('span', 'plan-date__warn', 'Already has a plan: saving replaces it'));
+      } else if (plan.from && plan.date !== plan.from) {
+        said.appendChild(el('span', 'plan-date__warn', 'Saving moves the plan from ' + longDate(plan.from)));
       }
     }
     function set(value) {
@@ -1000,16 +1002,32 @@
   }
 
   // save the plan, then (`then`) release it or take it back to a draft
+  // whether another plan already has the plan's date (not its own, when it's being moved)
+  function taken(plan) {
+    return [].concat(state.upcoming, state.past).some(function (p) { return p.date === plan.date && p.date !== plan.from; });
+  }
+
   function save(then, said) {
     var plan = editing;
     if (!plan.date) { said.textContent = 'Choose the session’s date.'; return; }
-    if (plan.isNew && [].concat(state.upcoming, state.past).some(function (p) { return p.date === plan.date; }) &&
-        !window.confirm('There is already a plan for ' + longDate(plan.date) + '. Replace it?')) { return; }
+    var replace = taken(plan);
+    if (replace && !window.confirm('There is already a plan for ' + longDate(plan.date) + '. Replace it?')) { return; }
+    var moving = !!plan.from && plan.date !== plan.from;
     var bad = plan.slots.filter(function (s) { return s.end <= s.start; })[0];
     if (bad) { said.textContent = 'A time slot ends before it starts (' + bad.start + '–' + bad.end + ').'; return; }
     said.textContent = 'Saving…';
-    NCAN.send('/training/' + plan.date, { notes: plan.notes, coach_notes: plan.coach_notes, slots: plan.slots }).then(function (res) {
+    NCAN.send('/training/' + (moving ? plan.from : plan.date),
+              { notes: plan.notes, coach_notes: plan.coach_notes, slots: plan.slots }).then(function (res) {
       if (res.status !== 200) { said.textContent = apiError(res); return null; }
+      if (!moving) { return res; }
+      // then to its new date, as it is
+      return NCAN.send('/training/' + plan.from + '/move', { to: plan.date, replace: replace }).then(function (moved) {
+        if (moved.status !== 200) { said.textContent = 'Saved, but not moved: ' + apiError(moved); dirty = false; return null; }
+        plan.from = plan.date;
+        return moved;
+      });
+    }).then(function (res) {
+      if (!res) { return null; }
       if (!then) { return res; }
       return NCAN.send('/training/' + plan.date + '/' + then, {});
     }).then(function (res) {
