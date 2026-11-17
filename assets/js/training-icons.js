@@ -3,8 +3,8 @@
   page (assets/js/training.js): on the plan, the planner's chips and groups, and
   printed plans and strips.
 
-  The athlete pictograms (sprints, hurdles, relays, race walking, the jumps and throws) were
-  drawn for the club, on a 24 x 24 grid: a 2.2 head, limbs 2 wide with round
+  The athlete pictograms (sprints, hurdles, relays, race walking, the jumps and
+  throws, vortex) were drawn for the club, on a 24 x 24 grid: a 2.2 head, limbs 2 wide with round
   ends, and the ground or equipment shaded (class "d": a quarter of the colour).
   They draw in currentColor, so they follow the text's colour (green on screen,
   black in print, and in dark mode).
@@ -61,6 +61,15 @@
       '<path class="d" d="M2.5 21.4h19" stroke-width="1.6"/>' +
       LIMBS('M12 6.4 11.6 12.4M11.6 12.4l4 7.9 2-1M11.6 12.4l-4 7.3-2 .9M11.9 8l1.9 2.6 2.6-1.9M11.9 8 9.6 10.4l-1.2 2.4') +
       HEAD(12.2, 4),
+    // vortex: a thrower following through, the howler (a finned foam dart) in flight
+    vortex:
+      '<ellipse class="d" cx="9" cy="20.8" rx="6.5" ry="1.4" stroke="none"/>' +
+      LIMBS('M7 8.6 8 14M7.2 10l3.8-2.6M7.2 10 3.8 12M8 14l-2.8 6M8 14l3.8 5') +
+      HEAD(6.8, 6.2) +
+      // the howler: a rounded nose, a thin tail, fins at its end
+      '<ellipse cx="20.2" cy="3.9" rx="2.5" ry="1.5" transform="rotate(-30 20.2 3.9)" fill="currentColor" stroke="none"/>' +
+      '<path d="M18.2 5.1 14.6 7.2" stroke-width="1.2"/>' +
+      '<path d="M15.8 6.5 13.2 5.6l.9 1.6-.5 1.8z" fill="currentColor" stroke-width="1"/>',
     javelin:
       '<path d="M2.5 14 22 3" stroke-width="1.6"/>' +
       LIMBS('M8.8 8l1 5.6M9 9.6l-3.8 2.8M9 9.6l4-1.4M9.8 13.6l-3 6.2M9.8 13.6l4 5.2') +
