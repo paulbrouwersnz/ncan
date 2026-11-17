@@ -35,6 +35,14 @@ is the home page. `tools/pages.py` is the one place the tools learn this.
   it sends an old address on for good.
 - **A new page** is a new folder with an `index.html`, copied from a page like it
   (with the partial markers), then the tools in "added a new page" below.
+- **Files at the root that browsers and others look for by name**:
+  `favicon.ico` and `apple-touch-icon.png` (made by `build-icons.py`),
+  `site.webmanifest` (the name and icons when the site is added to a phone's home
+  screen), `robots.txt` and `sitemap.xml` (`build-sitemap.py`), and
+  `.well-known/security.txt`, which says where to report a security problem.
+  **`security.txt` has an `Expires` date (17 November 2027): renew it each year**,
+  or it stops counting. `_config.yml` tells GitHub Pages' Jekyll build to publish
+  `.well-known`, which it would otherwise leave out, as it starts with a dot.
 
 ## Requirements
 
@@ -45,6 +53,7 @@ these need packages installed with `pip install`:
 |---|---|
 | `build-fonts.py` | `fonttools`, `brotli` |
 | `build-gallery.py`, `shrink-gallery.py` | `Pillow` |
+| `build-icons.py` | `Pillow`, and Microsoft Edge or Google Chrome |
 | `import-records.py` | `openpyxl` |
 | `verify-records.py` | `pypdf` |
 
@@ -66,6 +75,8 @@ browser's console on the Athletics NZ eLearning library (see below).
 | a club championships Saturday has finished | add its meeting on the results sources page, then confirm it under "Review results" on the club champs page |
 | a meeting's results are out, or a family asks for a page to be removed | in the private ncan-api project: `ncan add-meeting` / `ncan opt-out`, then `ncan collect` |
 | new records to check against official results | `verify-records.py` |
+| changed the logo (`assets/img/logo.svg`) | `build-icons.py` |
+| it's November (`security.txt` expires on 17 November each year) | move the `Expires` date in `.well-known/security.txt` on a year |
 | added characters the site's fonts may not have (e.g. a new macron) | `build-fonts.py` |
 
 ## Shared parts of every page
@@ -107,6 +118,16 @@ renders in a fallback font, so re-run after adding unusual characters.
 python tools/build-fonts.py
 python tools/build-fonts.py --check          # report only
 python tools/build-fonts.py --report-chars   # list the characters and where they come from
+```
+
+### `build-icons.py`
+Makes the site's icons from `assets/img/logo.svg`: `favicon.ico` (browser tabs),
+`apple-touch-icon.png` (iPhone home screen) and the Android home screen icons in
+`assets/img/icons/` named in `site.webmanifest`. It draws the logo with headless
+Edge or Chrome, then sizes it. Run it after the logo changes.
+
+```bash
+python tools/build-icons.py
 ```
 
 ## Search engines

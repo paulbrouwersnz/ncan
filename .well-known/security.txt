@@ -1,0 +1,7 @@
+# Found a security problem with ncan.nz or the club's sign-in (api.ncan.nz)?
+# Please tell us privately at the address below before sharing it anywhere.
+# For questions about your personal information, see https://ncan.nz/privacy/
+Contact: mailto:ncanathletics@gmail.com
+Expires: 2027-11-17T00:00:00.000Z
+Preferred-Languages: en
+Canonical: https://ncan.nz/.well-known/security.txt
