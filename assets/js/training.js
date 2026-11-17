@@ -947,7 +947,13 @@
     var tbody = el('tbody');
     plan.slots.forEach(function (slot) {
       var tr = el('tr');
-      tr.appendChild(el('th', 'plan-print__time', timeRange(slot.start, slot.end)));
+      // the time over two lines, breaking after the dash ("5:15–" / "5:30 pm", indented),
+      // so the column is narrow and the groups have the room
+      var range = timeRange(slot.start, slot.end).split('–');
+      var when = el('th', 'plan-print__time plan-print__time--wrap');
+      when.appendChild(el('span', null, range[0] + '–'));
+      when.appendChild(el('span', 'plan-print__until', range[1]));
+      tr.appendChild(when);
       var td = el('td');
       var list = el('div', 'plan-print__groups');
       slot.groups.forEach(function (g) {
