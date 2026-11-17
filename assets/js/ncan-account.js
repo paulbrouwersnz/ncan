@@ -15,7 +15,8 @@
                               err.body, the API's reply (its "error", and more).
     send(path, data)       -> Promise of {status, body}: a POST of JSON.
     me()                   -> Promise of {email, role, athletes}, or null.
-    signIn(el, intro)      -> fills el with a sign-in form.
+    signIn(el, intro, next) -> fills el with a sign-in form; the emailed link comes
+                              back to `next` (by default, this page as it is).
     account(el, who)       -> fills el with "Signed in as ... Sign out".
 
   On this computer (http://localhost:8123), pages call an API run locally on
@@ -81,7 +82,7 @@
   }
 
   // A sign-in box: email address -> the API emails a link that brings them back here.
-  function signIn(box, intro) {
+  function signIn(box, intro, next) {
     box.textContent = '';
     box.hidden = false;
     box.classList.add('signin');
@@ -121,7 +122,7 @@
       e.preventDefault();
       button.disabled = true;
       said.textContent = 'Sending…';
-      post('/auth/request-link', { email: input.value, next: location.href })
+      post('/auth/request-link', { email: input.value, next: next || location.href })
         .then(function (res) {
           return res.json().catch(function () { return {}; }).then(function (data) {
             if (res.status === 202) { said.textContent = data.message || 'Check your email for a sign-in link.'; return; }

@@ -2047,10 +2047,7 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 .page-head .lede { color: var(--text-on-dark); max-width: 62ch; }
 /* links in the dark page header: light text, keeping the yellow underline */
 .page-head .lede a { color: #fff; }
-.page-head .lede a:hover { color: var(--yellow-400); }
-.page-head .training-signin-link { font-size: .95rem; }
-.page-head .training-signin-link[hidden] { display: none; }
-.page-head .btn-row { margin-top: 2rem; }
+.page-head .lede a:hover { color: var(--yellow-400); }.page-head .btn-row { margin-top: 2rem; }
 
 .breadcrumb {
   margin-bottom: 1.5rem;

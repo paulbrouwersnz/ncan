@@ -1254,8 +1254,6 @@
     editorBox.hidden = true;
     signInBox.hidden = true;
     accountBox.hidden = true;
-    var link = document.getElementById('training-signin-link');
-    if (link) { link.hidden = true; }
     listBox.textContent = '';
     listBox.appendChild(el('p', 'note', 'Loading the training plan…'));
     var all = el('a', null, 'See all the Tuesday training plans');
@@ -1266,6 +1264,20 @@
       var back = el('p', 'training-shared__all');
       back.appendChild(all);
       listBox.appendChild(back);
+      // staff: the plan in the planner (with the coaches' notes, to change); anyone else:
+      // a sign-in that comes back to it there
+      var inPlanner = '/tuesday-training/#plan-' + date;
+      NCAN.me().then(function (who) {
+        if (who && /^(admin|coach|committee)$/.test(who.role)) {
+          var open = el('a', 'btn btn--ghost btn--sm', 'Open in the planner (with coaches’ notes)');
+          open.href = inPlanner;
+          signInBox.textContent = '';
+          signInBox.appendChild(open);
+          signInBox.hidden = false;
+        } else if (!who) {
+          offerSignIn(location.origin + inPlanner);
+        }
+      }).catch(function () { /* the plan still shows */ });
     }
     function message(text) { return el('p', 'training-shared__gone', text); }
     return NCAN.get('/training/' + date).then(function (plan) {
@@ -1581,6 +1593,21 @@
     if (editing && dirty) { e.preventDefault(); e.returnValue = ''; }
   });
 
+  // "Coaches and committee: sign in to plan sessions", which opens the sign-in form; the
+  // emailed link comes back to `next` (by default, this page as it is)
+  function offerSignIn(next) {
+    signInBox.textContent = '';
+    var open = button('Coaches and committee: sign in to plan sessions', 'btn btn--ghost btn--sm', function () {
+      open.remove();
+      NCAN.signIn(signInBox, 'Coaches, the committee and club administrators make the training plans. Enter the ' +
+        'email address the club has for you, and we’ll email you a link to sign in. There is no password.', next);
+      var h = signInBox.querySelector('h3');
+      if (h) { h.textContent = 'Sign in to plan training'; }
+    });
+    signInBox.appendChild(open);
+    signInBox.hidden = false;
+  }
+
   var shared = /^#\/plan\/(\d{4}-\d{2}-\d{2})$/.exec(location.hash);
   window.addEventListener('hashchange', function () {
     var now = /^#\/plan\//.test(location.hash);
@@ -1594,33 +1621,14 @@
   NCAN.me().then(function (who) {
     var staff = who && /^(admin|coach|committee)$/.test(who.role);
     NCAN.account(accountBox, staff ? who : null);
-    if (!who) {
-      var open = button('Coaches and committee: sign in to plan sessions', 'btn btn--ghost btn--sm', function () {
-        open.remove();
-        NCAN.signIn(signInBox, 'Coaches, the committee and club administrators make the training plans. Enter the ' +
-          'email address the club has for you, and we’ll email you a link to sign in. There is no password.');
-        var h = signInBox.querySelector('h3');
-        if (h) { h.textContent = 'Sign in to plan training'; }
-      });
-      signInBox.appendChild(open);
-      signInBox.hidden = false;
-      // the link in the page's header: straight to the form, ready to type
-      var link = document.getElementById('training-signin-link');
-      if (link && !sharedView) {
-        link.hidden = false;
-        link.querySelector('a').addEventListener('click', function (e) {
-          e.preventDefault();
-          if (open.parentNode) { open.click(); }
-          signInBox.scrollIntoView({ block: 'center' });
-          var input = signInBox.querySelector('input[type=email]');
-          if (input) { input.focus({ preventScroll: true }); }
-        });
-      }
-    }
+    if (!who) { offerSignIn(); }
   }).catch(function () { /* the plans still show */ }).then(function () {
     list.textContent = '';
     return load().then(function () {
       state.events.forEach(function (e) { var o = el('option'); o.value = e; list.appendChild(o); });
+      // "#plan-2026-12-01" (e.g. back from signing in on a shared plan): that plan
+      var at = /^#plan-\d{4}-\d{2}-\d{2}$/.test(location.hash) && document.getElementById(location.hash.slice(1));
+      if (at) { at.scrollIntoView({ block: 'start' }); }
     });
   });
 }());
