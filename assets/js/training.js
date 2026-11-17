@@ -899,11 +899,13 @@
   }
 
   // The sheet that's printed: built on demand, shown only in print (body.plan-printing)
+  // the sheet, with the club's header (logo, title, date) unless `title` is null
   function sheet(title, plan) {
     var old = document.getElementById('plan-print');
     if (old) { old.remove(); }
     var box = el('div', 'plan-print');
     box.id = 'plan-print';
+    if (title === null) { return box; }
     var head = el('div', 'plan-print__head');
     var logo = el('img', 'plan-print__logo');
     logo.src = '/assets/img/logo.svg';
@@ -1030,10 +1032,11 @@
   }
 
   function printStrips(plan) {
-    var box = sheet('Training plan: group strips', plan);
+    // no page header: each strip carries its group and the date, and the page
+    // starts with the first one (more strips to a page)
+    var box = sheet(null, plan);
     box.classList.add('plan-print--strips');
     var list = strips(plan);
-    box.appendChild(el('p', 'plan-print__notes', list.length + ' groups. Cut along the dashed lines, one strip for each group.'));
     list.forEach(function (st) {
       var strip = el('section', 'plan-strip');
       var head = el('div', 'plan-strip__head');
