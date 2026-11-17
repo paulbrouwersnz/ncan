@@ -65,6 +65,8 @@
     return a.pm === b.pm ? a.text + '–' + b.text + (b.pm ? ' pm' : ' am')
                          : a.text + (a.pm ? ' pm' : ' am') + '–' + b.text + (b.pm ? ' pm' : ' am');
   }
+  // on paper, without am/pm: "5:15–5:30" (training is an evening session)
+  function printRange(start, end) { return clock(start).text + '–' + clock(end).text; }
   function addMinutes(t, mins) {
     var m = Math.min(23 * 60 + 59, +t.slice(0, 2) * 60 + +t.slice(3) + mins);
     return ('0' + Math.floor(m / 60)).slice(-2) + ':' + ('0' + m % 60).slice(-2);
@@ -949,7 +951,7 @@
       var tr = el('tr');
       // the time over two lines, breaking after the dash ("5:15–" / "5:30 pm", indented),
       // so the column is narrow and the groups have the room
-      var range = timeRange(slot.start, slot.end).split('–');
+      var range = printRange(slot.start, slot.end).split('–');
       var when = el('th', 'plan-print__time plan-print__time--wrap');
       when.appendChild(el('span', null, range[0] + '–'));
       when.appendChild(el('span', 'plan-print__until', range[1]));
@@ -1053,7 +1055,7 @@
       var tbody = el('tbody');
       plan.slots.forEach(function (slot, i) {
         var tr = el('tr');
-        tr.appendChild(el('th', 'plan-print__time', timeRange(slot.start, slot.end)));
+        tr.appendChild(el('th', 'plan-print__time', printRange(slot.start, slot.end)));
         var td = el('td');
         var gs = st.path[i];
         if (!gs.length && st.parents) { return; }             // the parents: only their own slots
