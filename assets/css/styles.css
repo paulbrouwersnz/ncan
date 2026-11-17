@@ -3104,6 +3104,10 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 .roll-emails li { margin: .2rem 0; overflow-wrap: anywhere; }
 .roll-emails__how { color: var(--text-soft); }
 /* the admin page's athlete addresses: a retired one is struck through */
+/* the admin members list's registrations: the type, and the date ordered under it */
+.reg-item { display: block; }
+.reg-item + .reg-item { margin-top: .4rem; }
+.reg-item__date { display: block; font-size: .85rem; color: var(--text-soft); }
 .addr-retired { text-decoration: line-through; color: var(--text-soft); }
 .addr-add { margin-top: .8rem; }
 .addr-numbers { display: block; margin: .6rem 0 0; font-size: .92rem; }
