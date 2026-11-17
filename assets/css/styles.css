@@ -3305,8 +3305,45 @@ html:has(.plan-editor:not([hidden])) { scroll-padding-bottom: 5rem; }
   .plan-placing { border-radius: var(--radius-sm); }
 }
 @media print {
-  .training-tools, .plan__actions, .plan__by, .training-signin, .training-account, .plan-editor { display: none !important; }
+  .training-tools, .plan__actions, .plan__print, .plan__by, .training-signin, .training-account, .plan-editor { display: none !important; }
 }
+
+/* Tuesday training: a plan printed (assets/js/training.js). Built on demand and
+   shown only in print, and only while body has .plan-printing. Black on white. */
+.plan__print { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .9rem; }
+.plan-print { display: none; }
+@media print {
+  body.plan-printing > *:not(#plan-print) { display: none !important; }
+  body.plan-printing .plan-print { display: block; color: #000; font-size: 10.5pt; line-height: 1.35; }
+}
+.plan-print__head { display: flex; align-items: center; gap: 5mm; margin-bottom: 4mm; }
+.plan-print__logo { width: 26mm; height: auto; }
+.plan-print__club { margin: 0; font-size: 9pt; text-transform: uppercase; letter-spacing: .06em; color: #333; }
+.plan-print__title { margin: 0; font-size: 18pt; color: #0b3b2e; }
+.plan-print__date { margin: .5mm 0 0; font-size: 12pt; font-weight: 700; }
+.plan-print__notes { margin: 0 0 3mm; }
+.plan-print__table, .plan-strip__table { width: 100%; border-collapse: collapse; }
+.plan-print__table th, .plan-print__table td,
+.plan-strip__table th, .plan-strip__table td { padding: 1.6mm 2mm; text-align: left; vertical-align: top; border-top: 1px solid #bbb; }
+.plan-print__table tr { break-inside: avoid; }
+.plan-print__time { width: 1%; white-space: nowrap; font-weight: 700; }
+.plan-print__groups { display: flex; flex-wrap: wrap; gap: 1.5mm; }
+.plan-print__group { flex: 1 1 24mm; min-width: 0; padding: 1mm 1.8mm; border: 1px solid #999; border-left: 3px solid #0b3b2e; border-radius: 1.5mm; }
+.plan-print__group--everyone { border-left-color: #c49000; }
+.plan-print__who { display: block; font-size: 8.5pt; font-weight: 700; color: #333; }
+.plan-print__what { font-weight: 700; }
+.plan-print__note, .plan-print__coach { display: block; font-size: 9pt; color: #333; }
+.plan-print__coach { margin-top: .6mm; padding: .4mm 1mm; border: 1px dashed #777; }
+/* strips: one for each group, with dashed lines to cut along */
+.plan-strip { break-inside: avoid; padding: 3mm 0; border-top: 1.5px dashed #000; }
+.plan-strip:last-child { border-bottom: 1.5px dashed #000; }
+.plan-strip__head { display: flex; justify-content: space-between; align-items: baseline; gap: 4mm; margin-bottom: 1.5mm; }
+.plan-strip__who { font-size: 13pt; color: #0b3b2e; }
+.plan-strip__date { font-size: 9pt; color: #333; }
+.plan-strip__table td .plan-print__note { display: inline; margin-left: 2mm; }
+.plan-print--strips .plan-print__head { margin-bottom: 2mm; }
+.plan-print--strips .plan-print__logo { width: 18mm; }
+.plan-print--strips .plan-print__title { font-size: 14pt; }
 
 /* ---------- Reveal on scroll ---------- */
 [data-reveal] {

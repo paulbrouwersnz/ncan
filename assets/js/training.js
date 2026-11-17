@@ -88,6 +88,7 @@
   function load() {
     return NCAN.get('/training').then(function (data) {
       state.canEdit = !!data.can_edit;
+      state.squad = data.squad;
       state.events = data.events || [];
       state.grades = data.grades || state.grades;
       state.upcoming = data.upcoming || [];
@@ -147,6 +148,7 @@
       if (plan.slots && plan.slots.length) { card.appendChild(planTable(plan)); }
       else if (plan.status !== 'cancelled') { card.appendChild(el('p', 'note', 'No time slots yet.')); }
     }
+    if (plan.status !== 'cancelled' && plan.slots && plan.slots.length) { card.appendChild(printButtons(plan)); }
     if (state.canEdit) {
       if (plan.updated_by) {
         card.appendChild(el('p', 'plan__by', 'Last changed by ' + plan.updated_by + ', ' +
@@ -823,6 +825,180 @@
       });
     }).catch(function (err) { said.textContent = err.message; });
   }
+
+  // ------------------------------------------------------------ printing
+
+  // Print plan (everyone); staff also: with the coaches' notes, and strips to cut up
+  function printButtons(plan) {
+    var row = el('div', 'plan__print');
+    row.appendChild(button('Print plan', null, function () { printPlan(plan, false); }));
+    if (state.canEdit) {
+      row.appendChild(button('Print with coaches’ notes', null, function () { printPlan(plan, true); }));
+      row.appendChild(button('Print strips for each group', null, function () { printStrips(plan); }));
+    }
+    return row;
+  }
+
+  // The sheet that's printed: built on demand, shown only in print (body.plan-printing)
+  function sheet(title, plan) {
+    var old = document.getElementById('plan-print');
+    if (old) { old.remove(); }
+    var box = el('div', 'plan-print');
+    box.id = 'plan-print';
+    var head = el('div', 'plan-print__head');
+    var logo = el('img', 'plan-print__logo');
+    logo.src = '/assets/img/logo.svg';
+    logo.alt = '';
+    head.appendChild(logo);
+    var words = el('div');
+    words.appendChild(el('p', 'plan-print__club', 'North Canterbury Athletic Club · ' + (state.squad || 'Children’s 7–14 team')));
+    words.appendChild(el('h1', 'plan-print__title', title));
+    words.appendChild(el('p', 'plan-print__date', longDate(plan.date)));
+    head.appendChild(words);
+    box.appendChild(head);
+    return box;
+  }
+
+  function go(box) {
+    document.body.appendChild(box);
+    document.body.classList.add('plan-printing');
+    window.print();
+  }
+  window.addEventListener('afterprint', function () {
+    document.body.classList.remove('plan-printing');
+    var old = document.getElementById('plan-print');
+    if (old) { old.remove(); }
+  });
+
+  function printNote(text, coach) {
+    var n = el('span', coach ? 'plan-print__coach' : 'plan-print__note');
+    if (coach) { n.appendChild(el('strong', null, 'Coaches: ')); }
+    n.appendChild(document.createTextNode(text));
+    return n;
+  }
+
+  // the whole plan: a row per time slot, each group's activity in it
+  function printPlan(plan, coaches) {
+    var box = sheet(coaches ? 'Training plan (with coaches’ notes)' : 'Training plan', plan);
+    if (plan.notes) { box.appendChild(el('p', 'plan-print__notes', plan.notes)); }
+    if (coaches && plan.coach_notes) { box.appendChild(el('p', 'plan-print__notes', '')).appendChild(printNote(plan.coach_notes, true)); }
+    var table = el('table', 'plan-print__table');
+    var tbody = el('tbody');
+    plan.slots.forEach(function (slot) {
+      var tr = el('tr');
+      tr.appendChild(el('th', 'plan-print__time', timeRange(slot.start, slot.end)));
+      var td = el('td');
+      var list = el('div', 'plan-print__groups');
+      slot.groups.forEach(function (g) {
+        var cell = el('div', 'plan-print__group' + (g.everyone ? ' plan-print__group--everyone' : ''));
+        cell.appendChild(el('span', 'plan-print__who', groupLabel(g)));
+        cell.appendChild(el('span', 'plan-print__what', g.event || '—'));
+        if (g.note) { cell.appendChild(printNote(g.note, false)); }
+        if (coaches && g.coach_note) { cell.appendChild(printNote(g.coach_note, true)); }
+        list.appendChild(cell);
+      });
+      td.appendChild(list);
+      if (slot.note) { td.appendChild(printNote(slot.note, false)); }
+      if (coaches && slot.coach_note) { td.appendChild(printNote(slot.coach_note, true)); }
+      tr.appendChild(td);
+      tbody.appendChild(tr);
+    });
+    table.appendChild(tbody);
+    box.appendChild(table);
+    go(box);
+  }
+
+  /* Strips: the plan cut up by who does what. Each athlete is a grade and a sex
+     ("girls 7"); their path through the session is which group they're in at each
+     time slot (Everyone counts for all). Athletes with the same path get one strip,
+     so there are as few strips as the plan allows: e.g. grade 10-12 and 13-14 are
+     split when they do different things at 5:15, even if they're together for
+     relays later. Grades no group names don't get a strip. */
+  var SEXES = ['girls', 'boys'];
+  function cellsOf(g) {
+    if (g.everyone) { return null; }                          // everyone: all of them
+    var sexes = g.sex === 'both' ? SEXES : [g.sex];
+    var grades = g.grades.length ? g.grades : (g.sex === 'both' ? [] : state.grades);   // "Girls": every grade
+    var out = [];
+    sexes.forEach(function (x) { grades.forEach(function (n) { out.push(x + ' ' + n); }); });
+    return out;
+  }
+
+  function strips(plan) {
+    var order = [];                                           // athletes, in the order the plan names them
+    plan.slots.forEach(function (slot) {
+      slot.groups.forEach(function (g) {
+        (cellsOf(g) || []).forEach(function (c) { if (order.indexOf(c) === -1) { order.push(c); } });
+      });
+    });
+    if (!order.length) { return [{ label: 'Everyone', path: plan.slots.map(function (s) { return s.groups; }) }]; }
+    var bySignature = {};
+    var out = [];
+    order.forEach(function (c) {
+      var path = plan.slots.map(function (slot) {
+        return slot.groups.filter(function (g) { var cells = cellsOf(g); return !cells || cells.indexOf(c) !== -1; });
+      });
+      var sig = path.map(function (gs, i) {
+        return gs.map(function (g) { return plan.slots[i].groups.indexOf(g); }).join('+');
+      }).join('|');
+      if (!bySignature[sig]) { bySignature[sig] = { cells: [], path: path }; out.push(bySignature[sig]); }
+      bySignature[sig].cells.push(c);
+    });
+    out.forEach(function (st) { st.label = stripLabel(st.cells); });
+    return out;
+  }
+
+  // "Grade 7, 8, 9 Girls", "Grade 10, 11, 12 Girls & Boys", "Grade 7 Girls and Grade 8 Boys"
+  function stripLabel(cells) {
+    function grades(sex) {
+      return cells.filter(function (c) { return c.indexOf(sex + ' ') === 0; })
+        .map(function (c) { return +c.split(' ')[1]; }).sort(function (a, b) { return a - b; });
+    }
+    var girls = grades('girls'), boys = grades('boys');
+    if (girls.length && girls.join() === boys.join()) { return 'Grade ' + girls.join(', ') + ' Girls & Boys'; }
+    var parts = [];
+    if (girls.length) { parts.push('Grade ' + girls.join(', ') + ' Girls'); }
+    if (boys.length) { parts.push('Grade ' + boys.join(', ') + ' Boys'); }
+    return parts.join(' and ');
+  }
+
+  function printStrips(plan) {
+    var box = sheet('Training plan: group strips', plan);
+    box.classList.add('plan-print--strips');
+    var list = strips(plan);
+    box.appendChild(el('p', 'plan-print__notes', list.length + ' groups. Cut along the dashed lines, one strip for each group.'));
+    list.forEach(function (st) {
+      var strip = el('section', 'plan-strip');
+      var head = el('div', 'plan-strip__head');
+      head.appendChild(el('strong', 'plan-strip__who', st.label));
+      head.appendChild(el('span', 'plan-strip__date', longDate(plan.date)));
+      strip.appendChild(head);
+      var table = el('table', 'plan-strip__table');
+      var tbody = el('tbody');
+      plan.slots.forEach(function (slot, i) {
+        var tr = el('tr');
+        tr.appendChild(el('th', 'plan-print__time', timeRange(slot.start, slot.end)));
+        var td = el('td');
+        var gs = st.path[i];
+        if (!gs.length) { td.appendChild(el('span', 'plan-print__note', '—')); }
+        gs.forEach(function (g, k) {
+          if (k) { td.appendChild(document.createTextNode(' / ')); }
+          td.appendChild(el('span', 'plan-print__what', g.event || '—'));
+          if (g.note) { td.appendChild(printNote(g.note, false)); }
+        });
+        if (slot.note) { td.appendChild(printNote(slot.note, false)); }
+        tr.appendChild(td);
+        tbody.appendChild(tr);
+      });
+      table.appendChild(tbody);
+      strip.appendChild(table);
+      box.appendChild(strip);
+    });
+    go(box);
+  }
+
+  // for checking the strips without printing (see the tests in the page's console)
+  window.NCANTraining = { strips: strips, stripLabel: stripLabel };
 
   // ------------------------------------------------------------ start
 
