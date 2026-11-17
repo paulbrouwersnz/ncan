@@ -16,7 +16,7 @@
 <link rel="apple-touch-icon" href="assets/img/logo.png">
 <link rel="preload" href="assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/archivo-variable.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/styles.css?v=a9f76eb9">
+<link rel="stylesheet" href="assets/css/styles.css?v=3ce04b03">
 <!-- /@partial:head -->
 
 <link rel="canonical" href="https://ncan.nz/results-sources.html">
@@ -487,7 +487,7 @@
           m.athletes.forEach(function (a) {
             var li = text('li');
             var al = text('a', null, a.name);
-            al.href = 'athlete.html?id=' + a.id;
+            al.href = a.slug ? 'athlete.html?a=' + a.slug : 'athlete.html?id=' + a.id;
             li.appendChild(al);
             li.appendChild(text('span', 'src-athletes__n', ' ' + a.results));
             ul.appendChild(li);

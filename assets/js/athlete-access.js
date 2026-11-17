@@ -16,9 +16,11 @@
 (function () {
   'use strict';
 
-  var id = new URLSearchParams(location.search).get('id');
+  // the page's address (?a=sam-brown), or a number in an old link (?id=12345678)
+  var query = new URLSearchParams(location.search);
+  var id = query.get('a') || query.get('id');
   var $ = function (x) { return document.getElementById(x); };
-  if (!/^\d+$/.test(id || '')) { return; }
+  if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(id || '')) { return; }
 
   function el(tag, cls, words) {
     var e = document.createElement(tag);

@@ -10,6 +10,7 @@
     GET/POST /v1/membership, POST /v1/membership/undo     membership changes
     GET /v1/access/blocks, POST /v1/access/block|unblock  site-wide blocks
     GET /v1/admin/members              every member, with all held about them but results
+    GET /v1/admin/addresses, POST /v1/admin/addresses/add|primary|retire|restore   athlete page addresses
   No athlete data is in this file.
 */
 (function () {
@@ -30,9 +31,10 @@
     b.addEventListener('click', function () { onClick(b); });
     return b;
   }
+  var addresses = {};     // page number -> its address (the athlete's name), from the API
   function pageLink(id, words) {
     var a = el('a', null, words || 'number ' + id);
-    a.href = 'athlete.html?id=' + id;
+    a.href = addresses[id] ? 'athlete.html?a=' + addresses[id] : 'athlete.html?id=' + id;
     a.target = '_blank';
     a.rel = 'noopener';
     return a;
@@ -976,11 +978,174 @@
     }, function () { $('roll-status').textContent = 'Sorry, the members could not be loaded.'; });
   }
 
+  /* Athlete addresses ---------------------------------------------------------
+     GET /v1/admin/addresses; POST /v1/admin/addresses/add|primary|retire|restore.
+     Each page's addresses: the primary (the one links use), the one from the name,
+     ones added, ones retired (they lead nowhere, at once, and are never reused). */
+  var addrPages = [];
+  var addrShown = false;      // the Show button's state; the list starts hidden
+  var addrOpen = {};          // athletes opened, by page, kept while the list is drawn again
+
+  function addrChange(path, body, page) {
+    $('addr-status').textContent = 'Saving…';
+    return NCAN.send('/admin/addresses/' + path, body).then(function (r) {
+      if (r.status !== 200) {
+        $('addr-status').textContent = (r.body && r.body.error) || 'Sorry, that didn’t work.';
+        return;
+      }
+      $('addr-status').textContent = 'Saved. It takes effect at once.';
+      addrOpen[page] = true;
+      return loadAddresses();
+    }, function (err) { $('addr-status').textContent = err.message; });
+  }
+
+  function addrTags(a) {
+    var out = [];
+    if (a.primary) { out.push('primary: the one links use'); }
+    if (a.from_name) { out.push('from their name'); }
+    if (a.added) { out.push('added by ' + a.added.by + ' on ' + a.added.at + (a.added.why ? ': ' + a.added.why : '')); }
+    if (a.retired) { out.push('RETIRED by ' + a.retired.by + ' on ' + a.retired.at + ': ' + a.retired.why); }
+    return out.join(' · ');
+  }
+
+  function addrAthlete(p) {
+    var block = el('details', 'champs-day src-meeting roll-member');
+    block.open = !!addrOpen[p.page];
+    block.addEventListener('toggle', function () { addrOpen[p.page] = block.open; });
+    var head = el('summary', 'champs-day__head');
+    head.appendChild(el('h4', 'champs-day__title src-meeting__title', p.name));
+    var live = p.addresses.filter(function (a) { return !a.retired; }).length;
+    head.appendChild(el('span', 'champs-day__count', p.addresses.length + ' address' +
+      (p.addresses.length === 1 ? '' : 'es') + (live < p.addresses.length ? ' · ' + (p.addresses.length - live) + ' retired' : '')));
+    block.appendChild(head);
+
+    var body = el('div', 'champs-day__body');
+    var ul = el('ul', 'access-list');
+    var primary = p.addresses.filter(function (a) { return a.primary; })[0];
+    p.addresses.forEach(function (a) {
+      var li = el('li');
+      var what = el('strong');
+      if (a.retired) {
+        what.appendChild(el('span', 'addr-retired', a.address));
+      } else {
+        var link = el('a', null, a.address);
+        link.href = 'athlete.html?a=' + a.address;
+        link.target = '_blank';
+        link.rel = 'noopener';
+        what.appendChild(link);
+      }
+      li.appendChild(what);
+      li.appendChild(el('span', 'access-how', addrTags(a)));
+      if (a.retired) {
+        li.appendChild(button('Restore', function (b) {
+          b.disabled = true;
+          addrChange('restore', { address: a.address }, p.page);
+        }));
+      } else if (!a.primary) {
+        li.appendChild(button('Make primary', function (b) {
+          b.disabled = true;
+          addrChange('primary', { page: primary ? primary.address : String(p.page), address: a.address }, p.page);
+        }));
+        li.appendChild(button('Retire', function (b) {
+          var why = window.prompt('Retire ' + a.address + '? It will lead nowhere, at once, and is never given to ' +
+                                  'anyone else. Why?');
+          if (!why || !why.trim()) { return; }
+          b.disabled = true;
+          addrChange('retire', { address: a.address, why: why.trim() }, p.page);
+        }));
+      }
+      ul.appendChild(li);
+    });
+    body.appendChild(ul);
+    if (p.primary_chosen) {
+      body.appendChild(button('Use the address from their name again', function (b) {
+        b.disabled = true;
+        addrChange('primary', { page: primary ? primary.address : String(p.page), address: null }, p.page);
+      }));
+    }
+
+    var form = el('form', 'mem-add addr-add');
+    form.noValidate = true;
+    var f1 = el('p', 'records-field records-field--grow');
+    var l1 = el('label', null, 'Add an address');
+    var in1 = el('input');
+    in1.type = 'text';
+    in1.placeholder = 'e.g. sam-green';
+    in1.id = 'addr-new-' + p.page;
+    l1.htmlFor = in1.id;
+    f1.appendChild(l1); f1.appendChild(in1);
+    var f2 = el('p', 'records-field records-field--grow');
+    var l2 = el('label', null, 'Why');
+    var in2 = el('input');
+    in2.type = 'text';
+    in2.maxLength = 200;
+    in2.id = 'addr-why-' + p.page;
+    in2.placeholder = 'e.g. a new name';
+    l2.htmlFor = in2.id;
+    f2.appendChild(l2); f2.appendChild(in2);
+    var add = el('button', 'btn btn--ghost', 'Add');
+    add.type = 'submit';
+    form.appendChild(f1); form.appendChild(f2); form.appendChild(add);
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var address = in1.value.trim().toLowerCase();
+      if (!address) { $('addr-status').textContent = 'Give the address to add.'; return; }
+      add.disabled = true;
+      addrChange('add', { page: primary ? primary.address : String(p.page), address: address, why: in2.value.trim() },
+                 p.page).then(function () { add.disabled = false; });
+    });
+    body.appendChild(form);
+    block.appendChild(body);
+    return block;
+  }
+
+  function renderAddresses() {
+    var q = $('addr-find').value.trim().toLowerCase();
+    var many = $('addr-many').checked;
+    var multi = addrPages.filter(function (p) { return p.addresses.length > 1; }).length;
+    $('addr-count').textContent = addrPages.length + ' athlete pages; ' + multi + ' with more than one address.';
+    $('addr-show').hidden = !addrPages.length;
+    $('addr-show').textContent = addrShown ? 'Hide the athletes' : 'Show the athletes';
+    $('addr-show').setAttribute('aria-expanded', addrShown ? 'true' : 'false');
+    $('addr-list').hidden = !addrShown;
+    if (!addrShown) { return; }
+    var shown = addrPages.filter(function (p) {
+      if (q) {
+        return p.name.toLowerCase().indexOf(q) !== -1 ||
+               p.addresses.some(function (a) { return a.address.indexOf(q.replace(/\s+/g, '-')) !== -1; });
+      }
+      return !many || p.addresses.length > 1;
+    });
+    $('addr-match').textContent = q ? shown.length + ' of ' + addrPages.length + ' athletes match.'
+      : (many ? (shown.length ? '' : 'No athlete has more than one address yet. Find one by name to add an address.') : '');
+    var out = $('addr-out');
+    out.textContent = '';
+    shown.forEach(function (p) { out.appendChild(addrAthlete(p)); });
+  }
+
+  function loadAddresses() {
+    return NCAN.get('/admin/addresses').then(function (r) {
+      addrPages = r.pages || [];
+      renderAddresses();
+    }, function () { $('addr-count').textContent = 'Sorry, the addresses could not be loaded.'; });
+  }
+
+  function setUpAddresses() {
+    $('addr-show').addEventListener('click', function () {
+      addrShown = !addrShown;
+      renderAddresses();
+    });
+    $('addr-find').addEventListener('input', renderAddresses);
+    $('addr-many').addEventListener('change', renderAddresses);
+    loadAddresses();
+  }
+
   /* Loading ------------------------------------------------------------------- */
   function loadAll() {
     return Promise.all([NCAN.get('/admin/review'), NCAN.get('/membership'), NCAN.get('/access/blocks')])
       .then(function (r) {
         members = r[1].members || [];
+        addresses = r[0].addresses || {};    // before anything draws a link to a page
         renderReview(r[0]);
         corrNames = r[0].names || {};
         renderCorrections(r[0].corrections);
@@ -1007,12 +1172,13 @@
     loadAll().then(function () {
       $('admin-status').hidden = true;
       $('admin-jump').hidden = false;
-      ['review', 'upload', 'members', 'merges', 'corrections', 'blocks'].forEach(function (x) { $(x).hidden = false; });
+      ['review', 'upload', 'members', 'merges', 'corrections', 'addresses', 'blocks'].forEach(function (x) { $(x).hidden = false; });
       setUpUpload();
       loadRoll();
       setUpMembership();
       setUpMerges();
       setUpCorrections();
+      setUpAddresses();
       setUpOptOut();
       setUpBlocks();
     }, function (err) { $('admin-status').textContent = err.message || 'Sorry, this page could not be loaded.'; });

@@ -16,7 +16,7 @@
 <link rel="apple-touch-icon" href="assets/img/logo.png">
 <link rel="preload" href="assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/archivo-variable.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/styles.css?v=a9f76eb9">
+<link rel="stylesheet" href="assets/css/styles.css?v=3ce04b03">
 <!-- /@partial:head -->
 
 <meta name="robots" content="noindex">
@@ -90,6 +90,7 @@
           <a class="btn btn--ghost-light" href="#members">Membership</a>
           <a class="btn btn--ghost-light" href="#merges">Merges</a>
           <a class="btn btn--ghost-light" href="#corrections">Corrections</a>
+          <a class="btn btn--ghost-light" href="#addresses">Addresses</a>
           <a class="btn btn--ghost-light" href="#blocks">Blocked</a>
         </div>
         <p class="account-line" id="account" hidden></p>
@@ -331,8 +332,49 @@
       </div>
     </section>
 
+    <!-- ================= Athlete addresses ================= -->
+    <section class="section section--tint" id="addresses" aria-labelledby="addresses-heading" hidden>
+      <div class="wrap">
+        <div class="section-head section-head--wide">
+          <p class="eyebrow">Athlete pages</p>
+          <h2 id="addresses-heading">Athlete addresses</h2>
+          <p class="lede">
+            Each athlete&rsquo;s page address comes from their name (athlete.html?a=sam-brown). An athlete can
+            have several: after a name change the old one still leads to the page. Add an address, choose
+            the primary (the one links use), or retire one so it leads nowhere, after a name change the family
+            would rather not have linked, say. An address is never given to anyone else, even once retired.
+            Changes take effect at once.
+          </p>
+        </div>
+        <p class="access-status" id="addr-status" role="status"></p>
+        <div class="merge-bar">
+          <p class="records-status" id="addr-count"></p>
+          <button type="button" class="btn btn--ghost btn--sm" id="addr-show" aria-expanded="false"
+                  aria-controls="addr-list" hidden>Show the athletes</button>
+        </div>
+        <div id="addr-list" hidden>
+          <div class="records-bar champs-bar">
+            <div class="records-filters">
+              <p class="records-field records-field--grow">
+                <label for="addr-find">Find</label>
+                <input type="search" id="addr-find" placeholder="athlete name or address" autocomplete="off">
+              </p>
+              <div class="ath-checks">
+                <p class="records-field ath-check">
+                  <input type="checkbox" id="addr-many" checked>
+                  <label for="addr-many">Only athletes with more than one address</label>
+                </p>
+              </div>
+            </div>
+          </div>
+          <p class="records-status" id="addr-match"></p>
+          <div id="addr-out"></div>
+        </div>
+      </div>
+    </section>
+
     <!-- ================= Blocks ================= -->
-    <section class="section section--tint" id="blocks" aria-labelledby="blocks-heading" hidden>
+    <section class="section" id="blocks" aria-labelledby="blocks-heading" hidden>
       <div class="wrap">
         <div class="section-head section-head--wide">
           <p class="eyebrow">Sign-in</p>
@@ -499,7 +541,7 @@
   </script>
 
   <script src="assets/js/ncan-account.js?v=27229fc9"></script>
-  <script src="assets/js/admin.js?v=1d51c291"></script>
+  <script src="assets/js/admin.js?v=77fbf85b"></script>
 
 </body>
 
