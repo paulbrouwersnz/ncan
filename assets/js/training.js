@@ -949,12 +949,11 @@
     var tbody = el('tbody');
     plan.slots.forEach(function (slot) {
       var tr = el('tr');
-      // the time over two lines, breaking after the dash ("5:15–" / "5:30 pm", indented),
+      // the start at the top of the cell and the end at the bottom ("5:15" ... "5:30"),
       // so the column is narrow and the groups have the room
-      var range = printRange(slot.start, slot.end).split('–');
       var when = el('th', 'plan-print__time plan-print__time--wrap');
-      when.appendChild(el('span', null, range[0] + '–'));
-      when.appendChild(el('span', 'plan-print__until', range[1]));
+      when.appendChild(el('span', null, clock(slot.start).text));
+      when.appendChild(el('span', 'plan-print__until', clock(slot.end).text));
       tr.appendChild(when);
       var td = el('td');
       var list = el('div', 'plan-print__groups');
