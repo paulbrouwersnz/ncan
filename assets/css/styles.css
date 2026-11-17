@@ -3124,6 +3124,21 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 .plan__wrap.is-focused .plan__group.is-lit { opacity: 1; background: var(--surface-warm); box-shadow: 0 0 0 2px var(--yellow-500); }
 .plan__wrap.is-focused .plan__slot-note { opacity: .5; }
 .plan__tip { margin: .4rem 0 0; font-size: .82rem; color: var(--text-soft); }
+/* the share link, and a plan seen from one */
+.plan-share { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem .8rem; margin-top: .6rem; }
+.plan-share__said { font-size: .88rem; color: var(--text-soft); }
+.plan-share__said:empty { display: none; }
+.plan-share__url {
+  flex: 1 1 18rem; min-width: 0; font: inherit; font-size: .88rem; padding: .4rem .6rem;
+  border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-tint); color: inherit;
+}
+.training-shared__gone, .training-shared__moved {
+  margin: 0; padding: .9rem 1rem; border-left: 4px solid var(--yellow-500); border-radius: var(--radius-sm);
+  background: var(--surface-tint); color: var(--heading); font-weight: 600;
+}
+.training-shared__moved { margin-bottom: 1rem; font-weight: 400; }
+.training-shared__all { margin: 1.2rem 0 0; }
+@media print { .plan-share { display: none !important; } }
 @media (prefers-reduced-motion: reduce) { .plan__group { transition: none; } }
 .plan__group--parents, .plan-group--parents { border-left-color: var(--text-soft); border-left-style: dotted; }
 .plan__who { font-size: .82rem; font-weight: 700; color: var(--link); }
