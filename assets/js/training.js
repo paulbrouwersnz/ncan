@@ -65,8 +65,6 @@
     return a.pm === b.pm ? a.text + '–' + b.text + (b.pm ? ' pm' : ' am')
                          : a.text + (a.pm ? ' pm' : ' am') + '–' + b.text + (b.pm ? ' pm' : ' am');
   }
-  // on paper, without am/pm: "5:15–5:30" (training is an evening session)
-  function printRange(start, end) { return clock(start).text + '–' + clock(end).text; }
   function addMinutes(t, mins) {
     var m = Math.min(23 * 60 + 59, +t.slice(0, 2) * 60 + +t.slice(3) + mins);
     return ('0' + Math.floor(m / 60)).slice(-2) + ':' + ('0' + m % 60).slice(-2);
@@ -1054,7 +1052,7 @@
       var tbody = el('tbody');
       plan.slots.forEach(function (slot, i) {
         var tr = el('tr');
-        tr.appendChild(el('th', 'plan-print__time', printRange(slot.start, slot.end)));
+        tr.appendChild(el('th', 'plan-print__time', clock(slot.start).text));   // the start only: the next row's is the end
         var td = el('td');
         var gs = st.path[i];
         if (!gs.length && st.parents) { return; }             // the parents: only their own slots
