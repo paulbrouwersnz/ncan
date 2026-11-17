@@ -346,13 +346,15 @@
     // the date (a new plan only: a saved plan's date is its name)
     if (plan.isNew) { editorBox.appendChild(dateField(plan)); }
 
+    // the chips, with how to use them; while one is picked by tapping, a slim bar
+    // stays in view (pinned under the site header) saying which, until Done
     editorBox.appendChild(palette());
+    var placing = el('div', 'plan-placing');
+    placing.id = 'plan-placing';
+    placing.appendChild(el('p', 'plan-placing__text'));
+    placing.appendChild(button('Done', 'btn btn--accent btn--sm', function () { unpick(); }));
+    editorBox.appendChild(placing);
     editorBox.classList.toggle('is-placing', !!picked);
-
-    var hint = el('p', 'plan-editor__hint');
-    hint.id = 'plan-hint';
-    hint.setAttribute('role', 'status');
-    editorBox.appendChild(hint);
     showHint();
 
     // the table
@@ -509,6 +511,10 @@
       oi.value = '';
     });
     box.appendChild(own);
+    var hint = el('p', 'plan-editor__hint');
+    hint.id = 'plan-hint';
+    hint.setAttribute('role', 'status');
+    box.appendChild(hint);
     return box;
   }
 
@@ -537,12 +543,27 @@
 
   function showHint() {
     var hint = document.getElementById('plan-hint');
+    var bar = document.getElementById('plan-placing');
     if (!hint) { return; }
-    hint.textContent = picked
-      ? 'Now tap each group to give “' + picked.label + '” to, or a time slot’s “New group” to start one. ' +
-        'Tap the chip again, or press Escape, when you’re done.'
-      : 'Drag a grade, Girls / Boys / Everyone or an event onto a group, or onto a time slot to start a new group. ' +
-        'On a phone, tap a chip and then the group.';
+    hint.textContent = 'Drag a grade, Girls / Boys / Everyone or an event onto a group, or onto a time slot’s ' +
+      '“New group” to start one. On a phone, tap a chip, then each group it goes on.';
+    if (!bar) { return; }
+    bar.hidden = !picked;
+    var text = bar.querySelector('.plan-placing__text');
+    text.textContent = '';
+    if (picked) {
+      text.appendChild(document.createTextNode('Placing '));
+      text.appendChild(el('strong', null, picked.label));
+      text.appendChild(document.createTextNode(': tap each group it goes on, or a time slot’s “New group”.'));
+    }
+  }
+
+  // stop placing a tapped chip
+  function unpick() {
+    picked = null;
+    editorBox.classList.remove('is-placing');
+    Array.prototype.forEach.call(editorBox.querySelectorAll('.plan-chip'), function (x) { x.setAttribute('aria-pressed', 'false'); });
+    showHint();
   }
 
   // what a chip does to a group
@@ -585,7 +606,7 @@
       if (c && c.kind) { onChip(c); renderEditor(); }
     });
     node.addEventListener('click', function (e) {
-      if (!picked || e.target.closest('input, textarea, select, button:not(.plan-slot__new)')) { return; }
+      if (!picked || e.target.closest('input, textarea, select, .plan-slot__times, button:not(.plan-slot__new)')) { return; }
       e.stopPropagation();          // a group inside a time slot: only the group gets it
       onChip(picked);
       renderEditor();
@@ -595,30 +616,52 @@
   function slotRow(slot, i) {
     var plan = editing;
     var row = el('div', 'plan-slot');
+    // The slot's times, in one box like the session's date: start – end, and under
+    // it how long the slot is. Moving the start moves the end with it, so the slot
+    // keeps its length; the end can then be changed on its own.
     var times = el('div', 'plan-slot__times');
+    times.appendChild(el('span', 'plan-date__label', 'Time'));
+    var box = el('div', 'plan-time');
+    var length = el('p', 'plan-time__length');
+    function showLength() {
+      var mins = minutes(slot.end) - minutes(slot.start);
+      length.textContent = mins > 0 ? mins + ' minutes' : 'Ends before it starts';
+      length.classList.toggle('plan-date__warn', mins <= 0);
+    }
     function timeInput(which, label) {
-      var p = el('p', 'records-field');
-      var l = el('label', null, label);
-      var t = el('input');
+      var t = el('input', 'plan-time__input');
       t.type = 'time';
       t.step = 300;
       t.id = 'slot-' + i + '-' + which;
       t.value = slot[which];
+      var l = el('label', 'visually-hidden', label + ', ' + timeRange(slot.start, slot.end) + ' slot');
       l.htmlFor = t.id;
       t.addEventListener('change', function () {
         if (!t.value) { t.value = slot[which]; return; }
+        if (which === 'start') {
+          var keep = minutes(slot.end) - minutes(slot.start);
+          slot.end = addMinutes(t.value, keep > 0 ? keep : 15);
+          endInput.value = slot.end;
+        }
         slot[which] = t.value;
         changed();
+        showLength();
       });
-      p.appendChild(l);
-      p.appendChild(t);
-      return p;
+      t.addEventListener('click', function () {
+        try { if (t.showPicker) { t.showPicker(); } } catch (e) { /* typing still works */ }
+      });
+      box.appendChild(l);
+      box.appendChild(t);
+      return t;
     }
-    times.appendChild(timeInput('start', 'From'));
-    times.appendChild(timeInput('end', 'To'));
-    row.appendChild(times);
-
+    timeInput('start', 'Starts');
+    box.appendChild(el('span', 'plan-time__dash', 'to'));
+    var endInput = timeInput('end', 'Ends');
+    times.appendChild(box);
+    times.appendChild(length);
+    showLength();
     var groups = el('div', 'plan-slot__groups');
+    groups.appendChild(times);        // first in the row: the groups flow beside it and wrap under it
     slot.groups.forEach(function (g, gi) { groups.appendChild(groupCell(slot, g, gi)); });
     var fresh = button('New group', 'plan-slot__new', function () {
       if (picked) { return; }       // handled by target()
@@ -789,12 +832,7 @@
   });
 
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && picked) {
-      picked = null;
-      editorBox.classList.remove('is-placing');
-      Array.prototype.forEach.call(editorBox.querySelectorAll('.plan-chip'), function (x) { x.setAttribute('aria-pressed', 'false'); });
-      showHint();
-    }
+    if (e.key === 'Escape' && picked) { unpick(); }
   });
   window.addEventListener('beforeunload', function (e) {
     if (editing && dirty) { e.preventDefault(); e.returnValue = ''; }

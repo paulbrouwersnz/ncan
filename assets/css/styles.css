@@ -3161,7 +3161,6 @@ p.plan__coach { margin: .5rem 0 1rem; }
 .plan-editor[hidden] { display: none; }
 .plan-editor__head { display: flex; flex-wrap: wrap; align-items: baseline; gap: .4rem 1rem; }
 .plan-editor__head h3 { margin: 0; }
-.plan-editor .records-field input[type="time"] { width: auto; }
 /* the session's date: a week back or on, the date in a box that opens the calendar */
 .plan-date { display: grid; gap: .45rem; justify-items: start; }
 .plan-date__label {
@@ -3197,14 +3196,23 @@ p.plan__coach { margin: .5rem 0 1rem; }
   font: inherit; font-size: .95rem; padding: .6rem .75rem; width: 100%;
   border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); color: inherit; resize: vertical;
 }
-.plan-editor__hint { margin: 0; font-size: .9rem; color: var(--text-soft); }
+.plan-editor__hint { margin: 0; padding-top: .55rem; border-top: 1px solid var(--line); font-size: .88rem; color: var(--text-soft); }
 .plan-editor.is-placing .plan-editor__hint { color: var(--heading); font-weight: 600; }
 
 .plan-palette {
-  position: sticky; top: 84px; z-index: 5;
   display: grid; gap: .6rem; padding: .8rem; border-radius: var(--radius-sm);
   background: var(--surface-tint); border: 1px solid var(--line);
 }
+/* while a tapped chip is being placed: one slim line, pinned under the site header (78px) */
+.plan-placing {
+  position: sticky; top: 78px; z-index: 5;
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem 1rem;
+  padding: .45rem .5rem .45rem 1rem; border-radius: 999px;
+  background: var(--solid); color: var(--white); box-shadow: var(--shadow);
+}
+.plan-placing[hidden] { display: none; }
+.plan-placing__text { margin: 0; font-size: .92rem; }
+.plan-placing__text strong { color: var(--yellow-400); }
 .plan-palette__group { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem .6rem; }
 .plan-palette__title {
   margin: 0; min-width: 4.5rem; font-family: var(--font-display); font-size: .72rem; font-weight: 700;
@@ -3228,10 +3236,26 @@ p.plan__coach { margin: .5rem 0 1rem; }
 
 .plan-editor__slots { display: grid; gap: .8rem; }
 .plan-slot {
-  display: grid; grid-template-columns: auto 1fr; gap: .6rem 1rem; padding: .8rem;
+  display: grid; gap: .6rem 1rem; padding: .8rem;
   border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-tint);
 }
-.plan-slot__times { display: flex; flex-direction: column; gap: .4rem; }
+.plan-slot__times { flex: none; display: grid; gap: .4rem; align-content: start; justify-items: start; margin-right: .4rem; }
+/* a slot's times: one box, like the session's date */
+.plan-time {
+  display: inline-flex; flex-direction: column; align-items: stretch; border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm); background: var(--surface); box-shadow: var(--shadow-sm); padding: .2rem;
+}
+.plan-time:focus-within { outline: 3px solid var(--yellow-500); outline-offset: 2px; }
+.plan-time__input {
+  font-family: var(--font-display); font-size: 1rem; font-weight: 700; color: var(--heading);
+  padding: .35rem .55rem; border: 0; background: transparent; cursor: pointer; min-width: 0; width: 6.6rem;
+}
+.plan-time__input:focus-visible { outline: none; background: var(--surface-tint); border-radius: 8px; }
+/* clicking the time opens the picker, so the browser's clock icon isn't needed */
+.plan-time__input::-webkit-calendar-picker-indicator { display: none; }
+.plan-time__dash { padding-left: .55rem; font-size: .72rem; line-height: 1; color: var(--text-soft); }
+.plan-time__length { margin: 0; font-size: .8rem; color: var(--text-soft); }
+
 .plan-slot__groups { display: flex; flex-wrap: wrap; align-items: stretch; gap: .5rem; min-height: 3rem; border-radius: var(--radius-sm); }
 .plan-slot__foot { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: end; gap: .6rem; }
 .plan-slot__moves { display: flex; gap: .4rem; flex-wrap: wrap; }
@@ -3272,11 +3296,13 @@ p.plan__coach { margin: .5rem 0 1rem; }
 .plan-editor.is-placing .plan-group, .plan-editor.is-placing .plan-slot__new { cursor: copy; }
 .plan-group.is-over, .plan-slot__new.is-over, .plan-slot__groups.is-over { outline: 3px solid var(--yellow-500); outline-offset: 2px; }
 .plan-editor__save { position: sticky; bottom: 0; padding: .7rem 0; margin: 0; background: var(--surface); border-top: 1px solid var(--line); }
+/* the pinned Save bar and the header never cover the field being typed in */
+html:has(.plan-editor:not([hidden])) { scroll-padding-bottom: 5rem; }
 @media (max-width: 40rem) {
-  .plan-slot { grid-template-columns: 1fr; }
-  .plan-slot__times { flex-direction: row; }
+
   .plan-group { flex: 1 1 100%; min-width: 0; }
-  .plan-palette, .plan-editor__save { position: static; }
+  .plan-editor__save { position: static; }
+  .plan-placing { border-radius: var(--radius-sm); }
 }
 @media print {
   .training-tools, .plan__actions, .plan__by, .training-signin, .training-account, .plan-editor { display: none !important; }
