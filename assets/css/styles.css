@@ -3290,6 +3290,19 @@ p.plan__coach { margin: .5rem 0 1rem; }
   background: var(--surface);
 }
 .plan-group--everyone { border-left-color: var(--yellow-500); }
+/* moving and copying a group block */
+.plan-group__who { display: grid; grid-template-columns: auto 1fr; column-gap: .35rem; }
+.plan-group__who .plan-group__tokens { grid-column: 1 / -1; }
+.plan-group__grip { cursor: grab; color: var(--text-soft); font-size: 1rem; line-height: 1.3; user-select: none; }
+.plan-group__grip:active { cursor: grabbing; }
+.plan-group__tools { display: flex; gap: .35rem; }
+.plan-group__tool {
+  font: inherit; font-size: .78rem; font-weight: 600; padding: .15rem .6rem; cursor: pointer;
+  border: 1px solid var(--line-strong); border-radius: 999px; background: var(--surface); color: var(--link);
+}
+.plan-group__tool:hover { border-color: var(--accent); }
+.plan-group__tool[aria-pressed="true"] { background: var(--yellow-500); border-color: var(--yellow-500); color: var(--green-900); }
+.plan-group.is-picked { outline: 3px dashed var(--yellow-500); outline-offset: 2px; }
 .plan-group__who strong { display: block; padding-right: 1.6rem; font-size: .88rem; color: var(--heading); }
 .plan-group__tokens { display: flex; flex-wrap: wrap; gap: .25rem; margin-top: .25rem; }
 .plan-group__token {

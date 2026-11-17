@@ -13,7 +13,10 @@
   Making a plan: drag a grade (7-14), Girls / Boys / Girls & Boys / Everyone, or
   an event from the palette onto a group in the table, or onto a time slot to
   start a new group there. On a phone, or with a keyboard: tap (or press) a
-  chip, then tap the group it goes on. Groups carry an activity and a note; each
+  chip, then tap the group it goes on. A group block moves (or, holding Ctrl or
+  Alt, copies) by dragging its handle onto another block (it goes before it) or
+  onto a time slot's "New group" (it goes at the end); or with its Move and Copy
+  buttons, then a tap on where it goes. Groups carry an activity and a note; each
   time slot and the plan as a whole can have a note too. Each note has a
   coaches-only twin: the API gives those only to admins, coaches and the
   committee, so they never reach the public page.
@@ -587,7 +590,12 @@
     bar.hidden = !picked;
     var text = bar.querySelector('.plan-placing__text');
     text.textContent = '';
-    if (picked) {
+    if (picked && picked.kind === 'group') {
+      text.appendChild(document.createTextNode(picked.mode === 'copy' ? 'Copying ' : 'Moving '));
+      text.appendChild(el('strong', null, picked.label));
+      text.appendChild(document.createTextNode(': tap a group to put it before that one, or a time slot’s ' +
+        '“New group” to put it at the end.'));
+    } else if (picked) {
       text.appendChild(document.createTextNode('Placing '));
       text.appendChild(el('strong', null, picked.label));
       text.appendChild(document.createTextNode(': tap each group it goes on, or a time slot’s “New group”.'));
@@ -598,7 +606,12 @@
   function unpick() {
     picked = null;
     editorBox.classList.remove('is-placing');
-    Array.prototype.forEach.call(editorBox.querySelectorAll('.plan-chip'), function (x) { x.setAttribute('aria-pressed', 'false'); });
+    Array.prototype.forEach.call(editorBox.querySelectorAll('.plan-chip, .plan-group__tool'), function (x) {
+      x.setAttribute('aria-pressed', 'false');
+    });
+    Array.prototype.forEach.call(editorBox.querySelectorAll('.plan-group.is-picked'), function (x) {
+      x.classList.remove('is-picked');
+    });
     showHint();
   }
 
@@ -624,6 +637,30 @@
     changed();
   }
 
+  // A group block moved (or copied) to `toSlot`, before its group number `before`
+  // (null: at the end). `c` says which: {kind: 'group', mode: 'move' | 'copy', s, g}.
+  function placeGroup(c, toSlot, before) {
+    var from = editing.slots[c.s];
+    var src = from && from.groups[c.g];
+    if (!src || !toSlot) { return; }
+    var item = src;
+    if (c.mode === 'copy') {
+      item = JSON.parse(JSON.stringify(src));
+    } else {
+      from.groups.splice(c.g, 1);
+      if (from === toSlot && before !== null && before > c.g) { before -= 1; }
+    }
+    if (before === null || before > toSlot.groups.length) { toSlot.groups.push(item); }
+    else { toSlot.groups.splice(before, 0, item); }
+    changed();
+  }
+  function groupPick(slot, g, gi, mode) {
+    var events = eventsOf(g);
+    return { kind: 'group', mode: mode, s: editing.slots.indexOf(slot), g: gi,
+             label: groupLabel(g) + (events.length ? ' · ' + events.join(', ') : '') };
+  }
+  var draggingGroup = false;      // a group block, not a chip, is being dragged
+
   function newGroup(slot, c) {
     var g = { everyone: false, parents: false, grades: [], sex: 'both', events: [], note: '', coach_note: '' };
     if (c) { apply(g, c); }
@@ -634,7 +671,11 @@
 
   // a drop target: something dragged, or a picked chip tapped onto it
   function target(node, onChip) {
-    node.addEventListener('dragover', function (e) { e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; node.classList.add('is-over'); });
+    node.addEventListener('dragover', function (e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = draggingGroup && !(e.ctrlKey || e.altKey) ? 'move' : 'copy';
+      node.classList.add('is-over');
+    });
     node.addEventListener('dragleave', function (e) { if (!node.contains(e.relatedTarget)) { node.classList.remove('is-over'); } });
     node.addEventListener('drop', function (e) {
       e.preventDefault();
@@ -643,12 +684,16 @@
       editorBox.classList.remove('is-dragging');
       var c;
       try { c = JSON.parse(e.dataTransfer.getData('text/plain')); } catch (err) { return; }
+      if (c && c.kind === 'group' && (e.ctrlKey || e.altKey)) { c.mode = 'copy'; }
+      draggingGroup = false;
       if (c && c.kind) { onChip(c); renderEditor(); }
     });
     node.addEventListener('click', function (e) {
       if (!picked || e.target.closest('input, textarea, select, .plan-slot__times, button:not(.plan-slot__new)')) { return; }
       e.stopPropagation();          // a group inside a time slot: only the group gets it
-      onChip(picked);
+      var placing = picked;
+      if (placing.kind === 'group') { unpick(); }    // a group goes in one place
+      onChip(placing);
       renderEditor();
     });
   }
@@ -709,9 +754,9 @@
       newGroup(slot);
       renderEditor();
     });
-    target(fresh, function (c) { newGroup(slot, c); });
+    target(fresh, function (c) { if (c.kind === 'group') { placeGroup(c, slot, null); } else { newGroup(slot, c); } });
     groups.appendChild(fresh);
-    target(groups, function (c) { newGroup(slot, c); });
+    target(groups, function (c) { if (c.kind === 'group') { placeGroup(c, slot, null); } else { newGroup(slot, c); } });
     row.appendChild(groups);
 
     var foot = el('div', 'plan-slot__foot');
@@ -762,7 +807,22 @@
     var cell = el('div', 'plan-group' + (g.everyone ? ' plan-group--everyone' : g.parents ? ' plan-group--parents' : ''));
     cell.tabIndex = 0;
     cell.setAttribute('aria-label', groupLabel(g) + (eventsOf(g).length ? ', ' + eventsOf(g).join(', ') : '') + '. Drop or place a chip here.');
+    var isPicked = picked && picked.kind === 'group' && picked.s === editing.slots.indexOf(slot) && picked.g === gi;
+    if (isPicked) { cell.classList.add('is-picked'); }
     var who = el('div', 'plan-group__who');
+    // the handle to drag the block by (to another slot, or before another block)
+    var grip = el('span', 'plan-group__grip', '⠿');
+    grip.draggable = true;
+    grip.title = 'Drag to move (hold Ctrl or Alt to copy)';
+    grip.setAttribute('aria-hidden', 'true');
+    grip.addEventListener('dragstart', function (e) {
+      e.dataTransfer.setData('text/plain', JSON.stringify(groupPick(slot, g, gi, 'move')));
+      e.dataTransfer.effectAllowed = 'copyMove';
+      draggingGroup = true;
+      editorBox.classList.add('is-dragging');
+    });
+    grip.addEventListener('dragend', function () { draggingGroup = false; editorBox.classList.remove('is-dragging'); });
+    who.appendChild(grip);
     who.appendChild(el('strong', null, groupLabel(g)));
     // take a grade off again
     var tokens = el('div', 'plan-group__tokens');
@@ -836,17 +896,39 @@
     coach.setAttribute('aria-label', 'Coaches-only note for ' + groupLabel(g) + ', not shown to the public');
     coach.addEventListener('input', function () { g.coach_note = coach.value; changed(); });
     cell.appendChild(coach);
+    // move or copy by tapping (phones, keyboards): then tap where it goes
+    var tools = el('div', 'plan-group__tools');
+    ['move', 'copy'].forEach(function (mode) {
+      var b = button(mode === 'move' ? 'Move' : 'Copy', 'plan-group__tool', function (e) {
+        e.stopPropagation();
+        var again = picked && picked.kind === 'group' && picked.mode === mode && isPicked;
+        unpick();
+        if (!again) {
+          picked = groupPick(slot, g, gi, mode);
+          editorBox.classList.add('is-placing');
+        }
+        renderEditor();
+      });
+      b.setAttribute('aria-pressed', String(!!(isPicked && picked.mode === mode)));
+      b.setAttribute('aria-label', (mode === 'move' ? 'Move ' : 'Copy ') + groupLabel(g) +
+        ' to another time slot or place');
+      tools.appendChild(b);
+    });
+    cell.appendChild(tools);
     cell.appendChild(button('Remove group', 'plan-group__remove', function (e) {
       e.stopPropagation();
       slot.groups.splice(gi, 1);
       changed();
       renderEditor();
     }));
-    target(cell, function (c) { apply(g, c); });
+    var drop = function (c) { if (c.kind === 'group') { placeGroup(c, slot, gi); } else { apply(g, c); } };
+    target(cell, drop);
     cell.addEventListener('keydown', function (e) {
       if (e.target === cell && picked && (e.key === 'Enter' || e.key === ' ')) {
         e.preventDefault();
-        apply(g, picked);
+        var placing = picked;
+        if (placing.kind === 'group') { unpick(); }
+        drop(placing);
         renderEditor();
       }
     });
