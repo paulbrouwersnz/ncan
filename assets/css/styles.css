@@ -3161,7 +3161,38 @@ p.plan__coach { margin: .5rem 0 1rem; }
 .plan-editor[hidden] { display: none; }
 .plan-editor__head { display: flex; flex-wrap: wrap; align-items: baseline; gap: .4rem 1rem; }
 .plan-editor__head h3 { margin: 0; }
-.plan-editor .records-field input[type="date"], .plan-editor .records-field input[type="time"] { width: auto; }
+.plan-editor .records-field input[type="time"] { width: auto; }
+/* the session's date: a week back or on, the date in a box that opens the calendar */
+.plan-date { display: grid; gap: .45rem; justify-items: start; }
+.plan-date__label {
+  font-family: var(--font-display); font-size: .72rem; font-weight: 700; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--link);
+}
+.plan-date__row {
+  display: inline-flex; align-items: stretch; border: 1px solid var(--line-strong); border-radius: 999px;
+  background: var(--surface); box-shadow: var(--shadow-sm); overflow: hidden;
+}
+.plan-date__row:focus-within { outline: 3px solid var(--yellow-500); outline-offset: 2px; }
+.plan-date__step {
+  font: inherit; font-size: 1.35rem; line-height: 1; width: 2.75rem; padding: 0; border: 0; cursor: pointer;
+  background: var(--surface-tint); color: var(--heading);
+}
+.plan-date__step:first-child { border-right: 1px solid var(--line); }
+.plan-date__step:last-child { border-left: 1px solid var(--line); }
+.plan-date__step:hover { background: var(--yellow-500); color: var(--green-900); }
+.plan-date__step:focus-visible { outline: none; background: var(--yellow-500); color: var(--green-900); }
+.plan-date__input {
+  font-family: var(--font-display); font-size: 1.05rem; font-weight: 700; color: var(--heading);
+  padding: .6rem 1rem; min-width: 11.5rem; border: 0; background: transparent; cursor: pointer;
+}
+.plan-date__input:focus-visible { outline: none; }
+.plan-date__input::-webkit-calendar-picker-indicator { cursor: pointer; opacity: .7; padding: .2rem; border-radius: 6px; }
+.plan-date__input::-webkit-calendar-picker-indicator:hover { opacity: 1; background: var(--surface-strong); }
+.plan-date__said { display: flex; flex-wrap: wrap; align-items: center; gap: .3rem .6rem; margin: 0; font-size: .95rem; color: var(--heading); }
+.plan-date__warn {
+  font-size: .8rem; font-weight: 600; padding: .1rem .55rem; border-radius: 999px;
+  background: var(--surface-warm); color: var(--warn);
+}
 .plan-editor textarea {
   font: inherit; font-size: .95rem; padding: .6rem .75rem; width: 100%;
   border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); color: inherit; resize: vertical;

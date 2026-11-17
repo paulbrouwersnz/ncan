@@ -344,20 +344,7 @@
     editorBox.appendChild(head);
 
     // the date (a new plan only: a saved plan's date is its name)
-    if (plan.isNew) {
-      var dateField = el('p', 'records-field');
-      var dl = el('label', null, 'Session date');
-      var di = el('input');
-      di.type = 'date';
-      di.id = 'plan-date';
-      di.value = plan.date;
-      di.required = true;
-      dl.htmlFor = di.id;
-      di.addEventListener('change', function () { plan.date = di.value; changed(); });
-      dateField.appendChild(dl);
-      dateField.appendChild(di);
-      editorBox.appendChild(dateField);
-    }
+    if (plan.isNew) { editorBox.appendChild(dateField(plan)); }
 
     editorBox.appendChild(palette());
     editorBox.classList.toggle('is-placing', !!picked);
@@ -424,6 +411,66 @@
     bar.appendChild(button('Close without saving', null, closeEditor));
     editorBox.appendChild(bar);
     editorBox.appendChild(said);
+  }
+
+  // The session's date: a week back or on with the arrows (sessions are weekly), or
+  // any date from the calendar, which opens from anywhere on the box. Under it, the
+  // date in words, and a word if it isn't a Tuesday or already has a plan.
+  function dateField(plan) {
+    var box = el('div', 'plan-date');
+    var label = el('label', 'plan-date__label', 'Session date');
+    var input = el('input', 'plan-date__input');
+    input.type = 'date';
+    input.id = 'plan-date';
+    input.value = plan.date;
+    input.required = true;
+    label.htmlFor = input.id;
+    var said = el('p', 'plan-date__said');
+    said.setAttribute('aria-live', 'polite');
+
+    function show() {
+      said.textContent = '';
+      if (!plan.date) { said.appendChild(el('span', 'plan-date__warn', 'Choose a date.')); return; }
+      said.appendChild(el('strong', null, longDate(plan.date)));
+      if (parseDate(plan.date).getDay() !== 2) {
+        said.appendChild(el('span', 'plan-date__warn', 'Not a Tuesday'));
+      }
+      if ([].concat(state.upcoming, state.past).some(function (p) { return p.date === plan.date; })) {
+        said.appendChild(el('span', 'plan-date__warn', 'Already has a plan: saving replaces it'));
+      }
+    }
+    function set(value) {
+      plan.date = value;
+      input.value = value;
+      changed();
+      show();
+    }
+    function step(days) {
+      var d = parseDate(plan.date || iso(new Date()));
+      d.setDate(d.getDate() + days);
+      set(iso(d));
+    }
+    input.addEventListener('change', function () { set(input.value); });
+    // the whole box opens the calendar, not just its icon (where the browser can)
+    input.addEventListener('click', function () {
+      try { if (input.showPicker) { input.showPicker(); } } catch (e) { /* not allowed here: typing still works */ }
+    });
+
+    var row = el('div', 'plan-date__row');
+    var back = button('‹', 'plan-date__step', function () { step(-7); });
+    back.setAttribute('aria-label', 'A week earlier');
+    back.title = 'A week earlier';
+    var on = button('›', 'plan-date__step', function () { step(7); });
+    on.setAttribute('aria-label', 'A week later');
+    on.title = 'A week later';
+    row.appendChild(back);
+    row.appendChild(input);
+    row.appendChild(on);
+    box.appendChild(label);
+    box.appendChild(row);
+    box.appendChild(said);
+    show();
+    return box;
   }
 
   // the chips to drag (or tap) onto the table
