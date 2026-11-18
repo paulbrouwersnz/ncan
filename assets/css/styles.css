@@ -3374,6 +3374,15 @@ p.plan__coach { margin: .5rem 0 1rem; }
 .plan-group__tool:hover { border-color: var(--accent); }
 .plan-group__tool[aria-pressed="true"] { background: var(--yellow-500); border-color: var(--yellow-500); color: var(--green-900); }
 .plan-group.is-picked { outline: 3px dashed var(--yellow-500); outline-offset: 2px; }
+/* a clash in a time slot: the groups involved, and what's wrong (a warning; it can still be saved) */
+.plan-group.has-clash { box-shadow: 0 0 0 2px var(--warn); }
+.plan-slot__clash {
+  grid-column: 1 / -1; margin: .1rem 0 0; padding: .45rem .7rem; font-size: .88rem; color: var(--warn);
+  background: var(--surface-warm); border-left: 3px solid var(--warn); border-radius: 0 8px 8px 0;
+}
+.plan-slot__clash ul { margin: 0; padding-left: 1.1rem; }
+.plan-slot__clash li + li { margin-top: .2rem; }
+.plan-editor__checks { margin: 1rem 0 0; font-size: .9rem; font-weight: 600; color: var(--warn); }
 .plan-group__who strong { display: block; padding-right: 1.6rem; font-size: .88rem; color: var(--heading); }
 .plan-group__tokens { display: flex; flex-wrap: wrap; gap: .25rem; margin-top: .25rem; }
 .plan-group__token {
