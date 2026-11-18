@@ -756,8 +756,42 @@
     return box;
   }
 
+  /* Girls & Boys and All athletes are shortcuts when tapped: Girls & Boys picks Girls
+     and Boys; All athletes picks every grade, Girls and Boys. Each shows as pressed
+     while all it stands for is picked. (Dragged on their own, they do the same.) */
+  var SEXES_PICKED = [{ kind: 'sex', value: 'girls', label: 'Girls' }, { kind: 'sex', value: 'boys', label: 'Boys' }];
+  function standsFor(c) {
+    if (c.kind === 'sex' && c.value === 'both') { return SEXES_PICKED; }
+    if (c.kind === 'everyone') {
+      return state.grades.map(function (n) { return { kind: 'grade', value: n, label: 'Grade ' + n }; }).concat(SEXES_PICKED);
+    }
+    return null;
+  }
+  function same(a, b) { return a.kind === b.kind && a.value === b.value; }
+  function chipPressed(c) {
+    var parts = standsFor(c);
+    return parts ? parts.every(inSelection) : inSelection(c);
+  }
+  function pressChips() {
+    Array.prototype.forEach.call(editorBox.querySelectorAll('.plan-chip'), function (b) {
+      if (b._chip) { b.setAttribute('aria-pressed', String(chipPressed(b._chip))); }
+    });
+  }
+  // what the picked chips say, e.g. "Grade 9, Grade 10, Girls & Boys" or "All athletes, Sprints"
+  function pickedLabel(items) {
+    var grades = items.filter(function (x) { return x.kind === 'grade'; });
+    var sexes = items.filter(function (x) { return x.kind === 'sex'; });
+    var all = grades.length === state.grades.length && sexes.length === 2;
+    var words = all ? ['All athletes'] : grades.map(function (x) { return x.label; })
+      .concat(sexes.length === 2 ? ['Girls & Boys'] : sexes.map(function (x) { return x.label; }));
+    return words.concat(items.filter(function (x) { return x.kind !== 'grade' && x.kind !== 'sex'; })
+      .map(function (x) { return x.label; })).join(', ');
+  }
+
   function chip(c) {
-    var b = c.kind === 'event' ? activity('plan-chip plan-chip--event', c.label) : el('span', 'plan-chip plan-chip--' + c.kind, c.label);
+    var shortcut = !!standsFor(c);
+    var b = c.kind === 'event' ? activity('plan-chip plan-chip--event', c.label)
+      : el('span', 'plan-chip plan-chip--' + c.kind + (shortcut ? ' plan-chip--shortcut' : ''), c.label);
     b = (function (span) {         // the chip is a button holding the icon and name
       var btn = el('button', span.className);
       while (span.firstChild) { btn.appendChild(span.firstChild); }
@@ -765,9 +799,11 @@
     }(b));
     b.type = 'button';
     b.draggable = true;
-    b.setAttribute('aria-pressed', String(inSelection(c)));
+    b._chip = c;
+    if (shortcut) { b.title = c.kind === 'everyone' ? 'Picks every grade, Girls and Boys' : 'Picks Girls and Boys'; }
+    b.setAttribute('aria-pressed', String(chipPressed(c)));
     b.addEventListener('dragstart', function (e) {
-      e.dataTransfer.setData('text/plain', JSON.stringify(inSelection(c) ? picked : c));
+      e.dataTransfer.setData('text/plain', JSON.stringify(chipPressed(c) && picked ? picked : c));
       e.dataTransfer.effectAllowed = 'copy';
       editorBox.classList.add('is-dragging');
     });
@@ -776,12 +812,19 @@
     b.addEventListener('click', function () {
       if (picked && picked.kind === 'group') { unpick(); }
       var items = picked && picked.kind === 'chips' ? picked.items : [];
-      var was = inSelection(c);
-      items = was ? items.filter(function (x) { return !(x.kind === c.kind && x.value === c.value); })
-                  : items.concat([c]);
-      picked = items.length ? { kind: 'chips', items: items,
-                                label: items.map(function (x) { return x.label; }).join(', ') } : null;
-      b.setAttribute('aria-pressed', String(!was));
+      var was = chipPressed(c);
+      var parts = standsFor(c) || [c];
+      // a shortcut pressed again takes out all it stands for; otherwise in it all goes
+      items = was ? items.filter(function (x) { return !parts.some(function (p) { return same(p, x); }); })
+                  : items.concat(parts.filter(function (p) { return !inSelection(p); }));
+      // the parents and guardians aren't athletes: picking one side takes out the other
+      if (!was && c.kind === 'parents') {
+        items = items.filter(function (x) { return x.kind !== 'grade' && x.kind !== 'sex'; });
+      } else if (!was && (c.kind === 'grade' || c.kind === 'sex' || c.kind === 'everyone')) {
+        items = items.filter(function (x) { return x.kind !== 'parents'; });
+      }
+      picked = items.length ? { kind: 'chips', items: items, label: pickedLabel(items) } : null;
+      pressChips();
       editorBox.classList.toggle('is-placing', !!picked);
       showHint();
     });
@@ -831,7 +874,20 @@
 
   // what a chip does to a group
   function apply(g, c) {
-    if (c.kind === 'chips') { c.items.forEach(function (x) { apply(g, x); }); return; }
+    if (c.kind === 'chips') {
+      // who, taken together: Girls and Boys are both; every grade and both are All athletes
+      var grades = c.items.filter(function (x) { return x.kind === 'grade'; });
+      var sexes = c.items.filter(function (x) { return x.kind === 'sex'; });
+      var rest = c.items.filter(function (x) { return x.kind !== 'grade' && x.kind !== 'sex'; });
+      if (grades.length === state.grades.length && sexes.length === 2) {
+        apply(g, { kind: 'everyone', value: true });
+      } else {
+        grades.forEach(function (x) { apply(g, x); });
+        if (sexes.length) { apply(g, { kind: 'sex', value: sexes.length === 2 ? 'both' : sexes[0].value }); }
+      }
+      rest.forEach(function (x) { apply(g, x); });
+      return;
+    }
     if (c.kind === 'grade') {
       g.everyone = false;
       g.parents = false;

@@ -3299,6 +3299,10 @@ p.plan__coach { margin: .5rem 0 1rem; }
 .plan-chip--event { background: var(--surface-strong); }
 .plan-chip:hover { border-color: var(--accent); }
 .plan-chip[aria-pressed="true"] { background: var(--yellow-500); color: var(--green-900); border-color: var(--yellow-500); }
+/* Girls & Boys and All athletes: shortcuts that pick other chips; set apart with a
+   dashed edge, and green (not yellow) while all they stand for is picked */
+.plan-chip--shortcut { background: var(--surface); border-style: dashed; border-color: var(--link); color: var(--link); }
+.plan-chip--shortcut[aria-pressed="true"] { background: var(--solid); border-color: var(--solid); border-style: solid; color: var(--white); }
 
 .plan-editor__slots { display: grid; gap: .8rem; }
 .plan-slot {
