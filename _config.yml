@@ -1,4 +1,6 @@
-# GitHub Pages builds the site with Jekyll, which leaves out folders starting with a dot.
-# This keeps .well-known (security.txt) in. The site uses no other Jekyll features.
+# Which files are published. tools/build-site.py reads this when the site is
+# published through GitHub Actions (.github/workflows/pages.yml); GitHub Pages'
+# Jekyll build read it before. Both leave out folders starting with a dot, so
+# this keeps .well-known (security.txt) in. The site uses no other Jekyll features.
 include:
   - .well-known

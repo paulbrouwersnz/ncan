@@ -52,8 +52,8 @@ is the home page. `tools/pages.py` is the one place the tools learn this.
   screen), `robots.txt` and `sitemap.xml` (`build-sitemap.py`), and
   `.well-known/security.txt`, which says where to report a security problem.
   **`security.txt` has an `Expires` date (17 November 2027): renew it each year**,
-  or it stops counting. `_config.yml` tells GitHub Pages' Jekyll build to publish
-  `.well-known`, which it would otherwise leave out, as it starts with a dot.
+  or it stops counting. `_config.yml` lists `.well-known` under `include:`, so it
+  is published although it starts with a dot (see "Publishing the site").
 
 ## Requirements
 
@@ -75,7 +75,7 @@ browser's console on the Athletics NZ eLearning library (see below).
 
 | You've… | Run |
 |---|---|
-| edited `assets/css/styles.css` or a script in `assets/js/` | `stamp-assets.py` |
+| edited `assets/css/styles.css` or a script in `assets/js/` | `stamp-assets.py` (optional once the site publishes through GitHub Actions: see "Publishing the site") |
 | edited anything in `partials/` | `sync-partials.py`, then `stamp-assets.py` |
 | added a new page (a folder with an `index.html`) | `sync-partials.py`, `stamp-assets.py`, `build-sitemap.py`, then `indexnow.py <page>` |
 | changed a page's content and want search engines to notice | `indexnow.py <page>` |
@@ -89,6 +89,44 @@ browser's console on the Athletics NZ eLearning library (see below).
 | changed the logo (`assets/img/logo.svg`) | `build-icons.py`, and redo `assets/img/logo-dark.svg` (the logo with `#164724` as `#3A8F5C` and white as `#0c1813`) |
 | it's November (`security.txt` expires on 17 November each year) | move the `Expires` date in `.well-known/security.txt` on a year |
 | added characters the site's fonts may not have (e.g. a new macron) | `build-fonts.py` |
+
+## Publishing the site
+
+`.github/workflows/pages.yml` publishes the site to GitHub Pages whenever `main`
+changes: on a push or merge, after the Facebook updater (`main.yml`) has
+committed new posts (its commits start no workflows of their own), or by hand
+(Actions → Publish site → Run workflow). It runs `sync-partials.py` and
+`stamp-assets.py`, gathers the public files with `build-site.py`, and deploys
+them.
+
+> **One-off setting, needed before this takes over:** Settings → Pages → Build
+> and deployment → Source: **GitHub Actions** (the repository owner). Until
+> then, Pages keeps building straight from the `main` branch with Jekyll, as it
+> always has, and the stamps must still be committed.
+
+Once it's switched, **committing the `?v=` stamps is optional**: they are
+brought up to date at publish time, so a pull request that edits the stylesheet
+or a script needn't run `stamp-assets.py` (and two pull requests no longer
+clash over the same stamp). Running it locally still does no harm, and keeps a
+local preview fresh. `sync-partials.py` is still to be run and committed (the
+pull request checks look for it), so the pages in the repository read as they
+are published.
+
+### `build-site.py`
+Copies the files that make up the website into `_site/` (ignored by git), the
+folder the publish workflow hands to GitHub Pages. Only files git tracks are
+copied. It leaves out what Pages' old Jekyll build left out, so nothing is
+published that wasn't before: names starting with `.` `_` `#` or `~` at any
+depth (`.git`, `.github`, `.vscode`, `_config.yml`), Jekyll's default excludes
+(`Gemfile`, `node_modules`, `vendor/...`) and `_config.yml`'s `exclude:` list,
+but keeping its `include:` list (`.well-known`). It also leaves out the
+repository's working files that Jekyll did publish: `tools/`, `partials/`,
+`actions/` and `README.md`.
+
+```bash
+python tools/build-site.py            # into _site/
+python tools/build-site.py --list     # list what would be published
+```
 
 ## Shared parts of every page
 
@@ -120,6 +158,9 @@ python tools/stamp-assets.py            # stamp
 python tools/stamp-assets.py --check    # report only
 python tools/stamp-assets.py --clear    # remove the stamps
 ```
+
+The publish workflow runs it too (see "Publishing the site"), so once Pages
+publishes through GitHub Actions, committing the stamps is optional.
 
 ### `build-fonts.py`
 Builds the self-hosted Inter and Archivo fonts in `assets/fonts/`, cut down to
