@@ -210,7 +210,8 @@
     card.appendChild(head);
     if (plan.status === 'cancelled') {
       var why = el('p', 'plan__cancelled');
-      why.appendChild(el('strong', null, 'This session is cancelled. '));
+      // in the past tense once the day has gone (shared links included)
+      why.appendChild(el('strong', null, plan.date < iso(new Date()) ? 'The session was cancelled. ' : 'This session is cancelled. '));
       why.appendChild(document.createTextNode(plan.cancelled_why || ''));
       card.appendChild(why);
     }
