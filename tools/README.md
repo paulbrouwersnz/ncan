@@ -33,6 +33,10 @@ is the home page. `tools/pages.py` is the one place the tools learn this.
   after the move** (the files at the root other than `index.html` and `404.html`).
   `404.html` stays: GitHub Pages shows it for any address that doesn't exist, and
   it sends an old address on for good.
+- **Help written by hand**: the Junior Athletics planner's "How to use the planner"
+  (`#planner-help` in `junior-athletics/index.html`) describes the buttons, chips and
+  behaviour of `assets/js/training.js` by name. When a label or what it does changes
+  there, update the help to match.
 - **A new page** is a new folder with an `index.html`, copied from a page like it
   (with the partial markers), then the tools in "added a new page" below.
 - **Colours and dark mode**: `assets/css/styles.css` uses colours by role

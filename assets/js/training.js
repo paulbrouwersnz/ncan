@@ -24,6 +24,12 @@
   time slot and the plan as a whole can have a note too. Each note has a
   coaches-only twin: the API gives those only to admins, coaches and the
   committee, so they never reach the public page.
+
+  The planner's help, "How to use the planner" (#planner-help in
+  junior-athletics/index.html), is written by hand and describes this file's
+  buttons, chips and behaviour by name: when a label or what it does changes,
+  update the help to match. (The "New training plan" and "Start from the latest
+  plan" buttons are in that page too.)
 */
 (function () {
   'use strict';
@@ -488,6 +494,8 @@
     });
   });
 
+  // the staff's buttons on a plan (described in the planner's help, #planner-help in
+  // junior-athletics/index.html: keep it in step)
   function staffActions(plan) {
     var bar = el('div', 'plan__actions');
     var said = el('p', 'plan__said');
@@ -804,7 +812,8 @@
         'You can still save the plan.'));
     }
 
-    // save
+    // save (the planner's help, #planner-help in junior-athletics/index.html, describes
+    // these buttons: keep it in step)
     var bar = el('div', 'plan__actions plan-editor__save');
     var said = el('p', 'plan__said');
     said.setAttribute('role', 'status');
@@ -915,6 +924,7 @@
   }
 
   // the chips to drag (or tap) onto the table
+  // (the planner's help, #planner-help in junior-athletics/index.html, names these: keep it in step)
   function palette() {
     var box = el('div', 'plan-palette');
     function group(title, chips) {
@@ -1710,6 +1720,7 @@
   // ------------------------------------------------------------ printing
 
   // Print plan (everyone); staff also: with the coaches' notes, and strips to cut up
+  // (described in the planner's help, #planner-help in junior-athletics/index.html: keep it in step)
   function printButtons(plan) {
     var row = el('div', 'plan__print');
     row.appendChild(button('Print plan', null, function () { printPlan(plan, false); }));
