@@ -571,6 +571,20 @@
 
   /* ------------------------------------------------------------- recurrence */
 
+  // whole calendar days, not 24-hour steps: a day across a daylight-saving
+  // change is 23 or 25 hours long, and the wall-clock time must stay put
+  function addDays(date, n) {
+    var d = new Date(date.getTime());
+    d.setDate(d.getDate() + n);
+    return d;
+  }
+
+  // where an occurrence finishes; an all-day event's span is whole days
+  function finishOf(item) {
+    return item.allDay ? addDays(item.start, Math.round(item.duration / DAY_MS))
+                       : new Date(item.start.getTime() + item.duration);
+  }
+
   function addMonths(date, n) {
     var d = new Date(date.getTime());
     var day = d.getDate();
@@ -601,19 +615,19 @@
     while (cursor <= stopAt && out.length < MAX_OCCURRENCES && guard++ < 2000) {
       if (rule.FREQ === 'WEEKLY' && days && days.length) {
         // walk the week the cursor starts, emitting each named weekday
-        var weekStart = new Date(cursor.getTime() - cursor.getDay() * DAY_MS);
+        var weekStart = addDays(cursor, -cursor.getDay());
         for (var i = 0; i < 7; i++) {
-          var candidate = new Date(weekStart.getTime() + i * DAY_MS);
+          var candidate = addDays(weekStart, i);
           candidate.setHours(first.getHours(), first.getMinutes(), first.getSeconds(), 0);
           if (days.indexOf(candidate.getDay()) < 0) { continue; }
           if (candidate < first || candidate > stopAt) { continue; }
           out.push({ start: candidate, duration: duration });
         }
-        cursor = new Date(cursor.getTime() + 7 * interval * DAY_MS);
+        cursor = addDays(cursor, 7 * interval);
       } else {
         out.push({ start: new Date(cursor.getTime()), duration: duration });
-        if (rule.FREQ === 'DAILY') { cursor = new Date(cursor.getTime() + interval * DAY_MS); }
-        else if (rule.FREQ === 'WEEKLY') { cursor = new Date(cursor.getTime() + 7 * interval * DAY_MS); }
+        if (rule.FREQ === 'DAILY') { cursor = addDays(cursor, interval); }
+        else if (rule.FREQ === 'WEEKLY') { cursor = addDays(cursor, 7 * interval); }
         else if (rule.FREQ === 'MONTHLY') { cursor = addMonths(cursor, interval); }
         else if (rule.FREQ === 'YEARLY') { cursor = addMonths(cursor, 12 * interval); }
         else { break; }
@@ -691,7 +705,7 @@
   }
 
   function buildIcs(item) {
-    var finish = new Date(item.start.getTime() + item.duration);
+    var finish = finishOf(item);
     var lines = [
       'BEGIN:VCALENDAR',
       'VERSION:2.0',
