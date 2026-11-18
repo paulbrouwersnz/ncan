@@ -446,9 +446,8 @@
         return load();
       }).catch(function (err) { said.textContent = err.message; });
     }
-    if (plan.status !== 'cancelled') {
-      bar.appendChild(button('Edit', 'btn btn--sm', function () { openEditor(plan, false); }));
-    }
+    // a cancelled session's plan can be changed too (saving keeps it cancelled)
+    bar.appendChild(button('Edit', 'btn btn--sm', function () { openEditor(plan, false); }));
     if (plan.status === 'draft') {
       bar.appendChild(button(plan.release_at ? 'Release now' : 'Release', 'btn btn--accent btn--sm', function () { act('release'); }));
       // released by itself at a set time: until then a draft, and the public is told when
@@ -613,6 +612,7 @@
     editing = { date: plan.date, notes: plan.notes || '', coach_notes: plan.coach_notes || '',
                 slots: copySlots(plan.slots), status: plan.status || 'draft',
                 releaseAt: isNew ? null : plan.release_at || null,   // saving keeps a scheduled release
+                cancelledWhy: isNew ? '' : plan.cancelled_why || '',
                 // by activity, {note, coach_note}: kept while an activity's off the plan, in case it comes back
                 eventNotes: (plan.event_notes || []).reduce(function (by, n) {
                   by[n.event] = { note: n.note || '', coach_note: n.coach_note || '' };
@@ -647,6 +647,11 @@
       head.appendChild(el('span', 'plan__status plan__status--' + plan.status, STATUS[plan.status]));
     }
     editorBox.appendChild(head);
+    if (plan.status === 'cancelled' && !plan.isNew) {
+      editorBox.appendChild(el('p', 'plan-editor__cancelled', 'This session is cancelled' +
+        (plan.cancelledWhy ? ' (' + plan.cancelledWhy + ')' : '') +
+        '. Saving keeps it cancelled: families see the reason, not the plan.'));
+    }
 
     // the date (a new plan only: a saved plan's date is its name)
     editorBox.appendChild(dateField(plan));      // a saved plan's too: saving moves it
@@ -749,7 +754,10 @@
     said.setAttribute('role', 'status');
     // A released plan: save it as it is (still public), or save it as a draft, which
     // takes it off the public page until it's released again.
-    if (plan.status === 'released') {
+    if (plan.status === 'cancelled') {
+      // saved as it is: still cancelled, with its reason ("Reinstate as a draft" on the card undoes that)
+      bar.appendChild(button('Save (stays cancelled)', 'btn btn--accent btn--sm', function () { save(null, said); }));
+    } else if (plan.status === 'released') {
       bar.appendChild(button('Save (stays released)', 'btn btn--accent btn--sm', function () { save(null, said); }));
       bar.appendChild(button('Save as a draft', 'btn btn--sm', function () { save('draft', said); }));
     } else if (plan.releaseAt) {

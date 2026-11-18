@@ -3382,6 +3382,10 @@ p.plan__coach { margin: .5rem 0 1rem; }
 }
 .plan-slot__clash ul { margin: 0; padding-left: 1.1rem; }
 .plan-slot__clash li + li { margin-top: .2rem; }
+.plan-editor__cancelled {
+  margin: 0 0 1rem; padding: .45rem .7rem; font-size: .9rem; color: var(--text);
+  border-left: 3px solid var(--danger); background: var(--surface-warm); border-radius: 0 8px 8px 0;
+}
 .plan-editor__checks { margin: 1rem 0 0; font-size: .9rem; font-weight: 600; color: var(--warn); }
 .plan-group__who strong { display: block; padding-right: 1.6rem; font-size: .88rem; color: var(--heading); }
 .plan-group__tokens { display: flex; flex-wrap: wrap; gap: .25rem; margin-top: .25rem; }
