@@ -141,7 +141,7 @@
     return NCAN.get('/training').then(function (data) {
       state.canEdit = !!data.can_edit;
       state.squad = data.squad;
-      state.events = data.events || [];
+      state.events = orderEvents(data.events || []);
       state.grades = data.grades || state.grades;
       state.upcoming = data.upcoming || [];
       state.past = data.past || [];
@@ -794,6 +794,29 @@
     return box;
   }
 
+  /* The activities in families, in the order of a club night: the planner's chips
+     show a labelled row for each, and the activity boxes' suggestions follow the
+     same order. An activity in none of them (one typed in) goes under Other. */
+  var ACTIVITY_GROUPS = [
+    ['Start', ['Set up', 'Warm up', 'Games']],
+    ['Sprints & hurdles', ['Starts', 'Sprints', 'Hurdles', 'Relays']],
+    ['Distance & walking', ['Middle distance', 'Long run', 'Race walk']],
+    ['Jumps', ['Long jump', 'Triple jump', 'High jump']],
+    ['Throws', ['Shot put', 'Discus', 'Javelin', 'Vortex']],
+    ['Finish', ['Cool down', 'Pack down']]
+  ];
+  function groupOf(name) {
+    return ACTIVITY_GROUPS.filter(function (g) { return g[1].indexOf(name) !== -1; })[0] || null;
+  }
+  // the families' order first, then any others as they came
+  function orderEvents(names) {
+    var known = [];
+    ACTIVITY_GROUPS.forEach(function (g) {
+      g[1].forEach(function (n) { if (names.indexOf(n) !== -1) { known.push(n); } });
+    });
+    return known.concat(names.filter(function (n) { return !groupOf(n); }));
+  }
+
   // the chips to drag (or tap) onto the table
   function palette() {
     var box = el('div', 'plan-palette');
@@ -810,7 +833,26 @@
     group('Who', [{ kind: 'sex', value: 'girls', label: 'Girls' }, { kind: 'sex', value: 'boys', label: 'Boys' },
                   { kind: 'sex', value: 'both', label: 'Girls & Boys' }, { kind: 'everyone', value: true, label: 'All athletes' },
                   { kind: 'parents', value: true, label: 'Parents & guardians' }]);
-    var events = group('Activities',state.events.map(function (e) { return { kind: 'event', value: e, label: e }; }));
+    // the activities, a labelled row for each family (ACTIVITY_GROUPS); any others under Other
+    var acts = el('div', 'plan-palette__group plan-palette__group--acts');
+    acts.appendChild(el('p', 'plan-palette__title', 'Activities'));
+    var sets = el('div', 'plan-palette__sets');
+    function set(label, names) {
+      var row = el('div', 'plan-palette__set');
+      row.appendChild(el('span', 'plan-palette__set-name', label));
+      var chips = el('div', 'plan-palette__chips');
+      names.forEach(function (e) { chips.appendChild(chip({ kind: 'event', value: e, label: e })); });
+      row.appendChild(chips);
+      row.hidden = !names.length;
+      sets.appendChild(row);
+      return { row: row, chips: chips };
+    }
+    ACTIVITY_GROUPS.forEach(function (gr) {
+      set(gr[0], gr[1].filter(function (e) { return state.events.indexOf(e) !== -1; }));
+    });
+    var other = set('Other', state.events.filter(function (e) { return !groupOf(e); }));
+    acts.appendChild(sets);
+    box.appendChild(acts);
     // an event of their own
     var own = el('form', 'plan-palette__own');
     var oi = el('input');
@@ -826,8 +868,13 @@
       e.preventDefault();
       var v = oi.value.trim();
       if (!v) { return; }
-      if (state.events.indexOf(v) === -1) { state.events.push(v); }
-      events.appendChild(chip({ kind: 'event', value: v, label: v }));
+      if (state.events.indexOf(v) === -1) {         // new: under Other, and offered in the activity boxes
+        state.events.push(v);
+        other.chips.appendChild(chip({ kind: 'event', value: v, label: v }));
+        other.row.hidden = false;
+        var list = document.getElementById('plan-events');
+        if (list) { var o = el('option'); o.value = v; list.appendChild(o); }
+      }
       oi.value = '';
     });
     box.appendChild(own);
