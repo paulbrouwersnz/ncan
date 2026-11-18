@@ -575,13 +575,29 @@
     return iso(d);
   }
 
+  // A new plan: the club night's usual frame (warm up and set up at 5:00, the long run
+  // or race walk and pack down at 6:00, three empty slots between), with the usual
+  // word to parents. Only the date changes.
   function blankPlan() {
-    return { notes: '', slots: [
-      { start: '17:00', end: '17:15', note: '', groups: [
-        { everyone: true, parents: false, grades: [], sex: 'both', events: ['Warm up'], note: '', coach_note: '' },
-        { everyone: false, parents: true, grades: [], sex: 'both', events: ['Set up'], note: '', coach_note: '' }] },
-      { start: '17:15', end: '17:30', note: '', groups: [] }
-    ] };
+    function g(who, events, note) {
+      return { everyone: who === 'everyone', parents: who === 'parents', grades: [], sex: 'both', events: events,
+               note: note || '', coach_note: '' };
+    }
+    function slot(start, end, groups) { return { start: start, end: end, note: '', coach_note: '', groups: groups || [] }; }
+    return {
+      notes: 'Parents and guardians are encouraged to either:\n' +
+             '· adopt an activity station and help the coach during the session.\n' +
+             '· chaperone a group and assist the children and/or coach.',
+      slots: [
+        slot('17:00', '17:15', [g('everyone', ['Warm up']),
+          g('parents', ['Set up'], 'Take equipment from the container to the stations and setup as required.')]),
+        slot('17:15', '17:30'),
+        slot('17:30', '17:45'),
+        slot('17:45', '18:00'),
+        slot('18:00', '18:15', [g('everyone', ['Long run', 'Race walk']),
+          g('parents', ['Pack down'], 'Check in with station to see if you can help return equipment to the container.')])
+      ]
+    };
   }
 
   function copySlots(slots) {
