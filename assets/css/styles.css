@@ -3222,6 +3222,18 @@ p.plan__coach { margin: .5rem 0 1rem; }
 .plan__cancel-form { display: grid; gap: .5rem; margin-top: .9rem; max-width: 36rem; }
 .training-past > summary { cursor: pointer; font-family: var(--font-display); font-weight: 700; color: var(--heading); margin-bottom: 1rem; }
 .training-past > .plan + .plan { margin-top: 1.5rem; }
+/* How to use the planner (staff, signed in) */
+.planner-help {
+  margin: 0 0 1.5rem; padding: .7rem 1rem; border: 1px solid var(--line); border-radius: var(--radius-sm);
+  background: var(--surface-tint);
+}
+.planner-help[hidden] { display: none; }
+.planner-help > summary { cursor: pointer; font-family: var(--font-display); font-weight: 700; color: var(--heading); }
+.planner-help__body { max-width: 70ch; padding-top: .4rem; font-size: .93rem; }
+.planner-help__body h3 { margin: 1rem 0 .3rem; font-size: 1rem; color: var(--heading); }
+.planner-help__body ul { margin: 0; padding-left: 1.2rem; list-style: disc; }
+.planner-help__body li + li { margin-top: .3rem; }
+@media print { .planner-help { display: none !important; } }
 
 /* phones: each time slot's groups under its time */
 @media (max-width: 40rem) {

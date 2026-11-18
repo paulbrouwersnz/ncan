@@ -23,7 +23,7 @@
 <link rel="manifest" href="/site.webmanifest">
 <link rel="preload" href="/assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/archivo-variable.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/assets/css/styles.css?v=e3328bb5">
+<link rel="stylesheet" href="/assets/css/styles.css?v=8d036d9a">
 <!-- /@partial:head -->
 
   <link rel="canonical" href="https://ncan.nz/junior-athletics/">
@@ -111,6 +111,58 @@
           <button class="btn btn--accent btn--sm" type="button" id="training-new">New training plan</button>
           <button class="btn btn--ghost btn--sm" type="button" id="training-copy">Start from the latest plan</button>
         </div>
+
+        <!-- How to use the planner: for coaches, the committee and admins once signed in
+             (assets/js/training.js shows it). Keep it in step with the planner. -->
+        <details class="planner-help" id="planner-help" hidden>
+          <summary>How to use the planner</summary>
+          <div class="planner-help__body">
+            <h3>Start a plan</h3>
+            <ul>
+              <li><strong>New training plan</strong> starts from the usual club night: warm up and set up at 5:00, three empty slots, the long run or race walk and pack down at 6:00, and the note to parents.</li>
+              <li><strong>Start from the latest plan</strong> copies the most recent plan to the next Tuesday.</li>
+              <li>Pick the <strong>session date</strong> with the arrows (a week at a time) or the calendar. Changing the date of a saved plan moves it, and its share link follows.</li>
+            </ul>
+
+            <h3>Put groups together</h3>
+            <ul>
+              <li>Tap chips to pick them: grades, who (Girls, Boys) and activities. Then tap each group they go on, or a time slot&rsquo;s <strong>New group</strong>. Tap <strong>Done</strong> when finished. On a computer you can drag a chip onto a group instead.</li>
+              <li>Pick several at once: e.g. Grade 7, Grade 8, Girls and Long jump make one group in one tap.</li>
+              <li><strong>Girls &amp; Boys</strong> picks Girls and Boys; <strong>All athletes</strong> picks every grade, Girls and Boys. <strong>Parents &amp; guardians</strong> is a group of its own, for setting up and packing down.</li>
+              <li>A group can do up to four activities in a time slot, e.g. Starts then Sprints. Not in the list? Type it in <strong>Another activity</strong>.</li>
+              <li>In a group: &times; takes a grade or activity out, the drop-down changes girls, boys or both, and <strong>Move</strong> or <strong>Copy</strong> then a tap puts the block somewhere else.</li>
+              <li>Time slots: change the start (the end moves with it) or the end; <strong>Copy slot</strong> repeats one straight after; <strong>Add a time slot</strong> adds one at the end.</li>
+            </ul>
+
+            <h3>Check it</h3>
+            <ul>
+              <li>An amber outline and a note under the slot mean two groups are at the same station, or the same athletes are in two groups at once. You can still save if that&rsquo;s what you meant.</li>
+            </ul>
+
+            <h3>Notes</h3>
+            <ul>
+              <li>Notes go on a group, a time slot, an activity (for the whole session, e.g. the shot put weights) or the whole session.</li>
+              <li>The shaded <strong>coaches-only</strong> boxes are seen only by coaches, the committee and admins, signed in, and on <strong>Print with coaches&rsquo; notes</strong>. Families never see them.</li>
+            </ul>
+
+            <h3>Save and release</h3>
+            <ul>
+              <li><strong>Save as a draft</strong>: only signed-in coaches, the committee and admins see it.</li>
+              <li><strong>Release</strong> (or <strong>Save and release</strong>) puts it on this page for families. <strong>Back to draft</strong> takes it off again while you change it.</li>
+              <li><strong>Schedule release</strong> releases a draft by itself at a set time, e.g. the evening before. Until then families see when it will be released.</li>
+              <li><strong>Cancel the session</strong> asks why; families see the reason. If the plan had been released, they can still look at it with <strong>Show the plan</strong>. <strong>Reinstate as a draft</strong> undoes a cancellation.</li>
+              <li><strong>Copy to a new date</strong> starts a new plan from this one; <strong>Delete</strong> removes it (a share link then says it was removed).</li>
+            </ul>
+
+            <h3>Share and print</h3>
+            <ul>
+              <li><strong>Share link</strong> gives a link to a released or cancelled plan, read-only, without coaches&rsquo; notes, for messages and Facebook.</li>
+              <li><strong>Print plan</strong>, <strong>Print with coaches&rsquo; notes</strong>, or <strong>Print strips for each group</strong> to cut up and hand out. Printed plans (not strips) end with a QR code to the plan online.</li>
+              <li>Tap a group on a plan to light up its whole session, or activities in the strip below it to see who does them. <strong>Print selected</strong> then prints just those.</li>
+            </ul>
+          </div>
+        </details>
+
         <div class="plan-editor" id="training-editor" hidden></div>
         <div class="training-list" id="training-list" aria-live="polite"><p class="note">Loading training plans&hellip;</p></div>
         <p class="account-line training-account" id="training-account" hidden></p>
@@ -262,7 +314,7 @@
 <script src="/assets/js/ncan-account.js?v=f7fc0a69"></script>
 <script src="/assets/js/qr.js?v=220a5a3b"></script>
 <script src="/assets/js/training-icons.js?v=43c25cb8"></script>
-<script src="/assets/js/training.js?v=71dfd774"></script>
+<script src="/assets/js/training.js?v=0b24b228"></script>
 </body>
 
 </html>
