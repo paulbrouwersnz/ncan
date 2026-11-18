@@ -316,6 +316,7 @@
         li.setAttribute('data-slot', si);
         li.setAttribute('data-group', gi);
         li.addEventListener('click', function () { lightUp(wrap, plan, si, gi); });
+        hintOn(li, wrap, plan, function () { return inSession(g); });
         li.addEventListener('keydown', function (e) {
           if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); lightUp(wrap, plan, si, gi); }
         });
@@ -373,6 +374,7 @@
       b.setAttribute('aria-pressed', 'false');
       b.appendChild(activity('plan__event-name', n));
       b.addEventListener('click', function () { lightEvent(wrap, plan, n); });
+      hintOn(b, wrap, plan, function () { return function (g) { return eventsOf(g).indexOf(n) !== -1; }; });
       strip.appendChild(b);
     });
     return strip;
@@ -381,6 +383,7 @@
   // The groups doing any of the tapped activities, lit up: each tap adds an activity or,
   // tapped again, takes it off; with none left the plan's back to normal.
   function lightEvent(wrap, plan, name) {
+    unhint(wrap);
     var names = /^event:/.test(wrap.getAttribute('data-lit') || '') ? (wrap._events || []).slice() : [];
     var at = names.indexOf(name);
     if (at === -1) { names.push(name); } else { names.splice(at, 1); }
@@ -419,18 +422,47 @@
      with any of the same athletes, and the All athletes blocks; for All athletes,
      every athlete's block (not the parents'); for the parents and guardians, the parents' blocks. The same again
      (or Escape) puts the plan back. */
-  function lightUp(wrap, plan, si, gi) {
-    var key = si + '-' + gi;
-    var off = wrap.getAttribute('data-lit') === key;
-    var chosen = plan.slots[si].groups[gi];
+  // whether group `g` is part of the session of the group `chosen` (see lightUp)
+  function inSession(chosen) {
     var cells = (!chosen.everyone && !chosen.parents) ? cellsOf(chosen) : null;
-    function includes(g) {
+    return function (g) {
+      if (g === chosen) { return true; }
       if (chosen.everyone) { return !g.parents; }
       if (chosen.parents) { return !!g.parents; }
       if (g.parents) { return false; }
       if (g.everyone) { return true; }
       return cellsOf(g).some(function (c) { return cells.indexOf(c) !== -1; });
-    }
+    };
+  }
+
+  /* A milder preview of what pressing would light up: hovering over a group (or an
+     activity in the strip), or moving to it with the keyboard. Not while something
+     is already lit up; a press clears it. */
+  function hint(wrap, plan, test) {
+    if (wrap.classList.contains('is-focused')) { return; }
+    wrap.classList.add('is-hinting');
+    Array.prototype.forEach.call(wrap.querySelectorAll('.plan__group'), function (li) {
+      li.classList.toggle('is-hint', test(plan.slots[+li.getAttribute('data-slot')].groups[+li.getAttribute('data-group')]));
+    });
+  }
+  function unhint(wrap) {
+    wrap.classList.remove('is-hinting');
+    Array.prototype.forEach.call(wrap.querySelectorAll('.plan__group.is-hint'), function (li) { li.classList.remove('is-hint'); });
+  }
+  // hint on hover with a mouse (not a tap) and on keyboard focus
+  function hintOn(node, wrap, plan, test) {
+    node.addEventListener('pointerenter', function (e) { if (e.pointerType === 'mouse') { hint(wrap, plan, test()); } });
+    node.addEventListener('pointerleave', function () { unhint(wrap); });
+    node.addEventListener('focus', function () { if (node.matches(':focus-visible')) { hint(wrap, plan, test()); } });
+    node.addEventListener('blur', function () { unhint(wrap); });
+  }
+
+  function lightUp(wrap, plan, si, gi) {
+    unhint(wrap);
+    var key = si + '-' + gi;
+    var off = wrap.getAttribute('data-lit') === key;
+    var chosen = plan.slots[si].groups[gi];
+    var includes = inSession(chosen);
     if (off) { wrap.removeAttribute('data-lit'); } else { wrap.setAttribute('data-lit', key); }
     wrap.classList.toggle('is-focused', !off);
     pressEvent(wrap, null);

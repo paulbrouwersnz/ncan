@@ -3124,6 +3124,9 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 .plan__wrap.is-focused .plan__group { opacity: .35; }
 .plan__wrap.is-focused .plan__group.is-lit { opacity: 1; background: var(--surface-warm); box-shadow: 0 0 0 2px var(--yellow-500); }
 .plan__wrap.is-focused .plan__slot-note { opacity: .5; }
+/* hovering (or keyboard focus): a milder preview of what pressing lights up */
+.plan__wrap.is-hinting .plan__group { opacity: .7; }
+.plan__wrap.is-hinting .plan__group.is-hint { opacity: 1; box-shadow: 0 0 0 2px var(--yellow-400); }
 .plan__tip { margin: .4rem 0 0; font-size: .82rem; color: var(--text-soft); }
 @media print { .plan__print { display: none !important; } }
 /* the plan's activities: tap one to see the groups doing it */
