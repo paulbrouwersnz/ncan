@@ -3070,7 +3070,6 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 .training-tools { display: flex; flex-wrap: wrap; gap: .6rem; margin: 0 0 1.5rem; }
 .training-tools[hidden], .training-signin[hidden] { display: none; }
 .training-list { display: grid; gap: 1.5rem; }
-.training-signin { margin-top: 1.5rem; }
 /* the sign-in line is styled for the green page heads; here it sits on the page */
 .account-line.training-account { color: var(--text-soft); }
 .training-account .account-line__admin { color: var(--link); }
@@ -3602,6 +3601,8 @@ html:has(.plan-editor:not([hidden])) { scroll-padding-bottom: 5rem; }
   background: var(--surface);
 }
 .signin[hidden] { display: none; }
+/* the training page's sign-in: clear of the plans above it */
+.training-signin, .training-signin.signin { margin-top: 2.5rem; }
 .signin__head { margin: 0 0 .5rem; color: var(--heading); }
 .signin__form { display: flex; flex-wrap: wrap; align-items: flex-end; gap: .8rem; margin-top: 1rem; }
 .signin__status { margin: .9rem 0 0; font-weight: 600; color: var(--heading); }
