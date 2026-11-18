@@ -608,7 +608,11 @@
           return row.map(csvCell).join(',');
         }).join('\r\n');
 
-        var stamp = new Date().toISOString().slice(0, 10);
+        // The local date (toISOString gives UTC: yesterday before midday in NZ).
+        var now = new Date();
+        var stamp = now.getFullYear() + '-' +
+                    ('0' + (now.getMonth() + 1)).slice(-2) + '-' +
+                    ('0' + now.getDate()).slice(-2);
         var bits = ['ncan-childrens-records'];
         if (gradeSel.value) { bits.push('grade-' + gradeSel.value); }
         if (genderSel.value) { bits.push(genderSel.value); }
