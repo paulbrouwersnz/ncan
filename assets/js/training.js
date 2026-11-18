@@ -796,9 +796,9 @@
 
   /* The activities in families, in the order of a club night: the planner's chips
      show a labelled row for each, and the activity boxes' suggestions follow the
-     same order. An activity in none of them (one typed in) goes under Other. */
+     same order. An activity in none of them (Games, or one typed in) goes under Other. */
   var ACTIVITY_GROUPS = [
-    ['Start', ['Set up', 'Warm up', 'Games']],
+    ['Start', ['Set up', 'Warm up']],
     ['Sprints & hurdles', ['Starts', 'Sprints', 'Hurdles', 'Relays']],
     ['Distance & walking', ['Middle distance', 'Long run', 'Race walk']],
     ['Jumps', ['Long jump', 'Triple jump', 'High jump']],
