@@ -36,7 +36,7 @@
   var accountBox = document.getElementById('training-account');
   var signInBox = document.getElementById('training-signin');
 
-  var state = { canEdit: false, events: [], grades: [7, 8, 9, 10, 11, 12, 13, 14], upcoming: [], past: [] };
+  var state = { canEdit: false, events: [], grades: [7, 8, 9, 10, 11, 12, 13, 14], upcoming: [], past: [], scheduled: [] };
   var editing = null;        // the plan in the editor: {date, notes, slots, status, isNew}
   var dirty = false;
   // What's picked by tapping: chips, several at once ({kind: 'chips', items: [chip...],
@@ -145,6 +145,7 @@
       state.grades = data.grades || state.grades;
       state.upcoming = data.upcoming || [];
       state.past = data.past || [];
+      state.scheduled = data.scheduled || [];
       showList();
     }).catch(function (err) {
       listBox.textContent = '';
@@ -159,16 +160,33 @@
     tools.hidden = !state.canEdit || !!editing;
     if (editing) { listBox.hidden = true; return; }
     listBox.hidden = false;
+    // plans due to be released at a set time: when (staff see the drafts themselves)
+    var due = state.canEdit ? [] : state.scheduled.map(function (s) {
+      return 'The plan for ' + longDate(s.date) + ' will be released on ' + whenText(s.release_at) + '.';
+    });
     if (!state.upcoming.length && !state.past.length) {
-      listBox.appendChild(el('p', 'note', state.canEdit
+      listBox.appendChild(el('p', 'note plan-due', state.canEdit
         ? 'No training plans yet. Start one with “New training plan”.'
-        : 'The next session’s plan will appear here once the coaches have released it.'));
+        : due.length ? due.join(' ') : 'The next session’s plan will appear here once the coaches have released it.'));
       return;
     }
     if (state.upcoming.length) {
-      state.upcoming.forEach(function (p) { listBox.appendChild(planCard(p, true)); });
+      // in date order with the plans: a session whose plan is due later, as a small card saying when
+      var coming = state.upcoming.map(function (p) { return { date: p.date, plan: p }; });
+      if (!state.canEdit) {
+        state.scheduled.forEach(function (s) { coming.push({ date: s.date, due: s }); });
+        coming.sort(function (a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; });
+      }
+      coming.forEach(function (c) {
+        if (c.plan) { listBox.appendChild(planCard(c.plan, true)); return; }
+        var box = el('article', 'plan plan--due');
+        box.appendChild(el('h3', 'plan__title', 'Training plan, ' + longDate(c.date)));
+        box.appendChild(el('p', 'plan-due', 'This plan will be released on ' + whenText(c.due.release_at) + '.'));
+        listBox.appendChild(box);
+      });
     } else {
-      listBox.appendChild(el('p', 'note', 'The next session’s plan hasn’t been released yet. The latest is below.'));
+      listBox.appendChild(el('p', 'note plan-due', (due.length ? due.join(' ') : 'The next session’s plan hasn’t been released yet.') +
+        (state.past.length ? ' The latest is below.' : '')));
     }
     if (state.past.length) {
       var older = el('details', 'training-past');
@@ -195,6 +213,10 @@
       why.appendChild(el('strong', null, 'This session is cancelled. '));
       why.appendChild(document.createTextNode(plan.cancelled_why || ''));
       card.appendChild(why);
+    }
+    if (plan.status === 'draft' && plan.release_at) {
+      card.appendChild(el('p', 'plan__scheduled', 'A draft until ' + whenText(plan.release_at) +
+        ', when it will be released. Families see only when.'));
     }
     if (plan.notes) { card.appendChild(el('p', 'plan__notes', plan.notes)); }
     if (plan.coach_notes) { card.appendChild(coachNote(plan.coach_notes, 'p')); }
@@ -418,7 +440,17 @@
       bar.appendChild(button('Edit', 'btn btn--sm', function () { openEditor(plan, false); }));
     }
     if (plan.status === 'draft') {
-      bar.appendChild(button('Release', 'btn btn--accent btn--sm', function () { act('release'); }));
+      bar.appendChild(button(plan.release_at ? 'Release now' : 'Release', 'btn btn--accent btn--sm', function () { act('release'); }));
+      // released by itself at a set time: until then a draft, and the public is told when
+      bar.appendChild(button(plan.release_at ? 'Change release time' : 'Schedule release', null, function () {
+        bar.hidden = true;
+        bar.parentNode.insertBefore(scheduleForm(plan, function (at) {
+          return act('schedule', { at: at });
+        }, function () { bar.hidden = false; }), bar);
+      }));
+      if (plan.release_at) {
+        bar.appendChild(button('Unschedule', null, function () { act('draft'); }));
+      }
     }
     if (plan.status === 'released') {
       bar.appendChild(button('Back to draft', null, function () { act('draft'); }));
@@ -446,6 +478,48 @@
     box.appendChild(bar);
     box.appendChild(said);
     return box;
+  }
+
+  // "Release the plan at" a date and time (the club's time, as the browser has it);
+  // by default the evening before the session, at 6pm, or an hour from now if that's passed
+  function localStamp(d) {
+    function two(n) { return (n < 10 ? '0' : '') + n; }
+    return iso(d) + 'T' + two(d.getHours()) + ':' + two(d.getMinutes());
+  }
+  function scheduleForm(plan, onSchedule, onBack) {
+    var form = el('form', 'plan__cancel-form plan__schedule-form');
+    var field = el('p', 'records-field');
+    var label = el('label', null, 'Release the plan at');
+    var input = el('input');
+    input.type = 'datetime-local';
+    input.id = 'schedule-at-' + plan.date;
+    label.htmlFor = input.id;
+    input.required = true;
+    var now = new Date();
+    input.min = localStamp(now);
+    var eve = parseDate(plan.date);
+    eve.setDate(eve.getDate() - 1);
+    eve.setHours(18, 0, 0, 0);
+    if (eve <= now) { eve = new Date(now.getTime() + 60 * 60 * 1000); eve.setMinutes(0, 0, 0); }
+    input.value = plan.release_at || localStamp(eve);
+    field.appendChild(label);
+    field.appendChild(input);
+    form.appendChild(field);
+    form.appendChild(el('p', 'plan__schedule-help', 'Until then it stays a draft, and families see when it will be released.'));
+    var row = el('div', 'plan__actions');
+    var go = el('button', 'btn btn--accent btn--sm', plan.release_at ? 'Change release time' : 'Schedule release');
+    go.type = 'submit';
+    row.appendChild(go);
+    row.appendChild(button('Keep it as it is', null, function () { form.remove(); onBack(); }));
+    form.appendChild(row);
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (!input.value) { input.focus(); return; }
+      go.disabled = true;
+      onSchedule(input.value.slice(0, 16));
+    });
+    setTimeout(function () { input.focus(); }, 0);
+    return form;
   }
 
   // "Why is it cancelled?" -> the reason families will see
@@ -512,6 +586,7 @@
   function openEditor(plan, isNew) {
     editing = { date: plan.date, notes: plan.notes || '', coach_notes: plan.coach_notes || '',
                 slots: copySlots(plan.slots), status: plan.status || 'draft',
+                releaseAt: isNew ? null : plan.release_at || null,   // saving keeps a scheduled release
                 // by activity, {note, coach_note}: kept while an activity's off the plan, in case it comes back
                 eventNotes: (plan.event_notes || []).reduce(function (by, n) {
                   by[n.event] = { note: n.note || '', coach_note: n.coach_note || '' };
@@ -643,6 +718,10 @@
     if (plan.status === 'released') {
       bar.appendChild(button('Save (stays released)', 'btn btn--accent btn--sm', function () { save(null, said); }));
       bar.appendChild(button('Save as a draft', 'btn btn--sm', function () { save('draft', said); }));
+    } else if (plan.releaseAt) {
+      // a draft to be released at a set time: saving keeps that time
+      bar.appendChild(button('Save (keeps the release time)', 'btn btn--sm', function () { save(null, said); }));
+      bar.appendChild(button('Save and release now', 'btn btn--accent btn--sm', function () { save('release', said); }));
     } else {
       bar.appendChild(button('Save as a draft', 'btn btn--sm', function () { save(null, said); }));
       bar.appendChild(button('Save and release', 'btn btn--accent btn--sm', function () { save('release', said); }));
@@ -1352,6 +1431,10 @@
       }
       if (err.status === 410) {
         return finish([message('The training plan for ' + longDate(date) + ' was removed on ' + whenText(body.removed) + '.')]);
+      }
+      if (body.state === 'draft' && body.release_at) {
+        return finish([message('The training plan for ' + longDate(date) + ' will be released on ' +
+          whenText(body.release_at) + '. Please check back then.')]);
       }
       if (body.state === 'draft') {
         return finish([message('The training plan for ' + longDate(date) + ' is being changed. Please check back soon.')]);
