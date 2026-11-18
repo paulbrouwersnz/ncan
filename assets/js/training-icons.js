@@ -1,5 +1,5 @@
 /*
-  training-icons.js - an icon for each training activity, for the Tuesday training
+  training-icons.js - an icon for each training activity, for the Junior Athletics
   page (assets/js/training.js): on the plan, the planner's chips and groups, and
   printed plans and strips.
 

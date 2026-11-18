@@ -1,6 +1,7 @@
 /*
-  training.js - training plans on the Tuesday training page (/tuesday-training/),
-  the junior club night.
+  training.js - training plans on the Junior Athletics page (/junior-athletics/),
+  the Tuesday junior club night. (It was /tuesday-training/ until November 2026:
+  assets/js/moved.js sends old addresses, share links included, here.)
 
   What each group of the children's 7-14 team does at a session, time slot by
   time slot. Plans live in the club's API (the private ncan-api project:
@@ -8,7 +9,7 @@
 
   Everyone sees released plans, and sessions that have been cancelled (with
   why). A released or cancelled plan has a share link,
-  /tuesday-training/#/plan/2026-12-01: that plan on its own, to read and print,
+  /junior-athletics/#/plan/2026-12-01: that plan on its own, to read and print,
   with nothing to edit (and no coaches' notes, whoever opens it). If it has gone,
   the link says so: removed (and when), moved (it follows), or being changed. Club administrators, coaches and the committee, once signed in, also
   see drafts and can make, change, release, cancel and delete plans.
@@ -1204,7 +1205,7 @@
   // ------------------------------------------------------------ sharing
 
   var sharedView = false;      // showing one plan from a share link
-  function shareUrl(date) { return location.origin + '/tuesday-training/#/plan/' + date; }
+  function shareUrl(date) { return location.origin + '/junior-athletics/#/plan/' + date; }
 
   // "Share link": the phone's share menu where there is one, else copied, and shown to copy
   // by hand. {button, out}: the button goes with the print buttons, `out` (what it says) under them.
@@ -1256,8 +1257,8 @@
     accountBox.hidden = true;
     listBox.textContent = '';
     listBox.appendChild(el('p', 'note', 'Loading the training plan…'));
-    var all = el('a', null, 'See all the Tuesday training plans');
-    all.href = '/tuesday-training/';
+    var all = el('a', null, 'See all the training plans');
+    all.href = '/junior-athletics/';
     function finish(nodes) {
       listBox.textContent = '';
       nodes.forEach(function (n) { listBox.appendChild(n); });
@@ -1266,7 +1267,7 @@
       listBox.appendChild(back);
       // staff: the plan in the planner (with the coaches' notes, to change); anyone else:
       // a sign-in that comes back to it there
-      var inPlanner = '/tuesday-training/#plan-' + date;
+      var inPlanner = '/junior-athletics/#plan-' + date;
       NCAN.me().then(function (who) {
         if (who && /^(admin|coach|committee)$/.test(who.role)) {
           var open = el('a', 'btn btn--ghost btn--sm', 'Open in the planner (with coaches’ notes)');

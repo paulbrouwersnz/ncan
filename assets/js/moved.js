@@ -9,8 +9,12 @@
     club-champs.html?season=2026-27#res-...  -> /club-champs/#/season/2026-27/res-...
     index.html#join                          -> /#join
 
-  Used by the old .html pages (each a small page that only sends you on, to be
-  deleted a few months after the move) and by 404.html, which keeps doing it for
+  and pages renamed since (FOLDERS), keeping what came after them:
+
+    /tuesday-training/#/plan/2026-12-01      -> /junior-athletics/#/plan/2026-12-01
+
+  Used by the old .html pages and old folders (each a small page that only sends
+  you on, to be deleted a few months after the move) and by 404.html, which keeps doing it for
   good: GitHub Pages shows 404.html for any address that doesn't exist.
 */
 (function () {
@@ -22,8 +26,14 @@
                'monday-training', 'open-day', 'privacy', 'records', 'resources', 'results-sources',
                'safeguarding'];
 
+  // folders renamed: old name -> new (shared plan links and printed QR codes
+  // point at /tuesday-training/)
+  var FOLDERS = { 'tuesday-training': 'junior-athletics' };
+
   // the new address for an old one, or null if it isn't one of the old pages
   function newAddress(path, search, hash) {
+    var f = /^\/([a-z0-9-]+)(?:\/(?:index\.html)?)?$/.exec(path);
+    if (f && FOLDERS.hasOwnProperty(f[1])) { return '/' + FOLDERS[f[1]] + '/' + search + hash; }
     var m = /^\/([a-z0-9-]+)\.html$/.exec(path);
     if (!m || PAGES.indexOf(m[1]) === -1) { return null; }
     var page = m[1];

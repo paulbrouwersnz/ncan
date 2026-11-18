@@ -3066,7 +3066,7 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 /* the header's logo for dark mode (see Dark mode) */
 .brand__logo-dark { display: none; }
 
-/* ---------- Training plans (Tuesday training page; assets/js/training.js) ---------- */
+/* ---------- Training plans (Junior Athletics page; assets/js/training.js) ---------- */
 .training-tools { display: flex; flex-wrap: wrap; gap: .6rem; margin: 0 0 1.5rem; }
 .training-tools[hidden], .training-signin[hidden] { display: none; }
 .training-list { display: grid; gap: 1.5rem; }
@@ -3405,7 +3405,7 @@ html:has(.plan-editor:not([hidden])) { scroll-padding-bottom: 5rem; }
   .training-tools, .plan__actions, .plan__print, .plan__by, .training-signin, .training-account, .plan-editor { display: none !important; }
 }
 
-/* Tuesday training: a plan printed (assets/js/training.js). Built on demand and
+/* Junior Athletics: a plan printed (assets/js/training.js). Built on demand and
    shown only in print, and only while body has .plan-printing. Black on white. */
 .plan__print { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .9rem; }
 .plan__print .plan__print-selected[hidden] { display: none; }   /* only while blocks are lit up */
