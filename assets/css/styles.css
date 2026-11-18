@@ -3404,6 +3404,13 @@ p.plan__coach { margin: .5rem 0 1rem; }
   margin: 0 0 1rem; padding: .45rem .7rem; font-size: .9rem; color: var(--text);
   border-left: 3px solid var(--danger); background: var(--surface-warm); border-radius: 0 8px 8px 0;
 }
+/* someone else saved the plan meanwhile: nothing written over; save anyway, or see theirs */
+.plan-editor__conflict {
+  margin: .8rem 0 0; padding: .6rem .8rem; border-left: 3px solid var(--warn);
+  background: var(--surface-warm); border-radius: 0 8px 8px 0; color: var(--text);
+}
+.plan-editor__conflict p { margin: 0; font-weight: 600; }
+.plan-editor__conflict .plan__actions { margin-top: .5rem; }
 .plan-editor__checks { margin: 1rem 0 0; font-size: .9rem; font-weight: 600; color: var(--warn); }
 .plan-group__who strong { display: block; padding-right: 1.6rem; font-size: .88rem; color: var(--heading); }
 .plan-group__tokens { display: flex; flex-wrap: wrap; gap: .25rem; margin-top: .25rem; }
