@@ -3297,6 +3297,16 @@ p.plan__coach { margin: .5rem 0 1rem; }
   letter-spacing: .1em; text-transform: uppercase; color: var(--link);
 }
 .plan-palette__chips { display: flex; flex-wrap: wrap; gap: .35rem; }
+/* the activities: a row for each family, with its name in front */
+.plan-palette__group--acts { align-items: flex-start; }
+.plan-palette__group--acts > .plan-palette__title { padding-top: .45rem; }
+.plan-palette__sets { display: grid; gap: .35rem; flex: 1 1 20rem; min-width: 0; }
+.plan-palette__set { display: grid; grid-template-columns: 8.5rem 1fr; align-items: center; gap: .35rem; }
+.plan-palette__set[hidden] { display: none; }
+.plan-palette__set-name { font-size: .78rem; font-weight: 600; color: var(--text-soft); }
+@media (max-width: 640px) {
+  .plan-palette__set { grid-template-columns: 1fr; gap: .2rem; }
+}
 .plan-palette__own { display: flex; gap: .4rem; flex-wrap: wrap; }
 .plan-palette__own input {
   font: inherit; font-size: .9rem; padding: .35rem .6rem; border: 1px solid var(--line); border-radius: 999px;
