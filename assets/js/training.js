@@ -174,7 +174,9 @@
       var older = el('details', 'training-past');
       older.appendChild(el('summary', null, 'Earlier sessions (' + state.past.length + ')'));
       state.past.forEach(function (p) { older.appendChild(planCard(p, false)); });
-      if (!state.upcoming.length) { older.open = true; }
+      // closed while a plan for today or later is released; open otherwise (only a draft
+      // or a cancelled session coming up), so the latest plan shows
+      older.open = !state.upcoming.some(function (p) { return p.status === 'released'; });
       listBox.appendChild(older);
     }
   }
