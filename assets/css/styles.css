@@ -3177,6 +3177,18 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 .plan-group__act-off:hover { background: var(--surface); color: var(--danger); }
 .plan__note { font-size: .85rem; color: var(--text-soft); }
 .plan__slot-note { margin: .5rem 0 0; font-size: .9rem; color: var(--text-soft); }
+/* a draft to be released at a set time (staff see it on the card; families, when) */
+.plan__scheduled {
+  margin: 0 0 .9rem; padding: .45rem .7rem; font-size: .9rem; color: var(--text);
+  border-left: 3px solid var(--yellow-500); background: var(--surface-warm); border-radius: 0 8px 8px 0;
+}
+.plan--due { border-style: dashed; box-shadow: none; }
+.plan--due .plan-due { margin: .35rem 0 0; color: var(--text-soft); }
+.plan__schedule-help { margin: .2rem 0 0; font-size: .85rem; color: var(--text-soft); }
+.plan__schedule-form input[type="datetime-local"] {
+  font: inherit; padding: .4rem .55rem; border: 1px solid var(--line-strong); border-radius: 8px;
+  background: var(--surface); color: inherit;
+}
 /* the notes for the plan's activities, under the activity strip */
 .plan__event-notes-head {
   margin: 1rem 0 .45rem; font-size: .78rem; font-weight: 700; letter-spacing: .08em;
