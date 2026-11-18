@@ -1,0 +1,95 @@
+name: Publish site
+
+# Publishes ncan.nz to GitHub Pages. Pages for this repository must be set to
+# Settings > Pages > Build and deployment > Source: "GitHub Actions"; until it
+# is, Pages keeps building from the branch as before and this deploy is refused.
+#
+# The stamps (?v=...) and the shared head, header and footer are brought up to
+# date here, at publish time, so a pull request needn't commit them.
+# See tools/README.md ("Publishing the site").
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+  # The Facebook updater (main.yml) commits with GITHUB_TOKEN, and a push made
+  # with that token starts no workflows, so publish when it finishes instead.
+  workflow_run:
+    workflows: ['Update Facebook posts']
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# one publish at a time; a newer one waits rather than cancelling one under way
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    # after the Facebook updater, only when it succeeded
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    outputs:
+      publish: ${{ steps.changed.outputs.publish }}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v7
+        with:
+          ref: main
+
+      - name: Anything new to publish?
+        id: changed
+        env:
+          EVENT: ${{ github.event_name }}
+          RUN_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          # The Facebook updater runs several times a day and often finds nothing
+          # new. When it committed nothing, main is still the commit it started
+          # from, which was published when it was pushed.
+          if [ "$EVENT" = "workflow_run" ] && [ "$(git rev-parse HEAD)" = "$RUN_SHA" ]; then
+            echo "No new commit from the Facebook updater; nothing to publish."
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Set up Python
+        if: steps.changed.outputs.publish == 'true'
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+
+      - name: Shared parts and stamps
+        if: steps.changed.outputs.publish == 'true'
+        run: |
+          python tools/sync-partials.py
+          python tools/stamp-assets.py
+
+      - name: Gather the site
+        if: steps.changed.outputs.publish == 'true'
+        run: python tools/build-site.py --out _site
+
+      - name: Upload the site
+        if: steps.changed.outputs.publish == 'true'
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site
+          # .well-known/security.txt starts with a dot
+          include-hidden-files: true
+
+  deploy:
+    needs: build
+    if: needs.build.outputs.publish == 'true'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Publish to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
