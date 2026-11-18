@@ -176,8 +176,8 @@
         </div>
 
         <p class="records-status" id="champs-status" role="status">Loading the championships&hellip;</p>
-        <!-- not signed in: children are shown by first name and initial (see privacy.html) -->
-        <p class="records-note" id="champs-names" hidden>Names show as a first name and initial. Club families, coaches and the committee see full names when signed in to an <a href="/athletes/">athlete page</a>.</p>
+        <!-- not signed in: children are shown by initial and surname, as on the records page (see privacy.html) -->
+        <p class="records-note" id="champs-names" hidden>Names show as an initial and surname, as on the records page. Club families, coaches and the committee see full names when signed in to an <a href="/athletes/">athlete page</a>.</p>
         <div id="standings-out"></div>
         <p class="records-note" id="champs-updated"></p>
       </div>
@@ -583,9 +583,10 @@
           results.push(r);
           if (!r.source) { unlinked++; }
           // full names are the rule; an initial or a single word is probably a slip
-          // that would score this athlete under two names, so say so (it still counts)
+          // that would score this athlete under two names, so say so (it still counts).
+          // Only with full names (signed in): the public sees initials ("S Brown") anyway.
           var parts = r.athlete.split(' ');
-          if (parts.length < 2 || parts[0].replace(/\./g, '').length < 2) {
+          if (data.full_names !== false && (parts.length < 2 || parts[0].replace(/\./g, '').length < 2)) {
             names.push(r.athlete);
           }
         });
@@ -1369,7 +1370,7 @@
       controls('event').forEach(combobox);
 
       function getJson(url) {
-        // with the sign-in cookie: signed in, the names are full; otherwise first name and initial
+        // with the sign-in cookie: signed in, the names are full; otherwise initial and surname
         return fetch(url, { cache: 'no-cache', credentials: 'include' }).then(function (res) {
           if (!res.ok) { throw new Error('HTTP ' + res.status); }
           return res.json();
