@@ -166,6 +166,8 @@
   function showList() {
     listBox.textContent = '';
     tools.hidden = !state.canEdit || !!editing;
+    var help = document.getElementById('planner-help');      // how to use the planner (staff)
+    if (help) { help.hidden = !state.canEdit || sharedView; }
     if (editing) { listBox.hidden = true; return; }
     listBox.hidden = false;
     // plans due to be released at a set time: when (staff see the drafts themselves)
