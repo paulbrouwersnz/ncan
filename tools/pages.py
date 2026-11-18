@@ -7,9 +7,10 @@ Every page is a folder with an index.html, so its address has no .html:
     calendar/index.html         https://ncan.nz/calendar/
     athlete/index.html          https://ncan.nz/athlete/#/sam-brown
 
-The .html files left at the root (calendar.html and so on) only send visitors
-on to the new address; they carry <meta name="ncan-redirect">, and the tools
-leave them alone. 404.html does the same for any old address once they're gone.
+The .html files left at the root (calendar.html and so on), and the folders of
+pages renamed since (tuesday-training/, now junior-athletics/), only send
+visitors on to the new address; they carry <meta name="ncan-redirect">, and the
+tools leave them alone. 404.html does the same for any old address once they're gone.
 """
 import os
 
@@ -29,9 +30,15 @@ def pages(root=ROOT):
         out.append(('index', '/', home))
     for name in sorted(os.listdir(root)):
         path = os.path.join(root, name, 'index.html')
-        if name not in NOT_PAGES and not name.startswith('.') and os.path.isfile(path):
+        if name not in NOT_PAGES and not name.startswith('.') and os.path.isfile(path) and not _redirect(path):
             out.append((name, '/%s/' % name, path))
     return out
+
+
+def _redirect(path):
+    """Whether a page only sends visitors on (an old address)."""
+    with open(path, encoding='utf-8') as fh:
+        return REDIRECT_MARK in fh.read(2000)
 
 
 def page_files(root=ROOT):
