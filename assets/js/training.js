@@ -575,13 +575,29 @@
     return iso(d);
   }
 
+  // A new plan: the club night's usual frame (warm up and set up at 5:00, the long run
+  // or race walk and pack down at 6:00, three empty slots between), with the usual
+  // word to parents. Only the date changes.
   function blankPlan() {
-    return { notes: '', slots: [
-      { start: '17:00', end: '17:15', note: '', groups: [
-        { everyone: true, parents: false, grades: [], sex: 'both', events: ['Warm up'], note: '', coach_note: '' },
-        { everyone: false, parents: true, grades: [], sex: 'both', events: ['Set up'], note: '', coach_note: '' }] },
-      { start: '17:15', end: '17:30', note: '', groups: [] }
-    ] };
+    function g(who, events, note) {
+      return { everyone: who === 'everyone', parents: who === 'parents', grades: [], sex: 'both', events: events,
+               note: note || '', coach_note: '' };
+    }
+    function slot(start, end, groups) { return { start: start, end: end, note: '', coach_note: '', groups: groups || [] }; }
+    return {
+      notes: 'Parents and guardians are encouraged to either:\n' +
+             '· adopt an activity station and help the coach during the session.\n' +
+             '· chaperone a group and assist the children and/or coach.',
+      slots: [
+        slot('17:00', '17:15', [g('everyone', ['Warm up']),
+          g('parents', ['Set up'], 'Take equipment from the container to the stations and setup as required.')]),
+        slot('17:15', '17:30'),
+        slot('17:30', '17:45'),
+        slot('17:45', '18:00'),
+        slot('18:00', '18:15', [g('everyone', ['Long run', 'Race walk']),
+          g('parents', ['Pack down'], 'Check in with station to see if you can help return equipment to the container.')])
+      ]
+    };
   }
 
   function copySlots(slots) {
@@ -718,6 +734,14 @@
     cnotes.appendChild(cl);
     cnotes.appendChild(ct);
     editorBox.appendChild(cnotes);
+
+    // what to check before saving (the slots say what): it can still be saved
+    var checks = plan.slots.reduce(function (n, s) { return n + slotClashes(s).messages.length; }, 0);
+    if (checks) {
+      editorBox.appendChild(el('p', 'plan-editor__checks', (checks === 1 ? 'One thing' : checks + ' things') +
+        ' to check in the time slots above: groups sharing a station, or athletes in two groups at once. ' +
+        'You can still save the plan.'));
+    }
 
     // save
     var bar = el('div', 'plan__actions plan-editor__save');
@@ -1107,6 +1131,57 @@
     });
   }
 
+  /* What to check in a time slot (warnings: it can still be saved):
+     - two groups at one station: the same activity, other than those done anywhere
+       (NOT_STATIONS: warm up, cool down, the long run, games, set up, pack down);
+     - athletes in two places at once: the same grade and sex in two groups (All
+       athletes is every grade; "Girls" with no grade, every girls' grade).
+     {messages: [...], groups: [indexes of the groups involved]} */
+  var NOT_STATIONS = ['Warm up', 'Cool down', 'Long run', 'Games', 'Set up', 'Pack down'];
+  var COUNT = ['', '', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten'];
+  function athleteCells(g) {
+    if (g.parents) { return []; }
+    if (g.everyone) {
+      var all = [];
+      SEXES.forEach(function (x) { state.grades.forEach(function (n) { all.push(x + ' ' + n); }); });
+      return all;
+    }
+    return cellsOf(g) || [];
+  }
+  function slotClashes(slot) {
+    var out = { messages: [], groups: [] };
+    function involve(list) { list.forEach(function (gi) { if (out.groups.indexOf(gi) === -1) { out.groups.push(gi); } }); }
+    function names(list) {
+      var words = list.map(function (gi) { return groupLabel(slot.groups[gi]); });
+      return words.length > 1 ? words.slice(0, -1).join(', ') + ' and ' + words[words.length - 1] : words[0];
+    }
+    // stations
+    var at = {};
+    slot.groups.forEach(function (g, gi) {
+      eventsOf(g).forEach(function (e) {
+        if (NOT_STATIONS.indexOf(e) !== -1) { return; }
+        (at[e] = at[e] || []).push(gi);
+      });
+    });
+    Object.keys(at).forEach(function (e) {
+      if (at[e].length < 2) { return; }
+      out.messages.push((COUNT[at[e].length] || at[e].length) + ' groups at the ' + e + ' station: ' + names(at[e]) + '.');
+      involve(at[e]);
+    });
+    // athletes in two groups
+    var cells = slot.groups.map(athleteCells);
+    for (var a = 0; a < cells.length; a += 1) {
+      for (var b = a + 1; b < cells.length; b += 1) {
+        var both = cells[a].filter(function (c) { return cells[b].indexOf(c) !== -1; });
+        if (!both.length) { continue; }
+        var who = both.length === SEXES.length * state.grades.length ? 'All athletes' : stripLabel(both);
+        out.messages.push(who + ' are in two groups at once: ' + names([a, b]) + '.');
+        involve([a, b]);
+      }
+    }
+    return out;
+  }
+
   function slotRow(slot, i) {
     var plan = editing;
     var row = el('div', 'plan-slot');
@@ -1157,7 +1232,12 @@
     row.appendChild(times);
 
     var groups = el('div', 'plan-slot__groups');
-    slot.groups.forEach(function (g, gi) { groups.appendChild(groupCell(slot, g, gi)); });
+    var clash = slotClashes(slot);
+    slot.groups.forEach(function (g, gi) {
+      var cell = groupCell(slot, g, gi);
+      if (clash.groups.indexOf(gi) !== -1) { cell.classList.add('has-clash'); }
+      groups.appendChild(cell);
+    });
     var fresh = button('New group', 'plan-slot__new', function () {
       if (picked) { return; }       // handled by target()
       newGroup(slot);
@@ -1167,6 +1247,14 @@
     groups.appendChild(fresh);
     target(groups, function (c) { if (c.kind === 'group') { placeGroup(c, slot, null); } else { newGroup(slot, c); } });
     row.appendChild(groups);
+    if (clash.messages.length) {
+      var warn = el('div', 'plan-slot__clash');
+      warn.setAttribute('role', 'status');
+      var ul = el('ul');
+      clash.messages.forEach(function (m) { ul.appendChild(el('li', null, m)); });
+      warn.appendChild(ul);
+      row.appendChild(warn);
+    }
 
     var foot = el('div', 'plan-slot__foot');
     var np = el('p', 'records-field records-field--grow');
