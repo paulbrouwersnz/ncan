@@ -668,6 +668,7 @@
                 slots: copySlots(plan.slots), status: plan.status || 'draft',
                 releaseAt: isNew ? null : plan.release_at || null,   // saving keeps a scheduled release
                 cancelledWhy: isNew ? '' : plan.cancelled_why || '',
+                since: isNew ? null : plan.updated || null,      // to tell if someone saves meanwhile
                 // by activity, {note, coach_note}: kept while an activity's off the plan, in case it comes back
                 eventNotes: (plan.event_notes || []).reduce(function (by, n) {
                   by[n.event] = { note: n.note || '', coach_note: n.coach_note || '' };
@@ -1501,7 +1502,8 @@
     return [].concat(state.upcoming, state.past).some(function (p) { return p.date === plan.date && p.date !== plan.from; });
   }
 
-  function save(then, said) {
+  // `anyway`: save over a change someone else made since the editor opened (see below)
+  function save(then, said, anyway) {
     var plan = editing;
     if (!plan.date) { said.textContent = 'Choose the session’s date.'; return; }
     var replace = taken(plan);
@@ -1515,8 +1517,12 @@
                 event_notes: planEvents(plan.slots).map(function (name) {
                   var n = plan.eventNotes[name] || {};
                   return { event: name, note: n.note || '', coach_note: n.coach_note || '' };
-                }) }).then(function (res) {
+                }),
+                // the plan as the editor opened it: the API refuses (409) if someone has saved since
+                since: anyway ? null : plan.since }).then(function (res) {
+      if (res.status === 409 && res.body && res.body.conflict) { changedMeanwhile(res.body, then, said); return null; }
       if (res.status !== 200) { said.textContent = apiError(res); return null; }
+      plan.since = res.body.updated;          // saved: this is now the version the editor has
       if (!moving) { return res; }
       // then to its new date, as it is
       return NCAN.send('/training/' + plan.from + '/move', { to: plan.date, replace: replace }).then(function (moved) {
@@ -1545,6 +1551,33 @@
         if (card) { card.scrollIntoView({ block: 'start' }); }
       });
     }).catch(function (err) { said.textContent = err.message; });
+  }
+
+  /* Someone else saved this plan after the editor opened it. Nothing has been
+     written over; say who and when, and offer to save over it anyway or to close
+     and look at theirs (the editor's changes are lost then, so it asks first). */
+  function changedMeanwhile(body, then, said) {
+    said.textContent = '';
+    var box = el('div', 'plan-editor__conflict');
+    box.setAttribute('role', 'alert');
+    box.appendChild(el('p', null, 'Someone else saved this plan after you opened it' +
+      (body.updated_by ? ' (' + body.updated_by + ', ' + whenText(body.updated) + ')' : ', ' + whenText(body.updated)) +
+      '. Your changes haven’t been saved.'));
+    var row = el('div', 'plan__actions');
+    row.appendChild(button('Save mine anyway', 'btn btn--accent btn--sm', function () {
+      box.remove();
+      save(then, said, true);
+    }));
+    row.appendChild(button('Close and see theirs', null, function () {
+      if (!window.confirm('Close the editor? Your changes will be lost.')) { return; }
+      dirty = false;
+      editing = null;
+      editorBox.hidden = true;
+      editorBox.textContent = '';
+      load();
+    }));
+    box.appendChild(row);
+    said.parentNode.insertBefore(box, said);
   }
 
   // ------------------------------------------------------------ sharing
