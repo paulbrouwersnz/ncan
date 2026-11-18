@@ -114,10 +114,18 @@
       return n && (n.note || (coaches && n.coach_note)) && (!only || only.indexOf(name) !== -1);
     }).map(function (name) { return by[name]; });
   }
+  // Punctuation between pieces the layout already sets apart ("Grade 7 Boys: Sprints,
+  // Starts — Coach: Sam"): unseen on the page, but there for reader modes (which drop
+  // the styles) and screen readers, so the words don't run together.
+  function sep(text) { return el('span', 'visually-hidden', text); }
+
   // all of a group's activities, each with its icon
   function activities(cls, g) {
     var box = el('span', cls + 's');
-    eventsOf(g).forEach(function (name) { box.appendChild(activity(cls, name)); });
+    eventsOf(g).forEach(function (name, i) {
+      if (i) { box.appendChild(sep(', ')); }
+      box.appendChild(activity(cls, name));
+    });
     if (!box.firstChild) { box.appendChild(activity(cls, '')); }
     return box;
   }
@@ -289,9 +297,9 @@
           if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); lightUp(wrap, plan, si, gi); }
         });
         li.appendChild(el('span', 'plan__who', groupLabel(g)));
-        if (eventsOf(g).length) { li.appendChild(activities('plan__what', g)); }
-        if (g.note) { li.appendChild(el('span', 'plan__note', g.note)); }
-        if (g.coach_note) { li.appendChild(coachNote(g.coach_note, 'span')); }
+        if (eventsOf(g).length) { li.appendChild(sep(': ')); li.appendChild(activities('plan__what', g)); }
+        if (g.note) { li.appendChild(sep(' — ')); li.appendChild(el('span', 'plan__note', g.note)); }
+        if (g.coach_note) { li.appendChild(sep(' — ')); li.appendChild(coachNote(g.coach_note, 'span')); }
         groups.appendChild(li);
       });
       td.appendChild(groups);
@@ -318,8 +326,9 @@
       notes.forEach(function (n) {
         var li = el('li', 'plan__event-note');
         li.appendChild(activity('plan__event-note-name', n.event));
+        li.appendChild(sep(': '));
         if (n.note) { li.appendChild(el('span', 'plan__event-note-text', n.note)); }
-        if (n.coach_note) { li.appendChild(coachNote(n.coach_note, 'span')); }
+        if (n.coach_note) { if (n.note) { li.appendChild(sep(' — ')); } li.appendChild(coachNote(n.coach_note, 'span')); }
         list.appendChild(li);
       });
       box.appendChild(list);
