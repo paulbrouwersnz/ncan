@@ -3097,6 +3097,9 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 .plan__status--cancelled { background: var(--danger); color: var(--bg); }
 .plan__cancelled { margin: 0 0 .8rem; padding: .7rem .9rem; border-left: 4px solid var(--danger); background: var(--surface-tint); }
 .plan__notes, .plan__slot-note { white-space: pre-line; }
+/* a cancelled session's plan, behind "Show the plan" */
+.plan__content[hidden] { display: none; }
+.plan__show { margin: 0 0 .8rem; }
 .plan__notes { margin: 0 0 1rem; }
 .plan__wrap { margin: 0; }
 .plan__table { width: 100%; border-collapse: collapse; }

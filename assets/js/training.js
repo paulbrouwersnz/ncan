@@ -227,11 +227,28 @@
       card.appendChild(el('p', 'plan__scheduled', 'A draft until ' + whenText(plan.release_at) +
         ', when it will be released. Families see only when.'));
     }
-    if (plan.notes) { card.appendChild(el('p', 'plan__notes', plan.notes)); }
-    if (plan.coach_notes) { card.appendChild(coachNote(plan.coach_notes, 'p')); }
-    if (plan.status !== 'cancelled' || state.canEdit) {
-      if (plan.slots && plan.slots.length) { card.appendChild(planTable(plan)); }
-      else if (plan.status !== 'cancelled') { card.appendChild(el('p', 'note', 'No time slots yet.')); }
+    // the plan: its notes and table. A cancelled session shows only why; its plan sits
+    // behind "Show the plan" if it had been released (for staff, whatever it was).
+    var body = el('div', 'plan__content');
+    if (plan.notes) { body.appendChild(el('p', 'plan__notes', plan.notes)); }
+    if (plan.coach_notes) { body.appendChild(coachNote(plan.coach_notes, 'p')); }
+    if (plan.slots && plan.slots.length) { body.appendChild(planTable(plan)); }
+    else if (plan.status !== 'cancelled') { body.appendChild(el('p', 'note', 'No time slots yet.')); }
+    if (plan.status !== 'cancelled') {
+      card.appendChild(body);
+    } else if (plan.slots && plan.slots.length && (state.canEdit || wasReleased(plan))) {
+      body.hidden = true;
+      body.id = 'plan-content-' + plan.date;
+      var label = wasReleased(plan) ? 'Show the plan' : 'Show the plan (never released: families can’t see it)';
+      var toggle = button(label, 'btn btn--ghost btn--sm plan__show', function () {
+        body.hidden = !body.hidden;
+        toggle.textContent = body.hidden ? label : 'Hide the plan';
+        toggle.setAttribute('aria-expanded', String(!body.hidden));
+      });
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.setAttribute('aria-controls', body.id);
+      card.appendChild(toggle);
+      card.appendChild(body);
     }
     var printable = plan.status !== 'cancelled' && plan.slots && plan.slots.length;
     var shareable = !sharedView && (plan.status === 'released' || plan.status === 'cancelled');
@@ -255,6 +272,10 @@
     }
     return card;
   }
+
+  // whether a cancelled session's plan had been released when it was cancelled (the API
+  // says so to the public; staff get what it was)
+  function wasReleased(plan) { return plan.was_released === true || plan.cancelled_from === 'released'; }
 
   // a coaches-only note (the API sends these to staff only), marked as such
   function coachNote(text, tag) {
@@ -1604,6 +1625,12 @@
     var p = JSON.parse(JSON.stringify(plan));
     delete p.coach_notes;
     (p.event_notes || []).forEach(function (n) { delete n.coach_note; });
+    // cancelled before it was released: only why, as the public sees it
+    if (p.status === 'cancelled') {
+      p.was_released = wasReleased(p);
+      if (!p.was_released) { p.slots = []; p.notes = ''; p.event_notes = []; }
+    }
+    delete p.cancelled_from;
     delete p.updated_by;
     delete p.created_by;
     (p.slots || []).forEach(function (s) {
