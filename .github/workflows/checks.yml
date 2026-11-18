@@ -1,0 +1,38 @@
+name: Checks
+
+# Runs on every pull request, and on main after a merge, so a page that has
+# fallen out of step with partials/ or links to something missing shows up
+# before it reaches the site. See tools/README.md ("Checks on pull requests").
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+
+      - name: Pages carry the current partials
+        run: |
+          python tools/sync-partials.py
+          if [ -n "$(git status --porcelain)" ]; then
+            git status --porcelain
+            git diff --stat
+            echo "::error::The pages are out of step with partials/. Run tools/sync-partials.py and commit."
+            exit 1
+          fi
+
+      - name: Links and files within the site exist
+        run: python tools/check-links.py

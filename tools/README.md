@@ -89,6 +89,7 @@ browser's console on the Athletics NZ eLearning library (see below).
 | changed the logo (`assets/img/logo.svg`) | `build-icons.py`, and redo `assets/img/logo-dark.svg` (the logo with `#164724` as `#3A8F5C` and white as `#0c1813`) |
 | it's November (`security.txt` expires on 17 November each year) | move the `Expires` date in `.well-known/security.txt` on a year |
 | added characters the site's fonts may not have (e.g. a new macron) | `build-fonts.py` |
+| changed links, moved or removed a file, or a pull request's "Checks" failed | `check-links.py` (and `sync-partials.py`) |
 
 ## Shared parts of every page
 
@@ -141,6 +142,36 @@ Edge or Chrome, then sizes it. Run it after the logo changes.
 ```bash
 python tools/build-icons.py
 ```
+
+## Checks on pull requests
+
+Every pull request, and every push to `main`, runs
+`.github/workflows/checks.yml` on GitHub. It fails, with the reason in the
+run's log, when:
+
+- **a page is out of step with `partials/`**: it runs `sync-partials.py` and
+  fails if that changed anything. Run `python tools/sync-partials.py` and
+  commit the result.
+- **a link or file within the site is missing**: it runs `check-links.py`.
+
+### `check-links.py`
+Checks that every `href=` and `src=` in the pages (and `404.html`) that points
+into the site, written from the root (`/calendar/`, `/assets/css/styles.css`)
+or relative to the page, leads to a file that exists, or to a folder with an
+`index.html`. What follows `?` or `#` is ignored. Case counts, as it does on the
+web server. Other websites, `mailto:`, `tel:`, in-page `#` links and links built
+by scripts are not checked. The old addresses that only redirect are skipped.
+Standard library only.
+
+```bash
+python tools/check-links.py
+```
+
+A link that is known to be broken and is to stay that way for now goes in
+`tools/check-links-allow.txt` (the page's address, a space, the link as
+written); it is then listed as "allowed" rather than failing. The check says
+when a line there no longer matches anything, so it can be taken out. Fix the
+link rather than adding to the list where you can.
 
 ## Search engines
 
