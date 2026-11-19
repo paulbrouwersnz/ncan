@@ -315,7 +315,8 @@ album of its own), a `title.txt` to rename it, a `README.md` for an intro, and
   the heading, intro and note above and below it are edited by hand.
 - `gallery/<album>/index.html` is a page per album (`<album>` is the folder path
   in lower case with dashes: `2024/Colgate Games` is `gallery/2024-colgate-games/`),
-  with its intro, the zip download, the photos and the photo viewer. These pages
+  with its intro, the zip download, the photos and the photo viewer (its script is
+  `assets/js/gallery-viewer.js`). These pages
   are written whole each time, copying the head, header and footer from the
   front page, so don't edit them by hand. A page whose album has gone is
   deleted (only pages the script wrote, which carry `@generated:album`).
@@ -323,7 +324,9 @@ album of its own), a `title.txt` to rename it, a `README.md` for an intro, and
   ("2024 Colgate Games, photo 5 of 1036"), plus its caption when the file has a
   descriptive name. Each thumbnail links to its full-size copy on the mirror.
 - Old links to an album on the single-page gallery (`/gallery/#album-<album>`)
-  are sent on to the album's page by a small script on the front page.
+  are sent on to the album's page by the front page's script, `assets/js/gallery.js`.
+- The script links carry the same `?v=` stamp `stamp-assets.py` would give them,
+  so after editing either script, run `build-gallery.py` or `stamp-assets.py`.
 
 After adding, renaming or removing an album, run `build-sitemap.py` too, as each
 album page is listed in the sitemap.

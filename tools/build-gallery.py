@@ -579,111 +579,24 @@ VIEWER = """      <dialog class="lightbox" id="lightbox" aria-label="Photo viewe
         </button>
       </dialog>
 
-      <script>
-      (function () {
-        'use strict';
-
-        /* Photo viewer --------------------------------------------------- */
-        var dialog = document.getElementById('lightbox');
-
-        // Without <dialog> the thumbnails keep their plain behaviour: the link
-        // opens the full-size photo in a new tab.
-        if (!dialog || typeof dialog.showModal !== 'function') { return; }
-
-        var img = dialog.querySelector('.lightbox__img');
-        var text = dialog.querySelector('.lightbox__text');
-        var count = dialog.querySelector('.lightbox__count');
-        var links = [];
-        var index = 0;
-
-        function preload(i) {
-          var link = links[i];
-          if (link) { new Image().src = link.getAttribute('href'); }
-        }
-
-        function show() {
-          var link = links[index];
-          var caption = link.getAttribute('data-caption') || '';
-          img.src = link.getAttribute('href');
-          img.alt = link.querySelector('img').alt;
-          text.textContent = caption;
-          text.hidden = !caption;
-          count.textContent = (index + 1) + ' of ' + links.length;
-          // the neighbours are almost always where the reader goes next
-          preload(index + 1);
-          preload(index - 1);
-        }
-
-        function step(delta) {
-          if (links.length < 2) { return; }
-          index = (index + delta + links.length) % links.length;
-          show();
-        }
-
-        function close() {
-          dialog.close();
-        }
-
-        document.addEventListener('click', function (event) {
-          var link = event.target.closest('.album__grid a');
-          if (!link || event.metaKey || event.ctrlKey || event.shiftKey ||
-              event.button !== 0) {
-            return;                       // let modified clicks open a new tab
-          }
-          event.preventDefault();
-          links = Array.prototype.slice.call(
-            link.closest('.album__grid').querySelectorAll('a'));
-          index = links.indexOf(link);
-          show();
-          dialog.showModal();
-          document.body.style.overflow = 'hidden';
-        });
-
-        dialog.addEventListener('click', function (event) {
-          var action = event.target.closest('[data-viewer]');
-          if (action) {
-            var what = action.getAttribute('data-viewer');
-            if (what === 'close') { close(); }
-            if (what === 'prev') { step(-1); }
-            if (what === 'next') { step(1); }
-            return;
-          }
-          // a click on the backdrop - anywhere but the photo itself - closes
-          if (!event.target.closest('.lightbox__figure')) { close(); }
-        });
-
-        dialog.addEventListener('keydown', function (event) {
-          if (event.key === 'ArrowLeft') { event.preventDefault(); step(-1); }
-          if (event.key === 'ArrowRight') { event.preventDefault(); step(1); }
-        });
-
-        // Escape closes natively, so undo the scroll lock wherever it came from
-        dialog.addEventListener('close', function () {
-          document.body.style.overflow = '';
-          img.removeAttribute('src');
-        });
-      }());
-      </script>"""
+      <script src="@viewer@"></script>"""
 
 
-REDIRECT = """      <script>
-      // The gallery used to be one long page with an anchor per album
-      // (/gallery/#album-2024-colgate-games). Each album has its own page now,
-      // so an old link is sent on to it. Only a hash naming an album on this
-      // page is followed; anything else stays put.
-      (function () {
-        'use strict';
-        function follow() {
-          var id = decodeURIComponent(window.location.hash.slice(1));
-          if (!/^[a-z0-9-]+$/.test(id)) { return; }
-          var card = document.getElementById(id.indexOf('album-') === 0 ? id : 'album-' + id);
-          var link = card && card.querySelector('a.card__link');
-          if (link) { window.location.replace(link.getAttribute('href')); }
-        }
-        window.addEventListener('hashchange', follow);
-        follow();
-      }());
-      </script>"""
+# the front page's script (assets/js/gallery.js): sends old links to an album
+# on the single-page gallery (/gallery/#album-<slug>) on to the album's page
+REDIRECT = """      <script src="@front@"></script>"""
+
+
+def script_url(name):
+    """/assets/js/<name> with the ?v= stamp tools/stamp-assets.py gives it, so
+    a rebuild and a stamp agree and neither undoes the other."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        'stamp_assets', os.path.join(ROOT, 'tools', 'stamp-assets.py'))
+    stamp = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(stamp)
+    return '/assets/js/%s?v=%s' % (
+        name, stamp.content_hash(os.path.join(ROOT, 'assets', 'js', name)))
 
 
 def plural(n, word='photo'):
@@ -741,7 +654,7 @@ def front_page(albums):
         n += 1
     if group is not None:
         out.append('      </div>\n')
-    return '\n'.join(out) + '\n' + REDIRECT
+    return '\n'.join(out) + '\n' + REDIRECT.replace('@front@', script_url('gallery.js'))
 
 
 def read_template():
@@ -841,7 +754,8 @@ def write_album(template, folder, title, photos, intro, download):
             '  </section>\n'
             '</main>'
             % (ALBUM_MARK, folder, esc(title), esc(title), plural(total),
-               intro_html, download, '\n'.join(items), VIEWER))
+               intro_html, download, '\n'.join(items),
+               VIEWER.replace('@viewer@', script_url('gallery-viewer.js'))))
 
     top, middle, bottom = template
     html = top + head + middle + main + bottom
