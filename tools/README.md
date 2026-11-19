@@ -261,8 +261,8 @@ python tools/check-planner-help.py
 ### `build-sitemap.py`
 Writes `sitemap.xml` and `robots.txt`, listing every page (the home page as
 `https://ncan.nz/`, the others as `https://ncan.nz/calendar/` and so on). Add a
-page's folder name to `SKIP` in the script to leave it out; `athlete`, `athletes`
-and `admin` are skipped, as they show nothing until someone signs in (and carry a noindex tag).
+page's folder name to `SKIP` in the script to leave it out; `athlete`, `athletes`,
+`admin` and `results-sources` are skipped, as they show nothing until someone signs in (and carry a noindex tag).
 `junior-athletics` is skipped while the coaches and committee review it. Folders
 that only redirect (`tuesday-training/`) are never listed. The sitemap was submitted once in Google Search
 Console; Google re-reads it by itself.
@@ -393,9 +393,12 @@ distances), with 1st, 2nd and 3rd places in a row of medal blocks of their own
 (only when there's a podium; a relay team's place counts once), and the
 athletes page counts the athletes on the podium.
 
-The results sources page (`/results-sources/`) is public: it lists every meeting collected, with how
-many of our athletes and results each added, and shows the athletes' names only
-to coaches and the committee. Signed in, administrators, coaches and the
+The results sources page (`/results-sources/`) is for club administrators,
+coaches and the committee, signed in (the API's `GET /v1/meetings` refuses
+anyone else): it lists every meeting collected, with how many results each
+added and which of our athletes. Anyone else sees only a sign-in form, or a line
+saying who the page is for; it is noindex and left out of the sitemap, and the
+athletes page shows its link only to staff. Administrators, coaches and the
 committee add meetings there; administrators also change a meeting's type and
 remove meetings.
 

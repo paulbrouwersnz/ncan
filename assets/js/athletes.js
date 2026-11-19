@@ -263,6 +263,8 @@
   NCAN.me()
     .then(function (who) {
       NCAN.account($('account'), who);
+      // the results sources page is for staff only: its link shows for them alone
+      $('sources-link').hidden = !(who && ['admin', 'coach', 'committee'].indexOf(who.role) >= 0);
       if (!who) { signedOut(); return null; }
       return NCAN.get('/athletes');
     })

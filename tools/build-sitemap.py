@@ -49,10 +49,11 @@ ROBOTS = os.path.join(ROOT, 'robots.txt')
 # pages to leave out of the sitemap
 # The athlete pages show results only to someone signed in (they read from the
 # club's API, api.ncan.nz), so search engines have nothing to index there; the
-# pages also carry a noindex tag. (results-sources/ is public.) admin/ is for
-# club administrators, signed in.
+# pages also carry a noindex tag. admin/ is for club administrators, and
+# results-sources/ for administrators, coaches and the committee, signed in
+# (both noindex too).
 # junior-athletics: left out while the coaches and committee review it (November 2026)
-SKIP = {'admin', 'athlete', 'athletes', 'junior-athletics'}
+SKIP = {'admin', 'athlete', 'athletes', 'junior-athletics', 'results-sources'}
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from pages import pages as site_pages  # noqa: E402

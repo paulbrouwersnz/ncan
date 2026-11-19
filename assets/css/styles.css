@@ -3621,8 +3621,8 @@ html:has(.plan-editor:not([hidden])) { scroll-padding-bottom: 5rem; }
 .merge-bar .records-status { margin: 0; }
 #merge-list, #corr-out { margin-top: 1.2rem; }   /* the list below its count */
 #merge-list[hidden] { display: none; }
-/* a button's own display would otherwise show it while hidden */
-.btn[hidden] { display: none; }
+/* a button's (or a row of them) own display would otherwise show it while hidden */
+.btn[hidden], .btn-row[hidden] { display: none; }
 .roll__head { margin: 0 0 .4rem; font-size: clamp(1.25rem, 2vw, 1.55rem); color: var(--heading); }
 .roll__sub { margin: 1rem 0 .4rem; font-size: .95rem; color: var(--heading); }
 .roll-member .champs-day__body .table-wrap { margin-bottom: .6rem; }
