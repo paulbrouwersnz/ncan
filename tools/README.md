@@ -411,6 +411,8 @@ Makes, in the local copy of the photo host, a thumbnail for every original
 that has none, and a WebP copy beside every original and thumbnail that has
 none (or whose JPEG is newer). It never changes or deletes a JPEG. Phone
 photos' orientation is baked in, and colour profiles kept.
+It can be stopped at any time (Ctrl+C, or even killed) and run again to carry
+on: files are written whole or not at all, and a run skips what's already made.
 
 ```bash
 python tools/gallery-photos.py --dry-run                       # what it would make

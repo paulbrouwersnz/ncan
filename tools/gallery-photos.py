@@ -24,6 +24,13 @@ This script fills in what's missing, and changes nothing that's already there:
 Phone photos carry an EXIF orientation flag; it is baked into the pixels, so a
 WebP or thumbnail never comes out on its side. Colour profiles are kept.
 
+It can be stopped at any time (Ctrl+C) and run again to carry on: each file
+is written to <name>.part and renamed only when complete, so there is never a
+half-made thumbnail or WebP, and a run skips what's already made. A run that
+was killed outright may leave .part files; the next run removes them. Run it
+after the photos have finished copying: a half-copied JPEG fails (reported,
+nothing written for it) and is made on the next run.
+
 Then rebuild the pages with tools/build-gallery.py and upload thumbs/ and the
 new .webp files to the host.
 
@@ -38,6 +45,7 @@ import argparse
 import os
 import sys
 from concurrent.futures import ProcessPoolExecutor
+from concurrent.futures.process import BrokenProcessPool
 
 try:
     from PIL import Image, ImageOps
@@ -138,11 +146,28 @@ def stale(src, dst):
     return not os.path.exists(dst) or os.path.getmtime(dst) < os.path.getmtime(src)
 
 
+def watch_parent():
+    """In each worker: stop when the main script is gone. On Windows a worker
+    outlives a main script that was killed outright (Task Manager, closing the
+    window), and would otherwise sit there, or carry on converting, for good."""
+    import multiprocessing
+    import threading
+    import time
+    parent = multiprocessing.parent_process()
+
+    def check():
+        while parent is None or parent.is_alive():
+            time.sleep(1)
+        os._exit(1)
+    threading.Thread(target=check, daemon=True).start()
+
+
 def run(jobs, fn, workers, label):
     if not jobs:
         return 0, 0
     made = failed = 0
-    with ProcessPoolExecutor(max_workers=workers) as pool:
+    pool = ProcessPoolExecutor(max_workers=workers, initializer=watch_parent)
+    try:
         for n, (dst, err) in enumerate(pool.map(fn, jobs, chunksize=4), 1):
             if err:
                 failed += 1
@@ -151,7 +176,29 @@ def run(jobs, fn, workers, label):
                 made += 1
             if n % 1000 == 0:
                 print('   %s: %d of %d' % (label, n, len(jobs)))
+    except (KeyboardInterrupt, BrokenProcessPool):
+        # Ctrl+C: drop the photos not started, let the workers stop. Every file
+        # is written whole or not at all, so running again carries on from here.
+        pool.shutdown(wait=True, cancel_futures=True)
+        print('\nstopped after %d %s - run it again to carry on where it left off'
+              % (made, label))
+        sys.exit(130)
+    pool.shutdown()
     return made, failed
+
+
+def tidy(tops):
+    """Remove half-written files (<photo>.<ext>.part) a killed run left behind."""
+    ends = tuple(e + '.part' for e in SOURCES + ('.webp',))
+    gone = 0
+    for top in tops:
+        for dirpath, _, files in os.walk(top):
+            for f in files:
+                if f.lower().endswith(ends):
+                    os.remove(os.path.join(dirpath, f))
+                    gone += 1
+    if gone:
+        print('removed %d half-written file(s) from an interrupted run' % gone)
 
 
 def main():
@@ -176,6 +223,8 @@ def main():
     if not os.path.isdir(originals) and not os.path.isdir(thumbs):
         sys.exit('No gallery/ or thumbs/ in %s - set --photos-dir' % photos)
     album = args.album.strip('/').replace('\\', '/')
+    if not args.dry_run:
+        tidy((originals, thumbs))
 
     full = sources(originals, album)
     bad = clashes(full)
