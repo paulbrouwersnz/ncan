@@ -579,24 +579,14 @@ VIEWER = """      <dialog class="lightbox" id="lightbox" aria-label="Photo viewe
         </button>
       </dialog>
 
-      <script src="@viewer@"></script>"""
+      <script src="/assets/js/gallery-viewer.js"></script>"""
 
 
 # the front page's script (assets/js/gallery.js): sends old links to an album
-# on the single-page gallery (/gallery/#album-<slug>) on to the album's page
-REDIRECT = """      <script src="@front@"></script>"""
-
-
-def script_url(name):
-    """/assets/js/<name> with the ?v= stamp tools/stamp-assets.py gives it, so
-    a rebuild and a stamp agree and neither undoes the other."""
-    import importlib.util
-    spec = importlib.util.spec_from_file_location(
-        'stamp_assets', os.path.join(ROOT, 'tools', 'stamp-assets.py'))
-    stamp = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(stamp)
-    return '/assets/js/%s?v=%s' % (
-        name, stamp.content_hash(os.path.join(ROOT, 'assets', 'js', name)))
+# on the single-page gallery (/gallery/#album-<slug>) on to the album's page.
+# Both links are written plain; publishing adds the ?v= stamps
+# (tools/stamp-assets.py), as for every page.
+REDIRECT = """      <script src="/assets/js/gallery.js"></script>"""
 
 
 def plural(n, word='photo'):
@@ -654,7 +644,7 @@ def front_page(albums):
         n += 1
     if group is not None:
         out.append('      </div>\n')
-    return '\n'.join(out) + '\n' + REDIRECT.replace('@front@', script_url('gallery.js'))
+    return '\n'.join(out) + '\n' + REDIRECT
 
 
 def read_template():
@@ -754,8 +744,7 @@ def write_album(template, folder, title, photos, intro, download):
             '  </section>\n'
             '</main>'
             % (ALBUM_MARK, folder, esc(title), esc(title), plural(total),
-               intro_html, download, '\n'.join(items),
-               VIEWER.replace('@viewer@', script_url('gallery-viewer.js'))))
+               intro_html, download, '\n'.join(items), VIEWER))
 
     top, middle, bottom = template
     html = top + head + middle + main + bottom

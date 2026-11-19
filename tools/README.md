@@ -325,8 +325,8 @@ album of its own), a `title.txt` to rename it, a `README.md` for an intro, and
   descriptive name. Each thumbnail links to its full-size copy on the mirror.
 - Old links to an album on the single-page gallery (`/gallery/#album-<album>`)
   are sent on to the album's page by the front page's script, `assets/js/gallery.js`.
-- The script links carry the same `?v=` stamp `stamp-assets.py` would give them,
-  so after editing either script, run `build-gallery.py` or `stamp-assets.py`.
+- The script links are written plain, like every page's: publishing adds the
+  `?v=` stamps, so editing either script needs no rebuild.
 
 After adding, renaming or removing an album, run `build-sitemap.py` too, as each
 album page is listed in the sitemap.
