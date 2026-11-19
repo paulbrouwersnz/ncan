@@ -131,7 +131,7 @@
       </div>
 
       <!-- The agenda is built by the script below from the .ics named in data-ics.
-           Without JavaScript the fallback link below is what the reader gets. -->
+           Without JavaScript the list of calendars below is what the reader gets. -->
       <div class="agenda"
            id="agenda-list"
            data-ics-dir="/assets/calendar/"
@@ -145,10 +145,27 @@
 
       <noscript>
         <p class="note">
-          This agenda needs JavaScript. You can still
-          <a href="/assets/calendar/">browse the calendar files</a>
-          and open them in your own calendar app.
+          This agenda needs JavaScript. You can still open any of our calendars
+          in your own calendar app:
         </p>
+        <!-- The list is written by tools/build-calendar-list.py from
+             assets/calendar/calendars.json: do not edit it by hand. -->
+        <!-- @generated:calendar-list -->
+        <ul>
+          <li><a href="/assets/calendar/events-childrens.ics">Children's athletics events</a></li>
+          <li><a href="/assets/calendar/training-junior-club-night.ics">Children's club night (ages 7–14)</a></li>
+          <li><a href="/assets/calendar/training-junior-competition-team.ics">Children's competition team training (ages 7–14)</a></li>
+          <li><a href="/assets/calendar/events-coaching.ics">Coaching &amp; officials courses</a></li>
+          <li><a href="/assets/calendar/events-road-xc.ics">Cross country &amp; road events</a></li>
+          <li><a href="/assets/calendar/training-cross-country-road-race-walking.ics">Cross country, road and race walking training</a></li>
+          <li><a href="/assets/calendar/other-meetings.ics">Other meetings</a></li>
+          <li><a href="/assets/calendar/training-race-walks-coaching.ics">Race walks training</a></li>
+          <li><a href="/assets/calendar/training-sprints-running-race-walking.ics">Sprints, running and race walking training</a></li>
+          <li><a href="/assets/calendar/events-senior.ics">Teens &amp; senior athletics events</a></li>
+          <li><a href="/assets/calendar/training-teens-senior-athletics.ics">Teens and senior athletics training</a></li>
+          <li><a href="/assets/calendar/training-the-good-trot.ics">The Good Trot – adult and teen social training</a></li>
+        </ul>
+        <!-- /@generated:calendar-list -->
       </noscript>
 
       <p class="note" id="agenda-meta" hidden></p>

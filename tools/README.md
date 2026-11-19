@@ -197,6 +197,10 @@ run's log, when:
 - **a page is out of step with `partials/`**: it runs `sync-partials.py` and
   fails if that changed anything. Run `python tools/sync-partials.py` and
   commit the result.
+- **the calendar page's no-JavaScript list is out of step with
+  `assets/calendar/calendars.json`**: it runs
+  `build-calendar-list.py --page-only --dry-run`. Run
+  `python tools/build-calendar-list.py` (or `--page-only`) and commit the result.
 - **a link or file within the site is missing**: it runs `check-links.py`.
 
 ### `check-links.py`
@@ -290,14 +294,18 @@ python tools/build-training-calendar.py --list         # show the dates
 ### `build-calendar-list.py`
 Maintains `assets/calendar/calendars.json`, the list the calendar page (`/calendar/`) reads.
 Picks up `.ics` files in the folder, keeping names and colours already set,
-and can mirror calendars published elsewhere.
+and can mirror calendars published elsewhere. Each time it writes the manifest
+it also rewrites the list of calendars that readers without JavaScript see on
+the calendar page (between the `@generated:calendar-list` markers in
+`calendar/index.html`), each calendar's name linked to its `.ics`.
 
 ```bash
 python tools/build-calendar-list.py                    # rescan the folder
 python tools/build-calendar-list.py --fetch            # re-download remote calendars
 python tools/build-calendar-list.py --add URL --name "…" --file events-x.ics
 python tools/build-calendar-list.py --rainbow          # re-order colours
-python tools/build-calendar-list.py --dry-run
+python tools/build-calendar-list.py --dry-run          # exits 1 if the manifest or page list would change
+python tools/build-calendar-list.py --page-only        # only rewrite the page list from the manifest
 ```
 
 The event calendars themselves (`events-*.ics`, `other-meetings.ics`) are
