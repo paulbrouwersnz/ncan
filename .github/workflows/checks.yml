@@ -34,5 +34,32 @@ jobs:
             exit 1
           fi
 
+      - name: Calendar page lists the calendars in calendars.json
+        run: python tools/build-calendar-list.py --page-only --dry-run
+
+      - name: No ?v= stamps committed (publishing adds them)
+        run: |
+          if grep -rlE '/assets/[^"'"'"' ]+\?v=[0-9a-f]+' --include='*.html' --exclude-dir=.git .; then
+            echo "::error::These files carry ?v= stamps. Run python tools/stamp-assets.py --clear and commit."
+            exit 1
+          fi
+
       - name: Links and files within the site exist
         run: python tools/check-links.py
+
+      - name: Planner help names buttons that exist
+        run: python tools/check-planner-help.py
+
+      - name: Facebook posts pass the home page's allowlist
+        run: python tools/check-facebook-posts.py
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+
+      # the helpers must not depend on the machine's time zone, so run twice
+      - name: Calendar date tests
+        run: |
+          TZ=UTC node --test "tests/js/*.test.js"
+          TZ=Pacific/Auckland node --test "tests/js/*.test.js"

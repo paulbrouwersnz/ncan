@@ -2,7 +2,3 @@
 # One per line: the page's address, a space, then the link exactly as written.
 # Fix the link and take its line out; the check says when a line no longer matches.
 # Lines starting with # are notes.
-
-# The no-JavaScript note on the calendar page offers "browse the calendar files"
-# at /assets/calendar/, but GitHub Pages doesn't list a folder's files, so it's a 404.
-/calendar/ /assets/calendar/

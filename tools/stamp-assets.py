@@ -20,7 +20,9 @@ Every script in assets/js/ is stamped the same way (<script src="assets/js/
 admin.js?v=...">): a page running an old script against the club's API, which
 has moved on, can show nonsense until a hard refresh.
 
-Run it after editing the stylesheet or a script, before publishing.
+The publish workflow (.github/workflows/pages.yml) runs it after sync-partials.py.
+The stamps are not committed: run it with --clear before committing if you
+stamped locally (the pull request checks fail on a committed stamp).
 
 The <link> lives in partials/head.html, which is generated into every page, so
 this stamps the partial as well as the pages. If it only stamped the pages, the

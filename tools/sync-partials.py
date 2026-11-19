@@ -15,9 +15,9 @@ icons, the font preloads and the stylesheet. The four things that differ per
 page (title, description, og:title, og:description) stay in the page itself,
 below the markers.
 
-The stylesheet link carries a cache-busting stamp, so partials/head.html is
-stamped too - see tools/stamp-assets.py. Run sync-partials first, then
-stamp-assets, and both end up carrying the same hash.
+At publish time the stylesheet and script links get a cache-busting stamp
+(tools/stamp-assets.py, run after this one, stamps partials/head.html and the
+pages alike). The stamps aren't committed.
 
 Links in the partials are written from the site root (/#training, /calendar/),
 because the pages live in folders (calendar/index.html; see tools/pages.py).
