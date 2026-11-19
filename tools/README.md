@@ -390,19 +390,29 @@ The album order and the zip index are in `tools/gallery/` (`order.txt`,
 
 **The old addresses:** the originals were at `https://ncan.brouwers.nz/gallery/`
 and the thumbnails in this repository (`assets/img/gallery/`, until November
-2026). The old host should send its gallery on to the new one with the same
-path, so links already shared keep working. For Apache, in the old site's
-`.htaccess` (or its config):
+2026). `photos.ncan.nz` is served from the same folder as `ncan.brouwers.nz`,
+so old links keep working as they are, with no redirect, for as long as
+`ncan.brouwers.nz` points there.
+
+To send old links on to the new address anyway (so they show `photos.ncan.nz`),
+the redirect must only apply to the old name: the same folder answers both, so
+an unconditional redirect would send `photos.ncan.nz` to itself for ever. For
+Apache, in that folder's `.htaccess`:
 
 ```
-RedirectMatch 301 ^/gallery/(.*)$ https://photos.ncan.nz/gallery/$1
+RewriteEngine On
+RewriteCond %{HTTP_HOST} ^ncan\.brouwers\.nz$ [NC]
+RewriteRule ^(.*)$ https://photos.ncan.nz/$1 [R=301,L]
 ```
 
-or for nginx:
+or for nginx, a `server` block for `ncan.brouwers.nz` alone:
 
 ```
-location /gallery/ { return 301 https://photos.ncan.nz$request_uri; }
+server { server_name ncan.brouwers.nz; return 301 https://photos.ncan.nz$request_uri; }
 ```
+
+`tools/gallery/` (the album order and zip index) is only read by
+`build-gallery.py`. `tools/` isn't published (`build-site.py` leaves it out).
 
 The photo host must serve `.webp` as `image/webp` (current Apache and nginx do).
 
