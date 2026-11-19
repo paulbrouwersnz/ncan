@@ -39,3 +39,6 @@ jobs:
 
       - name: Links and files within the site exist
         run: python tools/check-links.py
+
+      - name: Planner help names buttons that exist
+        run: python tools/check-planner-help.py
