@@ -108,7 +108,7 @@ RECORDS = os.path.join(ROOT, 'assets', 'data', 'records.json')
 # hand. See the note inside the file.
 SUPPLIED = os.path.join(ROOT, 'assets', 'data', 'record-sources.json')
 INDEX_URL = 'https://www.sporty.co.nz/cantychildrensathletics/Results-1/tab1'
-UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) ncan-site-tools/1.0'
+UA = 'Mozilla/5.0 (compatible)'     # a generic client name: nothing about who asks
 
 try:
     from pypdf import PdfReader
