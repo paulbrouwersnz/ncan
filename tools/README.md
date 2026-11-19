@@ -43,9 +43,8 @@ is the home page. `tools/pages.py` is the one place the tools learn this.
   (`--bg`, `--surface`, `--heading`, `--text`, `--line`, ...; listed at its top), not
   the brand colours directly, except where a colour must never change (the green
   bands, text on yellow). Each role's dark colour is in one place, the "Dark mode"
-  block at the end. The site follows the device's light or dark setting; the
-  "Switch to dark mode" button in the footer (`assets/js/theme.js`) overrides it
-  for that browser. When adding a style, use the roles, and look at the page in
+  block at the end. The site follows the device's light or dark setting (there's
+  no switch on the site). When adding a style, use the roles, and look at the page in
   both modes. Every page has `<meta name="darkreader-lock">`, so the Dark Reader
   browser extension leaves the site to its own dark mode rather than recolouring it.
   The header logo has a dark version (`assets/img/logo-dark.svg`: the

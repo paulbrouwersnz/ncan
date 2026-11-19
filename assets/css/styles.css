@@ -3059,17 +3059,6 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 /* a yellow button that is also an arrow link keeps dark text */
 .btn--accent.link-arrow:not(:hover) { color: var(--green-700); }
 
-/* The colour scheme switch, beside "Back to top" (assets/js/theme.js) */
-.theme-switch {
-  font: inherit;
-  color: rgba(255, 255, 255, .78);
-  background: none;
-  border: 0;
-  padding: 0;
-  cursor: pointer;
-}
-.theme-switch:hover { color: var(--yellow-500); }
-
 /* the header's logo for dark mode (see Dark mode) */
 .brand__logo-dark { display: none; }
 
@@ -3844,9 +3833,7 @@ table.schedule.manage-mem { min-width: 640px; }
 
 /* =========================================================
    Dark mode
-   Follows the device's setting, unless someone picks one with the switch in the
-   footer (assets/js/theme.js sets data-theme="light" or "dark" on <html>, and an
-   inline script in partials/head.html does it again on every page before it draws).
+   Follows the device's light or dark setting.
 
    Each colour role (--bg, --heading, ... at the top) gets its dark colour here, in
    one place, with light-dark(): it takes the first colour on a light page and the
@@ -3856,8 +3843,7 @@ table.schedule.manage-mem { min-width: 640px; }
 
    A part that must stay light on a dark page sets color-scheme: light (the medal
    tiles). The few changes that aren't a colour (icons drawn in a fixed colour, the
-   logo, the supporters' logos) are listed twice below, once for the device's
-   setting and once for the switch: keep the two lists the same.
+   logo, the supporters' logos) are listed below, under "not colours".
    ========================================================= */
 @supports (color: light-dark(#000, #fff)) {
   :root {
@@ -3884,8 +3870,6 @@ table.schedule.manage-mem { min-width: 640px; }
     --shadow: 0 10px 30px light-dark(rgba(6, 42, 32, .10), rgba(0, 0, 0, .4));
     --shadow-lg: 0 24px 60px light-dark(rgba(6, 42, 32, .18), rgba(0, 0, 0, .5));
   }
-  :root[data-theme="light"] { color-scheme: light; }
-  :root[data-theme="dark"] { color-scheme: dark; }
 
   /* the medal tiles are coloured objects: they keep their light look */
   .ath-medals .stat { color-scheme: light; }
@@ -3895,27 +3879,18 @@ table.schedule.manage-mem { min-width: 640px; }
     --cal-ink: light-dark(var(--cal-colour), color-mix(in srgb, var(--cal-colour) 50%, white));
   }
 
-  /* not colours: dark mode by the device's setting ... */
+  /* not colours */
   @media screen and (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) .champs-day__head::after, :root:not([data-theme="light"]) .album__head::after { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23D6E4DD' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); }
-    :root:not([data-theme="light"]) .records-field select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%23D6E4DD' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); }
-    :root:not([data-theme="light"]) .brand__logo { display: none; }
-    :root:not([data-theme="light"]) .brand__logo-dark { display: block; }
+    :root .champs-day__head::after, :root .album__head::after { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23D6E4DD' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); }
+    :root .records-field select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%23D6E4DD' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); }
+    :root .brand__logo { display: none; }
+    :root .brand__logo-dark { display: block; }
     /* supporters' logos are drawn for a white page */
-    :root:not([data-theme="light"]) .sponsors__row img { box-sizing: content-box; padding: .45rem .7rem; background: #fff; border-radius: var(--radius-sm); }
-  }
-  /* ... and by the switch */
-  @media screen {
-    :root[data-theme="dark"] .champs-day__head::after, :root[data-theme="dark"] .album__head::after { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23D6E4DD' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); }
-    :root[data-theme="dark"] .records-field select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%23D6E4DD' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); }
-    :root[data-theme="dark"] .brand__logo { display: none; }
-    :root[data-theme="dark"] .brand__logo-dark { display: block; }
-    /* supporters' logos are drawn for a white page */
-    :root[data-theme="dark"] .sponsors__row img { box-sizing: content-box; padding: .45rem .7rem; background: #fff; border-radius: var(--radius-sm); }
+    :root .sponsors__row img { box-sizing: content-box; padding: .45rem .7rem; background: #fff; border-radius: var(--radius-sm); }
   }
 
   /* paper is white */
   @media print {
-    :root, :root[data-theme] { color-scheme: light; }
+    :root { color-scheme: light; }
   }
 }
