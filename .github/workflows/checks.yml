@@ -36,3 +36,6 @@ jobs:
 
       - name: Links and files within the site exist
         run: python tools/check-links.py
+
+      - name: Facebook posts pass the home page's allowlist
+        run: python tools/check-facebook-posts.py
