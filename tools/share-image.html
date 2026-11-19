@@ -1,0 +1,23 @@
+<!doctype html>
+<!-- The picture shown when a page is shared (Facebook, WhatsApp, LinkedIn...):
+     the header's logo and name, 1200 x 630. Rebuild assets/img/share.png with
+     tools/build-share-image.py after changing this or the logo. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  @font-face { font-family: "Archivo"; src: url("../assets/fonts/archivo-variable.woff2") format("woff2"); font-weight: 100 900; }
+  html, body { margin: 0; width: 1200px; height: 630px; background: #fff; overflow: hidden; }
+  .brand { display: flex; align-items: center; justify-content: center; gap: 56px; height: 100%; }
+  .brand img { width: 400px; height: auto; }
+  .brand span { font-family: "Archivo", "Segoe UI", sans-serif; font-weight: 800; font-size: 66px;
+                line-height: 1.12; letter-spacing: -.01em; color: #0B3B2E; white-space: nowrap; }
+</style>
+</head>
+<body>
+  <div class="brand">
+    <img src="../assets/img/logo.svg" alt="">
+    <span>North Canterbury<br>Athletic Club</span>
+  </div>
+</body>
+</html>
