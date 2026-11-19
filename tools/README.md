@@ -220,6 +220,24 @@ run's log, when:
 - **the Junior Athletics planner's help names a button that isn't there**: it
   runs `check-planner-help.py`. Update the help to the new name (or put the
   old name back).
+- **a calendar date test fails**: it runs the tests in `tests/js/` with Node,
+  once with `TZ=UTC` and once with `TZ=Pacific/Auckland`.
+
+### Calendar date tests (`tests/js/`)
+`tests/js/calendar-dates.test.js` tests `assets/js/calendar-dates.js`, the
+calendar page's date and repeat-event helpers: times staying put across the
+New Zealand clock changes, `RRULE` (`COUNT`, `UNTIL`, `BYDAY`, `INTERVAL`),
+`EXDATE`, all-day events, 29 February and month ends, "today" in New Zealand,
+the "NZ time" label and the saved `.ics` times. It uses Node's built-in test
+runner, so there is nothing to install (Node 22 or later):
+
+```bash
+node --test "tests/js/*.test.js"
+```
+
+The helpers never read the machine's own time zone, so the tests pass the same
+anywhere. After changing `calendar-dates.js`, run them and then
+`python tools/stamp-assets.py`.
 
 ### `check-links.py`
 Checks that every `href=` and `src=` in the pages (and `404.html`) that points
