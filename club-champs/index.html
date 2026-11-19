@@ -1405,7 +1405,11 @@
         setAddress(opening && asked && asked.season === season.id ? asked.part : '');
 
         if (window.ChampsReview) { ChampsReview.season(season.id); }
+        // Switching quickly, an earlier season's reply can arrive after a later one's:
+        // only the season still chosen is shown (a late reply, or its error, is dropped)
+        var stale = function () { return seasonId !== season.id; };
         return getJson(API + '/' + season.id).then(function (json) {
+          if (stale()) { return; }
           data = json;
           document.getElementById('champs-names').hidden = json.full_names !== false;
           data.meetings = (data.meetings || []).slice().sort(function (a, b) {
@@ -1443,6 +1447,9 @@
                     ' not look like a full name: ' + odd.join(', ') + '.';
           }
           updated.textContent = note;
+        }, function (err) {
+          if (stale()) { return; }
+          throw err;
         });
       }
 
