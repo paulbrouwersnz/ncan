@@ -8,9 +8,6 @@
 <meta name="theme-color" content="#0B3B2E">
 <!-- the site has its own dark mode: the Dark Reader browser extension leaves it alone -->
 <meta name="darkreader-lock">
-<!-- a colour scheme picked with the switch in the footer, before the page draws (assets/js/theme.js) -->
-<script>try { var t = localStorage.getItem('ncan-theme'); if (t === 'light' || t === 'dark') { document.documentElement.setAttribute('data-theme', t); } } catch (e) {}</script>
-<script src="/assets/js/theme.js?v=7bdda2a4" defer></script>
 
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://ncan.nz/assets/img/share.png">
@@ -27,13 +24,14 @@
 <link rel="manifest" href="/site.webmanifest">
 <link rel="preload" href="/assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/archivo-variable.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/assets/css/styles.css?v=a86fc829">
+<link rel="stylesheet" href="/assets/css/styles.css">
 <!-- /@partial:head -->
 
+<meta name="robots" content="noindex">
 <link rel="canonical" href="https://ncan.nz/results-sources/">
 
 <title>Results Sources &mdash; North Canterbury Athletic Club</title>
-<meta name="description" content="Every meeting the North Canterbury Athletic Club athlete pages are built from, and what each one added.">
+<meta name="description" content="For North Canterbury Athletic Club administrators, coaches and the committee: every meeting the athlete pages are built from, and what each one added.">
 <meta property="og:title" content="Results Sources &mdash; North Canterbury Athletic Club">
 <meta property="og:description" content="The meetings behind the North Canterbury athlete pages.">
 </head>
@@ -89,18 +87,16 @@
           <a href="/">Home</a> <span aria-hidden="true">/</span>
           <a href="/athletes/">Athletes</a> <span aria-hidden="true">/</span> <span>Results sources</span>
         </nav>
-        <p class="eyebrow eyebrow--light">Behind the athlete pages</p>
+        <p class="eyebrow eyebrow--light">For club administrators, coaches and the committee</p>
         <h1 id="page-heading">Results sources</h1>
         <p class="lede">
-          Every meeting the athlete pages are built from, with what each one added. Most come from
+          Every meeting the athlete pages are built from, with what each one added and which of our
+          athletes, for club administrators, coaches and the committee, signed in. Most come from
           <a href="https://live.athletic.net">AthleticLIVE</a> (athletic.net); a few, such as primary
           school sports, were entered manually from the results the organisers published
           (<span aria-hidden="true">&#9997;&#65039;</span>), and results checked where no member competed are listed too.
         </p>
-        <p class="lede">
-          Know of a meeting that&rsquo;s missing, or earlier results? The club would love to hear about it.
-        </p>
-        <div class="btn-row">
+        <div class="btn-row" id="src-jump" hidden>
           <a class="btn btn--accent" href="#meetings">Browse meetings</a>
           <a class="btn btn--ghost-light" href="/athletes/">All athletes</a>
           <a class="btn btn--ghost-light" href="/#contact">Suggest a source</a>
@@ -108,6 +104,10 @@
         <p class="account-line" id="account" hidden></p>
       </div>
     </section>
+
+    <!-- Not signed in: a sign-in form; signed in but not staff: why there's nothing here -->
+    <div id="src-signin" class="wrap admin-gate" hidden></div>
+    <p class="wrap admin-gate records-status" id="src-gate" role="status">Loading&hellip;</p>
 
     <!-- Adding meetings: only for club administrators, coaches and the committee, signed in -->
     <section class="section section--tint" id="add-meeting" aria-labelledby="add-heading" hidden>
@@ -170,14 +170,15 @@
       </div>
     </section>
 
-    <section class="section" id="meetings" aria-labelledby="meetings-heading">
+    <!-- The meetings: shown once the API says this is staff (GET /v1/meetings is staff-only too) -->
+    <section class="section" id="meetings" aria-labelledby="meetings-heading" hidden>
       <div class="wrap">
         <div class="section-head section-head--wide" data-reveal>
           <p class="eyebrow">Meetings collected</p>
           <h2 id="meetings-heading">Meetings</h2>
           <p class="lede">
             Newest first, by season. Open a meeting to see its dates, the events, and how many North
-            Canterbury athletes and results it added (coaches and the committee, signed in, also see who).
+            Canterbury athletes and results it added, and who.
             A meeting with no results here was read, but none of our members competed at it (or only before
             or after their membership).
           </p>
@@ -301,7 +302,6 @@
     <div class="site-footer__base">
       <p>&copy; 2026 <a href="/">North Canterbury Athletic Club Incorporated</a>. All rights reserved.</p>
       <ul>
-        <li><button class="theme-switch" type="button" id="theme-switch" hidden>Switch to dark mode</button></li>
         <li><a href="/">Back to top</a></li>
       </ul>
     </div>
@@ -372,15 +372,20 @@
     }());
   </script>
 
-  <script src="/assets/js/ncan-account.js?v=f7fc0a69"></script>
+  <script src="/assets/js/ncan-account.js"></script>
   <script>
     (function () {
       'use strict';
 
       /* Results sources -----------------------------------------------------
          Reads every meeting collected, newest first, from the club's API
-         (GET /v1/meetings; see assets/js/ncan-account.js). Public, without
-         athletes' names; coaches and administrators signed in also see them. */
+         (GET /v1/meetings; see assets/js/ncan-account.js). For club
+         administrators, coaches and the committee, signed in: the API refuses
+         anyone else (401/403), and the page shows them only a sign-in form or
+         why there's nothing here. The filters, the list and "Add a meeting"
+         stay hidden until NCAN.me() says this is staff. */
+
+      var STAFF = ['admin', 'coach', 'committee'];
 
       var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July',
                     'August', 'September', 'October', 'November', 'December'];
@@ -496,7 +501,7 @@
           body.appendChild(typeForm(m));
           body.appendChild(removeControl(m));
         }
-        // names only for coaches and administrators: the public list has just the count
+        // the athletes' names (the API sends a count instead to anyone not allowed every athlete)
         if (m.athletes && m.athletes.length) {
           var ul = text('ul', 'src-athletes');
           m.athletes.forEach(function (a) {
@@ -553,8 +558,6 @@
         Array.prototype.forEach.call(document.querySelectorAll('#src-out .src-season'), function (d) { d.open = open; });
       }
 
-      // Public: anyone sees the meetings and how many of our athletes each added.
-      // Coaches and administrators, signed in, also get the athletes' names.
       /* Adding and removing meetings ----------------------------------------
          For club administrators, coaches and the committee, signed in: the API
          (POST /v1/sources) checks the address with AthleticLIVE, adds it to the
@@ -702,13 +705,8 @@
         return box;
       }
 
-      NCAN.me().then(function (who) {
-        NCAN.account($('account'), who);
-        if (who && who.role !== 'family') { setUpAdding(); }
-      }, function () { /* shown below */ });
-
-      NCAN.get('/meetings')
-        .then(function (json) {
+      function loadMeetings() {
+        return NCAN.get('/meetings').then(function (json) {
           all = json.meetings || [];
           var names = all.some(function (m) { return m.athletes; });
           $('src-text').placeholder = names ? 'meeting or athlete' : 'meeting';
@@ -731,10 +729,35 @@
           $('src-fold-all').addEventListener('click', function () { foldAll(false); });
           if (json.updated) { $('src-updated').textContent = 'Last updated ' + longDate(json.updated) + '.'; }
           render();
-        })
-        .catch(function () {
-          $('src-status').textContent = 'Sorry, the meetings could not be loaded. Please try again later.';
         });
+      }
+
+      // Only staff see anything below the page head: not signed in, a sign-in
+      // form; signed in as family, a line saying who the page is for.
+      NCAN.me().then(function (who) {
+        NCAN.account($('account'), who);
+        if (!who) {
+          $('src-gate').textContent = '';
+          $('src-signin').hidden = false;
+          NCAN.signIn($('src-signin'), 'This page is for club administrators, coaches and the committee. ' +
+            'Sign in with your email address.');
+          return;
+        }
+        if (STAFF.indexOf(who.role) === -1) {
+          $('src-gate').textContent = 'This page is for club administrators, coaches and the committee only.';
+          return;
+        }
+        loadMeetings().then(function () {
+          $('src-gate').hidden = true;
+          $('src-jump').hidden = false;
+          $('meetings').hidden = false;
+          setUpAdding();
+        }, function (err) {
+          $('src-gate').textContent = err.status === 403
+            ? 'This page is for club administrators, coaches and the committee only.'
+            : 'Sorry, the meetings could not be loaded. Please try again later.';
+        });
+      }, function () { $('src-gate').textContent = 'The club’s results service could not be reached.'; });
     }());
   </script>
 

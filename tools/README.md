@@ -46,9 +46,8 @@ the tools learn this.
   (`--bg`, `--surface`, `--heading`, `--text`, `--line`, ...; listed at its top), not
   the brand colours directly, except where a colour must never change (the green
   bands, text on yellow). Each role's dark colour is in one place, the "Dark mode"
-  block at the end. The site follows the device's light or dark setting; the
-  "Switch to dark mode" button in the footer (`assets/js/theme.js`) overrides it
-  for that browser. When adding a style, use the roles, and look at the page in
+  block at the end. The site follows the device's light or dark setting (there's
+  no switch on the site). When adding a style, use the roles, and look at the page in
   both modes. Every page has `<meta name="darkreader-lock">`, so the Dark Reader
   browser extension leaves the site to its own dark mode rather than recolouring it.
   The header logo has a dark version (`assets/img/logo-dark.svg`: the
@@ -223,6 +222,24 @@ run's log, when:
 - **the Junior Athletics planner's help names a button that isn't there**: it
   runs `check-planner-help.py`. Update the help to the new name (or put the
   old name back).
+- **a calendar date test fails**: it runs the tests in `tests/js/` with Node,
+  once with `TZ=UTC` and once with `TZ=Pacific/Auckland`.
+
+### Calendar date tests (`tests/js/`)
+`tests/js/calendar-dates.test.js` tests `assets/js/calendar-dates.js`, the
+calendar page's date and repeat-event helpers: times staying put across the
+New Zealand clock changes, `RRULE` (`COUNT`, `UNTIL`, `BYDAY`, `INTERVAL`),
+`EXDATE`, all-day events, 29 February and month ends, "today" in New Zealand,
+the "NZ time" label and the saved `.ics` times. It uses Node's built-in test
+runner, so there is nothing to install (Node 22 or later):
+
+```bash
+node --test "tests/js/*.test.js"
+```
+
+The helpers never read the machine's own time zone, so the tests pass the same
+anywhere. After changing `calendar-dates.js`, run them and then
+`python tools/stamp-assets.py`.
 
 ### `check-links.py`
 Checks that every `href=` and `src=` in the pages (and `404.html`) that points
@@ -264,8 +281,8 @@ python tools/check-planner-help.py
 ### `build-sitemap.py`
 Writes `sitemap.xml` and `robots.txt`, listing every page (the home page as
 `https://ncan.nz/`, the others as `https://ncan.nz/calendar/` and so on). Add a
-page's folder name to `SKIP` in the script to leave it out; `athlete`, `athletes`
-and `admin` are skipped, as they show nothing until someone signs in (and carry a noindex tag).
+page's folder name to `SKIP` in the script to leave it out; `athlete`, `athletes`,
+`admin` and `results-sources` are skipped, as they show nothing until someone signs in (and carry a noindex tag).
 `junior-athletics` is skipped while the coaches and committee review it. Folders
 that only redirect (`tuesday-training/`) are never listed. The sitemap was submitted once in Google Search
 Console; Google re-reads it by itself.
@@ -418,9 +435,12 @@ distances), with 1st, 2nd and 3rd places in a row of medal blocks of their own
 (only when there's a podium; a relay team's place counts once), and the
 athletes page counts the athletes on the podium.
 
-The results sources page (`/results-sources/`) is public: it lists every meeting collected, with how
-many of our athletes and results each added, and shows the athletes' names only
-to coaches and the committee. Signed in, administrators, coaches and the
+The results sources page (`/results-sources/`) is for club administrators,
+coaches and the committee, signed in (the API's `GET /v1/meetings` refuses
+anyone else): it lists every meeting collected, with how many results each
+added and which of our athletes. Anyone else sees only a sign-in form, or a line
+saying who the page is for; it is noindex and left out of the sitemap, and the
+athletes page shows its link only to staff. Administrators, coaches and the
 committee add meetings there; administrators also change a meeting's type and
 remove meetings.
 

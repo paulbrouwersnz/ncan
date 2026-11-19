@@ -7,9 +7,6 @@
 <meta name="theme-color" content="#0B3B2E">
 <!-- the site has its own dark mode: the Dark Reader browser extension leaves it alone -->
 <meta name="darkreader-lock">
-<!-- a colour scheme picked with the switch in the footer, before the page draws (assets/js/theme.js) -->
-<script>try { var t = localStorage.getItem('ncan-theme'); if (t === 'light' || t === 'dark') { document.documentElement.setAttribute('data-theme', t); } } catch (e) {}</script>
-<script src="/assets/js/theme.js?v=7bdda2a4" defer></script>
 
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://ncan.nz/assets/img/share.png">
@@ -26,7 +23,7 @@
 <link rel="manifest" href="/site.webmanifest">
 <link rel="preload" href="/assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/archivo-variable.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/assets/css/styles.css?v=a86fc829">
+<link rel="stylesheet" href="/assets/css/styles.css">
 <!-- /@partial:head -->
 
 <link rel="canonical" href="https://ncan.nz/calendar/">
@@ -167,7 +164,7 @@
           <li><a href="/assets/calendar/training-sprints-running-race-walking.ics">Sprints, running and race walking training</a></li>
           <li><a href="/assets/calendar/events-senior.ics">Teens &amp; senior athletics events</a></li>
           <li><a href="/assets/calendar/training-teens-senior-athletics.ics">Teens and senior athletics training</a></li>
-          <li><a href="/assets/calendar/training-the-good-trot.ics">The Good Trot – adult and teen social training</a></li>
+          <li><a href="/assets/calendar/training-the-good-trot.ics">The Good Trot – adult and teen social intervals</a></li>
         </ul>
         <!-- /@generated:calendar-list -->
       </noscript>
@@ -357,7 +354,6 @@
     <div class="site-footer__base">
       <p>&copy; 2026 <a href="/">North Canterbury Athletic Club Incorporated</a>. All rights reserved.</p>
       <ul>
-        <li><button class="theme-switch" type="button" id="theme-switch" hidden>Switch to dark mode</button></li>
         <li><a href="/">Back to top</a></li>
       </ul>
     </div>
@@ -428,7 +424,8 @@
 }());
 </script>
 
-<script src="/assets/js/calendar.js?v=0804191c"></script>
+<script src="/assets/js/calendar-dates.js"></script>
+<script src="/assets/js/calendar.js"></script>
 
 </body>
 </html>
