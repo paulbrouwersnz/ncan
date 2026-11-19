@@ -42,7 +42,8 @@
   var accountBox = document.getElementById('training-account');
   var signInBox = document.getElementById('training-signin');
 
-  var state = { canEdit: false, events: [], grades: [7, 8, 9, 10, 11, 12, 13, 14], upcoming: [], past: [], scheduled: [] };
+  var state = { canEdit: false, events: [], grades: [7, 8, 9, 10, 11, 12, 13, 14], upcoming: [], past: [], scheduled: [],
+                open: {} };          // later upcoming plans opened with "Show the plan", by date
   var editing = null;        // the plan in the editor: {date, notes, slots, status, isNew}
   var dirty = false;
   // What's picked by tapping: chips, several at once ({kind: 'chips', items: [chip...],
@@ -193,8 +194,10 @@
         state.scheduled.forEach(function (s) { coming.push({ date: s.date, due: s }); });
         coming.sort(function (a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; });
       }
+      // only the soonest plan in full: the later ones behind "Show the plan" until tapped
+      var soonest = true;
       coming.forEach(function (c) {
-        if (c.plan) { listBox.appendChild(planCard(c.plan, true)); return; }
+        if (c.plan) { listBox.appendChild(planCard(c.plan, true, !soonest)); soonest = false; return; }
         var box = el('article', 'plan plan--due');
         box.appendChild(el('h3', 'plan__title', 'Training plan, ' + longDate(c.date)));
         box.appendChild(el('p', 'plan-due', 'This plan will be released on ' + whenText(c.due.release_at) + '.'));
@@ -215,7 +218,9 @@
     }
   }
 
-  function planCard(plan, upcoming) {
+  // `later`: an upcoming plan after the soonest, its plan shown only when tapped open
+  // (or opened before: state.open)
+  function planCard(plan, upcoming, later) {
     var card = el('article', 'plan plan--' + plan.status);
     card.id = 'plan-' + plan.date;
     var head = el('header', 'plan__head');
@@ -242,20 +247,14 @@
     if (plan.coach_notes) { body.appendChild(coachNote(plan.coach_notes, 'p')); }
     if (plan.slots && plan.slots.length) { body.appendChild(planTable(plan)); }
     else if (plan.status !== 'cancelled') { body.appendChild(el('p', 'note', 'No time slots yet.')); }
-    if (plan.status !== 'cancelled') {
+    if (plan.status !== 'cancelled' && later) {
+      card.appendChild(showToggle(plan, body, 'Show the plan', true));
+      card.appendChild(body);
+    } else if (plan.status !== 'cancelled') {
       card.appendChild(body);
     } else if (plan.slots && plan.slots.length && (state.canEdit || wasReleased(plan))) {
-      body.hidden = true;
-      body.id = 'plan-content-' + plan.date;
-      var label = wasReleased(plan) ? 'Show the plan' : 'Show the plan (never released: families can’t see it)';
-      var toggle = button(label, 'btn btn--ghost btn--sm plan__show', function () {
-        body.hidden = !body.hidden;
-        toggle.textContent = body.hidden ? label : 'Hide the plan';
-        toggle.setAttribute('aria-expanded', String(!body.hidden));
-      });
-      toggle.setAttribute('aria-expanded', 'false');
-      toggle.setAttribute('aria-controls', body.id);
-      card.appendChild(toggle);
+      card.appendChild(showToggle(plan, body, wasReleased(plan) ? 'Show the plan'
+        : 'Show the plan (never released: families can’t see it)', false));
       card.appendChild(body);
     }
     var printable = plan.status !== 'cancelled' && plan.slots && plan.slots.length;
@@ -279,6 +278,24 @@
       card.appendChild(staffActions(plan));
     }
     return card;
+  }
+
+  // The button that shows or hides a plan's content (`body`): "Show the plan" (`label`),
+  // then "Hide the plan". `remember`: kept open when the list is drawn again (after
+  // Release, say) while the page is open (state.open), and open now if it was.
+  function showToggle(plan, body, label, remember) {
+    var open = remember && !!state.open[plan.date];
+    body.hidden = !open;
+    body.id = 'plan-content-' + plan.date;
+    var toggle = button(open ? 'Hide the plan' : label, 'btn btn--ghost btn--sm plan__show', function () {
+      body.hidden = !body.hidden;
+      toggle.textContent = body.hidden ? label : 'Hide the plan';
+      toggle.setAttribute('aria-expanded', String(!body.hidden));
+      if (remember) { if (body.hidden) { delete state.open[plan.date]; } else { state.open[plan.date] = true; } }
+    });
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.setAttribute('aria-controls', body.id);
+    return toggle;
   }
 
   // whether a cancelled session's plan had been released when it was cancelled (the API
@@ -1556,6 +1573,7 @@
       editing = null;
       editorBox.hidden = true;
       editorBox.textContent = '';
+      state.open[res.body.date] = true;       // the plan just saved, shown in full
       return load().then(function () {
         var card = document.getElementById('plan-' + res.body.date);
         if (card) { card.scrollIntoView({ block: 'start' }); }
@@ -2024,6 +2042,8 @@
     if (!who) { offerSignIn(); }
   }).catch(function () { /* the plans still show */ }).then(function () {
     list.textContent = '';
+    // "#plan-2026-12-01" (e.g. back from signing in on a shared plan): that plan, shown in full
+    if (/^#plan-\d{4}-\d{2}-\d{2}$/.test(location.hash)) { state.open[location.hash.slice(6)] = true; }
     return load().then(function () {
       state.events.forEach(function (e) { var o = el('option'); o.value = e; list.appendChild(o); });
       // "#plan-2026-12-01" (e.g. back from signing in on a shared plan): that plan
