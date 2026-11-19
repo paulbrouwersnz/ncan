@@ -29,9 +29,7 @@ WHAT GOES IN
 
 <lastmod>
     Taken from the last commit that touched the file, not the filesystem,
-    so a fresh clone does not report everything as changed today. Note that
-    tools/stamp-assets.py rewrites every page whenever the stylesheet
-    changes, so these dates tend to move together.
+    so a fresh clone does not report everything as changed today.
 """
 
 import argparse

@@ -79,9 +79,9 @@ browser's console on the Athletics NZ eLearning library (see below).
 
 | You've… | Run |
 |---|---|
-| edited `assets/css/styles.css` or a script in `assets/js/` | `stamp-assets.py` (optional once the site publishes through GitHub Actions: see "Publishing the site") |
-| edited anything in `partials/` | `sync-partials.py`, then `stamp-assets.py` |
-| added a new page (a folder with an `index.html`) | `sync-partials.py`, `stamp-assets.py`, `build-sitemap.py`, then `indexnow.py <page>` |
+| edited `assets/css/styles.css` or a script in `assets/js/` | nothing: publishing stamps them (don't commit stamps; see "Publishing the site") |
+| edited anything in `partials/` | `sync-partials.py` |
+| added a new page (a folder with an `index.html`) | `sync-partials.py`, `build-sitemap.py`, then `indexnow.py <page>` |
 | changed a page's content and want search engines to notice | `indexnow.py <page>` |
 | added photos or albums to the gallery | `shrink-gallery.py` (after the originals are on the mirror), then `build-gallery.py` |
 | added or changed a calendar in `assets/calendar/` | `build-calendar-list.py` |
@@ -106,16 +106,15 @@ committed new posts (its commits start no workflows of their own), or by hand
 `stamp-assets.py`, gathers the public files with `build-site.py`, and deploys
 them.
 
-> **One-off setting, needed before this takes over:** Settings → Pages → Build
-> and deployment → Source: **GitHub Actions** (the repository owner). Until
-> then, Pages keeps building straight from the `main` branch with Jekyll, as it
-> always has, and the stamps must still be committed.
+Pages is set to publish this way (Settings → Pages → Build and deployment →
+Source: **GitHub Actions**).
 
-Once it's switched, **committing the `?v=` stamps is optional**: they are
-brought up to date at publish time, so a pull request that edits the stylesheet
-or a script needn't run `stamp-assets.py` (and two pull requests no longer
-clash over the same stamp). Running it locally still does no harm, and keeps a
-local preview fresh. `sync-partials.py` is still to be run and committed (the
+**The `?v=` stamps are not committed.** They are added at publish time, so the
+pages in the repository link `/assets/css/styles.css` and `/assets/js/...`
+plainly, and a pull request that edits the stylesheet or a script doesn't touch
+every page (which made pull requests clash). The checks fail if a stamp is
+committed: run `python tools/stamp-assets.py --clear` and commit.
+`sync-partials.py` is still to be run and committed (the
 pull request checks look for it), so the pages in the repository read as they
 are published.
 
@@ -161,13 +160,13 @@ per file reference. The hash ignores line endings, so a Windows checkout (where
 git gives files Windows line endings) stamps the same as the files the site serves.
 
 ```bash
-python tools/stamp-assets.py            # stamp
-python tools/stamp-assets.py --check    # report only
-python tools/stamp-assets.py --clear    # remove the stamps
+python tools/stamp-assets.py --clear    # remove the stamps (before committing)
+python tools/stamp-assets.py --check    # report what stamping would change
+python tools/stamp-assets.py            # stamp (the publish workflow does this)
 ```
 
-The publish workflow runs it too (see "Publishing the site"), so once Pages
-publishes through GitHub Actions, committing the stamps is optional.
+Only the publish workflow stamps (see "Publishing the site"): stamps are not
+committed, and the checks fail if one is.
 
 ### `build-fonts.py`
 Builds the self-hosted Inter and Archivo fonts in `assets/fonts/`, cut down to
@@ -238,8 +237,7 @@ node --test "tests/js/*.test.js"
 ```
 
 The helpers never read the machine's own time zone, so the tests pass the same
-anywhere. After changing `calendar-dates.js`, run them and then
-`python tools/stamp-assets.py`.
+anywhere. After changing `calendar-dates.js`, run them.
 
 ### `check-links.py`
 Checks that every `href=` and `src=` in the pages (and `404.html`) that points
