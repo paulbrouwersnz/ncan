@@ -38,7 +38,9 @@ the tools learn this.
   it sends an old address on for good.
 - **Help written by hand**: the Junior Athletics planner's "How to use the planner"
   (`#planner-help` in `junior-athletics/index.html`) describes the buttons, chips and
-  behaviour of `assets/js/training.js` by name. When a label or what it does changes
+  behaviour of `assets/js/training*.js` by name (`training.js` for the list and the
+  public view, `training-print.js` for printing, `training-editor.js` for the coaches'
+  buttons and the planner). When a label or what it does changes
   there, update the help to match.
 - **A new page** is a new folder with an `index.html`, copied from a page like it
   (with the partial markers), then the tools in "added a new page" below.

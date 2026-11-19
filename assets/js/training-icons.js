@@ -1,7 +1,7 @@
 /*
   training-icons.js - an icon for each training activity, for the Junior Athletics
-  page (assets/js/training.js): on the plan, the planner's chips and groups, and
-  printed plans and strips.
+  page (assets/js/training.js, training-editor.js, training-print.js): on the plan,
+  the planner's chips and groups, and printed plans and strips.
 
   Every icon is an athlete pictogram drawn for the club, as one family, on a
   24 x 24 grid: a 2.2 head, limbs 2 wide with round ends, and the ground or
