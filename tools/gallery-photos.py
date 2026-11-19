@@ -166,7 +166,8 @@ def main():
     ap.add_argument('--webp-max-edge', type=int, default=0,
                     help="cap the originals' WebP copies at this many pixels on the longest "
                          'side (default 0: full size). The JPEG stays full size.')
-    ap.add_argument('--jobs', type=int, default=min(8, os.cpu_count() or 2))
+    ap.add_argument('--jobs', type=int, default=os.cpu_count() or 2,
+                    help='photos converted at once (default: one per CPU, %(default)s here)')
     ap.add_argument('--dry-run', action='store_true', help='report what would be made, make nothing')
     args = ap.parse_args()
 

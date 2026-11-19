@@ -420,9 +420,9 @@ python tools/gallery-photos.py --only webp                     # or --only thumb
 ```
 
 Options: `--max-edge` (thumbnail size, 500), `--thumb-quality` (82),
-`--webp-quality` (80), `--webp-max-edge` (cap the originals' WebP copies, e.g.
+`--webp-quality` (80), `--jobs` (photos converted at once: one per CPU by default), `--webp-max-edge` (cap the originals' WebP copies, e.g.
 2560: camera photos are bigger than any screen, and a full-size WebP is only
-about 10% smaller than its JPEG, a 2560px one about half), `--jobs`.
+about 10% smaller than its JPEG, a 2560px one about half).
 
 ### `gallery-move-thumbs.py`
 One-off, for the move to `photos.ncan.nz`: copies the thumbnails that were in
