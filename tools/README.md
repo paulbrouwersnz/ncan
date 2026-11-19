@@ -69,6 +69,7 @@ these need packages installed with `pip install`:
 | `build-fonts.py` | `fonttools`, `brotli` |
 | `build-gallery.py`, `shrink-gallery.py` | `Pillow` |
 | `build-icons.py` | `Pillow`, and Microsoft Edge or Google Chrome |
+| `build-share-image.py` | Microsoft Edge or Google Chrome |
 | `import-records.py` | `openpyxl` |
 | `verify-records.py` | `pypdf` |
 
@@ -90,7 +91,7 @@ browser's console on the Athletics NZ eLearning library (see below).
 | a club championships Saturday has finished | add its meeting on the results sources page, then confirm it under "Review results" on the club champs page |
 | a meeting's results are out, or a family asks for a page to be removed | in the private ncan-api project: `ncan add-meeting` / `ncan opt-out`, then `ncan collect` |
 | new records to check against official results | `verify-records.py` |
-| changed the logo (`assets/img/logo.svg`) | `build-icons.py`, and redo `assets/img/logo-dark.svg` (the logo with `#164724` as `#3A8F5C` and white as `#0c1813`) |
+| changed the logo (`assets/img/logo.svg`) | `build-icons.py`, `build-share-image.py`, and redo `assets/img/logo-dark.svg` (the logo with `#164724` as `#3A8F5C` and white as `#0c1813`) |
 | it's November (`security.txt` expires on 17 November each year) | move the `Expires` date in `.well-known/security.txt` on a year |
 | added characters the site's fonts may not have (e.g. a new macron) | `build-fonts.py` |
 | changed links, moved or removed a file, or a pull request's "Checks" failed | `check-links.py` (and `sync-partials.py`) |
@@ -186,6 +187,19 @@ Edge or Chrome, then sizes it. Run it after the logo changes.
 
 ```bash
 python tools/build-icons.py
+```
+
+### `build-share-image.py`
+Makes `assets/img/share.png`, the picture Facebook, WhatsApp, LinkedIn and
+others show when a page is shared: the header's logo and name on white,
+1200 × 630. The layout is `tools/share-image.html`; the script draws it with
+headless Edge or Chrome. Every page names the picture by its full address
+(`og:image` in `partials/head.html`), because sharing sites ignore a path
+without `https://ncan.nz` and don't show SVG. Run it after the logo or the
+layout changes.
+
+```bash
+python tools/build-share-image.py
 ```
 
 ## Checks on pull requests
