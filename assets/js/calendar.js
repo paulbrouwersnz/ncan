@@ -17,9 +17,17 @@
    escaped text, all-day and timed events, and repeating events using
    RRULE (FREQ, INTERVAL, COUNT, UNTIL, BYDAY) with EXDATE exclusions.
 
-   Times carrying a TZID are read as local wall-clock time, which is right for
-   anyone in the same timezone as the club. Times ending in Z are true UTC and
-   are converted properly.
+   Every time is handled as New Zealand wall-clock time, whatever the
+   visitor's own time zone: a 5 pm club night reads 5 pm in Sydney or London
+   too, with a small "NZ time" label beside it there. Times carrying a TZID
+   (the club's files all say Pacific/Auckland) or none are taken as written;
+   times ending in Z are true UTC and are converted to New Zealand time.
+
+   To keep that independent of the visitor's clock, a wall-clock time is held
+   in a Date's UTC fields (a "wall date"): 5 pm on 3 March is stored as
+   Date.UTC(y, 2, 3, 17, 0). UTC has no daylight saving, so stepping a repeat
+   by whole days or months never moves the time of day. Only "now" and the
+   saved .ics file need the real instant, and Intl converts those.
 --------------------------------------------------------------------------- */
 (function () {
   'use strict';
@@ -39,6 +47,60 @@
   // used only when the manifest does not name a colour for a calendar
   var PALETTE = ['#12684D', '#B4531A', '#2A5DA8', '#7A3E9D', '#A8123F', '#4B6157'];
   var WEEKDAYS = { SU: 0, MO: 1, TU: 2, WE: 3, TH: 4, FR: 5, SA: 6 };
+
+  /* ------------------------------------------------------- New Zealand time */
+
+  var NZ_ZONE = 'Pacific/Auckland';
+  var nzFormat = null;
+
+  function wallDate(y, mo, d, hh, mi, ss) {
+    return new Date(Date.UTC(y, mo, d, hh || 0, mi || 0, ss || 0));
+  }
+
+  // the New Zealand wall-clock time at a real instant, as a wall date
+  function nzWallFromInstant(instant) {
+    if (!nzFormat) {
+      nzFormat = new Intl.DateTimeFormat('en-NZ', {
+        timeZone: NZ_ZONE, hourCycle: 'h23',
+        year: 'numeric', month: 'numeric', day: 'numeric',
+        hour: 'numeric', minute: 'numeric', second: 'numeric'
+      });
+    }
+    var p = {};
+    nzFormat.formatToParts(instant).forEach(function (part) { p[part.type] = +part.value; });
+    // some engines say 24 for midnight even with h23
+    return wallDate(p.year, p.month - 1, p.day, p.hour % 24, p.minute, p.second);
+  }
+
+  // minutes New Zealand is ahead of UTC at a real instant (720 or 780)
+  function nzOffsetMinutes(instant) {
+    return Math.round((nzWallFromInstant(instant).getTime() - instant.getTime()) / 60000);
+  }
+
+  // the real instant a New Zealand wall-clock time names
+  function instantFromNzWall(wall) {
+    var guess = new Date(wall.getTime() - nzOffsetMinutes(wall) * 60000);
+    return new Date(wall.getTime() - nzOffsetMinutes(guess) * 60000);
+  }
+
+  // midnight at the start of today in New Zealand, as a wall date
+  function nzToday(now) {
+    var wall = nzWallFromInstant(now || new Date());
+    return wallDate(wall.getUTCFullYear(), wall.getUTCMonth(), wall.getUTCDate());
+  }
+
+  // true when the visitor's own clock already reads New Zealand time, so the
+  // "NZ time" label would only be noise. zone and offset default to the
+  // browser's; offset is Date#getTimezoneOffset (minutes behind UTC).
+  function visitorOnNzTime(zone, offset, now) {
+    now = now || new Date();
+    if (zone === undefined) {
+      try { zone = Intl.DateTimeFormat().resolvedOptions().timeZone; } catch (err) { zone = ''; }
+    }
+    if (offset === undefined) { offset = now.getTimezoneOffset(); }
+    var nzZones = ['Pacific/Auckland', 'NZ', 'Antarctica/McMurdo', 'Antarctica/South_Pole'];
+    return nzZones.indexOf(zone) > -1 && -offset === nzOffsetMinutes(now);
+  }
 
   /* ---------------------------------------------------------------- parsing */
 
@@ -78,11 +140,13 @@
     if (!m) { return null; }
     var y = +m[1], mo = +m[2] - 1, d = +m[3];
     var allDay = !m[4] || (params && params.VALUE === 'DATE');
-    if (allDay) { return { date: new Date(y, mo, d), allDay: true }; }
+    if (allDay) { return { date: wallDate(y, mo, d), allDay: true }; }
     var hh = +m[4], mi = +m[5], ss = +m[6];
-    if (m[7]) { return { date: new Date(Date.UTC(y, mo, d, hh, mi, ss)), allDay: false }; }
-    // floating, or carrying a TZID - treat as local wall-clock time
-    return { date: new Date(y, mo, d, hh, mi, ss), allDay: false };
+    if (m[7]) {
+      return { date: nzWallFromInstant(new Date(Date.UTC(y, mo, d, hh, mi, ss))), allDay: false };
+    }
+    // floating, or carrying a TZID - New Zealand wall-clock time as written
+    return { date: wallDate(y, mo, d, hh, mi, ss), allDay: false };
   }
 
   function calendarName(text, fallback) {
@@ -165,7 +229,7 @@
   // change is 23 or 25 hours long, and the wall-clock time must stay put
   function addDays(date, n) {
     var d = new Date(date.getTime());
-    d.setDate(d.getDate() + n);
+    d.setUTCDate(d.getUTCDate() + n);
     return d;
   }
 
@@ -177,11 +241,11 @@
 
   function addMonths(date, n) {
     var d = new Date(date.getTime());
-    var day = d.getDate();
-    d.setDate(1);
-    d.setMonth(d.getMonth() + n);
+    var day = d.getUTCDate();
+    d.setUTCDate(1);
+    d.setUTCMonth(d.getUTCMonth() + n);
     // clamp, so 31 Jan + 1 month lands on 28/29 Feb rather than overflowing
-    d.setDate(Math.min(day, new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate()));
+    d.setUTCDate(Math.min(day, new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 0)).getUTCDate()));
     return d;
   }
 
@@ -205,11 +269,11 @@
     while (cursor <= stopAt && out.length < MAX_OCCURRENCES && guard++ < 2000) {
       if (rule.FREQ === 'WEEKLY' && days && days.length) {
         // walk the week the cursor starts, emitting each named weekday
-        var weekStart = addDays(cursor, -cursor.getDay());
+        var weekStart = addDays(cursor, -cursor.getUTCDay());
         for (var i = 0; i < 7; i++) {
           var candidate = addDays(weekStart, i);
-          candidate.setHours(first.getHours(), first.getMinutes(), first.getSeconds(), 0);
-          if (days.indexOf(candidate.getDay()) < 0) { continue; }
+          candidate.setUTCHours(first.getUTCHours(), first.getUTCMinutes(), first.getUTCSeconds(), 0);
+          if (days.indexOf(candidate.getUTCDay()) < 0) { continue; }
           if (candidate < first || candidate > stopAt) { continue; }
           out.push({ start: candidate, duration: duration });
         }
@@ -239,7 +303,7 @@
   var DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
   function clockTime(date) {
-    var h = date.getHours(), m = date.getMinutes();
+    var h = date.getUTCHours(), m = date.getUTCMinutes();
     var suffix = h < 12 ? 'am' : 'pm';
     var hour = h % 12; if (hour === 0) { hour = 12; }
     return hour + (m ? ':' + (m < 10 ? '0' + m : m) : '') + suffix;
@@ -247,7 +311,7 @@
 
   function isoDate(date) {
     function pad(n) { return n < 10 ? '0' + n : '' + n; }
-    return date.getFullYear() + '-' + pad(date.getMonth() + 1) + '-' + pad(date.getDate());
+    return date.getUTCFullYear() + '-' + pad(date.getUTCMonth() + 1) + '-' + pad(date.getUTCDate());
   }
 
   /* Saving one event ------------------------------------------------ */
@@ -261,7 +325,7 @@
   }
 
   function dateStamp(date) {
-    return date.getFullYear() + pad(date.getMonth() + 1) + pad(date.getDate());
+    return date.getUTCFullYear() + pad(date.getUTCMonth() + 1) + pad(date.getUTCDate());
   }
 
   // iCalendar's escaping and line endings are all backslash and control
@@ -315,8 +379,8 @@
       lines.push('DTEND;VALUE=DATE:' + dateStamp(finish));
     } else {
       // absolute UTC, so no VTIMEZONE is needed and the time is unambiguous
-      lines.push('DTSTART:' + utcStamp(item.start));
-      lines.push('DTEND:' + utcStamp(finish));
+      lines.push('DTSTART:' + utcStamp(instantFromNzWall(item.start)));
+      lines.push('DTEND:' + utcStamp(instantFromNzWall(finish)));
     }
 
     lines.push('SUMMARY:' + icsEscape(item.summary || 'Club event'));
@@ -488,7 +552,7 @@
   }
 
   function monthKey(date) {
-    return date.getFullYear() + '-' + date.getMonth();
+    return date.getUTCFullYear() + '-' + date.getUTCMonth();
   }
 
   function countByMonth(items) {
@@ -518,7 +582,7 @@
     months.forEach(function (month) {
       var heading = el('h3', 'agenda__month');
       heading.appendChild(el('span', 'agenda__month-name',
-        MONTH_NAMES[month.first.getMonth()] + ' ' + month.first.getFullYear()));
+        MONTH_NAMES[month.first.getUTCMonth()] + ' ' + month.first.getUTCFullYear()));
       // A folded block counts only what it holds - saying "17 events, 11
       // displayed" above six past events describes the agenda, not the block
       // the reader has just opened. The open agenda is the one place where
@@ -553,8 +617,8 @@
       var when = el('div', 'agenda__when');
       var time = el('time', 'agenda__date');
       time.setAttribute('datetime', isoDate(item.start));
-      time.appendChild(el('span', 'agenda__weekday', DAY_NAMES[item.start.getDay()].slice(0, 3)));
-      time.appendChild(el('span', 'agenda__day', item.start.getDate()));
+      time.appendChild(el('span', 'agenda__weekday', DAY_NAMES[item.start.getUTCDay()].slice(0, 3)));
+      time.appendChild(el('span', 'agenda__day', item.start.getUTCDate()));
       when.appendChild(time);
       row.appendChild(when);
 
@@ -581,7 +645,17 @@
                    (item.duration ? '\u2013' + clockTime(finish) : ''));
       }
       if (item.location) { facts.push(item.location); }
-      body.appendChild(el('p', 'agenda__meta', facts.join(' \u00b7 ')));
+      var meta = el('p', 'agenda__meta');
+      facts.forEach(function (fact, i) {
+        if (i) { meta.appendChild(document.createTextNode(' \u00b7 ')); }
+        meta.appendChild(document.createTextNode(fact));
+        // outside New Zealand, say whose clock the time is on
+        if (i === 0 && !item.allDay && !onNzTime) {
+          meta.appendChild(document.createTextNode(' '));
+          meta.appendChild(el('span', 'agenda__tz', 'NZ time'));
+        }
+      });
+      body.appendChild(meta);
 
       if (showSource && item.sources) {
         item.sources.forEach(function (src) {
@@ -713,6 +787,9 @@
   var todayStart = null;
   var calendarCount = 0;
   var searchText = '';        // lower-cased; '' means no search
+  var onNzTime = visitorOnNzTime();
+  var TIME_NOTE = onNzTime ? ' Times shown in New Zealand time.'
+                           : ' Times shown in New Zealand time, not your local time.';
 
   function loadHidden() {
     try {
@@ -779,11 +856,11 @@
     } else if (searchText) {
       meta.textContent = plural(ahead) + ' matching \u201c'
         + searchInput.value.trim() + '\u201d, from ' + on + ' calendar'
-        + (on === 1 ? '' : 's') + '. Times shown in New Zealand time.';
+        + (on === 1 ? '' : 's') + '.' + TIME_NOTE;
     } else {
       meta.textContent = plural(ahead) + ' from ' + on + ' calendar'
         + (on === 1 ? '' : 's') + ' over the next ' + MONTHS_AHEAD
-        + ' months. Times shown in New Zealand time.';
+        + ' months.' + TIME_NOTE;
     }
     meta.hidden = false;
   }
@@ -952,9 +1029,10 @@
       loaded = loaded.filter(Boolean);
       if (!loaded.length) { fail('The calendars could not be loaded.'); return; }
 
-      var windowEnd = addMonths(new Date(), MONTHS_AHEAD);
-      var startOfToday = new Date();
-      startOfToday.setHours(0, 0, 0, 0);
+      // "today" is today in New Zealand, wherever the visitor is
+      var now = new Date();
+      var windowEnd = addMonths(nzWallFromInstant(now), MONTHS_AHEAD);
+      var startOfToday = nzToday(now);
       var windowStart = MONTHS_BACK ? addMonths(startOfToday, -MONTHS_BACK) : startOfToday;
 
       var items = [];

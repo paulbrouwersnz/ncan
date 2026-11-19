@@ -2942,6 +2942,13 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
   letter-spacing: .04em;
   color: var(--accent);
 }
+/* shown beside a time only when the visitor's clock is not on NZ time */
+.agenda__tz {
+  font-size: .72rem;
+  font-weight: 600;
+  color: var(--text-soft);
+  white-space: nowrap;
+}
 .agenda__note {
   margin: .45rem 0 0;
   font-size: .92rem;
