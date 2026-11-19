@@ -2368,6 +2368,18 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
   .album__head::after { transition: none; }
 }
 
+/* The front page: a card per album, under a heading per year */
+.gallery-year {
+  margin: clamp(2.5rem, 5vw, 3.5rem) 0 clamp(1rem, 2vw, 1.4rem);
+  padding-bottom: .5rem;
+  border-bottom: 2px solid var(--line);
+  font-size: clamp(1.4rem, 2.2vw, 1.8rem);
+  scroll-margin-top: 96px;
+}
+.visually-hidden + .gallery-year { margin-top: 0; }   /* the first year, under the hidden section heading */
+.album-card { scroll-margin-top: 96px; }
+.album__back { margin: clamp(2rem, 4vw, 3rem) 0 0; }
+
 /* Download the whole album as a zip. The file lives on the mirror with the
    full-size originals, so this is a link out, not a local file. */
 .album__dl {
