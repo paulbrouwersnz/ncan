@@ -107,6 +107,8 @@ body {
 }
 
 img, svg { display: block; max-width: 100%; height: auto; }
+/* <picture> only offers a WebP: lay its <img> out as if it stood alone */
+picture { display: contents; }
 
 a { color: var(--link); text-decoration-color: var(--yellow-500); text-underline-offset: 3px; }
 a:hover { color: var(--accent); }
@@ -1547,7 +1549,11 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
   color: var(--white);
   background:
     linear-gradient(105deg, rgba(6, 42, 32, .95) 18%, rgba(11, 59, 46, .72)),
-    url("../img/join.jpg") center / cover no-repeat var(--green-800);
+    url("../img/training-hurdles.jpg") center / cover no-repeat var(--green-800);
+  /* the WebP where the browser takes it (it's smaller); otherwise the line above */
+  background:
+    linear-gradient(105deg, rgba(6, 42, 32, .95) 18%, rgba(11, 59, 46, .72)),
+    image-set(url("../img/training-hurdles.webp") type("image/webp"), url("../img/training-hurdles.jpg") type("image/jpeg")) center / cover no-repeat var(--green-800);
 }
 .cta-band::before {
   content: "";
