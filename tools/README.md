@@ -93,6 +93,7 @@ browser's console on the Athletics NZ eLearning library (see below).
 | changed the logo (`assets/img/logo.svg`) | `build-icons.py`, `build-share-image.py`, and redo `assets/img/logo-dark.svg` (the logo with `#164724` as `#3A8F5C` and white as `#0c1813`) |
 | it's November (`security.txt` expires on 17 November each year) | move the `Expires` date in `.well-known/security.txt` on a year |
 | added characters the site's fonts may not have (e.g. a new macron) | `build-fonts.py` |
+| changed the Facebook posts' layout in `build-html.py`, or the updater warned about the allowlist | `check-facebook-posts.py` (see its section to allow something new) |
 | changed links, moved or removed a file, or a pull request's "Checks" failed | `check-links.py` (and `sync-partials.py`) |
 | renamed or removed a button in the Junior Athletics planner (`assets/js/training*.js`) | update "How to use the planner" in `junior-athletics/index.html`, then `check-planner-help.py` |
 
@@ -221,6 +222,8 @@ run's log, when:
   old name back).
 - **a calendar date test fails**: it runs the tests in `tests/js/` with Node,
   once with `TZ=UTC` and once with `TZ=Pacific/Auckland`.
+- **the Facebook posts hold something the home page would take out**: it runs
+  `check-facebook-posts.py`.
 
 ### Calendar date tests (`tests/js/`)
 `tests/js/calendar-dates.test.js` tests `assets/js/calendar-dates.js`, the
@@ -250,6 +253,54 @@ Standard library only.
 ```bash
 python tools/check-links.py
 ```
+
+### `check-facebook-posts.py`: the Facebook posts allowlist
+The home page shows the club's Facebook posts from `assets/facebook/posts.html`,
+which the "Update Facebook posts" workflow (`main.yml`) builds with
+`actions/update-facebook-posts/build-html.py`. Before showing them, the page
+cleans them with an **allowlist** in `assets/js/post-clean.js`: only the
+elements in `TAGS` and the attributes in `ATTRS` are kept, links must start
+`http://` or `https://`, and pictures must be the copies in
+`assets/facebook/images/`. Anything else is taken out (elements in `DROP`, such
+as `<script>` or `<iframe>`, with everything inside them; other elements keep
+their text). Normally nothing is taken out, because `build-html.py` escapes the
+posts' text.
+
+`check-facebook-posts.py` reads the same lists from `post-clean.js` and reports
+anything in `posts.html` the page would take out. It runs in the checks above,
+and in the Facebook updater after each update, where it only warns (the posts
+still publish, and the page takes the rest out).
+
+```bash
+python tools/check-facebook-posts.py              # the current posts
+python tools/check-facebook-posts.py some.html    # any other file
+```
+
+**To change what's allowed** (say `build-html.py` starts writing `<p>`, or a
+picture's `width`):
+1. Add the element to `TAGS`, or the attribute to `ATTRS` under its element
+   (`'*'` is for every element), in `assets/js/post-clean.js`. Change `URLS`
+   only to allow links or pictures from somewhere new.
+2. Run `python tools/check-facebook-posts.py`. It should say "nothing the
+   allowlist would take out".
+3. Run `python tools/stamp-assets.py`, so browsers fetch the new `post-clean.js`.
+
+**To check it's working**, on a local copy (`python -m http.server`) or on
+ncan.nz after publishing:
+1. Open the home page. The "Recent posts" should show, with their pictures and
+   "View on Facebook" links.
+2. Open the browser console (F12, Console). There should be no "Club posts:
+   took out ..." warning. If there is one, it lists what was taken out: either
+   allow it (above) or find out how it got into `posts.html`.
+3. To see the cleaner take something out, paste this into the console. It
+   should list the `onclick` and the `<script>`, and print the text without
+   them:
+   ```js
+   var d = new DOMParser().parseFromString('<div onclick="x()">Hi<script>x()</script></div>', 'text/html');
+   console.log(ncanPostClean.clean(d.body), d.body.innerHTML);
+   ```
+4. In GitHub, after the Facebook updater has run, its "Check the posts against
+   the home page's allowlist" step should show no warnings.
 
 A link that is known to be broken and is to stay that way for now goes in
 `tools/check-links-allow.txt` (the page's address, a space, the link as

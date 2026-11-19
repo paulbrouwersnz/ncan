@@ -23,7 +23,7 @@
 <link rel="manifest" href="/site.webmanifest">
 <link rel="preload" href="/assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/archivo-variable.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/assets/css/styles.css?v=bb37b0fb">
+<link rel="stylesheet" href="/assets/css/styles.css">
 <!-- /@partial:head -->
 
 <link rel="canonical" href="https://ncan.nz/">
@@ -739,6 +739,7 @@
 </footer>
 <!-- /@partial:footer -->
 
+<script src="/assets/js/post-clean.js"></script>
 <script>
 (function () {
   'use strict';
@@ -834,21 +835,13 @@
         return res.text();
       })
       .then(function (html) {
-        // Parse detached, drop anything executable, then adopt the nodes.
+        // Parse detached, keep only what the allowlist allows (assets/js/post-clean.js),
+        // then adopt the nodes.
         var doc = new DOMParser().parseFromString(html, 'text/html');
-
-        [].forEach.call(doc.body.querySelectorAll('script, iframe, object, embed'), function (el) {
-          el.parentNode.removeChild(el);
-        });
-        [].forEach.call(doc.body.querySelectorAll('*'), function (el) {
-          [].slice.call(el.attributes).forEach(function (attr) {
-            var name = attr.name.toLowerCase();
-            var value = attr.value.replace(/\s+/g, '').toLowerCase();
-            if (name.indexOf('on') === 0 || value.indexOf('javascript:') === 0) {
-              el.removeAttribute(attr.name);
-            }
-          });
-        });
+        var removed = window.ncanPostClean.clean(doc.body);
+        if (removed.length && window.console) {
+          console.warn('Club posts: took out ' + removed.length + ' thing(s) the allowlist does not allow:', removed);
+        }
 
         var posts = doc.body.querySelectorAll('.post');
         if (!posts.length) { throw new Error('no posts found'); }

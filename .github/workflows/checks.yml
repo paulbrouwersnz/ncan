@@ -43,6 +43,9 @@ jobs:
       - name: Planner help names buttons that exist
         run: python tools/check-planner-help.py
 
+      - name: Facebook posts pass the home page's allowlist
+        run: python tools/check-facebook-posts.py
+
       - name: Set up Node
         uses: actions/setup-node@v7
         with:
