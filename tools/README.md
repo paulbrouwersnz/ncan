@@ -94,6 +94,7 @@ browser's console on the Athletics NZ eLearning library (see below).
 | it's November (`security.txt` expires on 17 November each year) | move the `Expires` date in `.well-known/security.txt` on a year |
 | added characters the site's fonts may not have (e.g. a new macron) | `build-fonts.py` |
 | changed links, moved or removed a file, or a pull request's "Checks" failed | `check-links.py` (and `sync-partials.py`) |
+| renamed or removed a button in the Junior Athletics planner (`assets/js/training*.js`) | update "How to use the planner" in `junior-athletics/index.html`, then `check-planner-help.py` |
 
 ## Publishing the site
 
@@ -198,6 +199,9 @@ run's log, when:
   fails if that changed anything. Run `python tools/sync-partials.py` and
   commit the result.
 - **a link or file within the site is missing**: it runs `check-links.py`.
+- **the Junior Athletics planner's help names a button that isn't there**: it
+  runs `check-planner-help.py`. Update the help to the new name (or put the
+  old name back).
 
 ### `check-links.py`
 Checks that every `href=` and `src=` in the pages (and `404.html`) that points
@@ -217,6 +221,22 @@ A link that is known to be broken and is to stay that way for now goes in
 written); it is then listed as "allowed" rather than failing. The check says
 when a line there no longer matches anything, so it can be taken out. Fix the
 link rather than adding to the list where you can.
+
+### `check-planner-help.py`
+The Junior Athletics planner's help for coaches, "How to use the planner"
+(`#planner-help` in `junior-athletics/index.html`), is written by hand and
+names buttons in bold (`<strong>Schedule release</strong>`). This takes every
+bold name from the help and checks it is still the text of a button or label
+in the planner: a whole string in `assets/js/training*.js` (all of them, if the
+planner is split into several files) or an element's text in the page outside
+the help. Comments don't count, and case, `&amp;`-style entities and curly
+apostrophes are ignored. Prints any name not found and exits 1. Bold text that
+is emphasis rather than a label goes in the short `IGNORE` list at the top of
+the script. Standard library only.
+
+```bash
+python tools/check-planner-help.py
+```
 
 ## Search engines
 
