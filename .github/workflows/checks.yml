@@ -37,6 +37,13 @@ jobs:
       - name: Calendar page lists the calendars in calendars.json
         run: python tools/build-calendar-list.py --page-only --dry-run
 
+      - name: No ?v= stamps committed (publishing adds them)
+        run: |
+          if grep -rlE '/assets/[^"'"'"' ]+\?v=[0-9a-f]+' --include='*.html' --exclude-dir=.git .; then
+            echo "::error::These files carry ?v= stamps. Run python tools/stamp-assets.py --clear and commit."
+            exit 1
+          fi
+
       - name: Links and files within the site exist
         run: python tools/check-links.py
 
