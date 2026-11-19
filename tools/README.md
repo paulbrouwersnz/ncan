@@ -15,7 +15,10 @@ This page is the map: what each one is for, and which to run when.
 
 Every page is a folder holding an `index.html`, so its address has no `.html`:
 `calendar/index.html` is `https://ncan.nz/calendar/`, and `index.html` at the root
-is the home page. `tools/pages.py` is the one place the tools learn this.
+is the home page. A page can have pages of its own one folder further down: the
+gallery's album pages, `gallery/2024-colgate-games/index.html`
+(`https://ncan.nz/gallery/2024-colgate-games/`). `tools/pages.py` is the one place
+the tools learn this.
 
 - **Links between pages and to `assets/` are written from the site root**
   (`/calendar/`, `/assets/css/styles.css`, `/#join`), so they work from any folder.
@@ -83,7 +86,7 @@ browser's console on the Athletics NZ eLearning library (see below).
 | edited anything in `partials/` | `sync-partials.py` |
 | added a new page (a folder with an `index.html`) | `sync-partials.py`, `build-sitemap.py`, then `indexnow.py <page>` |
 | changed a page's content and want search engines to notice | `indexnow.py <page>` |
-| added photos or albums to the gallery | `shrink-gallery.py` (after the originals are on the mirror), then `build-gallery.py` |
+| added photos or albums to the gallery | `shrink-gallery.py` (after the originals are on the mirror), then `build-gallery.py`, then `build-sitemap.py` if an album was added, renamed or removed |
 | added or changed a calendar in `assets/calendar/` | `build-calendar-list.py` |
 | changed the weekly training times | `build-training-calendar.py`, then `build-calendar-list.py` |
 | added AGM papers to `assets/docs/agm/` | `build-agm-list.py` |
@@ -367,10 +370,32 @@ Options: `--max-edge`, `--quality`, `--jobs`, `--sample`, and
 `--skip-remote-check` (not advised).
 
 ### `build-gallery.py`
-Rebuilds `gallery/index.html` from the folders in `assets/img/gallery/`: one album
-per folder, a `title.txt` to rename it, a `README.md` for an intro, and
-`order.txt` for album order. Each thumbnail links to its full-size copy on the
-mirror.
+Rebuilds the gallery from the folders in `assets/img/gallery/`: one album per
+folder (a folder of photos inside another, like `2026/Colgate Games/Day 3`, is an
+album of its own), a `title.txt` to rename it, a `README.md` for an intro, and
+`order.txt` for album order.
+
+- `gallery/index.html` is the front page: a card per album (its first photo as
+  the cover, its title and photo count) under a heading per year, in album
+  order. Only the part between the `@generated:gallery` markers is rewritten;
+  the heading, intro and note above and below it are edited by hand.
+- `gallery/<album>/index.html` is a page per album (`<album>` is the folder path
+  in lower case with dashes: `2024/Colgate Games` is `gallery/2024-colgate-games/`),
+  with its intro, the zip download, the photos and the photo viewer (its script is
+  `assets/js/gallery-viewer.js`). These pages
+  are written whole each time, copying the head, header and footer from the
+  front page, so don't edit them by hand. A page whose album has gone is
+  deleted (only pages the script wrote, which carry `@generated:album`).
+- Each photo's alt text names the album and the photo's place in it
+  ("2024 Colgate Games, photo 5 of 1036"), plus its caption when the file has a
+  descriptive name. Each thumbnail links to its full-size copy on the mirror.
+- Old links to an album on the single-page gallery (`/gallery/#album-<album>`)
+  are sent on to the album's page by the front page's script, `assets/js/gallery.js`.
+- The script links are written plain, like every page's: publishing adds the
+  `?v=` stamps, so editing either script needs no rebuild.
+
+After adding, renaming or removing an album, run `build-sitemap.py` too, as each
+album page is listed in the sitemap.
 
 ```bash
 python tools/build-gallery.py

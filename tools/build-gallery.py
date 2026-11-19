@@ -1,5 +1,15 @@
 # -*- coding: utf-8 -*-
-"""Rebuild the photo gallery in gallery/index.html from assets/img/gallery/.
+"""Rebuild the photo gallery from assets/img/gallery/.
+
+The gallery is a front page, gallery/index.html, with one card per album
+(cover photo, title, photo count), and a page per album at
+gallery/<slug>/index.html with that album's photos, intro, zip download and
+photo viewer. Every photo's alt text says which album it is from and which
+photo it is ("2024 Colgate Games, photo 5 of 1036"), so a screen reader does
+not read the same sentence a thousand times.
+
+Old links to an album on the single-page gallery (/gallery/#album-<slug>)
+still work: the front page sends them on to the album's page.
 
 One folder per album. Folders may be nested to any depth - any folder that
 directly contains images becomes an album:
@@ -52,9 +62,17 @@ file still named undefined-*, is download debris and is deleted last. Files
 that are the only copy of their photo are flagged in the log as they go.
 
 Image dimensions are read from the files so the grid does not jump while
-loading. The markup between the markers is regenerated - do not hand-edit.
+loading. On the front page, the markup between the markers is regenerated -
+do not hand-edit it. The rest of the front page (its heading, intro and
+note) is hand-edited, and is also the template for the album pages: their
+head, header, footer and closing script are copied from it, so they carry
+the same partials (tools/sync-partials.py keeps them all in step).
 
     <!-- @generated:gallery -->  ...  <!-- /@generated:gallery -->
+
+The album pages are written whole, every build, and carry the marker
+<!-- @generated:album -->. An album page whose album has gone (renamed or
+removed) is deleted - only pages carrying that marker, never anything else.
 """
 import io, json, os, re, sys
 from urllib.parse import quote
@@ -78,7 +96,14 @@ FULL_BASE = 'https://ncan.brouwers.nz/gallery/'
 # link to a missing file is worse than no link.
 ZIP_INDEX = os.path.join(GALLERY_DIR, 'zips.json')
 PAGE = os.path.join(ROOT, 'gallery', 'index.html')
+PAGE_DIR = os.path.dirname(PAGE)
 OPEN, CLOSE = '<!-- @generated:gallery -->', '<!-- /@generated:gallery -->'
+ALBUM_MARK = '<!-- @generated:album -->'
+SITE = 'https://ncan.nz'
+CLUB = 'North Canterbury Athletic Club'
+# how many cover photos on the front page load straight away; the rest wait
+# until they are scrolled near (loading="lazy")
+EAGER_COVERS = 4
 
 EXTS = ('.jpg', '.jpeg', '.png', '.webp', '.avif')
 ORDER_FILE = 'order.txt'
@@ -554,104 +579,197 @@ VIEWER = """      <dialog class="lightbox" id="lightbox" aria-label="Photo viewe
         </button>
       </dialog>
 
-      <script>
-      (function () {
-        'use strict';
+      <script src="/assets/js/gallery-viewer.js"></script>"""
 
-        // A link to #album-<slug> lands on an album that is collapsed; open it
-        // so the browser has something to scroll to.
-        function openTarget() {
-          var id = decodeURIComponent(window.location.hash.slice(1));
-          var album = id && document.getElementById(id);
-          if (album && album.tagName === 'DETAILS' && !album.open) {
-            album.open = true;
-            album.scrollIntoView();
-          }
-        }
-        window.addEventListener('hashchange', openTarget);
-        openTarget();
 
-        /* Photo viewer --------------------------------------------------- */
-        var dialog = document.getElementById('lightbox');
+# the front page's script (assets/js/gallery.js): sends old links to an album
+# on the single-page gallery (/gallery/#album-<slug>) on to the album's page.
+# Both links are written plain; publishing adds the ?v= stamps
+# (tools/stamp-assets.py), as for every page.
+REDIRECT = """      <script src="/assets/js/gallery.js"></script>"""
 
-        // Without <dialog> the thumbnails keep their plain behaviour: the link
-        // opens the full-size photo in a new tab.
-        if (!dialog || typeof dialog.showModal !== 'function') { return; }
 
-        var img = dialog.querySelector('.lightbox__img');
-        var text = dialog.querySelector('.lightbox__text');
-        var count = dialog.querySelector('.lightbox__count');
-        var links = [];
-        var index = 0;
+def plural(n, word='photo'):
+    return '%d %s%s' % (n, word, '' if n == 1 else 's')
 
-        function preload(i) {
-          var link = links[i];
-          if (link) { new Image().src = link.getAttribute('href'); }
-        }
 
-        function show() {
-          var link = links[index];
-          var caption = link.getAttribute('data-caption') || '';
-          img.src = link.getAttribute('href');
-          img.alt = link.querySelector('img').alt;
-          text.textContent = caption;
-          text.hidden = !caption;
-          count.textContent = (index + 1) + ' of ' + links.length;
-          // the neighbours are almost always where the reader goes next
-          preload(index + 1);
-          preload(index - 1);
-        }
+def year_of(folder):
+    m = re.search(r'(19|20)\d{2}', folder)
+    return m.group(0) if m else ''
 
-        function step(delta) {
-          if (links.length < 2) { return; }
-          index = (index + delta + links.length) % links.length;
-          show();
-        }
 
-        function close() {
-          dialog.close();
-        }
+def thumb_src(folder, f):
+    return '/assets/img/gallery/%s/%s' % (quote(folder), quote(f))
 
-        document.addEventListener('click', function (event) {
-          var link = event.target.closest('.album__grid a');
-          if (!link || event.metaKey || event.ctrlKey || event.shiftKey ||
-              event.button !== 0) {
-            return;                       // let modified clicks open a new tab
-          }
-          event.preventDefault();
-          links = Array.prototype.slice.call(
-            link.closest('.album__grid').querySelectorAll('a'));
-          index = links.indexOf(link);
-          show();
-          dialog.showModal();
-          document.body.style.overflow = 'hidden';
-        });
 
-        dialog.addEventListener('click', function (event) {
-          var action = event.target.closest('[data-viewer]');
-          if (action) {
-            var what = action.getAttribute('data-viewer');
-            if (what === 'close') { close(); }
-            if (what === 'prev') { step(-1); }
-            if (what === 'next') { step(1); }
-            return;
-          }
-          // a click on the backdrop - anywhere but the photo itself - closes
-          if (!event.target.closest('.lightbox__figure')) { close(); }
-        });
+def size_attrs(folder, f):
+    dims = dimensions(os.path.join(GALLERY_DIR, folder, f))
+    return ' width="%d" height="%d"' % dims if dims else ''
 
-        dialog.addEventListener('keydown', function (event) {
-          if (event.key === 'ArrowLeft') { event.preventDefault(); step(-1); }
-          if (event.key === 'ArrowRight') { event.preventDefault(); step(1); }
-        });
 
-        // Escape closes natively, so undo the scroll lock wherever it came from
-        dialog.addEventListener('close', function () {
-          document.body.style.overflow = '';
-          img.removeAttribute('src');
-        });
-      }());
-      </script>"""
+def front_page(albums):
+    """The front page's cards, one per album, under a heading per year.
+
+    Albums keep the order of order.txt (or the automatic order). A new year
+    heading starts whenever the year changes, so a hand-made order that mixes
+    years still reads top to bottom as written. Each card carries the id the
+    album had on the old single-page gallery (album-<slug>), which REDIRECT
+    uses to send old links on.
+    """
+    out, group, n = [], None, 0
+    for folder, title, photos in albums:
+        year = year_of(folder) or 'More photos'
+        if year != group:
+            if group is not None:
+                out.append('      </div>\n')
+            group = year
+            out.append('      <h2 class="gallery-year" id="year-%s">%s</h2>\n'
+                       '      <div class="cards gallery-cards">'
+                       % (slug(year), esc(year)))
+        s = slug(folder)
+        cover = photos[0]                # the album's first photo, in its order
+        out.append(
+            '        <article class="card album-card" id="album-%s">\n'
+            '          <div class="card__media">\n'
+            '            <img src="%s" alt=""%s%s decoding="async">\n'
+            '          </div>\n'
+            '          <div class="card__body">\n'
+            '            <h3><a class="card__link" href="/gallery/%s/">%s</a></h3>\n'
+            '            <p class="card__meta">%s</p>\n'
+            '          </div>\n'
+            '        </article>'
+            % (s, thumb_src(folder, cover), size_attrs(folder, cover),
+               '' if n < EAGER_COVERS else ' loading="lazy"', s, esc(title),
+               plural(len(photos))))
+        n += 1
+    if group is not None:
+        out.append('      </div>\n')
+    return '\n'.join(out) + '\n' + REDIRECT
+
+
+def read_template():
+    """The front page, split into the parts an album page shares with it:
+    (the top of the head, from </head> to <main>, from </main> to the end).
+
+    The nav's aria-current="page" marks the front page; an album page is a
+    different page, so it is taken out, as tools/sync-partials.py would.
+    """
+    html = io.open(PAGE, encoding='utf-8').read()
+    head_end = '<!-- /@partial:head -->'
+    for marker in (head_end, '</head>', '<main id="main">', '</main>'):
+        if marker not in html:
+            raise SystemExit('%s not found in gallery/index.html' % marker)
+    top = html[:html.index(head_end) + len(head_end)]
+    middle = html[html.index('</head>'):html.index('<main id="main">')]
+    bottom = html[html.index('</main>') + len('</main>'):]
+
+    def unmark(text):
+        return re.sub(r'\s+aria-current="page"', '', text)
+    return top, unmark(middle), unmark(bottom)
+
+
+def write_album(template, folder, title, photos, intro, download):
+    """Write gallery/<slug>/index.html for one album."""
+    s = slug(folder)
+    total = len(photos)
+    items = []
+    for n, f in enumerate(photos, 1):
+        full = FULL_BASE + '%s/%s' % (quote(folder), quote(f))
+        cap = caption_for(f)
+        # which album and which photo, so no two photos read the same
+        alt = '%s, photo %d of %d' % (title, n, total)
+        if cap:
+            alt += ': ' + cap
+        data_cap = ' data-caption="%s"' % esc(cap) if cap else ''
+        items.append(
+            '          <li class="album__item">\n'
+            '            <a href="%s"%s target="_blank" rel="noopener">\n'
+            '              <img src="%s" alt="%s"%s loading="lazy" decoding="async">\n'
+            '            </a>\n'
+            '          </li>' % (full, data_cap, thumb_src(folder, f), esc(alt),
+                                 size_attrs(folder, f)))
+
+    intro_html = ''
+    if intro:
+        intro_html = ('        <div class="album__intro">\n'
+                      + '\n'.join('          ' + line for line in intro)
+                      + '\n        </div>\n')
+
+    page_title = '%s photos — %s' % (title, CLUB)
+    description = '%s from %s, in the %s photo gallery.' % (plural(total), title, CLUB)
+    head = ('\n\n<link rel="canonical" href="%s/gallery/%s/">\n\n'
+            '<title>%s</title>\n'
+            '<meta name="description" content="%s">\n'
+            '<meta property="og:title" content="%s">\n'
+            '<meta property="og:description" content="%s">\n'
+            % (SITE, s, esc(page_title), esc(description), esc(page_title),
+               esc(description)))
+
+    main = ('<main id="main">\n'
+            '  <span id="top"></span>\n'
+            '  %s\n'
+            '  <!-- Generated by tools/build-gallery.py from assets/img/gallery/%s/ - do not hand-edit -->\n\n'
+            '  <!-- ================= Page head ================= -->\n'
+            '  <section class="page-head" aria-labelledby="page-heading">\n'
+            '    <div class="wrap">\n'
+            '      <nav class="breadcrumb" aria-label="Breadcrumb">\n'
+            '        <a href="/">Home</a> <span aria-hidden="true">/</span> '
+            '<a href="/gallery/">Photo gallery</a> <span aria-hidden="true">/</span> <span>%s</span>\n'
+            '      </nav>\n'
+            '      <p class="eyebrow eyebrow--light">Photo gallery</p>\n'
+            '      <h1 id="page-heading">%s</h1>\n'
+            '      <p class="lede">%s. Select any photo to open it full size.</p>\n'
+            '      <div class="btn-row">\n'
+            '        <a class="btn btn--ghost-light" href="/gallery/">All photo albums</a>\n'
+            '      </div>\n'
+            '    </div>\n'
+            '  </section>\n\n'
+            '  <!-- ================= Photos ================= -->\n'
+            '  <section class="section" aria-labelledby="photos-heading">\n'
+            '    <div class="wrap">\n'
+            '      <div class="album">\n'
+            '        <h2 class="visually-hidden" id="photos-heading">Photos</h2>\n'
+            '%s%s'
+            '        <ul class="album__grid" aria-labelledby="photos-heading">\n'
+            '%s\n'
+            '        </ul>\n'
+            '      </div>\n\n'
+            '%s\n\n'
+            '      <p class="album__back"><a class="btn btn--ghost" href="/gallery/">All photo albums</a></p>\n\n'
+            '      <p class="note">\n'
+            '        Photos are shared for club members and whānau. If you would like a photo of you or your\n'
+            '        child removed, contact the club and we will take it down.\n'
+            '      </p>\n'
+            '    </div>\n'
+            '  </section>\n'
+            '</main>'
+            % (ALBUM_MARK, folder, esc(title), esc(title), plural(total),
+               intro_html, download, '\n'.join(items), VIEWER))
+
+    top, middle, bottom = template
+    html = top + head + middle + main + bottom
+    path = os.path.join(PAGE_DIR, s, 'index.html')
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    before = io.open(path, encoding='utf-8').read() if os.path.exists(path) else None
+    if before != html:
+        io.open(path, 'w', encoding='utf-8', newline='').write(html)
+
+
+def remove_stale(slugs):
+    """Delete album pages whose album is gone. Only a page this script wrote
+    (it carries ALBUM_MARK) is removed, and only its index.html."""
+    for name in sorted(os.listdir(PAGE_DIR)):
+        path = os.path.join(PAGE_DIR, name, 'index.html')
+        if name in slugs or not os.path.isfile(path):
+            continue
+        if ALBUM_MARK not in io.open(path, encoding='utf-8').read():
+            continue
+        os.remove(path)
+        try:
+            os.rmdir(os.path.dirname(path))
+        except OSError:
+            pass                       # something else lives there; leave it
+        print('   removed gallery/%s/ - its album is gone' % name)
 
 
 def build(order=False, check=False):
@@ -662,7 +780,7 @@ def build(order=False, check=False):
     # The Sporty migration is finished, so the three passes that renamed and
     # deleted UUID-named downloads are switched off, along with the flags that
     # used to control them: a build now only reads the folders and rewrites
-    # gallery.html. Their functions are kept for reference - to bring them back,
+    # the gallery pages. Their functions are kept for reference - to bring them back,
     # swap the two Files(...) lines and uncomment the three calls.
     files = Files(dry_run=True)          # nothing is written to the folders now
     # files = Files(dry_run=False)
@@ -697,6 +815,7 @@ def build(order=False, check=False):
                   '<code>assets/img/gallery/&lt;album&gt;/</code> and run '
                   '<code>python tools/build-gallery.py</code>.</p>')
         write(markup)
+        remove_stale(set())
         print('no photos found - wrote the empty state')
         print('empty albums: %s' % ', '.join(empty))
         return 0
@@ -712,61 +831,28 @@ def build(order=False, check=False):
         print('   ! no zips.json - run with --check-zips to size the links '
               'and drop albums that have no zip')
 
-    blocks = []
+    template = read_template()
+    slugs = set()
     intros = 0
     downloads = 0
     for folder, title, photos in albums:
         intro = intro_for(folder)
         if intro:
             intros += 1
-            intro = ('        <div class="album__intro">\n'
-                     + '\n'.join('          ' + line for line in intro)
-                     + '\n        </div>\n')
-        else:
-            intro = ''
-
         download = download_link(folder, zips)
         if download:
             downloads += 1
+        if slug(folder) in slugs:
+            raise SystemExit('two albums would share the page gallery/%s/ - '
+                             'rename one of the folders' % slug(folder))
+        slugs.add(slug(folder))
+        write_album(template, folder, title, photos, intro, download)
 
-        items = []
-        for f in photos:
-            src = '/assets/img/gallery/%s/%s' % (folder, quote(f))
-            full = FULL_BASE + '%s/%s' % (quote(folder), quote(f))
-            cap = caption_for(f)
-            dims = dimensions(os.path.join(GALLERY_DIR, folder, f))
-            size = ' width="%d" height="%d"' % dims if dims else ''
-            alt = esc(cap) if cap else '%s photo' % esc(title)
-            data_cap = ' data-caption="%s"' % esc(cap) if cap else ''
-            items.append(
-                '          <li class="album__item">\n'
-                '            <a href="%s"%s target="_blank" rel="noopener">\n'
-                '              <img src="%s" alt="%s"%s loading="lazy" decoding="async">\n'
-                '            </a>\n'
-                '          </li>' % (full, data_cap, src, alt, size))
-
-        # Every album starts collapsed. A closed <details> is not rendered, so
-        # the browser lays out none of its grid and - because every photo is
-        # loading="lazy" - requests none of its images until it is opened.
-        blocks.append(
-            '      <details class="album" id="album-%s">\n'
-            '        <summary class="album__head">\n'
-            '          <h2 id="album-%s-heading">%s</h2>\n'
-            '          <span class="album__count">%d photo%s</span>\n'
-            '        </summary>\n'
-            '%s%s'
-            '        <ul class="album__grid" aria-labelledby="album-%s-heading">\n'
-            '%s\n'
-            '        </ul>\n'
-            '      </details>'
-            % (slug(folder), slug(folder), esc(title), len(photos),
-               '' if len(photos) == 1 else 's', intro, download, slug(folder),
-               '\n'.join(items)))
-
-    write('\n\n'.join(blocks) + '\n\n' + VIEWER)
+    write(front_page(albums))
+    remove_stale(slugs)
 
     total = sum(len(p) for _, _, p in albums)
-    print('gallery rebuilt: %d album(s), %d photo(s), %d zip link(s)'
+    print('gallery rebuilt: %d album page(s), %d photo(s), %d zip link(s)'
           % (len(albums), total, downloads))
     for folder, title, photos in albums:
         print('   %-26s %-24s %d photo(s)' % (folder, title, len(photos)))
@@ -817,7 +903,7 @@ def write_order(albums):
 def write(markup):
     html = io.open(PAGE, encoding='utf-8').read()
     if OPEN not in html or CLOSE not in html:
-        raise SystemExit('markers not found in gallery.html:\n  %s\n  %s' % (OPEN, CLOSE))
+        raise SystemExit('markers not found in gallery/index.html:\n  %s\n  %s' % (OPEN, CLOSE))
     start, end = html.index(OPEN) + len(OPEN), html.index(CLOSE)
     io.open(PAGE, 'w', encoding='utf-8', newline='').write(
         html[:start] + '\n' + markup + '\n    ' + html[end:])
