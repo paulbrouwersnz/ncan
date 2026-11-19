@@ -2,10 +2,14 @@
   gallery-viewer.js - the photo viewer on the gallery's album pages
   (gallery/<album>/index.html, written by tools/build-gallery.py).
 
-  Each thumbnail links to its full-size photo on the mirror. Selecting one
-  opens it in the <dialog id="lightbox"> on the page instead, with the arrow
-  keys and buttons stepping through the album. Without <dialog> the links keep
-  their plain behaviour and open the photo in a new tab.
+  Each thumbnail links to its full-size photo on the photo host
+  (photos.ncan.nz). Selecting one opens it in the <dialog id="lightbox"> on the
+  page instead, with the arrow keys and buttons stepping through the album.
+  Without <dialog> the links keep their plain behaviour and open the JPEG in a
+  new tab.
+
+  A link may also carry data-webp, the same photo as WebP. The viewer opens
+  that when the browser shows WebP, so a browser without it gets the JPEG.
 */
 (function () {
   'use strict';
@@ -23,15 +27,30 @@
   var links = [];
   var index = 0;
 
+  // Does this browser show WebP? A 1x1 WebP decides, in the background; until
+  // it has, a thumbnail the <picture> already showed as WebP also says yes.
+  var webpOK = false;
+  var probe = new Image();
+  probe.onload = function () { webpOK = probe.width === 1; };
+  probe.src = 'data:image/webp;base64,UklGRiIAAABXRUJQVlA4IBYAAAAwAQCdASoBAAEADsD+JaQAA3AAAAAA';
+
+  // the WebP original if this browser shows WebP, otherwise the JPEG
+  function full(link) {
+    var webp = link.getAttribute('data-webp');
+    var thumb = link.querySelector('img');
+    var shown = thumb && /\.webp(\?|$)/i.test(thumb.currentSrc || '');
+    return webp && (webpOK || shown) ? webp : link.getAttribute('href');
+  }
+
   function preload(i) {
     var link = links[i];
-    if (link) { new Image().src = link.getAttribute('href'); }
+    if (link) { new Image().src = full(link); }
   }
 
   function show() {
     var link = links[index];
     var caption = link.getAttribute('data-caption') || '';
-    img.src = link.getAttribute('href');
+    img.src = full(link);
     img.alt = link.querySelector('img').alt;
     text.textContent = caption;
     text.hidden = !caption;

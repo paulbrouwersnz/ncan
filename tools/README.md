@@ -71,7 +71,7 @@ these need packages installed with `pip install`:
 | Tool | Needs |
 |---|---|
 | `build-fonts.py` | `fonttools`, `brotli` |
-| `build-gallery.py`, `shrink-gallery.py` | `Pillow` |
+| `build-gallery.py`, `gallery-photos.py` | `Pillow` |
 | `build-icons.py` | `Pillow`, and Microsoft Edge or Google Chrome |
 | `build-share-image.py` | Microsoft Edge or Google Chrome |
 | `import-records.py` | `openpyxl` |
@@ -88,7 +88,7 @@ browser's console on the Athletics NZ eLearning library (see below).
 | edited anything in `partials/` | `sync-partials.py` |
 | added a new page (a folder with an `index.html`) | `sync-partials.py`, `build-sitemap.py`, then `indexnow.py <page>` |
 | changed a page's content and want search engines to notice | `indexnow.py <page>` |
-| added photos or albums to the gallery | `shrink-gallery.py` (after the originals are on the mirror), then `build-gallery.py`, then `build-sitemap.py` if an album was added, renamed or removed |
+| added photos or albums to the gallery | put the originals in the photo host's `gallery/` folder, then `gallery-photos.py`, upload, `build-gallery.py`, and `build-sitemap.py` if an album was added, renamed or removed (see "Gallery") |
 | added or changed a calendar in `assets/calendar/` | `build-calendar-list.py` |
 | changed the weekly training times | `build-training-calendar.py`, then `build-calendar-list.py` |
 | added AGM papers to `assets/docs/agm/` | `build-agm-list.py` |
@@ -356,26 +356,93 @@ python tools/indexnow.py --dry-run calendar
 
 ## Gallery
 
-### `shrink-gallery.py`
-Resizes the photos in `assets/img/gallery/` in place to thumbnails (500px on
-the long edge). **This overwrites the originals.** The full-size photos live
-on the mirror at `https://ncan.brouwers.nz/gallery/`, and the script checks a
-sample is there before shrinking anything. Never run it on photos that aren't
-on the mirror yet.
+The photos aren't in this repository. They're hosted at
+**`https://photos.ncan.nz/`**, and the gallery's pages link there. A local copy
+of the host, by default the folder `ncan-gallery` next to this repository (or
+set `NCAN_PHOTOS_DIR`, or pass `--photos-dir`), is what the tools read and
+write:
 
-```bash
-python tools/shrink-gallery.py                       # dry run
-python tools/shrink-gallery.py --album "2026/Colgate Games" --apply
+```
+gallery/<year>/<album>/<photo>.jpg     full-size originals (the zips' contents)
+gallery/<year>/<album>/<photo>.webp    the same, as WebP
+gallery/<year>/<album>.zip             an album's zip download
+thumbs/<year>/<album>/<photo>.jpg      thumbnails, 500px on the long side
+thumbs/<year>/<album>/<photo>.webp     the same, as WebP
 ```
 
-Options: `--max-edge`, `--quality`, `--jobs`, `--sample`, and
-`--skip-remote-check` (not advised).
+A thumbnail's address is its original's with `gallery/` swapped for `thumbs/`,
+and a WebP's is its JPEG's with `.webp` in place of `.jpg`. Each page offers the
+WebP thumbnail with the JPEG as the fallback (`<picture>`), and the photo viewer
+opens the WebP original in browsers that show WebP, the JPEG in the rest. The
+"open in a new tab" link and the zips stay JPEG.
+
+**Adding an album:**
+1. Put the originals in `gallery/<year>/<album>/` in the local copy (and its
+   zip beside the folder, as `<album>.zip`, if there is one).
+2. `python tools/gallery-photos.py` makes the missing thumbnails and WebP copies.
+3. Upload the new files (originals, `.webp`s, `thumbs/`, zip) to the host.
+4. `python tools/build-gallery.py` (with `--check-zips` for a new zip), then
+   `python tools/build-sitemap.py`, and commit.
+
+The album order and the zip index are in `tools/gallery/` (`order.txt`,
+`zips.json`), and so is any album's `title.txt` or `README.md`, at
+`tools/gallery/<year>/<album>/`.
+
+**The old addresses:** the originals were at `https://ncan.brouwers.nz/gallery/`
+and the thumbnails in this repository (`assets/img/gallery/`, until November
+2026). The old host should send its gallery on to the new one with the same
+path, so links already shared keep working. For Apache, in the old site's
+`.htaccess` (or its config):
+
+```
+RedirectMatch 301 ^/gallery/(.*)$ https://photos.ncan.nz/gallery/$1
+```
+
+or for nginx:
+
+```
+location /gallery/ { return 301 https://photos.ncan.nz$request_uri; }
+```
+
+The photo host must serve `.webp` as `image/webp` (current Apache and nginx do).
+
+### `gallery-photos.py`
+Makes, in the local copy of the photo host, a thumbnail for every original
+that has none, and a WebP copy beside every original and thumbnail that has
+none (or whose JPEG is newer). It never changes or deletes a JPEG. Phone
+photos' orientation is baked in, and colour profiles kept.
+
+```bash
+python tools/gallery-photos.py --dry-run                       # what it would make
+python tools/gallery-photos.py                                 # make it
+python tools/gallery-photos.py --album "2026/Colgate Games"    # one album
+python tools/gallery-photos.py --only webp                     # or --only thumbs
+```
+
+Options: `--max-edge` (thumbnail size, 500), `--thumb-quality` (82),
+`--webp-quality` (80), `--webp-max-edge` (cap the originals' WebP copies, e.g.
+2560: camera photos are bigger than any screen, and a full-size WebP is only
+about 10% smaller than its JPEG, a 2560px one about half), `--jobs`.
+
+### `gallery-move-thumbs.py`
+One-off, for the move to `photos.ncan.nz`: copies the thumbnails that were in
+this repository (`assets/img/gallery/`), exactly as they were, from git history
+into the local copy's `thumbs/`. It reports first; `--apply` copies. A
+thumbnail already there with the same contents is skipped; a different one is
+left alone unless `--overwrite`.
+
+```bash
+python tools/gallery-move-thumbs.py            # report
+python tools/gallery-move-thumbs.py --apply    # copy
+```
 
 ### `build-gallery.py`
-Rebuilds the gallery from the folders in `assets/img/gallery/`: one album per
+Rebuilds the gallery pages from the local copy's `thumbs/` folder: one album per
 folder (a folder of photos inside another, like `2026/Colgate Games/Day 3`, is an
-album of its own), a `title.txt` to rename it, a `README.md` for an intro, and
-`order.txt` for album order.
+album of its own), with `tools/gallery/` for album order, zips, titles and
+intros (see "Gallery"). It reads which photos there are and their sizes; the
+pages link to `https://photos.ncan.nz/`. A photo whose WebP copy isn't in the
+local copy yet is offered as JPEG only.
 
 - `gallery/index.html` is the front page: a card per album (its first photo as
   the cover, its title and photo count) under a heading per year, in album
@@ -390,7 +457,7 @@ album of its own), a `title.txt` to rename it, a `README.md` for an intro, and
   deleted (only pages the script wrote, which carry `@generated:album`).
 - Each photo's alt text names the album and the photo's place in it
   ("2024 Colgate Games, photo 5 of 1036"), plus its caption when the file has a
-  descriptive name. Each thumbnail links to its full-size copy on the mirror.
+  descriptive name. Each thumbnail links to its full-size original on the photo host.
 - Old links to an album on the single-page gallery (`/gallery/#album-<album>`)
   are sent on to the album's page by the front page's script, `assets/js/gallery.js`.
 - The script links are written plain, like every page's: publishing adds the
@@ -403,6 +470,7 @@ album page is listed in the sitemap.
 python tools/build-gallery.py
 python tools/build-gallery.py --check-zips     # which albums have a zip download, and how big
 python tools/build-gallery.py --write-order    # save the current album order
+NCAN_PHOTOS_URL=http://127.0.0.1:8152/ python tools/build-gallery.py   # preview against a local copy served on 8152 (don't commit)
 ```
 
 ## Calendars
