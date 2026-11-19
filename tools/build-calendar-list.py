@@ -1,6 +1,13 @@
 # -*- coding: utf-8 -*-
 """Maintain assets/calendar/calendars.json, the list calendar.html reads.
 
+It also writes the no-JavaScript list of calendars into calendar/index.html,
+between the markers below, so a reader without JavaScript still gets each
+calendar's name linked to its .ics. The markup between them is regenerated
+from the manifest whenever the tool writes the manifest, so do not hand-edit it.
+
+    <!-- @generated:calendar-list -->  ...  <!-- /@generated:calendar-list -->
+
 calendar.html shows every calendar named in the manifest. A calendar is either
 
   local   a .ics sitting in assets/calendar/
@@ -36,8 +43,15 @@ Usage
 
     python tools/build-calendar-list.py --dry-run
         Report what would change and write nothing. Exits 1 when the manifest
-        is out of date, so it works as a pre-publish check. Combine with
-        --fetch to see which remote calendars would be re-downloaded.
+        or the page's no-JavaScript list is out of date, so it works as a
+        pre-publish check. Combine with --fetch to see which remote calendars
+        would be re-downloaded.
+
+    python tools/build-calendar-list.py --page-only [--dry-run]
+        Leave the folder and the manifest alone and only rewrite the page's
+        no-JavaScript list from calendars.json as it stands (say after a name
+        is edited by hand). With --dry-run it writes nothing and exits 1 when
+        the list is out of step; the Checks workflow runs that.
 
 Each calendar carries a colour, used on the agenda to show which calendar an
 event came from. A colour set by hand in calendars.json is kept; new calendars
@@ -45,6 +59,7 @@ take the next unused colour from the palette below.
 """
 import argparse
 import colorsys
+import html
 import io
 import json
 import os
@@ -60,6 +75,10 @@ except ImportError:                   # Python 2
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CAL_DIR = os.path.join(ROOT, 'assets', 'calendar')
 MANIFEST = os.path.join(CAL_DIR, 'calendars.json')
+PAGE = os.path.join(ROOT, 'calendar', 'index.html')
+# where the page's script finds the calendars (its data-ics-dir)
+CAL_HREF = '/assets/calendar/'
+OPEN, CLOSE = '<!-- @generated:calendar-list -->', '<!-- /@generated:calendar-list -->'
 
 # Distinct against the page's white cards, and legible as text and as a rule.
 # Club yellow is deliberately absent - too pale to read at this size.
@@ -195,6 +214,52 @@ def hue_of(colour):
     return hue - 360 if hue >= 340 else hue
 
 
+def noscript_list(entries, indent):
+    """The no-JavaScript <ul>, one item per calendar, named and linked the way
+    the page's script builds "Our calendars" (#calendar-files): the local copy
+    when there is a file, otherwise the published url."""
+    lines = [indent + '<ul>']
+    for e in entries:
+        href = CAL_HREF + e['file'] if e.get('file') else e.get('url')
+        if not href:
+            continue
+        name = e.get('name') or e.get('file') or e.get('url')
+        lines.append('%s  <li><a href="%s">%s</a></li>'
+                     % (indent, html.escape(href, quote=True), html.escape(name, quote=False)))
+    lines.append(indent + '</ul>')
+    return '\n'.join(lines)
+
+
+def update_page(entries, dry_run=False):
+    """Write the list between the markers in calendar/index.html.
+
+    Returns 0 when the page is (now) in step, 1 when a dry run finds it out of
+    step, 2 when the markers are missing.
+    """
+    rel = os.path.relpath(PAGE, ROOT)
+    text = read(PAGE)
+    start, end = text.find(OPEN), text.find(CLOSE)
+    if start < 0 or end < start:
+        print('   ! %s has no %s ... %s markers - list not written' % (rel, OPEN, CLOSE))
+        return 2
+    # indent the list to line up with the opening marker
+    line_start = text.rfind('\n', 0, start) + 1
+    indent = re.match(r'[ \t]*', text[line_start:start]).group(0)
+    block = OPEN + '\n' + noscript_list(entries, indent) + '\n' + indent + CLOSE
+    updated = text[:start] + block + text[end + len(CLOSE):]
+    if updated == text:
+        print('%s: no-JavaScript list up to date (%d calendar(s))' % (rel, len(entries)))
+        return 0
+    if dry_run:
+        print('%s: the no-JavaScript list would change - run '
+              'python tools/build-calendar-list.py (or --page-only to keep the '
+              'manifest as it is)' % rel)
+        return 1
+    write_atomic(PAGE, updated)
+    print('%s: wrote the no-JavaScript list (%d calendar(s))' % (rel, len(entries)))
+    return 0
+
+
 def make_rainbow(entries):
     """Re-deal the colours already in use, in spectrum order down the list."""
     ordered = sorted((e['colour'] for e in entries), key=hue_of)
@@ -302,7 +367,8 @@ def rebuild(known, dry_run=False, rainbow=False):
         differs = describe(previous, entries)
         if not differs:
             print('   (no changes - the manifest is up to date)')
-        return 1 if differs else 0
+        page = update_page(entries, dry_run=True)
+        return 1 if differs or page else 0
 
     write_atomic(MANIFEST, json.dumps({'calendars': entries}, indent=2,
                                       ensure_ascii=False) + '\n')
@@ -318,7 +384,7 @@ def rebuild(known, dry_run=False, rainbow=False):
     for e in entries:
         print('   %-30s %-8s %-34s %s'
               % (e['file'], e['colour'], e['name'][:34], 'remote' if e.get('url') else 'local'))
-    return 0
+    return 1 if update_page(entries) else 0
 
 
 def main():
@@ -333,7 +399,21 @@ def main():
                     help='re-deal the colours already in use into spectrum order')
     ap.add_argument('--dry-run', action='store_true',
                     help='report what would change and write nothing')
+    ap.add_argument('--page-only', action='store_true',
+                    help='only rewrite the no-JavaScript list in calendar/index.html '
+                         'from the manifest as it stands')
     args = ap.parse_args()
+
+    if args.page_only:
+        if args.add or args.fetch or args.rainbow:
+            print('--page-only cannot be combined with --add, --fetch or --rainbow')
+            return 2
+        try:
+            entries = json.loads(read(MANIFEST)).get('calendars', [])
+        except ValueError:
+            print('%s is missing or not valid JSON' % os.path.relpath(MANIFEST, ROOT))
+            return 1
+        return update_page(entries, dry_run=args.dry_run)
 
     if not os.path.isdir(CAL_DIR):
         print('no calendar directory at %s' % CAL_DIR)

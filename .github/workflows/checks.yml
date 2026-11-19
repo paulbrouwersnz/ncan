@@ -34,5 +34,8 @@ jobs:
             exit 1
           fi
 
+      - name: Calendar page lists the calendars in calendars.json
+        run: python tools/build-calendar-list.py --page-only --dry-run
+
       - name: Links and files within the site exist
         run: python tools/check-links.py
