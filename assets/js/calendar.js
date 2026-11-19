@@ -687,14 +687,22 @@
       return row;
   }
 
-  function fail(message, detail) {
+  // calendars, when known, are listed under "Our calendars" so the reader
+  // can still subscribe; the folder itself cannot be browsed on the live site
+  function fail(message, detail, calendars) {
     root.setAttribute('aria-busy', 'false');
     root.innerHTML = '';
-    var p = el('p', 'agenda__state', message + ' You can still ');
-    var a = el('a', null, 'browse the calendar files');
-    a.href = DIR;
-    p.appendChild(a);
-    p.appendChild(document.createTextNode(' and open them in your own calendar app.'));
+    var p = el('p', 'agenda__state', message);
+    if (calendars && calendars.length) {
+      listCalendars(calendars);
+      p.appendChild(document.createTextNode(' You can still open '));
+      var a = el('a', null, 'our calendars');
+      a.href = '#calendar-files';
+      p.appendChild(a);
+      p.appendChild(document.createTextNode(' in your own calendar app.'));
+    } else {
+      p.appendChild(document.createTextNode(' Please try again later.'));
+    }
     root.appendChild(p);
     if (detail) { console.warn('calendar:', detail); }
   }
@@ -1027,7 +1035,7 @@
         .catch(function (err) { console.warn('calendar:', err.message); return null; });
     })).then(function (loaded) {
       loaded = loaded.filter(Boolean);
-      if (!loaded.length) { fail('The calendars could not be loaded.'); return; }
+      if (!loaded.length) { fail('The calendars could not be loaded.', null, calendars); return; }
 
       // "today" is today in New Zealand, wherever the visitor is
       var now = new Date();
