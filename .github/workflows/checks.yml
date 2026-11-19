@@ -34,8 +34,13 @@ jobs:
             exit 1
           fi
 
+      - name: Calendar page lists the calendars in calendars.json
+        run: python tools/build-calendar-list.py --page-only --dry-run
+
       - name: Links and files within the site exist
         run: python tools/check-links.py
 
+      - name: Planner help names buttons that exist
+        run: python tools/check-planner-help.py
       - name: Facebook posts pass the home page's allowlist
         run: python tools/check-facebook-posts.py

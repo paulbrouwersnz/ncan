@@ -69,6 +69,7 @@ these need packages installed with `pip install`:
 | `build-fonts.py` | `fonttools`, `brotli` |
 | `build-gallery.py`, `shrink-gallery.py` | `Pillow` |
 | `build-icons.py` | `Pillow`, and Microsoft Edge or Google Chrome |
+| `build-share-image.py` | Microsoft Edge or Google Chrome |
 | `import-records.py` | `openpyxl` |
 | `verify-records.py` | `pypdf` |
 
@@ -90,11 +91,12 @@ browser's console on the Athletics NZ eLearning library (see below).
 | a club championships Saturday has finished | add its meeting on the results sources page, then confirm it under "Review results" on the club champs page |
 | a meeting's results are out, or a family asks for a page to be removed | in the private ncan-api project: `ncan add-meeting` / `ncan opt-out`, then `ncan collect` |
 | new records to check against official results | `verify-records.py` |
-| changed the logo (`assets/img/logo.svg`) | `build-icons.py`, and redo `assets/img/logo-dark.svg` (the logo with `#164724` as `#3A8F5C` and white as `#0c1813`) |
+| changed the logo (`assets/img/logo.svg`) | `build-icons.py`, `build-share-image.py`, and redo `assets/img/logo-dark.svg` (the logo with `#164724` as `#3A8F5C` and white as `#0c1813`) |
 | it's November (`security.txt` expires on 17 November each year) | move the `Expires` date in `.well-known/security.txt` on a year |
 | added characters the site's fonts may not have (e.g. a new macron) | `build-fonts.py` |
 | changed the Facebook posts' layout in `build-html.py`, or the updater warned about the allowlist | `check-facebook-posts.py` (see its section to allow something new) |
 | changed links, moved or removed a file, or a pull request's "Checks" failed | `check-links.py` (and `sync-partials.py`) |
+| renamed or removed a button in the Junior Athletics planner (`assets/js/training*.js`) | update "How to use the planner" in `junior-athletics/index.html`, then `check-planner-help.py` |
 
 ## Publishing the site
 
@@ -189,6 +191,19 @@ Edge or Chrome, then sizes it. Run it after the logo changes.
 python tools/build-icons.py
 ```
 
+### `build-share-image.py`
+Makes `assets/img/share.png`, the picture Facebook, WhatsApp, LinkedIn and
+others show when a page is shared: the header's logo and name on white,
+1200 × 630. The layout is `tools/share-image.html`; the script draws it with
+headless Edge or Chrome. Every page names the picture by its full address
+(`og:image` in `partials/head.html`), because sharing sites ignore a path
+without `https://ncan.nz` and don't show SVG. Run it after the logo or the
+layout changes.
+
+```bash
+python tools/build-share-image.py
+```
+
 ## Checks on pull requests
 
 Every pull request, and every push to `main`, runs
@@ -198,7 +213,14 @@ run's log, when:
 - **a page is out of step with `partials/`**: it runs `sync-partials.py` and
   fails if that changed anything. Run `python tools/sync-partials.py` and
   commit the result.
+- **the calendar page's no-JavaScript list is out of step with
+  `assets/calendar/calendars.json`**: it runs
+  `build-calendar-list.py --page-only --dry-run`. Run
+  `python tools/build-calendar-list.py` (or `--page-only`) and commit the result.
 - **a link or file within the site is missing**: it runs `check-links.py`.
+- **the Junior Athletics planner's help names a button that isn't there**: it
+  runs `check-planner-help.py`. Update the help to the new name (or put the
+  old name back).
 - **the Facebook posts hold something the home page would take out**: it runs
   `check-facebook-posts.py`.
 
@@ -268,6 +290,22 @@ A link that is known to be broken and is to stay that way for now goes in
 written); it is then listed as "allowed" rather than failing. The check says
 when a line there no longer matches anything, so it can be taken out. Fix the
 link rather than adding to the list where you can.
+
+### `check-planner-help.py`
+The Junior Athletics planner's help for coaches, "How to use the planner"
+(`#planner-help` in `junior-athletics/index.html`), is written by hand and
+names buttons in bold (`<strong>Schedule release</strong>`). This takes every
+bold name from the help and checks it is still the text of a button or label
+in the planner: a whole string in `assets/js/training*.js` (all of them, if the
+planner is split into several files) or an element's text in the page outside
+the help. Comments don't count, and case, `&amp;`-style entities and curly
+apostrophes are ignored. Prints any name not found and exits 1. Bold text that
+is emphasis rather than a label goes in the short `IGNORE` list at the top of
+the script. Standard library only.
+
+```bash
+python tools/check-planner-help.py
+```
 
 ## Search engines
 
@@ -341,14 +379,18 @@ python tools/build-training-calendar.py --list         # show the dates
 ### `build-calendar-list.py`
 Maintains `assets/calendar/calendars.json`, the list the calendar page (`/calendar/`) reads.
 Picks up `.ics` files in the folder, keeping names and colours already set,
-and can mirror calendars published elsewhere.
+and can mirror calendars published elsewhere. Each time it writes the manifest
+it also rewrites the list of calendars that readers without JavaScript see on
+the calendar page (between the `@generated:calendar-list` markers in
+`calendar/index.html`), each calendar's name linked to its `.ics`.
 
 ```bash
 python tools/build-calendar-list.py                    # rescan the folder
 python tools/build-calendar-list.py --fetch            # re-download remote calendars
 python tools/build-calendar-list.py --add URL --name "…" --file events-x.ics
 python tools/build-calendar-list.py --rainbow          # re-order colours
-python tools/build-calendar-list.py --dry-run
+python tools/build-calendar-list.py --dry-run          # exits 1 if the manifest or page list would change
+python tools/build-calendar-list.py --page-only        # only rewrite the page list from the manifest
 ```
 
 The event calendars themselves (`events-*.ics`, `other-meetings.ics`) are

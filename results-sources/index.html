@@ -13,9 +13,13 @@
 <script src="/assets/js/theme.js?v=7bdda2a4" defer></script>
 
 <meta property="og:type" content="website">
-<meta property="og:image" content="/assets/img/logo.svg">
+<meta property="og:image" content="https://ncan.nz/assets/img/share.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="North Canterbury Athletic Club">
 <meta property="og:locale" content="en_NZ">
+<meta name="twitter:card" content="summary_large_image">
 
 <link rel="icon" href="/assets/img/logo.svg" type="image/svg+xml">
 <link rel="icon" href="/favicon.ico" sizes="32x32">
@@ -23,7 +27,7 @@
 <link rel="manifest" href="/site.webmanifest">
 <link rel="preload" href="/assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/archivo-variable.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/assets/css/styles.css?v=7919022b">
+<link rel="stylesheet" href="/assets/css/styles.css?v=20c2f544">
 <!-- /@partial:head -->
 
 <link rel="canonical" href="https://ncan.nz/results-sources/">
@@ -112,9 +116,10 @@
           <p class="eyebrow">For coaches and the committee</p>
           <h2 id="add-heading">Add a meeting</h2>
           <p class="lede">
-            Open the meeting on <a href="https://athleticscanterbury.anet.live/meet-list">AthleticLIVE</a>,
-            add <code>/teams</code> to its address, choose a club that has results (North Canterbury if it
-            competed; any club works, as the whole meeting is read) and copy that page&rsquo;s address.
+            Open the meeting on <a href="https://athleticscanterbury.anet.live/meet-list">AthleticLIVE</a>
+            and copy its address (e.g. <code>&hellip;/meets/80234</code>): a team with results is chosen for you,
+            North Canterbury&rsquo;s if it competed (the whole meeting is read either way). A team page&rsquo;s
+            address (<code>&hellip;/meets/80234/teams/1855906</code>) works too, if you&rsquo;d rather choose.
             Add a meeting once its results are complete: what&rsquo;s published when it&rsquo;s collected is kept.
             Choose the type <strong>Cross country</strong> or <strong>Road</strong> for an out-of-stadia
             meeting, including cross country and road relays: those results are shown in a section of
@@ -123,8 +128,8 @@
         </div>
         <form class="src-add" id="src-add" novalidate>
           <p class="records-field records-field--grow">
-            <label for="add-url">Team page address</label>
-            <input type="url" id="add-url" required placeholder="https://athleticscanterbury.anet.live/meets/80234/teams/1855906" autocomplete="off">
+            <label for="add-url">Meeting address</label>
+            <input type="url" id="add-url" required placeholder="https://athleticscanterbury.anet.live/meets/80234" autocomplete="off">
           </p>
           <button type="button" class="btn btn--ghost" id="add-check">Check</button>
           <div class="src-add__found" id="add-found" hidden>
@@ -590,7 +595,7 @@
         $('add-url').addEventListener('input', function () { checked = null; $('add-found').hidden = true; });
         $('add-check').addEventListener('click', function () {
           var url = $('add-url').value.trim();
-          if (!url) { $('add-status').textContent = 'Paste the team page address first.'; return; }
+          if (!url) { $('add-status').textContent = 'Paste the meeting’s address first.'; return; }
           $('add-status').textContent = 'Checking with AthleticLIVE…';
           $('add-found').hidden = true;
           NCAN.send('/sources/check', { url: url }).then(function (r) {
@@ -602,7 +607,8 @@
             }
             checked = m;
             var when = m.dates.length ? ' on ' + m.dates.map(function (d) { return longDate(d); }).join(' and ') : '';
-            $('add-about').textContent = 'AthleticLIVE meeting ' + m.meet + when + ': ' + m.results + ' result' + (m.results === 1 ? '' : 's') + ' for ' + m.team + '.' +
+            $('add-about').textContent = 'AthleticLIVE meeting ' + m.meet + when + ': ' + m.results + ' result' + (m.results === 1 ? '' : 's') + ' for ' + m.team +
+              (m.ours ? '' : ' (the whole meeting is read through this team)') + '.' +
               (m.recent ? ' This meeting is recent: if its results are still coming in, wait until they’re complete.' : '');
             $('add-found').hidden = false;
             $('add-status').textContent = 'Give it a name and type, then add it.';
