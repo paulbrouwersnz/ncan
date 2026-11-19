@@ -43,9 +43,8 @@ is the home page. `tools/pages.py` is the one place the tools learn this.
   (`--bg`, `--surface`, `--heading`, `--text`, `--line`, ...; listed at its top), not
   the brand colours directly, except where a colour must never change (the green
   bands, text on yellow). Each role's dark colour is in one place, the "Dark mode"
-  block at the end. The site follows the device's light or dark setting; the
-  "Switch to dark mode" button in the footer (`assets/js/theme.js`) overrides it
-  for that browser. When adding a style, use the roles, and look at the page in
+  block at the end. The site follows the device's light or dark setting (there's
+  no switch on the site). When adding a style, use the roles, and look at the page in
   both modes. Every page has `<meta name="darkreader-lock">`, so the Dark Reader
   browser extension leaves the site to its own dark mode rather than recolouring it.
   The header logo has a dark version (`assets/img/logo-dark.svg`: the
@@ -80,9 +79,9 @@ browser's console on the Athletics NZ eLearning library (see below).
 
 | You've… | Run |
 |---|---|
-| edited `assets/css/styles.css` or a script in `assets/js/` | `stamp-assets.py` (optional once the site publishes through GitHub Actions: see "Publishing the site") |
-| edited anything in `partials/` | `sync-partials.py`, then `stamp-assets.py` |
-| added a new page (a folder with an `index.html`) | `sync-partials.py`, `stamp-assets.py`, `build-sitemap.py`, then `indexnow.py <page>` |
+| edited `assets/css/styles.css` or a script in `assets/js/` | nothing: publishing stamps them (don't commit stamps; see "Publishing the site") |
+| edited anything in `partials/` | `sync-partials.py` |
+| added a new page (a folder with an `index.html`) | `sync-partials.py`, `build-sitemap.py`, then `indexnow.py <page>` |
 | changed a page's content and want search engines to notice | `indexnow.py <page>` |
 | added photos or albums to the gallery | `shrink-gallery.py` (after the originals are on the mirror), then `build-gallery.py` |
 | added or changed a calendar in `assets/calendar/` | `build-calendar-list.py` |
@@ -94,6 +93,7 @@ browser's console on the Athletics NZ eLearning library (see below).
 | changed the logo (`assets/img/logo.svg`) | `build-icons.py`, `build-share-image.py`, and redo `assets/img/logo-dark.svg` (the logo with `#164724` as `#3A8F5C` and white as `#0c1813`) |
 | it's November (`security.txt` expires on 17 November each year) | move the `Expires` date in `.well-known/security.txt` on a year |
 | added characters the site's fonts may not have (e.g. a new macron) | `build-fonts.py` |
+| changed the Facebook posts' layout in `build-html.py`, or the updater warned about the allowlist | `check-facebook-posts.py` (see its section to allow something new) |
 | changed links, moved or removed a file, or a pull request's "Checks" failed | `check-links.py` (and `sync-partials.py`) |
 | renamed or removed a button in the Junior Athletics planner (`assets/js/training*.js`) | update "How to use the planner" in `junior-athletics/index.html`, then `check-planner-help.py` |
 
@@ -106,16 +106,15 @@ committed new posts (its commits start no workflows of their own), or by hand
 `stamp-assets.py`, gathers the public files with `build-site.py`, and deploys
 them.
 
-> **One-off setting, needed before this takes over:** Settings → Pages → Build
-> and deployment → Source: **GitHub Actions** (the repository owner). Until
-> then, Pages keeps building straight from the `main` branch with Jekyll, as it
-> always has, and the stamps must still be committed.
+Pages is set to publish this way (Settings → Pages → Build and deployment →
+Source: **GitHub Actions**).
 
-Once it's switched, **committing the `?v=` stamps is optional**: they are
-brought up to date at publish time, so a pull request that edits the stylesheet
-or a script needn't run `stamp-assets.py` (and two pull requests no longer
-clash over the same stamp). Running it locally still does no harm, and keeps a
-local preview fresh. `sync-partials.py` is still to be run and committed (the
+**The `?v=` stamps are not committed.** They are added at publish time, so the
+pages in the repository link `/assets/css/styles.css` and `/assets/js/...`
+plainly, and a pull request that edits the stylesheet or a script doesn't touch
+every page (which made pull requests clash). The checks fail if a stamp is
+committed: run `python tools/stamp-assets.py --clear` and commit.
+`sync-partials.py` is still to be run and committed (the
 pull request checks look for it), so the pages in the repository read as they
 are published.
 
@@ -161,13 +160,13 @@ per file reference. The hash ignores line endings, so a Windows checkout (where
 git gives files Windows line endings) stamps the same as the files the site serves.
 
 ```bash
-python tools/stamp-assets.py            # stamp
-python tools/stamp-assets.py --check    # report only
-python tools/stamp-assets.py --clear    # remove the stamps
+python tools/stamp-assets.py --clear    # remove the stamps (before committing)
+python tools/stamp-assets.py --check    # report what stamping would change
+python tools/stamp-assets.py            # stamp (the publish workflow does this)
 ```
 
-The publish workflow runs it too (see "Publishing the site"), so once Pages
-publishes through GitHub Actions, committing the stamps is optional.
+Only the publish workflow stamps (see "Publishing the site"): stamps are not
+committed, and the checks fail if one is.
 
 ### `build-fonts.py`
 Builds the self-hosted Inter and Archivo fonts in `assets/fonts/`, cut down to
@@ -220,6 +219,25 @@ run's log, when:
 - **the Junior Athletics planner's help names a button that isn't there**: it
   runs `check-planner-help.py`. Update the help to the new name (or put the
   old name back).
+- **a calendar date test fails**: it runs the tests in `tests/js/` with Node,
+  once with `TZ=UTC` and once with `TZ=Pacific/Auckland`.
+- **the Facebook posts hold something the home page would take out**: it runs
+  `check-facebook-posts.py`.
+
+### Calendar date tests (`tests/js/`)
+`tests/js/calendar-dates.test.js` tests `assets/js/calendar-dates.js`, the
+calendar page's date and repeat-event helpers: times staying put across the
+New Zealand clock changes, `RRULE` (`COUNT`, `UNTIL`, `BYDAY`, `INTERVAL`),
+`EXDATE`, all-day events, 29 February and month ends, "today" in New Zealand,
+the "NZ time" label and the saved `.ics` times. It uses Node's built-in test
+runner, so there is nothing to install (Node 22 or later):
+
+```bash
+node --test "tests/js/*.test.js"
+```
+
+The helpers never read the machine's own time zone, so the tests pass the same
+anywhere. After changing `calendar-dates.js`, run them.
 
 ### `check-links.py`
 Checks that every `href=` and `src=` in the pages (and `404.html`) that points
@@ -233,6 +251,54 @@ Standard library only.
 ```bash
 python tools/check-links.py
 ```
+
+### `check-facebook-posts.py`: the Facebook posts allowlist
+The home page shows the club's Facebook posts from `assets/facebook/posts.html`,
+which the "Update Facebook posts" workflow (`main.yml`) builds with
+`actions/update-facebook-posts/build-html.py`. Before showing them, the page
+cleans them with an **allowlist** in `assets/js/post-clean.js`: only the
+elements in `TAGS` and the attributes in `ATTRS` are kept, links must start
+`http://` or `https://`, and pictures must be the copies in
+`assets/facebook/images/`. Anything else is taken out (elements in `DROP`, such
+as `<script>` or `<iframe>`, with everything inside them; other elements keep
+their text). Normally nothing is taken out, because `build-html.py` escapes the
+posts' text.
+
+`check-facebook-posts.py` reads the same lists from `post-clean.js` and reports
+anything in `posts.html` the page would take out. It runs in the checks above,
+and in the Facebook updater after each update, where it only warns (the posts
+still publish, and the page takes the rest out).
+
+```bash
+python tools/check-facebook-posts.py              # the current posts
+python tools/check-facebook-posts.py some.html    # any other file
+```
+
+**To change what's allowed** (say `build-html.py` starts writing `<p>`, or a
+picture's `width`):
+1. Add the element to `TAGS`, or the attribute to `ATTRS` under its element
+   (`'*'` is for every element), in `assets/js/post-clean.js`. Change `URLS`
+   only to allow links or pictures from somewhere new.
+2. Run `python tools/check-facebook-posts.py`. It should say "nothing the
+   allowlist would take out".
+3. Run `python tools/stamp-assets.py`, so browsers fetch the new `post-clean.js`.
+
+**To check it's working**, on a local copy (`python -m http.server`) or on
+ncan.nz after publishing:
+1. Open the home page. The "Recent posts" should show, with their pictures and
+   "View on Facebook" links.
+2. Open the browser console (F12, Console). There should be no "Club posts:
+   took out ..." warning. If there is one, it lists what was taken out: either
+   allow it (above) or find out how it got into `posts.html`.
+3. To see the cleaner take something out, paste this into the console. It
+   should list the `onclick` and the `<script>`, and print the text without
+   them:
+   ```js
+   var d = new DOMParser().parseFromString('<div onclick="x()">Hi<script>x()</script></div>', 'text/html');
+   console.log(ncanPostClean.clean(d.body), d.body.innerHTML);
+   ```
+4. In GitHub, after the Facebook updater has run, its "Check the posts against
+   the home page's allowlist" step should show no warnings.
 
 A link that is known to be broken and is to stay that way for now goes in
 `tools/check-links-allow.txt` (the page's address, a space, the link as
@@ -261,8 +327,8 @@ python tools/check-planner-help.py
 ### `build-sitemap.py`
 Writes `sitemap.xml` and `robots.txt`, listing every page (the home page as
 `https://ncan.nz/`, the others as `https://ncan.nz/calendar/` and so on). Add a
-page's folder name to `SKIP` in the script to leave it out; `athlete`, `athletes`
-and `admin` are skipped, as they show nothing until someone signs in (and carry a noindex tag).
+page's folder name to `SKIP` in the script to leave it out; `athlete`, `athletes`,
+`admin` and `results-sources` are skipped, as they show nothing until someone signs in (and carry a noindex tag).
 `junior-athletics` is skipped while the coaches and committee review it. Folders
 that only redirect (`tuesday-training/`) are never listed. The sitemap was submitted once in Google Search
 Console; Google re-reads it by itself.
@@ -393,9 +459,12 @@ distances), with 1st, 2nd and 3rd places in a row of medal blocks of their own
 (only when there's a podium; a relay team's place counts once), and the
 athletes page counts the athletes on the podium.
 
-The results sources page (`/results-sources/`) is public: it lists every meeting collected, with how
-many of our athletes and results each added, and shows the athletes' names only
-to coaches and the committee. Signed in, administrators, coaches and the
+The results sources page (`/results-sources/`) is for club administrators,
+coaches and the committee, signed in (the API's `GET /v1/meetings` refuses
+anyone else): it lists every meeting collected, with how many results each
+added and which of our athletes. Anyone else sees only a sign-in form, or a line
+saying who the page is for; it is noindex and left out of the sitemap, and the
+athletes page shows its link only to staff. Administrators, coaches and the
 committee add meetings there; administrators also change a meeting's type and
 remove meetings.
 

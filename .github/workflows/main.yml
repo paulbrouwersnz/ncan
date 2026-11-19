@@ -20,6 +20,8 @@ jobs:
           sparse-checkout: |
             actions/update-facebook-posts
             assets/facebook
+            assets/js/post-clean.js
+            tools/check-facebook-posts.py
 
       - name: Make scripts executable
         run: |
@@ -31,6 +33,10 @@ jobs:
         env:
           FB_API_KEY: ${{ secrets.FB_API_KEY }}
         run: ./actions/update-facebook-posts/action.sh
+
+      - name: Check the posts against the home page's allowlist
+        # warnings only: the posts still publish, and the home page takes the rest out
+        run: python3 tools/check-facebook-posts.py --warn
 
       - name: Commit and push if changed
         run: |
