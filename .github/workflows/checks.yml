@@ -42,3 +42,14 @@ jobs:
 
       - name: Planner help names buttons that exist
         run: python tools/check-planner-help.py
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+
+      # the helpers must not depend on the machine's time zone, so run twice
+      - name: Calendar date tests
+        run: |
+          TZ=UTC node --test "tests/js/*.test.js"
+          TZ=Pacific/Auckland node --test "tests/js/*.test.js"
