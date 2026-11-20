@@ -750,6 +750,17 @@ def read_template():
     return top, unmark(middle), unmark(bottom)
 
 
+def hero_head(folder, f):
+    """The album page's green heading band, with the cover photo behind it
+    (styles.css, .page-head--photo): the original's WebP where the browser takes
+    it, otherwise the thumbnail JPEG (small, and soft under the green, but light).
+    The addresses go in CSS custom properties on the section."""
+    jpg = thumb_src(folder, f)
+    webp = webp_url(FULL_BASE, ORIGINALS_DIR, folder, f) or jpg
+    return ('  <section class="page-head page-head--photo" aria-labelledby="page-heading"'
+            ' style="--photo: url(\'%s\'); --photo-webp: url(\'%s\')">\n' % (jpg, webp))
+
+
 def write_album(template, folder, title, photos, intro, download):
     """Write gallery/<slug>/index.html for one album."""
     s = slug(folder)
@@ -830,6 +841,9 @@ def write_album(template, folder, title, photos, intro, download):
             '</main>'
             % (ALBUM_MARK, folder, esc(title), esc(title), plural(total),
                intro_html, download, '\n'.join(items), VIEWER))
+
+    main = main.replace('  <section class="page-head" aria-labelledby="page-heading">\n',
+                        hero_head(folder, cover_for(folder, photos)), 1)
 
     top, middle, bottom = template
     html = top + head + middle + main + bottom
