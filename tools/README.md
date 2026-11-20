@@ -388,8 +388,10 @@ The album order and the zip index are in `tools/gallery/` (`order.txt`,
 `zips.json`), and so is any album's `title.txt`, `cover.txt` or `README.md`, at
 `tools/gallery/<year>/<album>/`.
 
-**Choosing an album's cover:** an album's card on the gallery front page shows
-its first photo (by file name). To show another, put that photo's file name in
+**Choosing an album's cover:** an album's cover photo is its card's picture on
+the gallery front page, and the photo behind the green heading band on the
+album's own page (darkened on the left so the white title stays readable). It
+is the album's first photo (by file name). To show another, put that photo's file name in
 `tools/gallery/<year>/<album>/cover.txt` (e.g. `IMG_0312.jpg`; the extension
 and capitals don't matter), then run `python tools/build-gallery.py` and
 commit. A name that isn't in the album is reported, and the first photo used.
