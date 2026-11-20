@@ -1,0 +1,4 @@
+# This album's cover: the file name of one of its photos, on the line below.
+# It's the album's picture on the gallery front page (and behind the album
+# page's heading). Change it, then run: python tools/build-gallery.py
+NatashaHolloway2016.jpg
