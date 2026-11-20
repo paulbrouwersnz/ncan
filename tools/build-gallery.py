@@ -48,6 +48,10 @@ Folder names become album titles, joining nested segments ("2026/day-one" ->
 "2026 Day One"). To use a different title, put it on the first line of
 tools/gallery/<album>/title.txt (the album's folder path under tools/gallery/).
 
+An album's card on the front page shows its first photo. To show another, put
+the photo's file name on the first line of tools/gallery/<album>/cover.txt
+(e.g. IMG_0312.jpg; the extension and case don't matter).
+
 A tools/gallery/<album>/README.md is rendered as an intro block under that
 album's heading, above its photos. A useful subset of Markdown is supported:
 paragraphs, # headings, - and 1. lists, > quotes, **bold**, *italic*, `code`
@@ -115,7 +119,7 @@ GALLERY_DIR = os.path.join(PHOTOS_DIR, 'thumbs')
 ORIGINALS_DIR = os.path.join(PHOTOS_DIR, 'gallery')
 FULL_BASE = PHOTOS_URL + 'gallery/'
 THUMB_BASE = PHOTOS_URL + 'thumbs/'
-# order.txt, zips.json and any album's title.txt or README.md
+# order.txt, zips.json and any album's title.txt, cover.txt or README.md
 META_DIR = os.path.join(ROOT, 'tools', 'gallery')
 # Each album is also published as a single zip, at the album's own path with
 # .zip on the end. Which albums actually have one - and how big it is - is
@@ -283,6 +287,27 @@ def intro_for(relpath):
     if not os.path.exists(readme):
         return []
     return markdown(io.open(readme, encoding='utf-8').read())
+
+
+def cover_for(relpath, photos):
+    """The album's cover photo: the one named in tools/gallery/<album>/cover.txt
+    (its file name, on the first line that isn't blank or a # comment), or the
+    album's first photo when there's no cover.txt or it names no photo here."""
+    path = os.path.join(META_DIR, relpath, 'cover.txt')
+    if os.path.exists(path):
+        for line in io.open(path, encoding='utf-8'):
+            name = line.strip()
+            if not name or name.startswith('#'):
+                continue
+            # the name alone, with or without its extension, in any case
+            name = os.path.basename(name.replace('\\', '/')).lower()
+            for f in photos:
+                if f.lower() == name or os.path.splitext(f)[0].lower() == name:
+                    return f
+            print('   ! %s/cover.txt names "%s", which isn\'t in the album: '
+                  'using its first photo' % (relpath, line.strip()))
+            break
+    return photos[0]
 
 
 def album_key(relpath):
@@ -683,7 +708,7 @@ def front_page(albums):
                        '      <div class="cards gallery-cards">'
                        % (slug(year), esc(year)))
         s = slug(folder)
-        cover = photos[0]                # the album's first photo, in its order
+        cover = cover_for(folder, photos)   # cover.txt's choice, or the first photo
         out.append(
             '        <article class="card album-card" id="album-%s">\n'
             '          <div class="card__media">\n'
