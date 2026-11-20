@@ -341,6 +341,10 @@ def read_zips():
 
 def download_link(folder, zips):
     """The album's zip link, or '' when the album has no zip."""
+    local = os.path.join(ORIGINALS_DIR, *(folder + '.zip').split('/'))
+    if os.path.isdir(ORIGINALS_DIR) and not os.path.exists(local):
+        print('   ! no %s.zip in the local copy: no download link' % folder)
+        return ''                       # not uploaded, so the link would fail
     if zips is None:
         size = ''                       # never probed: link, but no size
     elif folder in zips:
