@@ -1,5 +1,24 @@
 # -*- coding: utf-8 -*-
-"""Rebuild the photo gallery from assets/img/gallery/.
+"""Rebuild the photo gallery from the photos at photos.ncan.nz.
+
+The photos are not in this repository. They live on the photo host,
+https://photos.ncan.nz/, and in a local copy of it (by default the folder
+ncan-gallery next to this repository; set NCAN_PHOTOS_DIR or --photos-dir to
+use another):
+
+    gallery/<album>/<photo>.jpg      the full-size originals (and a .zip per album)
+    gallery/<album>/<photo>.webp     the same photo as WebP
+    thumbs/<album>/<photo>.jpg       the thumbnails shown in the gallery
+    thumbs/<album>/<photo>.webp      the same thumbnail as WebP
+
+tools/gallery-photos.py makes the thumbnails and the WebP copies. This script
+reads the local thumbs/ folder (which albums, which photos, their sizes) and
+writes the pages, linking to the photo host. Each thumbnail is a <picture>
+offering the WebP with the JPEG as the fallback, and the photo viewer opens
+the WebP original when the browser took the WebP thumbnail.
+
+The album order, the zip index and any album titles or intros are kept in this
+repository, in tools/gallery/ (see below).
 
 The gallery is a front page, gallery/index.html, with one card per album
 (cover photo, title, photo count), and a page per album at
@@ -14,9 +33,9 @@ still work: the front page sends them on to the album's page.
 One folder per album. Folders may be nested to any depth - any folder that
 directly contains images becomes an album:
 
-    assets/img/gallery/2026-day-one/*.jpg          -> "2026 Day One"
-    assets/img/gallery/2026/day-one/*.jpg          -> "2026 Day One"
-    assets/img/gallery/2026/colgate-games/*.jpg    -> "2026 Colgate Games"
+    thumbs/2026-day-one/*.jpg          -> "2026 Day One"
+    thumbs/2026/day-one/*.jpg          -> "2026 Day One"
+    thumbs/2026/colgate-games/*.jpg    -> "2026 Colgate Games"
 
 A folder that holds both images and subfolders becomes an album in its own
 right, alongside its children.
@@ -26,17 +45,17 @@ Then run:
     python tools/build-gallery.py
 
 Folder names become album titles, joining nested segments ("2026/day-one" ->
-"2026 Day One"). To use a different title, put it on the first line of a
-`title.txt` inside the folder.
+"2026 Day One"). To use a different title, put it on the first line of
+tools/gallery/<album>/title.txt (the album's folder path under tools/gallery/).
 
-A `README.md` inside an album folder is rendered as an intro block under that
+A tools/gallery/<album>/README.md is rendered as an intro block under that
 album's heading, above its photos. A useful subset of Markdown is supported:
 paragraphs, # headings, - and 1. lists, > quotes, **bold**, *italic*, `code`
 and [links](https://example.com). Everything is escaped first, so the file
 cannot inject markup of its own.
 Albums are ordered newest year first, then by day. Empty folders are skipped.
 To order them by hand, list album folders one per line in
-assets/img/gallery/order.txt; a line holding just `*` marks where albums that
+tools/gallery/order.txt; a line holding just `*` marks where albums that
 are not listed go (without one they go last). Start from the current order
 with `--write-order`, then rearrange the lines.
 
@@ -84,17 +103,25 @@ except ImportError:
     Image = None
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-GALLERY_DIR = os.path.join(ROOT, 'assets', 'img', 'gallery')
-# The copies in the repo are thumbnails (see tools/shrink-gallery.py). The
-# full-size originals live on a mirror of this same folder layout, and that
-# is what a thumbnail links to - both for the lightbox, which reads the
-# link's href, and for the plain new-tab fallback without <dialog>.
-FULL_BASE = 'https://ncan.brouwers.nz/gallery/'
+# The photo host, and the local copy of it the pages are built from.
+# (NCAN_PHOTOS_URL overrides it, only to preview against a local server)
+PHOTOS_URL = os.environ.get('NCAN_PHOTOS_URL') or 'https://photos.ncan.nz/'
+PHOTOS_DIR = os.environ.get('NCAN_PHOTOS_DIR') or os.path.join(os.path.dirname(ROOT), 'ncan-gallery')
+# The thumbnails decide the albums and photos; the originals of the same names
+# are in gallery/. A thumbnail links to its original - both for the lightbox,
+# which reads the link's href (or data-webp), and for the plain new-tab
+# fallback without <dialog>.
+GALLERY_DIR = os.path.join(PHOTOS_DIR, 'thumbs')
+ORIGINALS_DIR = os.path.join(PHOTOS_DIR, 'gallery')
+FULL_BASE = PHOTOS_URL + 'gallery/'
+THUMB_BASE = PHOTOS_URL + 'thumbs/'
+# order.txt, zips.json and any album's title.txt or README.md
+META_DIR = os.path.join(ROOT, 'tools', 'gallery')
 # Each album is also published as a single zip, at the album's own path with
 # .zip on the end. Which albums actually have one - and how big it is - is
 # recorded by --check-zips, because not every album has been zipped and a
 # link to a missing file is worse than no link.
-ZIP_INDEX = os.path.join(GALLERY_DIR, 'zips.json')
+ZIP_INDEX = os.path.join(META_DIR, 'zips.json')
 PAGE = os.path.join(ROOT, 'gallery', 'index.html')
 PAGE_DIR = os.path.dirname(PAGE)
 OPEN, CLOSE = '<!-- @generated:gallery -->', '<!-- /@generated:gallery -->'
@@ -105,7 +132,8 @@ CLUB = 'North Canterbury Athletic Club'
 # until they are scrolled near (loading="lazy")
 EAGER_COVERS = 4
 
-EXTS = ('.jpg', '.jpeg', '.png', '.webp', '.avif')
+# the photos themselves; a .webp beside one is its WebP copy, not another photo
+EXTS = ('.jpg', '.jpeg', '.png')
 ORDER_FILE = 'order.txt'
 DAYS = {'one': 1, 'two': 2, 'three': 3, 'four': 4, 'five': 5}
 
@@ -148,7 +176,7 @@ def artifact(filename):
 
 
 def title_for(relpath):
-    custom = os.path.join(GALLERY_DIR, relpath, 'title.txt')
+    custom = os.path.join(META_DIR, relpath, 'title.txt')
     if os.path.exists(custom):
         first = io.open(custom, encoding='utf-8').readline().strip()
         if first:
@@ -251,7 +279,7 @@ def markdown(text):
 
 def intro_for(relpath):
     """The album folder's README.md, rendered, or an empty list."""
-    readme = os.path.join(GALLERY_DIR, relpath, 'README.md')
+    readme = os.path.join(META_DIR, relpath, 'README.md')
     if not os.path.exists(readme):
         return []
     return markdown(io.open(readme, encoding='utf-8').read())
@@ -276,7 +304,7 @@ def human_size(n):
 
 
 def check_zips(albums):
-    """Ask the mirror which albums have a zip, and record the sizes."""
+    """Ask the photo host which albums have a zip, and record the sizes."""
     found = {}
     print('checking %d album zip(s) on %s' % (len(albums), FULL_BASE))
     for folder in albums:
@@ -313,6 +341,10 @@ def read_zips():
 
 def download_link(folder, zips):
     """The album's zip link, or '' when the album has no zip."""
+    local = os.path.join(ORIGINALS_DIR, *(folder + '.zip').split('/'))
+    if os.path.isdir(ORIGINALS_DIR) and not os.path.exists(local):
+        print('   ! no %s.zip in the local copy: no download link' % folder)
+        return ''                       # not uploaded, so the link would fail
     if zips is None:
         size = ''                       # never probed: link, but no size
     elif folder in zips:
@@ -335,7 +367,7 @@ def read_order():
     `fallback_rank` - the position of the lone `*` line, or last when there is
     no `*` - and keeps the automatic order among themselves.
     """
-    path = os.path.join(GALLERY_DIR, ORDER_FILE)
+    path = os.path.join(META_DIR, ORDER_FILE)
     ranks, entries, fallback = {}, [], None
     if not os.path.exists(path):
         return ranks, 0, entries
@@ -599,7 +631,31 @@ def year_of(folder):
 
 
 def thumb_src(folder, f):
-    return '/assets/img/gallery/%s/%s' % (quote(folder), quote(f))
+    return THUMB_BASE + '%s/%s' % (quote(folder), quote(f))
+
+
+def webp_name(f):
+    return os.path.splitext(f)[0] + '.webp'
+
+
+def webp_url(base, local_dir, folder, f):
+    """The photo's WebP copy on the host, or None when there isn't one locally
+    (tools/gallery-photos.py hasn't made it yet): the page then offers only
+    the JPEG, rather than a WebP that would not load."""
+    w = webp_name(f)
+    if os.path.exists(os.path.join(local_dir, folder, w)):
+        return base + '%s/%s' % (quote(folder), quote(w))
+    return None
+
+
+def picture(folder, f, img_attrs):
+    """A thumbnail: the WebP where the browser takes it, the JPEG otherwise."""
+    img = '<img src="%s"%s>' % (thumb_src(folder, f), img_attrs)
+    webp = webp_url(THUMB_BASE, GALLERY_DIR, folder, f)
+    if not webp:
+        return img
+    return ('<picture><source srcset="%s" type="image/webp">%s</picture>'
+            % (webp, img))
 
 
 def size_attrs(folder, f):
@@ -631,16 +687,17 @@ def front_page(albums):
         out.append(
             '        <article class="card album-card" id="album-%s">\n'
             '          <div class="card__media">\n'
-            '            <img src="%s" alt=""%s%s decoding="async">\n'
+            '            %s\n'
             '          </div>\n'
             '          <div class="card__body">\n'
             '            <h3><a class="card__link" href="/gallery/%s/">%s</a></h3>\n'
             '            <p class="card__meta">%s</p>\n'
             '          </div>\n'
             '        </article>'
-            % (s, thumb_src(folder, cover), size_attrs(folder, cover),
-               '' if n < EAGER_COVERS else ' loading="lazy"', s, esc(title),
-               plural(len(photos))))
+            % (s, picture(folder, cover, ' alt=""%s%s decoding="async"'
+                          % (size_attrs(folder, cover),
+                             '' if n < EAGER_COVERS else ' loading="lazy"')),
+               s, esc(title), plural(len(photos))))
         n += 1
     if group is not None:
         out.append('      </div>\n')
@@ -681,13 +738,16 @@ def write_album(template, folder, title, photos, intro, download):
         if cap:
             alt += ': ' + cap
         data_cap = ' data-caption="%s"' % esc(cap) if cap else ''
+        full_webp = webp_url(FULL_BASE, ORIGINALS_DIR, folder, f)
+        data_webp = ' data-webp="%s"' % full_webp if full_webp else ''
         items.append(
             '          <li class="album__item">\n'
-            '            <a href="%s"%s target="_blank" rel="noopener">\n'
-            '              <img src="%s" alt="%s"%s loading="lazy" decoding="async">\n'
+            '            <a href="%s"%s%s target="_blank" rel="noopener">\n'
+            '              %s\n'
             '            </a>\n'
-            '          </li>' % (full, data_cap, thumb_src(folder, f), esc(alt),
-                                 size_attrs(folder, f)))
+            '          </li>' % (full, data_webp, data_cap,
+                                 picture(folder, f, ' alt="%s"%s loading="lazy" decoding="async"'
+                                         % (esc(alt), size_attrs(folder, f)))))
 
     intro_html = ''
     if intro:
@@ -708,7 +768,7 @@ def write_album(template, folder, title, photos, intro, download):
     main = ('<main id="main">\n'
             '  <span id="top"></span>\n'
             '  %s\n'
-            '  <!-- Generated by tools/build-gallery.py from assets/img/gallery/%s/ - do not hand-edit -->\n\n'
+            '  <!-- Generated by tools/build-gallery.py from the photos in thumbs/%s/ - do not hand-edit -->\n\n'
             '  <!-- ================= Page head ================= -->\n'
             '  <section class="page-head" aria-labelledby="page-heading">\n'
             '    <div class="wrap">\n'
@@ -774,7 +834,8 @@ def remove_stale(slugs):
 
 def build(order=False, check=False):
     if not os.path.isdir(GALLERY_DIR):
-        print('no gallery directory at %s' % GALLERY_DIR)
+        print('no thumbnails at %s - set NCAN_PHOTOS_DIR or --photos-dir to the '
+              'local copy of the photo host' % GALLERY_DIR)
         return 1
 
     # The Sporty migration is finished, so the three passes that renamed and
@@ -811,8 +872,9 @@ def build(order=False, check=False):
         albums.append((relpath, title_for(relpath), photos))
 
     if not albums:
-        markup = ('      <p class="note">No photos yet. Drop images into '
-                  '<code>assets/img/gallery/&lt;album&gt;/</code> and run '
+        markup = ('      <p class="note">No photos yet. Put the originals in '
+                  '<code>gallery/&lt;album&gt;/</code> on the photo host, run '
+                  '<code>python tools/gallery-photos.py</code>, then '
                   '<code>python tools/build-gallery.py</code>.</p>')
         write(markup)
         remove_stale(set())
@@ -885,7 +947,7 @@ ORDER_HEADER = """# Album order for gallery.html - one album folder per line, to
 
 def write_order(albums):
     """Write the current album order to order.txt as a starting point."""
-    path = os.path.join(GALLERY_DIR, ORDER_FILE)
+    path = os.path.join(META_DIR, ORDER_FILE)
     if os.path.exists(path):
         backup = path + '.bak'
         io.open(backup, 'w', encoding='utf-8', newline='').write(
@@ -911,13 +973,20 @@ def write(markup):
 
 if __name__ == '__main__':
     import argparse
-    ap = argparse.ArgumentParser(description='Rebuild the gallery from assets/img/gallery/.')
+    ap = argparse.ArgumentParser(description='Rebuild the gallery from the photos at photos.ncan.nz.')
+    ap.add_argument('--photos-dir', metavar='DIR',
+                    help='the local copy of the photo host (default: NCAN_PHOTOS_DIR, '
+                         'or ncan-gallery next to this repository)')
     ap.add_argument('--write-order', action='store_true',
-                    help='write the current album order to assets/img/gallery/'
+                    help='write the current album order to tools/gallery/'
                          'order.txt and stop, changing nothing else')
     ap.add_argument('--check-zips', action='store_true',
-                    help='ask the mirror which albums have a zip and how big '
-                         'it is, refresh assets/img/gallery/zips.json, then '
+                    help='ask the photo host which albums have a zip and how big '
+                         'it is, refresh tools/gallery/zips.json, then '
                          'rebuild the page')
     args = ap.parse_args()
+    if args.photos_dir:
+        PHOTOS_DIR = os.path.abspath(args.photos_dir)
+        GALLERY_DIR = os.path.join(PHOTOS_DIR, 'thumbs')
+        ORIGINALS_DIR = os.path.join(PHOTOS_DIR, 'gallery')
     sys.exit(build(order=args.write_order, check=args.check_zips))
