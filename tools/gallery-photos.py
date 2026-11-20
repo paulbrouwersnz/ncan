@@ -19,7 +19,10 @@ This script fills in what's missing, and changes nothing that's already there:
    without WebP, the "open in a new tab" link and the zips use them. The photo
    viewer opens the original's WebP; --webp-max-edge 2560 makes those half the
    size again (camera photos are larger than any screen), leaving the JPEG
-   full size. To change it later, delete the .webp files and run again.
+   full size. The cap is remembered (tools/gallery/photos.json), so later runs
+   keep to it without the option, and every run checks the originals' WebPs
+   are that size: one made bigger (before the cap) or smaller (under a lower
+   cap) is made again. --webp-max-edge 0 goes back to full size.
 
 Phone photos carry an EXIF orientation flag; it is baked into the pixels, so a
 WebP or thumbnail never comes out on its side. Colour profiles are kept.
@@ -42,9 +45,10 @@ new .webp files to the host.
 Needs Pillow (pip install Pillow).
 """
 import argparse
+import json
 import os
 import sys
-from concurrent.futures import ProcessPoolExecutor
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 from concurrent.futures.process import BrokenProcessPool
 
 try:
@@ -56,6 +60,8 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DEFAULT_PHOTOS = os.environ.get('NCAN_PHOTOS_DIR') or os.path.join(os.path.dirname(ROOT), 'ncan-gallery')
 SOURCES = ('.jpg', '.jpeg', '.png')
 WEBP_MAX = 16383                       # WebP's largest side, in pixels
+# remembered choices (the WebP cap), kept with the gallery's other settings
+SETTINGS = os.path.join(ROOT, 'tools', 'gallery', 'photos.json')
 
 
 def sources(top, album=''):
@@ -146,6 +152,47 @@ def stale(src, dst):
     return not os.path.exists(dst) or os.path.getmtime(dst) < os.path.getmtime(src)
 
 
+def longest(path):
+    """The longest side in pixels, from the file's header (no decoding)."""
+    with Image.open(path) as im:
+        return max(im.size)
+
+
+def wrong_size(src, dst, cap):
+    """Whether dst, the WebP of src, isn't the size the cap makes it: bigger than
+    the cap, or smaller than it should be (made under a lower cap)."""
+    try:
+        want = longest(src)
+        if cap:
+            want = min(want, cap)
+        return abs(longest(dst) - min(want, WEBP_MAX)) > 1
+    except Exception:
+        return True                       # unreadable: make it again
+
+
+def setting(name, default):
+    try:
+        with open(SETTINGS, encoding='utf-8') as fh:
+            return json.load(fh).get(name, default)
+    except (OSError, ValueError):
+        return default
+
+
+def save_setting(name, value):
+    try:
+        with open(SETTINGS, encoding='utf-8') as fh:
+            data = json.load(fh)
+    except (OSError, ValueError):
+        data = {}
+    if data.get(name) != value:
+        data[name] = value
+        os.makedirs(os.path.dirname(SETTINGS), exist_ok=True)
+        with open(SETTINGS, 'w', encoding='utf-8', newline='\n') as fh:
+            json.dump(data, fh, indent=2)
+            fh.write('\n')
+        print('saved %s = %s in %s (commit it)' % (name, value, os.path.relpath(SETTINGS, ROOT)))
+
+
 def watch_parent():
     """In each worker: stop when the main script is gone. On Windows a worker
     outlives a main script that was killed outright (Task Manager, closing the
@@ -210,9 +257,11 @@ def main():
     ap.add_argument('--max-edge', type=int, default=500, help='thumbnail size (default 500)')
     ap.add_argument('--thumb-quality', type=int, default=82, help='thumbnail JPEG quality (default 82)')
     ap.add_argument('--webp-quality', type=int, default=80, help='WebP quality (default 80)')
-    ap.add_argument('--webp-max-edge', type=int, default=0,
+    ap.add_argument('--webp-max-edge', type=int, default=None,
                     help="cap the originals' WebP copies at this many pixels on the longest "
-                         'side (default 0: full size). The JPEG stays full size.')
+                         'side (0: full size). Remembered in tools/gallery/photos.json, so '
+                         'later runs use it too; WebPs at another size are made again. '
+                         'The JPEG stays full size.')
     ap.add_argument('--jobs', type=int, default=os.cpu_count() or 2,
                     help='photos converted at once (default: one per CPU, %(default)s here)')
     ap.add_argument('--dry-run', action='store_true', help='report what would be made, make nothing')
@@ -223,6 +272,10 @@ def main():
     if not os.path.isdir(originals) and not os.path.isdir(thumbs):
         sys.exit('No gallery/ or thumbs/ in %s - set --photos-dir' % photos)
     album = args.album.strip('/').replace('\\', '/')
+    cap = setting('webp_max_edge', 0) if args.webp_max_edge is None else args.webp_max_edge
+    if args.webp_max_edge is not None and not args.dry_run:
+        save_setting('webp_max_edge', cap)
+    print("originals' WebP copies: %s" % (('at most %dpx' % cap) if cap else 'full size'))
     if not args.dry_run:
         tidy((originals, thumbs))
 
@@ -249,14 +302,23 @@ def main():
     if args.only != 'thumbs':
         small = sources(thumbs, album)
         small = [x for x in small if x not in clashes(small)]
-        jobs = []
-        for top, items, edge in ((originals, full, args.webp_max_edge), (thumbs, small, 0)):
+        jobs, resize = [], []
+        for top, items, edge in ((originals, full, cap), (thumbs, small, 0)):
             for rel, f in items:
                 src = os.path.join(top, rel, f)
                 if stale(src, webp_of(src)):
                     jobs.append((src, webp_of(src), args.webp_quality, edge))
-        print('WebP copies to make: %d (%d originals and %d thumbnails checked)'
-              % (len(jobs), len(full), len(small)))
+                elif top == originals:
+                    resize.append((src, webp_of(src)))
+        # an original's WebP made at another size (before the cap was set or changed)
+        with ThreadPoolExecutor(max_workers=16) as pool:
+            wrong = [pair for pair, bad in zip(resize, pool.map(lambda p: wrong_size(p[0], p[1], cap), resize))
+                     if bad]
+        jobs += [(src, dst, args.webp_quality, cap) for src, dst in wrong]
+        print('WebP copies to make: %d, of which %d at the wrong size for %s '
+              '(%d originals and %d thumbnails checked)'
+              % (len(jobs), len(wrong), ('%dpx' % cap) if cap else 'full size',
+                 len(full), len(small)))
         if not args.dry_run:
             made, failed = run(jobs, make_webp, args.jobs, 'WebP')
             print('   made %d, failed %d' % (made, failed))
