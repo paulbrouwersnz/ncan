@@ -385,8 +385,14 @@ opens the WebP original in browsers that show WebP, the JPEG in the rest. The
    `python tools/build-sitemap.py`, and commit.
 
 The album order and the zip index are in `tools/gallery/` (`order.txt`,
-`zips.json`), and so is any album's `title.txt` or `README.md`, at
+`zips.json`), and so is any album's `title.txt`, `cover.txt` or `README.md`, at
 `tools/gallery/<year>/<album>/`.
+
+**Choosing an album's cover:** an album's card on the gallery front page shows
+its first photo (by file name). To show another, put that photo's file name in
+`tools/gallery/<year>/<album>/cover.txt` (e.g. `IMG_0312.jpg`; the extension
+and capitals don't matter), then run `python tools/build-gallery.py` and
+commit. A name that isn't in the album is reported, and the first photo used.
 
 **The old addresses:** the originals were at `https://ncan.brouwers.nz/gallery/`
 and the thumbnails in this repository (`assets/img/gallery/`, until November
