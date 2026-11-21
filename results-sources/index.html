@@ -502,9 +502,12 @@
         body.appendChild(facts);
         // a club administrator can change an AthleticLIVE meeting's type, or take it off the list
         if (CAN_REMOVE && m.from === 'AthleticLIVE') {
-          body.appendChild(nameForm(m));
-          body.appendChild(typeForm(m));
-          body.appendChild(removeControl(m));
+          // one box, so it can be shaded and locked as a whole while a change is sent or collected
+          var manage = text('div', 'src-manage');
+          manage.appendChild(nameForm(m));
+          manage.appendChild(typeForm(m));
+          manage.appendChild(removeControl(m));
+          body.appendChild(manage);
         }
         // the athletes' names (the API sends a count instead to anyone not allowed every athlete)
         if (m.athletes && m.athletes.length) {
@@ -577,9 +580,14 @@
       var collecting = false; // results are being collected: everything that starts another collect is locked
 
       var COLLECT_NOW = 'Collecting results now. This takes 5–10 minutes; this page updates when it’s done.';
-      var LIST_CONTROLS = '.src-type-form select, .src-type-form input, .src-type-form button, .src-remove button';
+      // shade and lock every meeting's rename, type and remove controls (each in its .src-manage box)
+      function lockList(on) {
+        var boxes = $('src-out').querySelectorAll('.src-manage');
+        for (var i = 0; i < boxes.length; i++) { FormLock.lock(boxes[i], on); }
+      }
 
-      function lockList(on) { FormLock.lock($('src-out'), on, LIST_CONTROLS); }
+      // shade and lock one meeting's controls while its change is being sent
+      function lockMeeting(el, on) { FormLock.lock(el.closest('.src-manage'), on); }
 
       // lock the Add a meeting form (shaded, with a spinner) while a request or a collect runs
       function busy(on) {
@@ -683,7 +691,7 @@
         var go = text('button', 'btn btn--ghost', 'Rename');
         go.type = 'submit';
         go.disabled = true;
-        var said = text('span', 'src-type-form__said');
+        var said = text('span', 'src-type-form__said lock-keep');
         said.setAttribute('role', 'status');
         var tidy = function (s) { return s.replace(/\s+/g, ' ').trim(); };
         box.addEventListener('input', function () {
@@ -694,15 +702,15 @@
           e.preventDefault();
           var name = tidy(box.value);
           if (!name || name === m.name) { return; }
-          go.disabled = box.disabled = true;
+          lockMeeting(form, true);
           said.textContent = 'Saving…';
           NCAN.send('/sources/name', { url: m.link, name: name }).then(function (r) {
-            if (r.status !== 200) { go.disabled = box.disabled = false; said.textContent = r.body.error || 'Sorry, that didn’t work.'; return; }
+            if (r.status !== 200) { lockMeeting(form, false); said.textContent = r.body.error || 'Sorry, that didn’t work.'; return; }
             said.textContent = 'Now “' + r.body.meeting.name + '”: updating the results…' +
               (r.body.warning ? ' ' + r.body.warning : '');
             startCollecting();
             setTimeout(watchCollect, 3000);
-          }, function (err) { go.disabled = box.disabled = false; said.textContent = err.message; });
+          }, function (err) { lockMeeting(form, false); said.textContent = err.message; });
         });
         var field = text('p', 'records-field');
         field.appendChild(label);
@@ -725,20 +733,20 @@
         var go = text('button', 'btn btn--ghost', 'Change type');
         go.type = 'submit';
         go.disabled = true;
-        var said = text('span', 'src-type-form__said');
+        var said = text('span', 'src-type-form__said lock-keep');
         said.setAttribute('role', 'status');
         pick.addEventListener('change', function () { go.disabled = pick.value === m.type; said.textContent = ''; });
         form.addEventListener('submit', function (e) {
           e.preventDefault();
           if (pick.value === m.type) { return; }
-          go.disabled = pick.disabled = true;
+          lockMeeting(form, true);
           said.textContent = 'Saving…';
           NCAN.send('/sources/type', { url: m.link, type: pick.value }).then(function (r) {
-            if (r.status !== 200) { go.disabled = pick.disabled = false; said.textContent = r.body.error || 'Sorry, that didn’t work.'; return; }
+            if (r.status !== 200) { lockMeeting(form, false); said.textContent = r.body.error || 'Sorry, that didn’t work.'; return; }
             said.textContent = 'Now ' + r.body.meeting.type + ': updating the results…';
             startCollecting();
             setTimeout(watchCollect, 3000);
-          }, function (err) { go.disabled = pick.disabled = false; said.textContent = err.message; });
+          }, function (err) { lockMeeting(form, false); said.textContent = err.message; });
         });
         var field = text('p', 'records-field');
         field.appendChild(label);
@@ -761,21 +769,20 @@
         var no = text('button', 'btn btn--ghost btn--sm', 'Keep it');
         yes.type = no.type = 'button';
         ask.appendChild(yes); ask.appendChild(no);
-        var said = text('p', 'src-remove__said');
+        var said = text('p', 'src-remove__said lock-keep');
         said.setAttribute('role', 'status');
         rm.addEventListener('click', function () { rm.hidden = true; ask.hidden = false; said.textContent = ''; yes.focus(); });
         no.addEventListener('click', function () { ask.hidden = true; rm.hidden = false; rm.focus(); });
         yes.addEventListener('click', function () {
-          yes.disabled = no.disabled = true;
+          lockMeeting(box, true);
           said.textContent = 'Removing…';
           NCAN.send('/sources/remove', { url: m.link }).then(function (r) {
-            yes.disabled = no.disabled = false;
-            if (r.status !== 200) { said.textContent = (r.body && r.body.error) || 'Sorry, that didn’t work.'; return; }
+            if (r.status !== 200) { lockMeeting(box, false); said.textContent = (r.body && r.body.error) || 'Sorry, that didn’t work.'; return; }
             ask.hidden = true;
             said.textContent = 'Removed. The results are being collected again: this meeting goes from the list when that’s done.';
             startCollecting();
             setTimeout(watchCollect, 3000);
-          }, function (err) { yes.disabled = no.disabled = false; said.textContent = err.message; });
+          }, function (err) { lockMeeting(box, false); said.textContent = err.message; });
         });
         box.appendChild(rm); box.appendChild(ask); box.appendChild(said);
         return box;
