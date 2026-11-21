@@ -1,6 +1,7 @@
 /*
   What a shared training-plan link (/junior-athletics/#/plan/<date>) does when there's no
-  plan on that date: it goes to the list of all the plans, which says nothing matched.
+  plan to show: a draft says why (scheduled, not released yet, or being changed), and no
+  plan at all goes to the list of all the plans, which says nothing matched.
   Kept apart from training.js so the Node tests can check it (tests/js/training-links.test.js). Dates are "YYYY-MM-DD" text throughout, so the
   machine's time zone never matters.
 */
@@ -51,5 +52,18 @@
     return said + ' All the training plans are listed below.';
   }
 
-  return { followMove: followMove, notFoundUrl: notFoundUrl, noPlanAsked: noPlanAsked, noPlanText: noPlanText };
+  // A link to a plan that's still a draft (the API's 404 with "state": "draft"): what it
+  // says, or null if it isn't a draft. Scheduled: when it will be released. Never released
+  // ("released_before": false): not released yet. Taken back after release: being changed.
+  // An API too old to send "released_before" gets "being changed", as it always did.
+  function draftText(body, date, longDate, whenText) {
+    if (!body || body.state !== 'draft') { return null; }
+    var plan = 'The training plan for ' + longDate(date);
+    if (body.release_at) { return plan + ' will be released on ' + whenText(body.release_at) + '. Please check back then.'; }
+    if (body.released_before === false) { return plan + ' hasn’t been released yet. Please check back later.'; }
+    return plan + ' is being changed. Please check back soon.';
+  }
+
+  return { followMove: followMove, notFoundUrl: notFoundUrl, noPlanAsked: noPlanAsked, noPlanText: noPlanText,
+           draftText: draftText };
 }));

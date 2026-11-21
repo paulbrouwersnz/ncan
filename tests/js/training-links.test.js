@@ -52,3 +52,20 @@ test('the list says nothing matched', () => {
   assert.equal(L.noPlanText('link', TODAY, longDate),
     'No training plan was found for that link. All the training plans are listed below.');
 });
+
+test('a draft says why it is not shown', () => {
+  const when = (t) => 'WHEN(' + t + ')';
+  const day = '2026-11-24';
+  assert.equal(L.draftText({ state: 'draft', released_before: false, release_at: '2026-11-23T18:00' }, day, longDate, when),
+    'The training plan for Tuesday 24 November 2026 will be released on WHEN(2026-11-23T18:00). Please check back then.');
+  assert.equal(L.draftText({ state: 'draft', released_before: false }, day, longDate, when),
+    'The training plan for Tuesday 24 November 2026 hasn’t been released yet. Please check back later.');
+  assert.equal(L.draftText({ state: 'draft', released_before: true, since: '2026-11-20T09:00:00' }, day, longDate, when),
+    'The training plan for Tuesday 24 November 2026 is being changed. Please check back soon.');
+  // an older API, without "released_before": as before
+  assert.equal(L.draftText({ state: 'draft', since: '2026-11-20T09:00:00' }, day, longDate, when),
+    'The training plan for Tuesday 24 November 2026 is being changed. Please check back soon.');
+  // not a draft
+  assert.equal(L.draftText({ moved_to: '2026-12-01' }, day, longDate, when), null);
+  assert.equal(L.draftText({}, day, longDate, when), null);
+});

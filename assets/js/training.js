@@ -11,7 +11,8 @@
   why). A released or cancelled plan has a share link,
   /junior-athletics/#/plan/2026-12-01: that plan on its own, to read and print,
   with nothing to edit (and no coaches' notes, whoever opens it). If it has gone,
-  the link says so: removed (and when), moved (it follows), or being changed. A
+  the link says so: removed (and when), moved (it follows), not released yet, or
+  being changed (taken back after release). A
   link with no plan at all goes to the list of plans, which says nothing matched
   (training-links.js). Club administrators, coaches and the committee, once signed in, also
   see drafts and can make, change, release, cancel and delete plans.
@@ -666,13 +667,8 @@
       if (err.status === 410) {
         return finish([message('The training plan for ' + longDate(date) + ' was removed on ' + whenText(body.removed) + '.')]);
       }
-      if (body.state === 'draft' && body.release_at) {
-        return finish([message('The training plan for ' + longDate(date) + ' will be released on ' +
-          whenText(body.release_at) + '. Please check back then.')]);
-      }
-      if (body.state === 'draft') {
-        return finish([message('The training plan for ' + longDate(date) + ' is being changed. Please check back soon.')]);
-      }
+      var draft = links && links.draftText(body, date, longDate, whenText);
+      if (draft) { return finish([message(draft)]); }
       // nothing on that date (or not a date at all): the list of all the plans, which says so
       if (err.status === 404 || err.status === 400) { return noPlan(date); }
       finish([message('The training plan can’t be loaded just now. Please try again later.')]);
