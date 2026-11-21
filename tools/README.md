@@ -85,7 +85,7 @@ browser's console on the Athletics NZ eLearning library (see below).
 | You've… | Run |
 |---|---|
 | edited `assets/css/styles.css` or a script in `assets/js/` | nothing: publishing stamps them (don't commit stamps; see "Publishing the site") |
-| edited anything in `partials/` | `sync-partials.py` |
+| edited anything in `partials/`, including the staff tools list (`staff-tools.json`) | `sync-partials.py` |
 | added a new page (a folder with an `index.html`) | `sync-partials.py`, `build-sitemap.py`, then `indexnow.py <page>` |
 | changed a page's content and want search engines to notice | `indexnow.py <page>` |
 | added photos or albums to the gallery | put the originals in the photo host's `gallery/` folder, then `gallery-photos.py`, upload, `build-gallery.py`, and `build-sitemap.py` if an album was added, renamed or removed (see "Gallery") |
@@ -157,6 +157,18 @@ python tools/sync-partials.py
 It rewrites the whole block between the markers, so a page whose shared blocks
 have been reformatted (e.g. by an editor) shows a large but harmless diff the
 next time it runs.
+
+It also writes the **staff tools cards** on `/admin/`, `/committee-tools/` and
+`/coaches-tools/`, between `<!-- @tools:admin -->` (or `committee`, `coaches`)
+markers, from one list: `partials/staff-tools.json` (`tools/staff_tools.py`).
+Each tool is one entry: `title`, `href`, `blurb`, `lowest` (coach, committee or
+admin), `group`, and an optional `count` for a waiting-count badge. A page shows
+every group its role reaches: `/admin/` all of them, `/committee-tools/`
+Committee tools then Coaches' tools, `/coaches-tools/` Coaches' tools only. A
+tool for a higher role is never listed on a lower role's page. To add a tool,
+add one entry and run the script; it refuses a list with an unknown role or
+group, a tool whose role doesn't match its group, or an address listed twice.
+Tests: `tests/py/test_staff_tools.py`.
 
 ### `stamp-assets.py`
 Adds a content hash to the stylesheet link (`styles.css?v=1a2b3c4d`) and to
@@ -823,7 +835,10 @@ the committee to `/committee-tools/`, coaches to `/coaches-tools/` and families
 to `/athletes/`. The emailed link comes back to `/sign-in/`, which does the same.
 Pages that need signing in keep their own sign-in box, which brings people back
 to that page. The two tools pages (`assets/js/staff-tools.js`) are cards linking
-to the tools each role uses; the roles allowed are in `data-roles` on `<main>`.
+to the tools each role uses, written from `partials/staff-tools.json` by
+`sync-partials.py`; the lowest role allowed is in `data-lowest` on `<main>`.
+`/admin/` shows the same cards under Committee tools and Coaches' tools, below
+its own admin groups.
 All three are noindex and left out of the sitemap. The API's plain sign-in form
 (`/v1/auth/sign-in`) redirects here; `?plain=1` keeps the plain form, for
 browsers without JavaScript.
