@@ -101,6 +101,9 @@ import io, json, os, re, sys
 from urllib.parse import quote
 from urllib.request import Request, urlopen
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import page_photos  # noqa: E402
+
 try:
     from PIL import Image
 except ImportError:
@@ -750,15 +753,39 @@ def read_template():
     return top, unmark(middle), unmark(bottom)
 
 
-def hero_head(folder, f):
-    """The album page's green heading band, with the cover photo behind it
-    (styles.css, .page-head--photo): the original's WebP where the browser takes
-    it, otherwise the thumbnail JPEG (small, and soft under the green, but light).
-    The addresses go in CSS custom properties on the section."""
+def hero_photo(folder, f):
+    """The album's cover as a header photo (assets/data/page-photos.json): the
+    original's WebP where the browser takes it, otherwise the thumbnail JPEG
+    (small, and soft under the green, but light)."""
     jpg = thumb_src(folder, f)
     webp = webp_url(FULL_BASE, ORIGINALS_DIR, folder, f) or jpg
+    return {'src': jpg, 'webp': webp} if webp != jpg else jpg
+
+
+def hero_head(folder, f):
+    """The album page's green heading band, with the cover photo behind it
+    (styles.css, .page-head--photo), written as tools/make-head-photo.py
+    would write it from the album's entry in page-photos.json."""
+    style = page_photos.head_style(page_photos.photo_of(hero_photo(folder, f)))
     return ('  <section class="page-head page-head--photo" aria-labelledby="page-heading"'
-            ' style="--photo: url(\'%s\'); --photo-webp: url(\'%s\')">\n' % (jpg, webp))
+            ' style="%s">\n' % style)
+
+
+def write_header_photos(albums):
+    """Replace the album pages' entries in page-photos.json (those marked
+    "source": "gallery") with one per album, its cover photo. Entries written
+    by hand are left alone; one for an album page wins over the cover, and
+    tools/make-head-photo.py then writes it into the page."""
+    data = page_photos.load()
+    pages = data.setdefault('pages', {})
+    for key in [k for k, v in pages.items() if v.get('source') == 'gallery']:
+        del pages[key]
+    for folder, _, photos in albums:
+        key = '/gallery/%s/' % slug(folder)
+        if key not in pages:
+            pages[key] = {'photos': [hero_photo(folder, cover_for(folder, photos))],
+                          'source': 'gallery'}
+    page_photos.save(data)
 
 
 def write_album(template, folder, title, photos, intro, download):
@@ -951,6 +978,7 @@ def build(order=False, check=False):
 
     write(front_page(albums))
     remove_stale(slugs)
+    write_header_photos(albums)
 
     total = sum(len(p) for _, _, p in albums)
     print('gallery rebuilt: %d album page(s), %d photo(s), %d zip link(s)'
