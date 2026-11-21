@@ -81,7 +81,7 @@
       }
       list.appendChild(li);
     });
-    if (!data.people.length) { list.appendChild(el('li', null, 'Only coaches and club administrators.')); }
+    if (!data.people.length) { list.appendChild(el('li', null, 'Only coaches, the committee and club administrators.')); }
     out.appendChild(list);
 
     if (data.blocked && data.blocked.length) {

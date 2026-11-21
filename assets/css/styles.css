@@ -3913,6 +3913,9 @@ html:has(.plan-editor:not([hidden])) { scroll-padding-bottom: 5rem; }
 .review-results__date { display: inline-block; min-width: 6.2rem; color: var(--text-soft); }
 .review-results__more { color: var(--text-soft); }
 .account-line__admin { color: inherit; font-weight: 600; }
+.account-line__own { color: inherit; font-weight: 600; }
+.training-account .account-line__own { color: var(--link); }
+.committee-note { margin: 0 0 1rem; padding: .6rem .9rem; border-left: 4px solid var(--accent, currentColor); background: rgba(0,0,0,.04); }
 
 /* Name suggestions under a box: our own list, so it sits under the box */
 .suggest { position: relative; }

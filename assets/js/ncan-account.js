@@ -121,6 +121,25 @@
     });
   }
 
+  // Roles, lowest first: each can do everything the ones before it can (the API
+  // decides; this only picks what to show). Check with atLeast(who, 'coach'),
+  // never by listing role names. Staff keep their own family links: who.own.
+  var RANK = ['family', 'coach', 'committee', 'admin'];
+  function atLeast(who, lowest) {
+    var role = who && typeof who === 'object' ? who.role : who;
+    return RANK.indexOf(role) >= 0 && RANK.indexOf(role) >= RANK.indexOf(lowest);
+  }
+
+  // Training plans and the club champs review: the committee can change them,
+  // but coaches usually do. A note above them, for the committee only.
+  function coachesNote(before, who) {
+    if (!before || !who || who.role !== 'committee') { return null; }
+    var note = el('p', 'note committee-note',
+      'Coaches usually make changes here. Please check with the coaching team before editing.');
+    before.parentNode.insertBefore(note, before);
+    return note;
+  }
+
   var HOMES = { admin: '/admin/', committee: '/committee-tools/', coach: '/coaches-tools/', family: '/athletes/' };
   function home(who) {
     return (who && HOMES[who.role]) || '/athletes/';
@@ -260,6 +279,18 @@
     box.classList.add('account-line');
     box.appendChild(document.createTextNode('Signed in as ' + who.email +
       (ROLES[who.role] ? ' (' + ROLES[who.role] + ')' : '') + '. '));
+    // staff who are also family: their own athletes' pages, one step away
+    var own = atLeast(who, 'coach') && Array.isArray(who.own) ? who.own.filter(function (a) { return a.slug; }) : [];
+    if (own.length) {
+      box.appendChild(document.createTextNode(own.length > 1 ? 'Your athletes: ' : 'Your athlete: '));
+      own.forEach(function (a, i) {
+        if (i) { box.appendChild(document.createTextNode(', ')); }
+        var link = el('a', 'account-line__own', a.name);
+        link.href = '/athlete/#/' + a.slug;
+        box.appendChild(link);
+      });
+      box.appendChild(document.createTextNode(' · '));
+    }
     if (who.role === 'admin' && !/\/admin\/?(index\.html)?$/.test(location.pathname)) {
       var adm = el('a', 'account-line__admin', 'Club admin');
       adm.href = '/admin/';
@@ -277,5 +308,6 @@
   }
 
   window.NCAN = { api: API, get: get, send: send, sendFile: sendFile, me: me, signIn: signIn, account: account,
-    home: home, safeNext: safeNext, nextFromHash: nextFromHash, signInLink: signInLink };
+    home: home, safeNext: safeNext, nextFromHash: nextFromHash, signInLink: signInLink,
+    RANK: RANK, atLeast: atLeast, coachesNote: coachesNote };
 }());

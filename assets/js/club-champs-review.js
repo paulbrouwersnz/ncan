@@ -197,7 +197,8 @@
 
   NCAN.me().then(function (who) {
     NCAN.account($('account'), who);
-    staff = !!who && (who.role === 'admin' || who.role === 'coach');
+    staff = NCAN.atLeast(who, 'coach');
+    NCAN.coachesNote(document.querySelector('#champs-review .section-head'), who);
     load();
   }, function () { /* not signed in: the public page only */ });
 }());
