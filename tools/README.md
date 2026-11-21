@@ -440,6 +440,16 @@ and strips anything left. It's private like the page: fetched signed in and
 shown with `NCAN.pageHead.photo({photo, focus})`, which keeps it over whatever
 the settings give `/athlete/`.
 
+With a photo there, the same people get **Edit photo** and **Replace photo**.
+Edit photo changes only what stays in view: a 3 × 3 "Keep in view" grid (top
+left `0% 0%` … bottom right `100% 100%`), or a point clicked on the photo,
+shown as **Custom**. It saves just the focus (`POST .../photo/settings`), with
+no new upload, and the heading follows as you choose. Replace photo is the
+crop-and-upload flow, starting from the current "Keep in view"; the new photo
+takes the old one's place in one step. The grid is its own file,
+`assets/js/anchor-grid.js` (tests: `tests/js/anchor-grid.test.js`), so the admin
+Header photos editor can use it later.
+
 The file has two parts (the admin page's "Edit as text" uses the same layout):
 
 ```json
