@@ -1,6 +1,7 @@
 /*
   ncan-account.js - signing in, for the pages that read from the club's API
-  (/athletes/, /athlete/, /results-sources/).
+  (/sign-in/, /athletes/, /athlete/, /results-sources/, /admin/ and the
+  staff tools pages).
 
   Athlete results are not part of this website: they come from the API at
   https://api.ncan.nz/v1/ (the private ncan-api project), and only to someone
@@ -16,10 +17,21 @@
     send(path, data)       -> Promise of {status, body}: a POST of JSON.
     sendFile(path, blob)   -> the same, for a POST of a file's bytes (a photo),
                               sent with the blob's own type.
-    me()                   -> Promise of {email, role, athletes}, or null.
-    signIn(el, intro, next) -> fills el with a sign-in form; the emailed link comes
-                              back to `next` (by default, this page as it is).
+    me()                   -> Promise of {email, role, athletes}, or null. Also
+                              remembers on this device whether someone is signed
+                              in, so the header's Sign in / My pages link
+                              (account-link.js) only asks the API when it might
+                              be "My pages".
+    signIn(el, intro, next, head) -> fills el with a sign-in form; the emailed link
+                              comes back to `next` (by default, this page as it is).
     account(el, who)       -> fills el with "Signed in as ... Sign out".
+    home(who)              -> where someone lands after signing in with nowhere
+                              else to go: admin /admin/, committee
+                              /committee-tools/, coach /coaches-tools/, family
+                              /athletes/.
+    safeNext(value)        -> value as a path on this website ("/athlete/#/x"),
+                              or null if it points anywhere else (or back to
+                              /sign-in/ itself).
 
   On this computer (http://localhost:8123), pages call an API run locally on
   port 8765: see the ncan-api project's docs/API.md.
@@ -84,11 +96,42 @@
       });
   }
 
+  // "Someone signed in here recently", for the header link (account-link.js).
+  // Only a hint: the API's cookie decides, and this is cleared on a 401.
+  var HINT = 'ncan-signed-in';
+  function remember(who) {
+    try {
+      if (who) { localStorage.setItem(HINT, '1'); } else { localStorage.removeItem(HINT); }
+    } catch (e) { /* storage blocked: the header link just says Sign in */ }
+  }
+
   function me() {
-    return get('/auth/me').catch(function (err) {
-      if (err.status === 401) { return null; }
+    return get('/auth/me').then(function (who) {
+      remember(who);
+      return who;
+    }, function (err) {
+      if (err.status === 401) { remember(null); return null; }
       throw err;
     });
+  }
+
+  var HOMES = { admin: '/admin/', committee: '/committee-tools/', coach: '/coaches-tools/', family: '/athletes/' };
+  function home(who) {
+    return (who && HOMES[who.role]) || '/athletes/';
+  }
+
+  // Only ever send people on to a page of this website: a path ("/athletes/",
+  // "/athlete/#/sam-brown") or a full address on this site. Anything else, or
+  // /sign-in/ itself (a loop), is null.
+  function safeNext(value) {
+    if (typeof value !== 'string') { return null; }
+    value = value.trim();
+    if (!value || value.length > 500 || /[\\\s]/.test(value)) { return null; }
+    var here = location.protocol + '//' + location.host;
+    if (value.indexOf(here + '/') === 0) { value = value.slice(here.length); }
+    if (value.charAt(0) !== '/' || value.charAt(1) === '/') { return null; }
+    if (/^\/sign-in\/?([?#].*)?$/.test(value) || /^\/sign-in\/index\.html/.test(value)) { return null; }
+    return value;
   }
 
   function el(tag, cls, text) {
@@ -98,15 +141,18 @@
     return e;
   }
 
+  var CONTACT = 'ncanathletics@gmail.com';
+
   // A sign-in box: email address -> the API emails a link that brings them back here.
-  function signIn(box, intro, next) {
+  function signIn(box, intro, next, head) {
     box.textContent = '';
     box.hidden = false;
     box.classList.add('signin');
-    box.appendChild(el('h3', 'signin__head', 'Sign in to see results'));
+    box.appendChild(el('h3', 'signin__head', head || 'Sign in to see results'));
     box.appendChild(el('p', null, intro ||
-      'Athlete results are for club families, coaches and the committee. Enter the email address ' +
-      'the club has for you, and we’ll email you a link to sign in. There is no password.'));
+      'Athlete results are for club families, coaches, the committee and club administrators. ' +
+      'Enter the email address the club has for you, and we’ll email you a link to sign in. ' +
+      'There is no password.'));
     var form = el('form', 'signin__form');
     form.noValidate = false;
     var field = el('p', 'records-field records-field--grow');
@@ -127,6 +173,14 @@
     var said = el('p', 'signin__status');
     said.setAttribute('role', 'status');
     box.appendChild(said);
+    // the API never says whether it knows an address, so say what to do if no link comes
+    var help = el('p', 'signin__help', 'No link after a few minutes? Check your spam folder. ' +
+      'The club may have a different address for you: email ');
+    var mailto = el('a', null, CONTACT);
+    mailto.href = 'mailto:' + CONTACT;
+    help.appendChild(mailto);
+    help.appendChild(document.createTextNode('.'));
+    box.appendChild(help);
     // what the email is used for (Privacy Act IPP 3): sign-in links, nothing else
     var note = el('p', 'signin__privacy', 'We use your email address only to send sign-in links. ');
     var more = el('a', null, 'How the club handles your information');
@@ -194,10 +248,12 @@
     out.type = 'button';
     out.addEventListener('click', function () {
       out.disabled = true;
+      remember(null);
       post('/auth/sign-out').then(function () { location.reload(); }, function () { location.reload(); });
     });
     box.appendChild(out);
   }
 
-  window.NCAN = { api: API, get: get, send: send, sendFile: sendFile, me: me, signIn: signIn, account: account };
+  window.NCAN = { api: API, get: get, send: send, sendFile: sendFile, me: me, signIn: signIn, account: account,
+    home: home, safeNext: safeNext };
 }());

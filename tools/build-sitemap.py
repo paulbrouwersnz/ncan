@@ -49,9 +49,11 @@ ROBOTS = os.path.join(ROOT, 'robots.txt')
 # club's API, api.ncan.nz), so search engines have nothing to index there; the
 # pages also carry a noindex tag. admin/ is for club administrators, and
 # results-sources/ for administrators, coaches and the committee, signed in
-# (both noindex too).
+# (both noindex too). sign-in/, coaches-tools/ and committee-tools/ are for
+# signing in and the tools of those signed in (noindex).
 # junior-athletics: left out while the coaches and committee review it (November 2026)
-SKIP = {'admin', 'athlete', 'athletes', 'junior-athletics', 'results-sources'}
+SKIP = {'admin', 'athlete', 'athletes', 'coaches-tools', 'committee-tools', 'junior-athletics',
+        'results-sources', 'sign-in'}
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from pages import pages as site_pages  # noqa: E402

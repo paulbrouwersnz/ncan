@@ -393,7 +393,22 @@ ul { margin: 0; padding: 0; list-style: none; }
 .nav a:hover::after, .nav a[aria-current="page"]::after { transform: scaleX(1); }
 .nav__cta { display: none; }
 
-.site-header__cta { display: flex; gap: .6rem; }
+.site-header__cta { display: flex; align-items: center; gap: clamp(.7rem, 1.2vw, 1.1rem); }
+/* "Sign in" / "My pages" (account-link.js): beside "Join the club" on wide
+   screens, the last plain link in the menu on narrow ones */
+.nav__account { display: none; }
+.site-header__account {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(.86rem, .72vw + .38rem, .95rem);
+  white-space: nowrap;
+  color: var(--heading);
+  text-decoration: underline;
+  text-decoration-color: var(--yellow-500);
+  text-decoration-thickness: 2px;
+  text-underline-offset: .3em;
+}
+.site-header__account:hover { text-decoration-thickness: 3px; }
 
 /* The menu button takes over when the links won't fit beside the logo and the
    "Join the club" button. In em, not px: em here follows the browser's text
@@ -419,6 +434,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   }
   .nav li + li { border-top: 1px solid var(--line); }
   .nav a { padding: .95rem .2rem; font-size: 1.05rem; }
+  .nav__account { display: block; }
   .nav__cta { display: block; border-top: 0 !important; margin-top: 1.15rem; }
   /* `.nav a` (0,1,1) outranks `.btn` (0,1,0), so the CTA was being turned
      into a plain block link: left-aligned text, nav padding, nav underline.
