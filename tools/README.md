@@ -524,16 +524,48 @@ so old links keep working as they are, with no redirect, for as long as
 
 To send old links on to the new address anyway (so they show `photos.ncan.nz`),
 the redirect must only apply to the old name: the same folder answers both, so
-an unconditional redirect would send `photos.ncan.nz` to itself for ever. For
-Apache, in that folder's `.htaccess`:
+an unconditional redirect would send `photos.ncan.nz` to itself for ever.
 
-```
-RewriteEngine On
-RewriteCond %{HTTP_HOST} ^ncan\.brouwers\.nz$ [NC]
-RewriteRule ^(.*)$ https://photos.ncan.nz/$1 [R=301,L]
+**The photo host's `.htaccess`:** the complete file is
+[`photo-host.htaccess`](photo-host.htaccess). Upload it to the photo folder (the
+virtual host's document root, shown in Web Station → Virtual Host) as
+`.htaccess`, replacing the old one. It:
+
+1. redirects `ncan.brouwers.nz` to `photos.ncan.nz` (the old name only);
+2. sends `.webp` as `image/webp`;
+3. lets ncan.nz's pages fetch photos (`Access-Control-Allow-Origin` for
+   `https://ncan.nz`, `https://www.ncan.nz` and `localhost` for testing, plus
+   `Vary: Origin`), so the viewer's download button can save the photo straight
+   to the device instead of opening it in a new tab. Browsers only let a page
+   read a photo from another site when that site says so; JavaScript on ncan.nz
+   can't add the header itself;
+4. makes any photo address ending in `?download=1` save rather than show
+   (`Content-Disposition: attachment`), with no JavaScript needed.
+
+Check it after uploading (each should show the header named):
+
+```bash
+curl -sI -H "Origin: https://ncan.nz" "https://photos.ncan.nz/thumbs/2017/Canterbury%20Champs%20Timaru/20170305_175501.jpg"
 ```
 
-or for nginx, a `server` block for `ncan.brouwers.nz` alone:
+```bash
+curl -sI "https://photos.ncan.nz/thumbs/2017/Canterbury%20Champs%20Timaru/20170305_175501.jpg?download=1"
+```
+
+```bash
+curl -sI "https://ncan.brouwers.nz/gallery/"
+```
+
+The first should include `Access-Control-Allow-Origin: https://ncan.nz`, the
+second `Content-Disposition: attachment`, the third `301` and
+`Location: https://photos.ncan.nz/gallery/`. If none of the headers appear, the
+virtual host isn't reading `.htaccess` (it needs `AllowOverride`), or Web
+Station is using nginx for it rather than Apache 2.4 (Web Station → Virtual
+Host → Back-end server). A `500` error means a module is missing; the
+Apache error log names it.
+
+For nginx in place of Apache, a `server` block for `ncan.brouwers.nz` alone does
+the redirect:
 
 ```
 server { server_name ncan.brouwers.nz; return 301 https://photos.ncan.nz$request_uri; }

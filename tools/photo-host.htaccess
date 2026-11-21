@@ -1,0 +1,35 @@
+# .htaccess for the photo host: the folder that answers both photos.ncan.nz
+# and the old name, ncan.brouwers.nz (Apache 2.4, e.g. Synology Web Station).
+# Upload it to that folder as ".htaccess". It's kept in tools/README.md
+# ("The photo host's .htaccess"), which explains each part.
+#
+# Needs mod_rewrite, mod_headers and mod_setenvif (on in Web Station's
+# Apache 2.4), and the virtual host must allow .htaccess (AllowOverride).
+
+# 1. Send the old name on to the new one. Only for the old name: the same
+#    folder answers both, so a redirect for every name would loop for ever.
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{HTTP_HOST} ^ncan\.brouwers\.nz$ [NC]
+    RewriteRule ^(.*)$ https://photos.ncan.nz/$1 [R=301,L]
+</IfModule>
+
+# 2. WebP photos must be sent as image/webp.
+AddType image/webp .webp
+
+# 3. Let ncan.nz's pages fetch photos (the gallery viewer's download button
+#    saves the photo straight to the device). Only these sites are allowed;
+#    localhost is for testing the site on a computer. "Vary: Origin" stops a
+#    cache handing one site's answer to another.
+<IfModule mod_headers.c>
+    SetEnvIf Origin "^https://(www\.)?ncan\.nz$" NCAN_ORIGIN=$0
+    SetEnvIf Origin "^http://(localhost|127\.0\.0\.1)(:[0-9]+)?$" NCAN_ORIGIN=$0
+    Header always set Access-Control-Allow-Origin "%{NCAN_ORIGIN}e" env=NCAN_ORIGIN
+    Header always merge Vary Origin
+
+    # 4. A photo address ending in ?download=1 is saved, not shown
+    #    (works with no JavaScript, and in any browser).
+    <If "%{QUERY_STRING} =~ /(^|&)download=1(&|$)/ && %{REQUEST_URI} =~ /\.(jpe?g|webp)$/i">
+        Header set Content-Disposition "attachment"
+    </If>
+</IfModule>
