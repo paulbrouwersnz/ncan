@@ -11,7 +11,9 @@
   why). A released or cancelled plan has a share link,
   /junior-athletics/#/plan/2026-12-01: that plan on its own, to read and print,
   with nothing to edit (and no coaches' notes, whoever opens it). If it has gone,
-  the link says so: removed (and when), moved (it follows), or being changed. Club administrators, coaches and the committee, once signed in, also
+  the link says so: removed (and when), moved (it follows), or being changed. A
+  link with no plan at all goes to the list of plans, which says nothing matched
+  (training-links.js). Club administrators, coaches and the committee, once signed in, also
   see drafts and can make, change, release, cancel and delete plans.
 
   Making a plan (training-editor.js): drag a grade (7-14), Girls / Boys / Girls & Boys / All athletes, or
@@ -649,14 +651,6 @@
     function message(text) { return el('p', 'training-shared__gone', text); }
     var today = iso(new Date());
     var links = window.NCANTrainingLinks;
-    // `text`, then the most recent session before today below it (when there is one)
-    function withLatest(text) {
-      return NCAN.get('/training').then(function (data) {
-        var latest = links && links.latestPast(data.past, today);
-        if (!latest) { return finish([message(text)]); }
-        finish([message(text + ' The latest plan is below.'), planCard(publicCopy(latest), true)]);
-      }, function () { finish([message(text)]); });
-    }
     return NCAN.get('/training/' + date).then(function (plan) {
       var nodes = [];
       if (movedFrom) { nodes.push(el('p', 'training-shared__moved', 'This plan has moved here from ' + longDate(movedFrom) + '.')); }
@@ -679,14 +673,30 @@
       if (body.state === 'draft') {
         return finish([message('The training plan for ' + longDate(date) + ' is being changed. Please check back soon.')]);
       }
-      if (err.status === 404 && date >= today) {
-        return withLatest('The training plan for ' + longDate(date) + ' hasn’t been released yet.');
-      }
-      if (err.status === 404) {
-        return withLatest('There’s no training plan for ' + longDate(date) + '.');
-      }
+      // nothing on that date (or not a date at all): the list of all the plans, which says so
+      if (err.status === 404 || err.status === 400) { return noPlan(date); }
       finish([message('The training plan can’t be loaded just now. Please try again later.')]);
     });
+  }
+
+  // A link with no plan behind it: go to the list of all the plans (a fresh page load, so
+  // the list starts as normal), which says nothing matched. Replaces the link in the
+  // history, so Back doesn't bounce through it again.
+  function noPlan(date) {
+    var links = window.NCANTrainingLinks;
+    location.replace(links ? links.notFoundUrl(date) : '/junior-athletics/');
+  }
+
+  // Sent to the list from a link with no plan: say so above the list, and tidy the
+  // address back to the plain page.
+  function noPlanNotice() {
+    var links = window.NCANTrainingLinks;
+    var asked = links && links.noPlanAsked(location.search);
+    if (!asked) { return; }
+    if (window.history && history.replaceState) { history.replaceState(null, '', location.pathname + location.hash); }
+    var note = el('p', 'training-shared__gone training-notice', links.noPlanText(asked, iso(new Date()), longDate));
+    note.setAttribute('role', 'status');
+    listBox.parentNode.insertBefore(note, listBox);
   }
 
   // what a share link shows, whoever opens it: no coaches' notes, no who changed it
@@ -774,6 +784,8 @@
       showShared(shared[1]);
       return;
     }
+    if (/^#\/plan\//.test(location.hash)) { noPlan(''); return; }   // "#/plan/…" that isn't a date
+    noPlanNotice();
 
     NCAN.me().then(function (who) {
       var staff = who && /^(admin|coach|committee)$/.test(who.role);

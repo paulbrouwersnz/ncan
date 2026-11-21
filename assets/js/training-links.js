@@ -1,7 +1,7 @@
 /*
-  What a shared training-plan link (/junior-athletics/#/plan/<date>) shows when there's no
-  plan on that date. Kept apart from training.js so the Node tests can check it
-  (tests/js/training-links.test.js). Dates are "YYYY-MM-DD" text throughout, so the
+  What a shared training-plan link (/junior-athletics/#/plan/<date>) does when there's no
+  plan on that date: it goes to the list of all the plans, which says nothing matched.
+  Kept apart from training.js so the Node tests can check it (tests/js/training-links.test.js). Dates are "YYYY-MM-DD" text throughout, so the
   machine's time zone never matters.
 */
 (function (root, factory) {
@@ -14,20 +14,42 @@
   // Follow "this plan moved to `movedTo`"? Not when a link for today or later would land
   // on a session that has already been: a plan made on the wrong date and moved back
   // (say a new plan for 24 November changed to 13 October) is not what someone opening
-  // next week's link wants. They get "not released yet" and the latest plan instead.
+  // next week's link wants. They go to the list of all the plans instead.
   function followMove(date, movedTo, today) {
     if (!movedTo) { return false; }
     return !(date >= today && movedTo < today);
   }
 
-  // The most recent session before today that families can see: a released plan, or
-  // failing that a cancelled one (newest first). Null when there's none.
-  function latestPast(plans, today) {
-    var past = (plans || []).filter(function (p) { return p && p.date < today; })
-      .sort(function (a, b) { return a.date < b.date ? 1 : a.date > b.date ? -1 : 0; });
-    return past.filter(function (p) { return p.status === 'released'; })[0] ||
-           past.filter(function (p) { return p.status === 'cancelled'; })[0] || null;
+  // No plan to show for a link: it goes to the list of all the plans instead
+  // (/junior-athletics/?no-plan=<date>), which says nothing matched. `date` is left off
+  // when the link didn't name a real date.
+  var LIST = '/junior-athletics/';
+  function realDate(text) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(text || '');
+    if (!m) { return false; }
+    var d = new Date(Date.UTC(+m[1], +m[2] - 1, +m[3]));
+    return d.getUTCFullYear() === +m[1] && d.getUTCMonth() === +m[2] - 1 && d.getUTCDate() === +m[3];
+  }
+  function notFoundUrl(date) {
+    return LIST + '?no-plan=' + (realDate(date) ? date : 'link');
   }
 
-  return { followMove: followMove, latestPast: latestPast };
+  // The list page: the date asked for, from "?no-plan=…" ('link' when it wasn't a real
+  // date), or null when the page wasn't sent here from a link.
+  function noPlanAsked(search) {
+    var m = /[?&]no-plan=([^&#]*)/.exec(search || '');
+    if (!m) { return null; }
+    return realDate(m[1]) ? m[1] : 'link';
+  }
+
+  // What the list says at the top. `longDate` turns "2026-11-24" into
+  // "Tuesday 24 November 2026" (training.js has it).
+  function noPlanText(asked, today, longDate) {
+    var said = asked && asked !== 'link'
+      ? 'No training plan was found for ' + longDate(asked) + '.' + (asked >= today ? ' It may not have been released yet.' : '')
+      : 'No training plan was found for that link.';
+    return said + ' All the training plans are listed below.';
+  }
+
+  return { followMove: followMove, notFoundUrl: notFoundUrl, noPlanAsked: noPlanAsked, noPlanText: noPlanText };
 }));

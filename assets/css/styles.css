@@ -3182,6 +3182,7 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
   background: var(--surface-tint); color: var(--heading); font-weight: 600;
 }
 .training-shared__moved { margin-bottom: 1rem; font-weight: 400; }
+.training-notice { margin-bottom: 1rem; }   /* on the list, after a link with no plan */
 .training-shared__all { margin: 1.2rem 0 0; }
 @media print { .plan-share { display: none !important; } }
 @media (prefers-reduced-motion: reduce) { .plan__group { transition: none; } }

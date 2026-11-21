@@ -1,4 +1,4 @@
-// Tests for assets/js/training-links.js: what a shared training-plan link shows when
+// Tests for assets/js/training-links.js: what a shared training-plan link does when
 // there's no plan on its date. Run with: node --test "tests/js/*.test.js"
 'use strict';
 
@@ -26,30 +26,29 @@ test('no move, nothing to follow', () => {
   assert.equal(L.followMove('2026-11-24', '', TODAY), false);
 });
 
-const PAST = [   // as the API lists them: newest first, but not relied on
-  { date: '2026-10-13', status: 'released' },
-  { date: '2026-11-17', status: 'released' },
-  { date: '2026-11-10', status: 'cancelled' },
-  { date: '2026-11-03', status: 'released' },
-];
+// a stand-in for training.js's longDate
+const longDate = (d) => ({ '2026-11-24': 'Tuesday 24 November 2026', '2026-11-10': 'Tuesday 10 November 2026' })[d];
 
-test('the latest plan is the most recent before today, not the last changed', () => {
-  assert.equal(L.latestPast(PAST, TODAY).date, '2026-11-17');
+test('a link with no plan goes to the list of all the plans', () => {
+  assert.equal(L.notFoundUrl('2026-11-24'), '/junior-athletics/?no-plan=2026-11-24');
+  assert.equal(L.notFoundUrl('2026-02-30'), '/junior-athletics/?no-plan=link');   // not a real date
+  assert.equal(L.notFoundUrl(''), '/junior-athletics/?no-plan=link');
 });
 
-test('a released plan wins over a more recent cancelled session', () => {
-  const plans = [{ date: '2026-11-17', status: 'cancelled' }, { date: '2026-11-10', status: 'released' }];
-  assert.equal(L.latestPast(plans, TODAY).date, '2026-11-10');
+test('the list knows which date was asked for', () => {
+  assert.equal(L.noPlanAsked('?no-plan=2026-11-24'), '2026-11-24');
+  assert.equal(L.noPlanAsked('?x=1&no-plan=2026-11-24'), '2026-11-24');
+  assert.equal(L.noPlanAsked('?no-plan=link'), 'link');
+  assert.equal(L.noPlanAsked('?no-plan=<script>'), 'link');   // anything else is never shown
+  assert.equal(L.noPlanAsked(''), null);
+  assert.equal(L.noPlanAsked('?other=1'), null);
 });
 
-test('only cancelled sessions: the most recent of those', () => {
-  const plans = [{ date: '2026-11-03', status: 'cancelled' }, { date: '2026-11-17', status: 'cancelled' }];
-  assert.equal(L.latestPast(plans, TODAY).date, '2026-11-17');
-});
-
-test('today and later, drafts and nothing at all are left out', () => {
-  assert.equal(L.latestPast([{ date: TODAY, status: 'released' }], TODAY), null);
-  assert.equal(L.latestPast([{ date: '2026-11-17', status: 'draft' }], TODAY), null);
-  assert.equal(L.latestPast([], TODAY), null);
-  assert.equal(L.latestPast(undefined, TODAY), null);
+test('the list says nothing matched', () => {
+  assert.equal(L.noPlanText('2026-11-24', TODAY, longDate),
+    'No training plan was found for Tuesday 24 November 2026. It may not have been released yet. All the training plans are listed below.');
+  assert.equal(L.noPlanText('2026-11-10', TODAY, longDate),
+    'No training plan was found for Tuesday 10 November 2026. All the training plans are listed below.');
+  assert.equal(L.noPlanText('link', TODAY, longDate),
+    'No training plan was found for that link. All the training plans are listed below.');
 });
