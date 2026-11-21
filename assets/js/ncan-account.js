@@ -17,7 +17,9 @@
     send(path, data)       -> Promise of {status, body}: a POST of JSON.
     sendFile(path, blob)   -> the same, for a POST of a file's bytes (a photo),
                               sent with the blob's own type.
-    me()                   -> Promise of {email, role, athletes}, or null. Also
+    me()                   -> Promise of {email, role, athletes, own, acting,
+                              may_act}, or null (`role` is the role answered as:
+                              an admin acting as a coach gets "coach"). Also
                               remembers on this device whether someone is signed
                               in, so the header's Sign in / My pages link
                               (account-link.js) only asks the API when it might
@@ -269,15 +271,19 @@
   }
 
   var ROLES = { admin: 'club administrator', coach: 'coach', committee: 'committee', family: 'family' };
+  var ACTING = { coach: 'a coach', committee: 'the committee', family: 'a family' };
 
-  // "Signed in as paul@example.nz (coach). Sign out"
+  // "Signed in as paul@example.nz (coach). Sign out"; an admin acting as another
+  // role: "Signed in as paul@example.nz (club administrator), acting as a coach."
   function account(box, who) {
     box.textContent = '';
     if (!who) { box.hidden = true; return; }
     box.hidden = false;
     box.classList.add('account-line');
-    box.appendChild(document.createTextNode('Signed in as ' + who.email +
-      (ROLES[who.role] ? ' (' + ROLES[who.role] + ')' : '') + '. '));
+    var acting = who.acting && ACTING[who.acting.role];
+    box.appendChild(document.createTextNode('Signed in as ' + who.email + (acting
+      ? ' (club administrator), acting as ' + acting + '. '
+      : (ROLES[who.role] ? ' (' + ROLES[who.role] + ')' : '') + '. ')));
     // staff who are also family: their own athletes' pages, one step away
     var own = atLeast(who, 'coach') && Array.isArray(who.own) ? who.own.filter(function (a) { return a.slug; }) : [];
     if (own.length) {

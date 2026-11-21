@@ -1208,9 +1208,11 @@
   }
 
   /* /admin/: the staff tools. Each group of cards says its lowest role
-     (data-lowest); a person sees the groups their role reaches, and an admin
-     can "View as" the committee or a coach to check what they see. Hiding is
-     only tidiness: each tool's page and the API still refuse anyone below it. */
+     (data-lowest); a person sees the groups their role reaches. Hiding is
+     only tidiness: each tool's page and the API still refuse anyone below it.
+     An admin can "Act as" a coach, the committee or one family: the API then
+     answers them as that role on every page (account-link.js shows a banner),
+     and still records every change as the admin. */
   var VIEWS = {
     admin: { heading: 'Club admin', title: 'Club Admin',
              lede: 'Keeping the athlete pages right, the members list and the website. Every change is recorded with who made it and why, and results are collected again afterwards (5\u201310 minutes).' },
@@ -1229,15 +1231,76 @@
     var crumb = document.querySelector('.breadcrumb span:last-child');
     if (crumb) { crumb.textContent = v.heading; }
   }
+  function actAs(role, email) {
+    var said = $('admin-act-status');
+    $('admin-view').disabled = true;
+    said.textContent = role ? 'Switching\u2026' : 'Back to admin\u2026';
+    var go = role ? NCAN.send('/auth/act-as', { role: role, email: email || null }) : NCAN.send('/auth/act-as/stop', {});
+    go.then(function (r) {
+      if (r.status !== 200) {
+        said.textContent = (r.body && r.body.error) || 'That didn\u2019t work (' + r.status + ').';
+        $('admin-view').disabled = false;
+        return;
+      }
+      location.href = role === 'family' ? '/athletes/' : '/admin/';
+    }, function (err) {
+      said.textContent = err.message;
+      $('admin-view').disabled = false;
+    });
+  }
+  function findFamilies() {
+    var q = $('admin-act-q').value.trim();
+    var list = $('admin-act-found');
+    var said = $('admin-act-status');
+    list.textContent = '';
+    list.hidden = true;
+    if (q.length < 2) { said.textContent = 'Type at least 2 letters of an email or an athlete\u2019s name.'; return; }
+    NCAN.get('/admin/families?q=' + encodeURIComponent(q)).then(function (r) {
+      if ($('admin-act-q').value.trim() !== q) { return; }        // typed on since
+      var found = r.families || [];
+      said.textContent = found.length ? 'Choose the family to act as.' : 'No family contact matches that.';
+      found.forEach(function (f) {
+        var li = document.createElement('li');
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'admin-view__pick';
+        b.textContent = f.email + (f.athletes.length ? ' \u2014 ' + f.athletes.join(', ') : '');
+        b.addEventListener('click', function () { actAs('family', f.email); });
+        li.appendChild(b);
+        list.appendChild(li);
+      });
+      list.hidden = !found.length;
+    }, function (err) { said.textContent = err.message; });
+  }
+  function startActAs(who) {
+    var view = $('admin-view');
+    $('admin-view-row').hidden = false;
+    view.value = who.acting ? who.acting.role : '';
+    $('admin-act-find').hidden = view.value !== 'family';
+    if (who.acting && who.acting.role === 'family') { $('admin-act-q').value = who.acting.email || ''; }
+    var timer = null;
+    view.addEventListener('change', function () {
+      if (view.value === 'family') {
+        $('admin-act-find').hidden = false;
+        $('admin-act-q').focus();
+        $('admin-act-status').textContent = 'Find the family by email or an athlete\u2019s name.';
+        return;
+      }
+      $('admin-act-find').hidden = true;
+      $('admin-act-found').hidden = true;
+      actAs(view.value);
+    });
+    $('admin-act-q').addEventListener('input', function () {
+      clearTimeout(timer);
+      timer = setTimeout(findFamilies, 250);
+    });
+  }
   function startTools(who) {
     $('admin-status').hidden = true;
     $('admin-tools').hidden = false;
     showTools(who.role);
+    if (who.may_act) { startActAs(who); }
     if (who.role !== 'admin') { return; }
-    var view = $('admin-view');
-    $('admin-view-row').hidden = false;
-    view.value = 'admin';
-    view.addEventListener('change', function () { showTools(view.value); });
     NCAN.get('/admin/review').then(function (r) {
       var done = appliedKeys(r.collect).keys || [];
       var n = (r.items || []).filter(function (i) { return done.indexOf(i.key) === -1; }).length;

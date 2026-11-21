@@ -166,9 +166,16 @@ It also writes the **staff tools cards** on `/admin/`, between
 Each tool is one entry: `title`, `href`, `blurb`, `lowest` (coach, committee or
 admin), `group`, and an optional `count` for a waiting-count badge. Each group
 is written with its lowest role (`data-lowest`), and `admin.js` shows each
-person only the groups their role reaches; an admin can **View as** the
-committee or a coach to check what they see. Hiding is only tidiness: each
-tool's page and the API still refuse anyone below its role. To add a tool,
+person only the groups their role reaches. Hiding is only tidiness: each
+tool's page and the API still refuse anyone below its role.
+
+An admin can **Act as** a coach, the committee or one family (the switch in
+the green band on `/admin/`; `POST /v1/auth/act-as` in the API). The API then
+answers them as that role on every page, so they see and use the site exactly
+as that person does, without signing in as them, and still records every
+change as the admin. A yellow banner on every page (`account-link.js`) says
+who they're acting as, with **Back to admin**. It ends when they go back, at
+sign-out, or after an hour. Tests: `tests/js/account-link.test.js`. To add a tool,
 add one entry and run the script; it refuses a list with an unknown role or
 group, a tool whose role doesn't match its group, or an address listed twice.
 Tests: `tests/py/test_staff_tools.py`.
