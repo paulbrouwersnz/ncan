@@ -647,6 +647,16 @@
       }).catch(function () { /* the plan still shows */ });
     }
     function message(text) { return el('p', 'training-shared__gone', text); }
+    var today = iso(new Date());
+    var links = window.NCANTrainingLinks;
+    // `text`, then the most recent session before today below it (when there is one)
+    function withLatest(text) {
+      return NCAN.get('/training').then(function (data) {
+        var latest = links && links.latestPast(data.past, today);
+        if (!latest) { return finish([message(text)]); }
+        finish([message(text + ' The latest plan is below.'), planCard(publicCopy(latest), true)]);
+      }, function () { finish([message(text)]); });
+    }
     return NCAN.get('/training/' + date).then(function (plan) {
       var nodes = [];
       if (movedFrom) { nodes.push(el('p', 'training-shared__moved', 'This plan has moved here from ' + longDate(movedFrom) + '.')); }
@@ -654,7 +664,8 @@
       finish(nodes);
     }, function (err) {
       var body = err.body || {};
-      if (body.moved_to && (hops || 0) < 5) {
+      var follow = links ? links.followMove(date, body.moved_to, today) : !!body.moved_to;
+      if (follow && (hops || 0) < 5) {
         if (window.history && history.replaceState) { history.replaceState(null, '', '#/plan/' + body.moved_to); }
         return showShared(body.moved_to, movedFrom || date, (hops || 0) + 1);
       }
@@ -668,8 +679,11 @@
       if (body.state === 'draft') {
         return finish([message('The training plan for ' + longDate(date) + ' is being changed. Please check back soon.')]);
       }
+      if (err.status === 404 && date >= today) {
+        return withLatest('The training plan for ' + longDate(date) + ' hasn’t been released yet.');
+      }
       if (err.status === 404) {
-        return finish([message('There’s no training plan for ' + longDate(date) + '.')]);
+        return withLatest('There’s no training plan for ' + longDate(date) + '.');
       }
       finish([message('The training plan can’t be loaded just now. Please try again later.')]);
     });

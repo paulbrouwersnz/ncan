@@ -108,7 +108,9 @@
       </div>
     </section>
 
-    <div id="admin-signin" class="wrap admin-gate" hidden></div>
+    <!-- the card inside a plain wrap: a .signin card that is itself the .wrap loses the
+         wrap's centring and sits against the left edge -->
+    <div class="wrap"><div id="admin-signin" class="admin-gate" hidden></div></div>
     <p class="wrap admin-gate records-status" id="admin-status" role="status">Loading&hellip;</p>
 
     <!-- ================= Needs a look ================= -->
