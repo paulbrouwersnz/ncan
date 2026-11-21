@@ -80,7 +80,9 @@
       else { f.ends = 'never'; }
     }
     f.skip = (e.skip || []).slice();
-    f.status = e.status || '';
+    // "On (confirmed)" is the blank choice: CONFIRMED and no status mean the same,
+    // so an untouched confirmed event doesn't count as changed
+    f.status = e.status === 'CONFIRMED' ? '' : (e.status || '');
     return f;
   }
 
@@ -112,6 +114,36 @@
 
   // what the form would send, for "not saved yet"
   function same(a, b) { return JSON.stringify(toEvent(a)) === JSON.stringify(toEvent(b)); }
+
+  /* A new event copied from another (the Duplicate button). Everything is kept
+     except what belongs to the original: its id, its cancelled dates and a
+     "Cancelled" status. A copy of a past event moves forward by whole weeks to
+     the first same weekday on or after today, so it keeps its day of the week,
+     its times and its length; an "until" date moves with it. A copy of an event
+     still to come keeps its dates, for the person to change. */
+  function duplicate(f, today) {
+    var c = JSON.parse(JSON.stringify(f));
+    c.id = null;
+    c.skip = [];
+    if (c.status === 'CANCELLED') { c.status = ''; }
+    if (realDate(today) && realDate(c.startDate) && c.startDate < today) {
+      var gap = Math.round((Date.parse(today + 'T00:00Z') - Date.parse(c.startDate + 'T00:00Z')) / 86400000);
+      var shift = Math.ceil(gap / 7) * 7;
+      c.startDate = addDays(c.startDate, shift);
+      if (realDate(c.endDate)) { c.endDate = addDays(c.endDate, shift); }
+      if (c.freq && c.ends === 'until' && realDate(c.until)) { c.until = addDays(c.until, shift); }
+    }
+    return c;
+  }
+
+  // a copy that would add the same event again: same details, same dates
+  function sameAsCopied(f, from) {
+    if (!from) { return false; }
+    var a = toEvent(f), b = toEvent(from);
+    delete a.id; delete b.id;
+    a.calendars.sort(); b.calendars.sort();
+    return JSON.stringify(a) === JSON.stringify(b);
+  }
 
   /* -------------------------------------------------------------------- checks
      The API checks everything again; these catch the common slips before
@@ -246,7 +278,7 @@
   }
 
   var api = { DAYS: DAYS, DAY_NAMES: DAY_NAMES, LIMITS: LIMITS, blank: blank, fromEvent: fromEvent,
-              toEvent: toEvent, same: same, check: check, whenText: whenText, repeatText: repeatText,
+              toEvent: toEvent, same: same, duplicate: duplicate, sameAsCopied: sameAsCopied, check: check, whenText: whenText, repeatText: repeatText,
               dayText: dayText, timeText: timeText, lastDate: lastDate, upcoming: upcoming, pick: pick,
               addDays: addDays, dayCode: dayCode, realDate: realDate, slugProblem: slugProblem };
   if (typeof module !== 'undefined' && module.exports) { module.exports = api; }
