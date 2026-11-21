@@ -978,7 +978,16 @@
         var body = text('div', 'champs-day__body src-meeting__body');
         var link = text('a', 'records-source', m.live ? 'Meeting on AthleticLIVE' : 'Published results');
         link.href = m.link; link.target = '_blank'; link.rel = 'noopener';
-        var p = text('p', 'src-meeting__link'); p.appendChild(link); body.appendChild(p);
+        var p = text('p', 'src-meeting__link'); p.appendChild(link);
+        // the meeting's other links (an organiser's PDF, a photo finish, a livestream), if any
+        var also = window.NCANMeetingLinks ? NCANMeetingLinks.forMeeting(athlete.meeting_links, m.link) : [];
+        also.forEach(function (l, i) {
+          p.appendChild(document.createTextNode(i ? ' · ' : ' · Also: '));
+          var x = text('a', 'records-source', l.label);
+          x.href = l.url; x.target = '_blank'; x.rel = 'noopener';
+          p.appendChild(x);
+        });
+        body.appendChild(p);
         var ul = text('ul', 'src-results');
         m.results.forEach(function (r) {
           var li = text('li');

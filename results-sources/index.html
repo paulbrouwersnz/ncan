@@ -377,6 +377,7 @@
 
   <script src="/assets/js/ncan-account.js"></script>
   <script src="/assets/js/form-lock.js"></script>
+  <script src="/assets/js/meeting-links.js"></script>
   <script>
     (function () {
       'use strict';
@@ -499,6 +500,21 @@
           if (typeof f[1] === 'string') { dd.textContent = f[1]; } else { dd.appendChild(f[1]); }
           facts.appendChild(dd);
         });
+        // extra links, for people to follow only (never collected)
+        var otherDt = text('dt', null, 'Other links'), otherDd = text('dd');
+        var showOther = function () {
+          otherDd.textContent = '';
+          (m.extra_links || []).forEach(function (l, i) {
+            if (i) { otherDd.appendChild(document.createTextNode(' · ')); }
+            var a = text('a', 'records-source', l.label);
+            a.href = l.url; a.target = '_blank'; a.rel = 'noopener';
+            otherDd.appendChild(a);
+          });
+          otherDt.hidden = otherDd.hidden = !(m.extra_links || []).length;
+        };
+        showOther();
+        if (facts.children.length > 2) { facts.insertBefore(otherDd, facts.children[2]); facts.insertBefore(otherDt, otherDd); }
+        else { facts.appendChild(otherDt); facts.appendChild(otherDd); }
         body.appendChild(facts);
         // a club administrator can change an AthleticLIVE meeting's type, or take it off the list
         if (CAN_REMOVE && m.from === 'AthleticLIVE') {
@@ -506,6 +522,7 @@
           var manage = text('div', 'src-manage');
           manage.appendChild(nameForm(m));
           manage.appendChild(typeForm(m));
+          manage.appendChild(linksForm(m, showOther));
           manage.appendChild(removeControl(m));
           body.appendChild(manage);
         }
@@ -752,6 +769,99 @@
         field.appendChild(label);
         field.appendChild(pick);
         [field, go, said].forEach(function (x) { form.appendChild(x); });
+        return form;
+      }
+
+      // Other links: for people to follow (an organiser's PDF, a photo finish, a livestream).
+      // Never collected, so saving them starts no collect: only this meeting's box is
+      // locked while they're sent, and they show straight away.
+      function linksForm(m, shown) {
+        var L = window.NCANMeetingLinks;
+        var form = text('form', 'src-type-form src-xlinks');
+        var key = (m.link || '').replace(/\D+/g, '-');
+        form.appendChild(text('h5', 'src-xlinks__head', 'Other links'));
+        form.appendChild(text('p', 'src-xlinks__hint',
+          'For people to follow, like the organiser’s PDF, a photo finish or a livestream. Results are never read from these. ' +
+          'Leave a label empty to name it from the address.'));
+        var rows = text('div', 'src-xlinks__rows');
+        var add = text('button', 'btn btn--ghost btn--sm', 'Add a link');
+        add.type = 'button';
+        var go = text('button', 'btn btn--ghost', 'Save links');
+        go.type = 'submit';
+        var said = text('span', 'src-type-form__said lock-keep');
+        said.setAttribute('role', 'status');
+        var count = 0;
+
+        function typed() {
+          return Array.prototype.map.call(rows.children, function (r) {
+            return { label: r.querySelector('.src-xlinks__label').value, url: r.querySelector('.src-xlinks__url').value };
+          });
+        }
+        function check() {
+          var t = L.tidy(typed());
+          go.disabled = !!t.error || L.same(m.extra_links, t.links);
+          add.hidden = rows.children.length >= L.MAX;
+          return t;
+        }
+        function field(cls, words, value, type, max, holder) {
+          var p = text('p', 'records-field ' + cls + '-field');
+          var id = 'src-xl-' + key + '-' + (count) + cls.slice(-4);
+          var lab = text('label', null, words);
+          lab.htmlFor = id;
+          var box = text('input', cls);
+          box.id = id; box.type = type; box.maxLength = max; box.autocomplete = 'off';
+          box.value = value || '';
+          if (holder) { box.placeholder = holder; }
+          box.addEventListener('input', function () { said.textContent = ''; check(); });
+          // once a box is left, say what's wrong (Save stays off until it's fixed)
+          box.addEventListener('change', function () { said.textContent = check().error; });
+          p.appendChild(lab); p.appendChild(box);
+          return p;
+        }
+        function row(l) {
+          count++;
+          var r = text('div', 'src-xlinks__row');
+          r.appendChild(field('src-xlinks__label', 'Label', l && l.label, 'text', 60, 'optional'));
+          r.appendChild(field('src-xlinks__url', 'Address', l && l.url, 'url', 400, 'https://'));
+          var rm = text('button', 'btn btn--ghost btn--sm src-xlinks__rm', 'Remove');
+          rm.type = 'button';
+          rm.setAttribute('aria-label', 'Remove this link');
+          rm.addEventListener('click', function () { r.remove(); said.textContent = ''; check(); add.focus(); });
+          r.appendChild(rm);
+          rows.appendChild(r);
+          return r;
+        }
+        function fill() {
+          rows.textContent = '';
+          (m.extra_links || []).forEach(row);
+          check();
+        }
+        add.addEventListener('click', function () {
+          row().querySelector('.src-xlinks__url').focus();
+          check();
+        });
+        form.addEventListener('submit', function (e) {
+          e.preventDefault();
+          var t = check();
+          if (t.error) { said.textContent = t.error; return; }
+          if (go.disabled) { return; }
+          lockMeeting(form, true);
+          said.textContent = 'Saving…';
+          NCAN.send('/sources/links', { url: m.link, links: t.links }).then(function (r) {
+            lockMeeting(form, false);
+            if (r.status !== 200) { said.textContent = (r.body && r.body.error) || 'Sorry, that didn’t work.'; check(); return; }
+            m.extra_links = r.body.meeting.extra_links || [];
+            fill();
+            shown();
+            said.textContent = m.extra_links.length ? 'Saved. They show on the athlete pages now.' : 'Saved: no other links.';
+          }, function (err) { lockMeeting(form, false); said.textContent = err.message; check(); });
+        });
+        form.appendChild(rows);
+        var bar = text('div', 'src-xlinks__bar');
+        [add, go].forEach(function (x) { bar.appendChild(x); });
+        form.appendChild(bar);
+        form.appendChild(said);
+        fill();
         return form;
       }
 
