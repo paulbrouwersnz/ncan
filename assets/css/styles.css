@@ -2527,12 +2527,20 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
   background: transparent;
   overflow: hidden;
 }
+.lightbox {
+  --lb-pad: clamp(.75rem, 2vw, 1.5rem);
+  --lb-btn: clamp(2.5rem, 6vw, 3.25rem);
+}
+/* One row the height of the window, so a tall photo shrinks to fit rather
+   than growing the row; the top padding keeps it clear of the buttons */
 .lightbox[open] {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-rows: minmax(0, 1fr);
   align-items: center;
   gap: clamp(.4rem, 2vw, 1.5rem);
-  padding: clamp(.75rem, 2vw, 1.5rem);
+  padding: var(--lb-pad);
+  padding-top: calc(var(--lb-btn) + var(--lb-pad) * 2);
 }
 .lightbox::backdrop { background: rgba(6, 28, 22, .93); }
 
@@ -2545,12 +2553,14 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
   gap: .9rem;
   margin: 0;
   min-width: 0;
+  min-height: 0;
   height: 100%;
 }
 .lightbox__img {
   max-width: 100%;
+  max-height: 100%;
   min-height: 0;
-  flex: 1;
+  flex: 0 1 auto;
   object-fit: contain;
   border-radius: var(--radius-sm);
 }
@@ -2577,7 +2587,7 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 .lightbox__btn {
   display: grid;
   place-items: center;
-  width: clamp(2.5rem, 6vw, 3.25rem);
+  width: var(--lb-btn);
   aspect-ratio: 1;
   padding: 0;
   border: 0;
@@ -2604,19 +2614,21 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 }
 .lightbox__prev { grid-column: 1; }
 .lightbox__next { grid-column: 3; }
-.lightbox__close {
+.lightbox__tools {
   position: absolute;
-  top: clamp(.75rem, 2vw, 1.5rem);
-  right: clamp(.75rem, 2vw, 1.5rem);
-  background: rgba(255, 255, 255, .16);
+  top: var(--lb-pad);
+  right: var(--lb-pad);
+  display: flex;
+  gap: .6rem;
 }
+.lightbox__tools .lightbox__btn { background: rgba(255, 255, 255, .16); }
+.lightbox__tools .lightbox__btn:hover { background: rgba(255, 255, 255, .28); }
 
 /* On a phone the arrows sit under the photo rather than squeezing it */
 @media (max-width: 600px) {
   .lightbox[open] {
     grid-template-columns: 1fr 1fr;
     grid-template-rows: minmax(0, 1fr) auto;
-    padding-top: 4rem;
   }
   .lightbox__figure { grid-column: 1 / -1; grid-row: 1; }
   .lightbox__prev { grid-column: 1; grid-row: 2; justify-self: end; }

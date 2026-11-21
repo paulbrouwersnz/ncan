@@ -10,6 +10,11 @@
 
   A link may also carry data-webp, the same photo as WebP. The viewer opens
   that when the browser shows WebP, so a browser without it gets the JPEG.
+
+  The download button always points at the full-size JPEG, the file people
+  can open anywhere. The photo host is another site, so browsers ignore the
+  download attribute and open the photo in a new tab instead, ready to save,
+  unless the host sends Content-Disposition: attachment for it.
 */
 (function () {
   'use strict';
@@ -24,6 +29,7 @@
   var img = dialog.querySelector('.lightbox__img');
   var text = dialog.querySelector('.lightbox__text');
   var count = dialog.querySelector('.lightbox__count');
+  var download = dialog.querySelector('.lightbox__download');
   var links = [];
   var index = 0;
 
@@ -55,6 +61,12 @@
     text.textContent = caption;
     text.hidden = !caption;
     count.textContent = (index + 1) + ' of ' + links.length;
+    if (download) {
+      var jpeg = link.getAttribute('href');
+      download.href = jpeg;
+      download.setAttribute('download',
+        decodeURIComponent(jpeg.split('/').pop().split('?')[0]));
+    }
     // the neighbours are almost always where the reader goes next
     preload(index + 1);
     preload(index - 1);
@@ -94,6 +106,8 @@
       if (what === 'next') { step(1); }
       return;
     }
+    // the download link does its own thing; the viewer stays open
+    if (event.target.closest('.lightbox__download')) { return; }
     // a click on the backdrop - anywhere but the photo itself - closes
     if (!event.target.closest('.lightbox__figure')) { close(); }
   });

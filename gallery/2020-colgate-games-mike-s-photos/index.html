@@ -2715,9 +2715,14 @@
       </div>
 
       <dialog class="lightbox" id="lightbox" aria-label="Photo viewer">
-        <button type="button" class="lightbox__btn lightbox__close" data-viewer="close" aria-label="Close photo (Esc)">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
-        </button>
+        <div class="lightbox__tools">
+          <a class="lightbox__btn lightbox__download" href="#" download target="_blank" rel="noopener" aria-label="Download full-size photo" title="Download photo">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
+          </a>
+          <button type="button" class="lightbox__btn lightbox__close" data-viewer="close" aria-label="Close photo (Esc)" title="Close (Esc)">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+          </button>
+        </div>
         <button type="button" class="lightbox__btn lightbox__prev" data-viewer="prev" aria-label="Previous photo">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
         </button>
