@@ -1,6 +1,13 @@
 # -*- coding: utf-8 -*-
 """Generate the club training calendar as an .ics, from the weekly schedule.
 
+RETIRED: the club's calendars, training included, are now edited on the
+calendar editor (/admin/calendars/) and published from the API by
+tools/fetch-calendars.py, which replaces assets/calendar/ at every publish.
+Anything this writes would be overwritten, so it refuses to run unless given
+--force (say, to see how a season used to be laid out). See tools/README.md
+("Calendars").
+
 The schedule below mirrors the "When we train" table in index.html. Only the
 regular weekly sessions are generated. Saturday interclub is deliberately left
 out: those are fixtures on specific dates, not a weekly commitment, and they
@@ -213,7 +220,13 @@ def main():
     ap.add_argument('--season', type=int, default=None,
                     help='starting year, e.g. 2026 for the 2026/27 season')
     ap.add_argument('--list', action='store_true', help='report the dates generated')
+    ap.add_argument('--force', action='store_true', help='run although the tool is retired')
     args = ap.parse_args()
+    if not args.force:
+        print('build-training-calendar.py is retired: edit training on the calendar editor '
+              '(/admin/calendars/). Its files would be replaced at the next publish; '
+              'use --force to run it anyway.')
+        return 1
 
     today = datetime.date.today()
     # a season opens in April, so Jan-Mar still belongs to the one before

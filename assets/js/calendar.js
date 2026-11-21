@@ -2,10 +2,15 @@
    Reads every iCalendar (.ics) file in a folder and renders one merged
    agenda. No dependencies.
 
-   The files are discovered from assets/calendar/calendars.json if it exists
-   (run tools/build-calendar-list.py to refresh it), otherwise by reading the
-   folder's directory listing - which works on a dev server but not on most
-   static hosts, so ship the manifest.
+   The calendars are edited on /admin/calendars/ and kept by the club's API,
+   so the page reads them from there first (GET /v1/calendars and each
+   calendar's .ics), and an edit shows here within a minute. If the API doesn't
+   answer in time, it falls back to the published copies in this folder,
+   which the Publish site workflow refreshes from the API every half hour
+   (tools/fetch-calendars.py): assets/calendar/calendars.json if it exists,
+   otherwise the folder's directory listing - which works on a dev server but
+   not on most static hosts, so ship the manifest. Either way the addresses
+   shown for subscribing are this site's, which phones already use.
 
    A manifest entry may also carry a "url" for a calendar published elsewhere.
    The local mirror is tried first because it always works; the url is only
@@ -31,6 +36,13 @@
   var MONTHS_BACK = parseInt(root.getAttribute('data-months-past'), 10) || 0;
   // events beyond this many months are folded away, as the past ones are
   var MONTHS_NEAR = parseInt(root.getAttribute('data-months-near'), 10) || 0;
+
+  // the calendars edited on /admin/calendars/; on this computer, the API run
+  // locally (as in ncan-account.js)
+  var LOCAL = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+  var API = LOCAL ? 'http://' + location.hostname + ':8765/v1/calendars'
+    : 'https://api.ncan.nz/v1/calendars';
+  var API_WAIT = 2500;   // ms before giving up on the API and using the published files
 
   // used only when the manifest does not name a colour for a calendar
   var PALETTE = ['#12684D', '#B4531A', '#2A5DA8', '#7A3E9D', '#A8123F', '#4B6157'];
@@ -367,6 +379,16 @@
 
   /* --------------------------------------------------------------- discovery */
 
+  // the API's list of calendars, or null if it doesn't answer in time
+  function fromApi() {
+    var live = fetch(API, { cache: 'no-cache' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (data) { return D.fromApiList(data, API); })
+      .catch(function () { return null; });
+    var late = new Promise(function (done) { setTimeout(function () { done(null); }, API_WAIT); });
+    return Promise.race([live, late]);
+  }
+
   function fromManifest() {
     return fetch(DIR + 'calendars.json', { cache: 'no-cache' })
       .then(function (r) { return r.ok ? r.json() : null; })
@@ -407,7 +429,9 @@
   }
 
   function discover() {
-    return fromManifest().then(function (list) {
+    return fromApi().then(function (list) {
+      return list || fromManifest();
+    }).then(function (list) {
       return list && list.length ? list : fromDirectoryListing();
     }).then(function (list) {
       // a calendar without a colour of its own takes the next palette slot
@@ -664,8 +688,10 @@
     }
 
     return Promise.all(calendars.map(function (cal) {
-      // the mirror first - a remote url only works if that host sends CORS
+      // the API's copy first, then the published file; a remote url last, as it
+      // only works if that host sends CORS
       var addresses = [];
+      if (cal.api) { addresses.push(cal.api); }
       if (cal.file) { addresses.push(DIR + cal.file); }
       if (cal.url) { addresses.push(cal.url); }
 
