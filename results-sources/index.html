@@ -502,6 +502,7 @@
         body.appendChild(facts);
         // a club administrator can change an AthleticLIVE meeting's type, or take it off the list
         if (CAN_REMOVE && m.from === 'AthleticLIVE') {
+          body.appendChild(nameForm(m));
           body.appendChild(typeForm(m));
           body.appendChild(removeControl(m));
         }
@@ -567,7 +568,8 @@
          For club administrators, coaches and the committee, signed in: the API
          (POST /v1/sources) checks the address with AthleticLIVE, adds it to the
          list and collects the results in the background. Only administrators
-         remove (POST /v1/sources/remove) or change a meeting's type (POST /v1/sources/type). */
+         remove (POST /v1/sources/remove), rename (POST /v1/sources/name) or change a
+         meeting's type (POST /v1/sources/type). */
 
       var CAN_REMOVE = false;
       var TYPES = [];         // the meeting types, from GET /v1/sources
@@ -575,7 +577,7 @@
       var collecting = false; // results are being collected: everything that starts another collect is locked
 
       var COLLECT_NOW = 'Collecting results now. This takes 5–10 minutes; this page updates when it’s done.';
-      var LIST_CONTROLS = '.src-type-form select, .src-type-form button, .src-remove button';
+      var LIST_CONTROLS = '.src-type-form select, .src-type-form input, .src-type-form button, .src-remove button';
 
       function lockList(on) { FormLock.lock($('src-out'), on, LIST_CONTROLS); }
 
@@ -664,6 +666,49 @@
             setTimeout(watchCollect, 3000);
           }, function (err) { busy(false); $('add-status').textContent = err.message; });
         });
+      }
+
+      // the meeting's name: renaming collects again, as each result keeps its own copy of the name
+      function nameForm(m) {
+        var form = text('form', 'src-type-form src-name-form');
+        var id = 'src-name-' + (m.link || '').replace(/\D+/g, '-');
+        var label = text('label', null, 'Meeting name');
+        label.htmlFor = id;
+        var box = text('input');
+        box.id = id;
+        box.type = 'text';
+        box.maxLength = 120;
+        box.autocomplete = 'off';
+        box.value = m.name || '';
+        var go = text('button', 'btn btn--ghost', 'Rename');
+        go.type = 'submit';
+        go.disabled = true;
+        var said = text('span', 'src-type-form__said');
+        said.setAttribute('role', 'status');
+        var tidy = function (s) { return s.replace(/\s+/g, ' ').trim(); };
+        box.addEventListener('input', function () {
+          go.disabled = !tidy(box.value) || tidy(box.value) === m.name;
+          said.textContent = '';
+        });
+        form.addEventListener('submit', function (e) {
+          e.preventDefault();
+          var name = tidy(box.value);
+          if (!name || name === m.name) { return; }
+          go.disabled = box.disabled = true;
+          said.textContent = 'Saving…';
+          NCAN.send('/sources/name', { url: m.link, name: name }).then(function (r) {
+            if (r.status !== 200) { go.disabled = box.disabled = false; said.textContent = r.body.error || 'Sorry, that didn’t work.'; return; }
+            said.textContent = 'Now “' + r.body.meeting.name + '”: updating the results…' +
+              (r.body.warning ? ' ' + r.body.warning : '');
+            startCollecting();
+            setTimeout(watchCollect, 3000);
+          }, function (err) { go.disabled = box.disabled = false; said.textContent = err.message; });
+        });
+        var field = text('p', 'records-field');
+        field.appendChild(label);
+        field.appendChild(box);
+        [field, go, said].forEach(function (x) { form.appendChild(x); });
+        return form;
       }
 
       // the meeting's type: changing it collects again, as cross country and road are read differently
