@@ -226,7 +226,7 @@ run's log, when:
 - **the Junior Athletics planner's help names a button that isn't there**: it
   runs `check-planner-help.py`. Update the help to the new name (or put the
   old name back).
-- **a calendar date test fails**: it runs the tests in `tests/js/` with Node,
+- **a JavaScript test fails**: it runs the tests in `tests/js/` with Node,
   once with `TZ=UTC` and once with `TZ=Pacific/Auckland`.
 - **the Facebook posts hold something the home page would take out**: it runs
   `check-facebook-posts.py`.
@@ -235,10 +235,24 @@ run's log, when:
   the tests in `tests/py/`. Fix the entry it names, run
   `python tools/make-head-photo.py`, and commit the result.
 
-### Calendar date tests (`tests/js/`)
-`tests/js/page-photos.test.js` tests the header photo helpers (pools,
-which entry wins, the pick); `tests/py/test_page_photos.py` tests the checks
-(`python -m unittest discover -s tests/py`).
+### Tests (`tests/js/`, `tests/py/`)
+
+Each `tests/js/<name>.test.js` tests the helpers in `assets/js/<name>.js` (or
+`tools/head-photo-pick.js`):
+
+| Test file | What it covers |
+|---|---|
+| `calendar-dates.test.js` | the calendar's dates and repeat events (below) |
+| `page-photos.test.js`, `head-photo-pick.test.js` | header photos: pools, which entry wins, the pick before the page draws |
+| `training-links.test.js` | training plan links: moved plans, no plan, draft wording |
+| `ncan-account.test.js` | sign-in: `#/next/` return addresses, where each role lands, the at-least-role check, the committee note, sending again after a typo |
+| `form-lock.test.js` | locking a form while it works (below) |
+| `gallery-viewer.test.js` | the photo viewer's download button |
+| `meeting-links.test.js` | a meeting's other links on the results sources and athlete pages |
+
+`tests/py/test_page_photos.py` tests the header photo checks
+(`python -m unittest discover -s tests/py`). Add a test file with any new helper
+file; GitHub runs them all on every pull request.
 
 `tests/js/calendar-dates.test.js` tests `assets/js/calendar-dates.js`, the
 calendar page's date and repeat-event helpers: times staying put across the
@@ -764,8 +778,22 @@ anyone else): it lists every meeting collected, with how many results each
 added and which of our athletes. Anyone else sees only a sign-in form, or a line
 saying who the page is for; it is noindex and left out of the sitemap, and the
 athletes page shows its link only to staff. Administrators, coaches and the
-committee add meetings there; administrators also change a meeting's type and
-remove meetings.
+committee add meetings there; administrators also rename a meeting, change its
+type, give it up to five other links (an organiser's PDF, a photo finish: shown on
+the page and on athlete pages, never collected; `assets/js/meeting-links.js`) and
+remove meetings. Adding, renaming, a type change or removing starts a collect
+(5–10 minutes), and the form stays locked until it ends.
+
+**Locking a form while it works** (`assets/js/form-lock.js`):
+`FormLock.lock(box, true)` disables the controls in `box`, marks it `is-locked`
+and `aria-busy`, and the stylesheet shades it with a spinner; `FormLock.lock(box,
+false)` re-enables only what it disabled. The results sources forms, the members
+list upload and the header photos editor use it. On a tall area add `lock-quiet`
+(shading, no big spinner) and give the status line `lock-keep` and `is-busy`, so
+it stays readable above the shading with a small spinner. The spinner is a ring
+that erases and redraws; with the device's reduced motion setting on it breathes
+instead (one shared style in `styles.css`). Unlock on every ending: success,
+refusal and network error.
 
 The Club admin pages are for club administrators. `/admin/` lists the tools,
 each on its own page: needs a look (`/admin/review/`), the members list upload

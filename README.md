@@ -20,5 +20,7 @@ Formerly hosted at www.sporty.co.nz/northcantathletics/
 - Currently changes are made by emailing the request to paul@brouwers.nz
 - ncan.nz domain registered with https://domains.co.nz/.  Cost is around NZ$40/year.
 - Hosted on GitHub Pages, which is free for public repositories.
-- The site is essentially static, with no server-side processing.  Dynamic content is provided by JavaScript, which fetches data from JSON files and renders it in the browser.  This allows for a more interactive experience, while still keeping the site simple and fast.  Tools used to keep the pages in sync are included in the repository.
+- The site itself is static: JavaScript fetches data from JSON files and renders it in the browser, which keeps it simple and fast.  Tools used to keep the pages in sync are included in the repository; [tools/README.md](tools/README.md) explains each, and how the site is laid out.
+- Anything private (athlete pages, results sources, training plan editing, the club admin pages, header photo settings, sign-in) comes from the club's own API at api.ncan.nz, kept in a separate private repository (ncan-api). Nothing private is stored in this public repository.
+- Gallery photos are served from the club's NAS at photos.ncan.nz.
 - The facebook sync is currently managed with a GitHub action.
