@@ -101,6 +101,7 @@ browser's console on the Athletics NZ eLearning library (see below).
 | changed the Facebook posts' layout in `build-html.py`, or the updater warned about the allowlist | `check-facebook-posts.py` (see its section to allow something new) |
 | changed links, moved or removed a file, or a pull request's "Checks" failed | `check-links.py` (and `sync-partials.py`) |
 | renamed or removed a button in the Junior Athletics planner (`assets/js/training*.js`) | update "How to use the planner" in `junior-athletics/index.html`, then `check-planner-help.py` |
+| edited `assets/data/page-photos.json` (header photos) | `make-head-photo.py` (see "Header photos") |
 
 ## Publishing the site
 
@@ -228,8 +229,16 @@ run's log, when:
   once with `TZ=UTC` and once with `TZ=Pacific/Auckland`.
 - **the Facebook posts hold something the home page would take out**: it runs
   `check-facebook-posts.py`.
+- **a header photo isn't approved, or a page is out of step with
+  `assets/data/page-photos.json`**: it runs `make-head-photo.py --check` and
+  the tests in `tests/py/`. Fix the entry it names, run
+  `python tools/make-head-photo.py`, and commit the result.
 
 ### Calendar date tests (`tests/js/`)
+`tests/js/page-photos.test.js` tests the header photo helpers (pools,
+which entry wins, the pick); `tests/py/test_page_photos.py` tests the checks
+(`python -m unittest discover -s tests/py`).
+
 `tests/js/calendar-dates.test.js` tests `assets/js/calendar-dates.js`, the
 calendar page's date and repeat-event helpers: times staying put across the
 New Zealand clock changes, `RRULE` (`COUNT`, `UNTIL`, `BYDAY`, `INTERVAL`),
@@ -353,6 +362,73 @@ python tools/indexnow.py club-champs records     # /club-champs/ and /records/
 python tools/indexnow.py /                       # the home page
 python tools/indexnow.py --dry-run calendar
 ```
+
+## Header photos
+
+Any page can have a photo behind its green heading band (`.page-head--photo`
+in `styles.css`), chosen from `assets/data/page-photos.json`. A page with no
+entry keeps the plain band. The file has two parts:
+
+```json
+{
+  "pools": {
+    "sprints": ["https://photos.ncan.nz/gallery/2026/a.webp", "https://photos.ncan.nz/gallery/2026/b.webp"],
+    "jumps":   [{ "src": "https://photos.ncan.nz/thumbs/2026/c.jpg",
+                  "webp": "https://photos.ncan.nz/gallery/2026/c.webp",
+                  "tags": ["long-jump"], "focus": "50% 30%" }],
+    "junior":  { "include": ["sprints", "jumps"], "photos": ["..."] },
+    "club":    { "include": ["junior", "seniors"], "exclude": ["https://photos.ncan.nz/gallery/2026/b.webp"],
+                 "pick": "by-pool" }
+  },
+  "pages": {
+    "/junior-athletics/":                  { "pool": "junior" },
+    "/junior-athletics/#/plan/*":          { "pool": "jumps" },
+    "/junior-athletics/#/plan/2026-11-24": { "photos": ["https://photos.ncan.nz/gallery/2026/relay.webp"], "focus": "50% 30%" },
+    "/history/":                           { "photo": "none" }
+  }
+}
+```
+
+- **A photo** is an address, or `{"src", "webp", "tags", "focus"}` when
+  there is a JPEG and a WebP (the browser takes the WebP) or it carries tags or
+  a focus point. Photos must be on `https://photos.ncan.nz/` or a file under
+  `/assets/`. Only put photos in a pool used by a public page when the club has
+  consent to publish them, the same rule as the gallery.
+- **A pool** is a list of photos, or `{"include": [pools], "photos": [...],
+  "exclude": [addresses]}`. Included pools are merged, each photo once, and
+  `exclude` is applied last. A pool may include pools that include others, up
+  to four deep. `"pick": "by-pool"` picks one of its pools first, then a photo
+  in it, so a small pool isn't drowned out by a big one. `"public": false`
+  marks a pool that must not reach a public page; a page using one must say
+  `"public": false` too.
+- **A page entry** gives one of `"pool"`, `"photos"`, or `"photo": "none"`,
+  and an optional `"focus"` (`"x% y%"`, the part of the photo kept in view;
+  `center 35%` otherwise). The key can name a `#/...` address: the exact
+  address wins (`#plan-2026-11-24`, the planner's list link, counts as
+  `#/plan/2026-11-24`), then the longest pattern ending in `*`, then the page.
+  An entry replaces the page's choice; to add to it, use a pool that includes
+  the page's pool.
+
+After editing, run:
+
+```bash
+python tools/make-head-photo.py
+```
+
+It checks the file (see its docstring for the list), then writes each page's
+first photo into the page, so it shows before any script runs. Where there is
+more to choose from (several photos, or `#/...` entries), it also marks the
+band `data-page-photos`, and `assets/js/page-photos.js` (on every page, from
+`partials/head.html`) picks a photo at random, not the one that page showed
+last time, and picks again as the `#/...` part changes. On a page with several
+photos the written photo can be replaced a moment after the page loads.
+Unmarked pages never fetch the file. A page's own script can call
+`NCAN.pageHead.photo({tags: [...]})` to prefer photos with those tags.
+
+The gallery's album pages are entries too, marked `"source": "gallery"`:
+`build-gallery.py` rewrites those from each album's cover photo and leaves
+hand-written entries alone (an album entry without `"source"` wins; run
+`make-head-photo.py` after `build-gallery.py` to write it in).
 
 ## Gallery
 

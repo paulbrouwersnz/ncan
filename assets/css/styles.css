@@ -2045,16 +2045,18 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
   color: var(--text-on-dark);
   padding-block: clamp(2.5rem, 6vw, 4.5rem);
 }
-/* a photo album's heading band: its cover photo behind the green, which is
-   kept dark enough on the left for the white text (tools/build-gallery.py sets
-   --photo, the thumbnail JPEG, and --photo-webp, the original as WebP) */
+/* a heading band with a photo behind the green, which is kept dark enough on
+   the left for the white text: --photo (JPEG), --photo-webp (WebP) and
+   --photo-focus (the part kept in view, "x% y%"), set from
+   assets/data/page-photos.json by tools/make-head-photo.py and
+   assets/js/page-photos.js */
 .page-head--photo {
   background:
     linear-gradient(100deg, rgba(6, 42, 32, .94) 30%, rgba(11, 59, 46, .62)),
-    var(--photo) center 35% / cover no-repeat var(--green-800);
+    var(--photo) var(--photo-focus, center 35%) / cover no-repeat var(--green-800);
   background:
     linear-gradient(100deg, rgba(6, 42, 32, .94) 30%, rgba(11, 59, 46, .62)),
-    image-set(var(--photo-webp) type("image/webp"), var(--photo) type("image/jpeg")) center 35% / cover no-repeat var(--green-800);
+    image-set(var(--photo-webp) type("image/webp"), var(--photo) type("image/jpeg")) var(--photo-focus, center 35%) / cover no-repeat var(--green-800);
 }
 .page-head h1 {
   color: var(--white);

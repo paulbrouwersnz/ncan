@@ -53,6 +53,12 @@ jobs:
       - name: Facebook posts pass the home page's allowlist
         run: python tools/check-facebook-posts.py
 
+      - name: Header photos are approved and written into the pages
+        run: python tools/make-head-photo.py --check
+
+      - name: Header photo check tests
+        run: python -m unittest discover -s tests/py
+
       - name: Set up Node
         uses: actions/setup-node@v7
         with:
