@@ -49,15 +49,23 @@
     Object.keys(attrs || {}).forEach(function (k) { i.setAttribute(k, attrs[k]); });
     return i;
   }
-  function labelled(words, control, cls) {
+  function labelled(words, control, cls, hint) {
     var p = el('p', 'records-field ' + (cls || ''));
     var id = 'pp-' + Math.random().toString(36).slice(2, 9);
     control.id = id;
     var l = el('label', null, words);
     l.htmlFor = id;
     if (control.type === 'checkbox') { p.className += ' ath-check'; p.appendChild(control); p.appendChild(l); } else { p.appendChild(l); p.appendChild(control); }
+    if (hint) {
+      var h = el('small', 'pp-hint', hint);
+      h.id = id + '-hint';
+      control.setAttribute('aria-describedby', h.id);
+      p.appendChild(h);
+    }
     return p;
   }
+  // what the two numbers in a "Keep in view" field mean
+  var FOCUS_HINT = 'Across, then down: 0% left/top, 100% right/bottom. Empty keeps the middle.';
   function checkbox(on) { var c = el('input'); c.type = 'checkbox'; c.checked = !!on; return c; }
   function say(words) { $('pp-status').textContent = words || ''; }
   function when(iso) {
@@ -126,7 +134,7 @@
         fields.appendChild(labelled('Tags', tags));
         var focus = input(p.focus, { placeholder: '50% 30%', size: '8' });
         focus.addEventListener('change', function () { p.focus = focus.value.trim(); emit(); });
-        fields.appendChild(labelled('Keep in view', focus));
+        fields.appendChild(labelled('Keep in view', focus, 'pp-focus', FOCUS_HINT));
         row.appendChild(fields);
         row.appendChild(button('Remove', function () { rows.splice(i, 1); draw(); emit(); }));
         box.appendChild(row);
@@ -295,7 +303,7 @@
     if (kind !== 'none') {
       var focus = input(entry.focus, { placeholder: '50% 30%', size: '8' });
       focus.addEventListener('change', function () { if (focus.value.trim()) { entry.focus = focus.value.trim(); } else { delete entry.focus; } changed(); });
-      body.appendChild(labelled('Keep in view (every photo here)', focus));
+      body.appendChild(labelled('Keep in view (every photo here)', focus, 'pp-focus', FOCUS_HINT));
     }
     var priv = checkbox(entry.public === false);
     priv.addEventListener('change', function () { if (priv.checked) { entry.public = false; } else { delete entry.public; } changed(); });
