@@ -70,6 +70,7 @@
     $('pp-save').disabled = false;
     $('pp-dirty').hidden = false;
     test();
+    showText();
   }
   function clone(x) { return JSON.parse(JSON.stringify(x)); }
 
@@ -377,6 +378,7 @@
     drawPages();
     drawHistory(r.history || []);
     test();
+    showText();
   }
 
   function load() {
@@ -439,16 +441,40 @@
 
   /* Edit as text ----------------------------------------------------------------- */
 
+  // The text box follows the settings while it's open: after every change above,
+  // and after Save, Load the latest or Go back. Text someone has typed but not
+  // used yet is left alone, with a note, so a change elsewhere never wipes it.
+  var textTyped = false;
+
+  function showText() {
+    var wrap = $('pp-text-wrap');
+    if (!wrap || !wrap.open) { return; }
+    if (textTyped) {
+      if ($('pp-text').value !== JSON.stringify(draft, null, 2)) { $('pp-text-note').hidden = false; }
+      return;
+    }
+    $('pp-text').value = JSON.stringify(draft, null, 2);
+    $('pp-text-note').hidden = true;
+  }
+
+  function resetText() {
+    textTyped = false;
+    showText();
+  }
+
   function setUpText() {
     var box = $('pp-text');
     $('pp-text-wrap').addEventListener('toggle', function () {
-      if (this.open) { box.value = JSON.stringify(draft, null, 2); }
+      if (this.open) { resetText(); }
     });
+    box.addEventListener('input', function () { textTyped = true; });
+    $('pp-text-reset').addEventListener('click', resetText);
     $('pp-text-apply').addEventListener('click', function () {
       try {
         var d = JSON.parse(box.value);
         if (!d || typeof d !== 'object' || Array.isArray(d)) { throw new Error('should be {"pools": …, "pages": …}'); }
         draft = { pools: d.pools || {}, pages: d.pages || {} };
+        textTyped = false;
         changed();
         drawPools();
         drawPages();
