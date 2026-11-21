@@ -14,6 +14,8 @@
                               404 = not found, or not one you can see), and
                               err.body, the API's reply (its "error", and more).
     send(path, data)       -> Promise of {status, body}: a POST of JSON.
+    sendFile(path, blob)   -> the same, for a POST of a file's bytes (a photo),
+                              sent with the blob's own type.
     me()                   -> Promise of {email, role, athletes}, or null.
     signIn(el, intro, next) -> fills el with a sign-in form; the emailed link comes
                               back to `next` (by default, this page as it is).
@@ -65,6 +67,21 @@
         return { status: res.status, body: body };
       });
     });
+  }
+
+  // A file's bytes (an athlete's photo): {status, body} as for send().
+  function sendFile(path, blob) {
+    return fetch(API + path, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': blob.type || 'application/octet-stream' },
+      body: blob
+    }).catch(function () { throw failure(0, 'The results service could not be reached.'); })
+      .then(function (res) {
+        return res.json().catch(function () { return {}; }).then(function (body) {
+          return { status: res.status, body: body };
+        });
+      });
   }
 
   function me() {
@@ -164,5 +181,5 @@
     box.appendChild(out);
   }
 
-  window.NCAN = { api: API, get: get, send: send, me: me, signIn: signIn, account: account };
+  window.NCAN = { api: API, get: get, send: send, sendFile: sendFile, me: me, signIn: signIn, account: account };
 }());

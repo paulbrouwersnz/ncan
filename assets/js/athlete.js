@@ -1114,6 +1114,10 @@
       }
       current = json.slug || id;
       athlete = json;
+      // the header photo (athlete-photo.js): the athlete's own, and who may change it
+      NCAN.athlete = { slug: current, name: json.name, photo: json.photo || null,
+        can_change_photo: !!json.can_change_photo, can_remove_photo: !!json.can_remove_photo };
+      document.dispatchEvent(new CustomEvent('ncan:athlete', { detail: NCAN.athlete }));
       // cross country, road and relay legs have a section of their own: the
       // track sections (PBs, charts, filters, the results table) never see them
       var offTrack = json.results.filter(function (r) { return r.oos; });

@@ -102,6 +102,7 @@ browser's console on the Athletics NZ eLearning library (see below).
 | changed links, moved or removed a file, or a pull request's "Checks" failed | `check-links.py` (and `sync-partials.py`) |
 | renamed or removed a button in the Junior Athletics planner (`assets/js/training*.js`) | update "How to use the planner" in `junior-athletics/index.html`, then `check-planner-help.py` |
 | edited `assets/data/page-photos.json` (header photos) | `make-head-photo.py` (see "Header photos") |
+| changed header photos on the Club admin page | nothing: published within the half hour (see "Header photos") |
 
 ## Publishing the site
 
@@ -365,9 +366,44 @@ python tools/indexnow.py --dry-run calendar
 
 ## Header photos
 
-Any page can have a photo behind its green heading band (`.page-head--photo`
-in `styles.css`), chosen from `assets/data/page-photos.json`. A page with no
-entry keeps the plain band. The file has two parts:
+Any page with a green heading band (`.page-head--photo` in `styles.css`; not
+the home page, which has its own hero) can have a photo behind it. A page with
+no entry keeps the plain band.
+
+**Admins change them on the Club admin page** (`/admin/#page-photos`): pools,
+pages and `#/...` addresses, a "which photo shows here?" tester, versions with
+undo, and the athletes' own photos most recently uploaded, each with Remove
+(`assets/js/admin-photos.js`). The club's API keeps those settings
+(`GET /v1/page-photos`, in ncan-api) and checks them as `make-head-photo.py`
+does. They are laid over `assets/data/page-photos.json`: a pool or page entry
+there replaces the file's of the same name, and the file keeps the gallery's
+album entries and anything written by hand.
+
+- On a page that picks photos as it loads (marked `data-page-photos`, below),
+  `page-photos.js` reads the API's settings too, so a change shows within five
+  minutes (the API's cache time). If the API can't be reached in 2.5 seconds it
+  uses the copy published with the file.
+- At publish time `tools/fetch-page-photos.py` adds the API's settings to the
+  published file as its `"api"` part (never committed: `make-head-photo.py
+  --check` fails if it is), and `make-head-photo.py` writes them into the
+  pages, so a page that had no photo before gets one. The Publish site
+  workflow also runs every half hour, and publishes only when the settings
+  differ from the live site's (`fetch-page-photos.py --compare-live`). An entry
+  for a page that isn't on the site, or has no heading band, is left out with a
+  warning; if the settings still have a problem, all of them are left out of
+  that publish. Neither ever stops a publish.
+
+**Athletes' own photos** (`assets/js/athlete-photo.js`, "A photo for this
+page" on `/athlete/`): the athlete's GameDay contacts and admins can upload one;
+coaches can also remove one. It's cropped to the band's shape (2:1) in the
+browser, with a focus point, made 1600 pixels across (never under 640) and
+saved as WebP (JPEG where the browser can't), under 600 KB; drawing it afresh
+leaves out the file's location and camera details, and the API checks it again
+and strips anything left. It's private like the page: fetched signed in and
+shown with `NCAN.pageHead.photo({photo, focus})`, which keeps it over whatever
+the settings give `/athlete/`.
+
+The file has two parts (the admin page's "Edit as text" uses the same layout):
 
 ```json
 {
@@ -423,7 +459,9 @@ band `data-page-photos`, and `assets/js/page-photos.js` (on every page, from
 last time, and picks again as the `#/...` part changes. On a page with several
 photos the written photo can be replaced a moment after the page loads.
 Unmarked pages never fetch the file. A page's own script can call
-`NCAN.pageHead.photo({tags: [...]})` to prefer photos with those tags.
+`NCAN.pageHead.photo({tags: [...]})` to prefer photos with those tags, or
+`NCAN.pageHead.photo({photo: {src, webp}, focus})` to show a photo of its own
+until `NCAN.pageHead.photo({release: true})`.
 
 The gallery's album pages are entries too, marked `"source": "gallery"`:
 `build-gallery.py` rewrites those from each album's cover photo and leaves

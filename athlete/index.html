@@ -364,9 +364,64 @@
       </div>
     </section>
 
+    <!-- Header photo: the athlete's own photo behind the heading, for the people
+         who manage who sees this page, and coaches to remove one
+         (assets/js/athlete-photo.js) -->
+    <section class="section section--tint" id="ath-photo" aria-labelledby="photo-heading" hidden>
+      <div class="wrap">
+        <div class="section-head section-head--wide">
+          <p class="eyebrow">Header photo</p>
+          <h2 id="photo-heading">A photo for this page</h2>
+          <p class="lede">
+            A photo of the athlete behind the heading at the top of this page. Only the people who can
+            see the page see it. The photo is cropped and made smaller here, on your device, which also
+            leaves out where and when it was taken.
+          </p>
+        </div>
+        <p class="photo-now" id="photo-now"></p>
+        <div id="photo-choose">
+          <p class="records-field">
+            <label for="photo-file">Choose a photo</label>
+            <input type="file" id="photo-file" accept="image/*">
+          </p>
+          <div class="photo-crop" id="photo-crop" hidden>
+            <p class="mem-help">
+              Drag the frame to choose the part to show, and zoom to make it smaller. Click on the
+              athlete to keep them in view on a phone, where less of the photo shows. The heading at
+              the top of the page shows how it will look.
+            </p>
+            <div class="photo-crop__stage">
+              <canvas id="photo-canvas" tabindex="0" aria-label="The photo, with the part to show framed. Arrow keys move the frame."></canvas>
+            </div>
+            <p class="records-field photo-crop__zoom">
+              <label for="photo-zoom">Zoom</label>
+              <input type="range" id="photo-zoom" step="1" style="direction: rtl">
+            </p>
+            <p class="records-field ath-check">
+              <input type="checkbox" id="photo-confirm">
+              <label for="photo-confirm">I have the right to share this photo, and it shows
+                <span id="photo-confirm-name">the athlete</span> suitably.</label>
+            </p>
+            <div class="btn-row">
+              <button type="button" class="btn btn--accent" id="photo-save" disabled>Use this photo</button>
+              <button type="button" class="btn btn--ghost" id="photo-cancel">Cancel</button>
+            </div>
+          </div>
+        </div>
+        <div class="access-add" id="photo-remove-row" hidden>
+          <p class="records-field records-field--grow">
+            <label for="photo-why">Why remove it (optional)</label>
+            <input type="text" id="photo-why" maxlength="200" autocomplete="off">
+          </p>
+          <button type="button" class="btn btn--ghost" id="photo-remove">Remove the photo</button>
+        </div>
+        <p class="access-status" id="photo-status" role="status"></p>
+      </div>
+    </section>
+
     <!-- Manage this athlete: club administrators only; the API answers nobody else
          (assets/js/athlete-manage.js) -->
-    <section class="section section--tint" id="ath-manage" aria-labelledby="manage-heading" hidden>
+    <section class="section" id="ath-manage" aria-labelledby="manage-heading" hidden>
       <div class="wrap">
         <div class="section-head section-head--wide">
           <p class="eyebrow">For club administrators</p>
@@ -546,6 +601,7 @@
 
   <script src="/assets/js/ncan-account.js"></script>
   <script src="/assets/js/athlete-access.js" defer></script>
+  <script src="/assets/js/athlete-photo.js" defer></script>
   <script src="/assets/js/athlete-manage.js" defer></script>
   <script src="/assets/js/athlete.js"></script>
 

@@ -1210,6 +1210,7 @@
       setUpAddresses();
       setUpOptOut();
       setUpBlocks();
+      if (window.AdminPhotos) { AdminPhotos.start(); }
     }, function (err) { $('admin-status').textContent = err.message || 'Sorry, this page could not be loaded.'; });
   }, function () { $('admin-status').textContent = 'The club’s results service could not be reached.'; });
 }());

@@ -91,5 +91,58 @@ class Checks(unittest.TestCase):
                          "--photo-focus: 10%% 20%%" % (H, H))
 
 
+class Overlay(unittest.TestCase):
+    def test_overlay(self):
+        base = {'about': 'x', 'pools': {'a': [H + 'a.webp']},
+                'pages': {'/gallery/x/': {'photos': [H + 'g.webp']}, '/': {'pool': 'a'}}}
+        out = P.overlay(base, {'pools': {'b': [H + 'b.webp']}, 'pages': {'/': {'pool': 'b'}}})
+        self.assertEqual(set(out['pools']), {'a', 'b'})
+        self.assertEqual(out['pages']['/'], {'pool': 'b'})
+        self.assertIn('/gallery/x/', out['pages'])
+        self.assertEqual(base['pages']['/'], {'pool': 'a'})
+
+    def test_load_lays_the_api_part_over(self):
+        import json
+        import tempfile
+        data = {'about': '', 'pools': {}, 'pages': {'/': {'photo': 'none'}},
+                'api': {'version': 2, 'pools': {}, 'pages': {'/': {'photos': [H + 'a.webp']}}}}
+        with tempfile.NamedTemporaryFile('w', suffix='.json', delete=False, encoding='utf-8') as f:
+            json.dump(data, f)
+        try:
+            merged = P.load(f.name)
+            self.assertNotIn('api', merged)
+            self.assertEqual(merged['pages']['/'], {'photos': [H + 'a.webp']})
+            self.assertIn('api', P.load(f.name, raw=True))
+        finally:
+            os.unlink(f.name)
+
+
+class FetchFromApi(unittest.TestCase):
+    """tools/fetch-page-photos.py: what the API's settings lose at publish time."""
+
+    @classmethod
+    def setUpClass(cls):
+        import importlib.util
+        here = os.path.dirname(os.path.abspath(__file__))
+        path = os.path.join(here, '..', '..', 'tools', 'fetch-page-photos.py')
+        spec = importlib.util.spec_from_file_location('fetch_page_photos', path)
+        cls.F = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(cls.F)
+
+    def test_missing_pages_left_out(self):
+        settings = {'pools': {'a': [H + 'a.webp']},
+                    'pages': {'/junior-athletics/': {'pool': 'a'}, '/no-such-page/': {'pool': 'a'}, '/': {'pool': 'a'}}}
+        layer, notes = self.F.usable(settings, {'pools': {}, 'pages': {}})
+        self.assertEqual(list(layer['pages']), ['/junior-athletics/'])
+        self.assertTrue(any('no heading band' in n for n in notes))
+        self.assertTrue(any('/no-such-page/' in n for n in notes))
+
+    def test_problem_leaves_all_out(self):
+        settings = {'pools': {'a': ['https://example.com/a.jpg']}, 'pages': {'/': {'pool': 'a'}}}
+        layer, notes = self.F.usable(settings, {'pools': {}, 'pages': {}})
+        self.assertIsNone(layer)
+        self.assertTrue(any('left out of this publish' in n for n in notes))
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -3762,6 +3762,48 @@ html:has(.plan-editor:not([hidden])) { scroll-padding-bottom: 5rem; }
 .access-status { margin: .8rem 0 0; font-weight: 600; color: var(--heading); }
 .access-status:empty { display: none; }
 
+/* An athlete's own header photo (athlete.html, athlete-photo.js) */
+#ath-photo[hidden], #photo-choose[hidden], .photo-crop[hidden], #photo-remove-row[hidden] { display: none; }
+.photo-now { margin: 0 0 1rem; font-weight: 600; color: var(--heading); }
+.photo-crop { max-width: 46rem; margin-top: 1rem; }
+.photo-crop__stage { margin: .8rem 0; }
+.photo-crop__stage canvas { display: block; max-width: 100%; border-radius: var(--radius-sm); cursor: move; touch-action: none; }
+.photo-crop__stage canvas:focus-visible { outline: 3px solid var(--yellow-500); outline-offset: 2px; }
+.photo-crop__zoom { max-width: 20rem; margin-bottom: .8rem; }
+.photo-crop .ath-check { margin-bottom: 1rem; }
+#photo-remove-row { margin-top: 1.2rem; }
+
+/* Header photos on the Club admin page (admin.html, admin-photos.js) */
+#page-photos[hidden], .pp-dirty[hidden] { display: none; }
+.pp-heading { margin: 2rem 0 .8rem; font-size: 1.15rem; color: var(--heading); }
+.pp-card { max-width: 60rem; border-bottom: 1px solid var(--line); }
+.pp-card__head { display: flex; flex-wrap: wrap; align-items: baseline; gap: .3rem .8rem; padding: .8rem 0; cursor: pointer; }
+.pp-card__head strong { font-weight: 600; word-break: break-all; }
+.pp-card__meta { color: var(--text-soft); font-size: .9rem; }
+.pp-card__body { display: grid; gap: .8rem; padding: 0 0 1.2rem; }
+.pp-card__body > .btn { justify-self: start; }
+.pp-card textarea { width: 100%; font-family: ui-monospace, Consolas, monospace; font-size: .85rem; }
+.pp-sub { margin: .4rem 0 0; font-size: 1rem; }
+.pp-include { display: flex; flex-wrap: wrap; gap: .3rem 1.2rem; margin: 0; padding: .6rem .8rem; border: 1px solid var(--line); border-radius: var(--radius-sm); }
+.pp-include legend { padding: 0 .3rem; font-weight: 600; }
+.pp-photos { display: grid; gap: .8rem; }
+.pp-photos > .btn { justify-self: start; }
+.pp-photo { display: grid; grid-template-columns: 7.5rem 1fr auto; gap: .8rem; align-items: start; padding: .7rem; background: var(--white); border: 1px solid var(--line); border-radius: var(--radius-sm); }
+.pp-photo__fields { display: flex; flex-wrap: wrap; gap: .6rem .8rem; }
+.pp-photo__fields .records-field--grow { flex: 1 1 16rem; }
+.pp-thumb { width: 7.5rem; aspect-ratio: 2 / 1; object-fit: cover; border-radius: 6px; background: var(--green-100); }
+.pp-thumb--broken { outline: 2px solid #b3261e; }
+.pp-strip { display: flex; flex-wrap: wrap; gap: .5rem; margin: .5rem 0 0; }
+.pp-test { max-width: 40rem; }
+.pp-save { display: flex; flex-wrap: wrap; align-items: flex-end; gap: .8rem; max-width: 60rem; margin-top: 2rem; padding-top: 1.2rem; border-top: 2px solid var(--line-strong); }
+.pp-dirty { align-self: center; font-weight: 600; color: #8a5a00; }
+.pp-problems { margin: .6rem 0 0; padding-left: 1.2rem; color: #b3261e; max-width: 60rem; }
+.pp-history__item { display: flex; flex-wrap: wrap; align-items: center; gap: .3rem .8rem; padding: .6rem 0; border-bottom: 1px solid var(--line); }
+.pp-now { padding: .1rem .5rem; border-radius: 999px; background: var(--green-100); font-size: .8rem; font-weight: 600; }
+@media (max-width: 560px) {
+  .pp-photo { grid-template-columns: 1fr; }
+}
+
 /* Club admin (admin.html) */
 .admin-gate { margin-top: 2rem; margin-bottom: 2rem; }
 .admin-gate[hidden] { display: none; }
