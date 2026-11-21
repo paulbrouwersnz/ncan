@@ -99,3 +99,73 @@ test('a refused address can be fixed straight away', async () => {
   assert.equal(p.button.disabled, false);
   assert.match(p.status.textContent, /doesn’t look like an email address/);
 });
+
+// --- where people go after signing in -------------------------------------
+
+function account(replies, store) {
+  const sandbox = {
+    location: { hostname: 'ncan.nz', protocol: 'https:', host: 'ncan.nz', href: 'https://ncan.nz/sign-in/' },
+    localStorage: {
+      getItem: (k) => (k in store ? store[k] : null),
+      setItem: (k, v) => { store[k] = String(v); },
+      removeItem: (k) => { delete store[k]; },
+    },
+    fetch() {
+      const r = replies.shift();
+      return Promise.resolve({ ok: r.status < 300, status: r.status, json: () => Promise.resolve(r.body || {}) });
+    },
+  };
+  sandbox.window = sandbox;
+  vm.runInNewContext(SRC, sandbox);
+  return sandbox.NCAN;
+}
+
+test('each role has its own page to land on', () => {
+  const N = account([], {});
+  assert.equal(N.home({ role: 'admin' }), '/admin/');
+  assert.equal(N.home({ role: 'committee' }), '/committee-tools/');
+  assert.equal(N.home({ role: 'coach' }), '/coaches-tools/');
+  assert.equal(N.home({ role: 'family' }), '/athletes/');
+  assert.equal(N.home(null), '/athletes/');
+});
+
+test('#/next/ addresses read and write the page to go on to', () => {
+  const N = account([], {});
+  assert.equal(N.nextFromHash('#/next/athlete/%23/sam-brown'), '/athlete/#/sam-brown');
+  assert.equal(N.nextFromHash('#/next/athlete/#/sam-brown'), '/athlete/#/sam-brown');
+  assert.equal(N.nextFromHash('#/next/junior-athletics/%23/plan/2026-11-24'), '/junior-athletics/#/plan/2026-11-24');
+  assert.equal(N.nextFromHash('#/next/admin/'), '/admin/');
+  for (const bad of ['', '#', '#/next', '#/next/', '#/next//evil.example/x', '#/next/%2F%2Fevil.example',
+    '#/next/sign-in/', '#/next/%E0%A4%A', '#/other/admin/', null, undefined]) {
+    const got = N.nextFromHash(bad);
+    assert.ok(got === null || got === '/', String(bad) + ' -> ' + got);
+  }
+  assert.equal(N.signInLink('/athlete/#/sam-brown'), '/sign-in/#/next/athlete/%23/sam-brown');
+  assert.equal(N.signInLink('/admin/'), '/sign-in/#/next/admin/');
+  assert.equal(N.signInLink('https://evil.example/'), '/sign-in/');
+  for (const path of ['/athlete/#/sam-brown', '/junior-athletics/#/plan/2026-11-24', '/admin/#page-photos', '/a%20b/']) {
+    assert.equal(N.nextFromHash(N.signInLink(path).slice('/sign-in/'.length)), path, path);
+  }
+});
+
+test('next only ever points to a page of this website', () => {
+  const N = account([], {});
+  assert.equal(N.safeNext('/athletes/'), '/athletes/');
+  assert.equal(N.safeNext('/athlete/#/sam-brown'), '/athlete/#/sam-brown');
+  assert.equal(N.safeNext('/junior-athletics/#/plan/2026-11-24'), '/junior-athletics/#/plan/2026-11-24');
+  assert.equal(N.safeNext('https://ncan.nz/admin/#page-photos'), '/admin/#page-photos');
+  for (const bad of ['https://evil.example/', '//evil.example/x', '/\\evil.example', 'javascript:alert(1)',
+    'athletes/', '/a b/', '', null, 42, 'https://ncan.nz.evil.example/', '/sign-in/', '/sign-in/?next=/x',
+    '/sign-in', '/sign-in/index.html']) {
+    assert.equal(N.safeNext(bad), null, String(bad));
+  }
+});
+
+test('me() remembers whether someone is signed in, for the header link', async () => {
+  const store = {};
+  const N = account([{ status: 200, body: { email: 'c@club.example', role: 'coach' } }, { status: 401 }], store);
+  await N.me();
+  assert.equal(store['ncan-signed-in'], '1');
+  assert.equal(await N.me(), null);
+  assert.equal('ncan-signed-in' in store, false);
+});

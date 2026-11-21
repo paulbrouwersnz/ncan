@@ -751,6 +751,24 @@ number, or a page number given by hand (900000001 up), whose results move to
 the page (`assets/js/athlete-manage.js`). The shared sign-in code is
 `assets/js/ncan-account.js`.
 
+Signing in has one address, `/sign-in/` (`assets/js/sign-in.js`), and the header
+links to it on every page: "Sign in", or "My pages" for someone signed in
+(`assets/js/account-link.js`, loaded from `partials/head.html`; it asks the API
+only when the device has signed in before, so most visitors cause no request).
+Signed in, `/sign-in/` sends people on to the page named after `#/next`, for
+example `/sign-in/#/next/athlete/%23/sam-brown` (the page's own `#` written `%23`;
+`NCAN.nextFromHash` and `NCAN.signInLink`), kept after the `#` so it never reaches
+a server or its logs (a page of this site only,
+`NCAN.safeNext`) or to their own page (`NCAN.home`): administrators to `/admin/`,
+the committee to `/committee-tools/`, coaches to `/coaches-tools/` and families
+to `/athletes/`. The emailed link comes back to `/sign-in/`, which does the same.
+Pages that need signing in keep their own sign-in box, which brings people back
+to that page. The two tools pages (`assets/js/staff-tools.js`) are cards linking
+to the tools each role uses; the roles allowed are in `data-roles` on `<main>`.
+All three are noindex and left out of the sitemap. The API's plain sign-in form
+(`/v1/auth/sign-in`) redirects here; `?plain=1` keeps the plain form, for
+browsers without JavaScript.
+
 The filter and form dropdowns (`.records-field select`) draw the site's own
 arrow, so they look the same in every browser.
 
