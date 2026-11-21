@@ -454,10 +454,16 @@ python tools/make-head-photo.py
 It checks the file (see its docstring for the list), then writes each page's
 first photo into the page, so it shows before any script runs. Where there is
 more to choose from (several photos, or `#/...` entries), it also marks the
-band `data-page-photos`, and `assets/js/page-photos.js` (on every page, from
-`partials/head.html`) picks a photo at random, not the one that page showed
-last time, and picks again as the `#/...` part changes. On a page with several
-photos the written photo can be replaced a moment after the page loads.
+band `data-page-photos` and writes a small script straight after the band's
+opening tag (`tools/head-photo-pick.js`, with that page's choices). It picks a
+photo at random, not the one that page showed last time, as the page is read,
+before it is first drawn, so the photo doesn't jump. `assets/js/page-photos.js`
+(on every page, from `partials/head.html`) then keeps that photo while the
+live settings still allow it for the address, and otherwise, or as the
+`#/...` part changes to an entry that rules it out, loads the new photo first
+and fades it in over the old (no fade for people who ask for reduced motion).
+`head-photo-pick.js` is squeezed onto one line when written, so end every
+statement with a semicolon and keep comments on lines of their own.
 Unmarked pages never fetch the file. A page's own script can call
 `NCAN.pageHead.photo({tags: [...]})` to prefer photos with those tags, or
 `NCAN.pageHead.photo({photo: {src, webp}, focus})` to show a photo of its own

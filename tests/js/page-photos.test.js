@@ -129,3 +129,18 @@ test('without the API, the file\'s copy of its settings is used', () => {
   assert.deepEqual(P.settings(file, live).pages['/'], { photo: 'none' });
   assert.equal(P.settings({ pools: {}, pages: {} }, null).pages['/'], undefined);
 });
+
+test('a photo already showing is kept while the address may show it', () => {
+  const groups = P.entryGroups(data, { pool: 'junior' });
+  assert.equal(P.allowed(groups, [], H + 'd.webp').src, H + 'd.webp');
+  assert.equal(P.allowed(groups, [], H + 'relay.webp'), null);
+  assert.equal(P.allowed(groups, [], null), null);
+});
+
+test('with tags, only a tagged photo is kept when there is one', () => {
+  const groups = P.entryGroups(data, { pool: 'junior' });
+  assert.equal(P.allowed(groups, ['jumps'], H + 'a.webp'), null);
+  assert.equal(P.allowed(groups, ['jumps'], H + 'c.jpg').src, H + 'c.jpg');
+  // no photo carries the tag: any photo in the pool will do
+  assert.equal(P.allowed(groups, ['hurdles'], H + 'a.webp').src, H + 'a.webp');
+});

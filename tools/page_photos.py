@@ -153,6 +153,37 @@ def needs_script(data, page, entry):
     return sum(len(g) for g in entry_groups(data, entry)) > 1
 
 
+def pick_data(data, page):
+    """The choices the page's picker script needs (tools/head-photo-pick.js):
+    {"p": [photo, ...], "e": {key: {"g": [[index, ...], ...], "f": focus}}}
+    for the page's entry and its #/... entries. Each photo is listed once, as
+    [src], [src, webp] or [src, webp, focus]."""
+    photos, index, entries = [], {}, {}
+    for key, entry in sorted(data.get('pages', {}).items()):
+        if key != page and not key.startswith(page + '#'):
+            continue
+        groups = []
+        for g in entry_groups(data, entry):
+            ids = []
+            for p in g:
+                item = [p['src']]
+                if p['webp'] != p['src'] or p['focus']:
+                    item.append(p['webp'])
+                if p['focus']:
+                    item.append(p['focus'])
+                tag = tuple(item)
+                if tag not in index:
+                    index[tag] = len(photos)
+                    photos.append(item)
+                ids.append(index[tag])
+            groups.append(ids)
+        out = {'g': groups}
+        if entry.get('focus'):
+            out['f'] = entry['focus']
+        entries[key] = out
+    return {'p': photos, 'e': entries}
+
+
 def css_url(u):
     return "url('%s')" % u.replace("'", '%27')
 

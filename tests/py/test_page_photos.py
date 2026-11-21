@@ -146,3 +146,55 @@ class FetchFromApi(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class Picker(unittest.TestCase):
+    """The choices written into a page for tools/head-photo-pick.js, and the
+    script make-head-photo.py writes after the band's opening tag."""
+
+    data = {'pools': {'a': [H + 'a.webp', {'src': H + 'b.jpg', 'webp': H + 'b.webp', 'focus': '1% 2%'}]},
+            'pages': {'/junior-athletics/': {'pool': 'a'},
+                      '/junior-athletics/#/plan/*': {'pool': 'a', 'focus': '5% 5%'},
+                      '/junior-athletics/#/plan/2026-12-01': {'photo': 'none'},
+                      '/history/': {'photos': [H + 'c.webp']}}}
+
+    def test_pick_data(self):
+        d = P.pick_data(self.data, '/junior-athletics/')
+        self.assertEqual(d['p'], [[H + 'a.webp'], [H + 'b.jpg', H + 'b.webp', '1% 2%']])
+        self.assertEqual(d['e'], {'/junior-athletics/': {'g': [[0, 1]]},
+                                  '/junior-athletics/#/plan/*': {'g': [[0, 1]], 'f': '5% 5%'},
+                                  '/junior-athletics/#/plan/2026-12-01': {'g': []}})
+
+    def test_script_written_and_rewritten(self):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location(
+            'make_head_photo', os.path.join(os.path.dirname(P.__file__), 'make-head-photo.py'))
+        M = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(M)
+        tag = '<section class="page-head" aria-labelledby="h">'
+        entry = self.data['pages']['/junior-athletics/']
+        new = M.rewrite_tag(tag, self.data, '/junior-athletics/', entry)
+        self.assertTrue(new.startswith('<section class="page-head page-head--photo" aria-labelledby="h" '
+                                       'style="--photo: url(\'%sa.webp\')' % H))
+        self.assertIn(' data-page-photos><script data-head-pick>(function', new)
+        self.assertTrue(new.endswith(')</script>'))
+        self.assertNotIn('\n', new)
+        # the whole match (tag and script) found again, and written the same
+        html = '<main>' + new + '<h1>x</h1></main>'
+        m = M.HEAD.search(html)
+        self.assertEqual(m.group(0), new)
+        self.assertEqual(M.rewrite_tag(m.group(0), self.data, '/junior-athletics/', entry), new)
+        # a single photo: no script, and an old one is taken out
+        one = M.rewrite_tag(new, self.data, '/history/', self.data['pages']['/history/'])
+        self.assertNotIn('<script', one)
+        self.assertNotIn('data-page-photos', one)
+
+    def test_script_cannot_end_early(self):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location(
+            'make_head_photo', os.path.join(os.path.dirname(P.__file__), 'make-head-photo.py'))
+        M = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(M)
+        data = {'pools': {}, 'pages': {'/x/': {'photos': [H + 'a</script>.webp', H + 'b.webp']}}}
+        script = M.picker_script(data, '/x/')
+        self.assertEqual(script.count('</script>'), 1)

@@ -10,9 +10,12 @@ gets the first photo its entry would pick from, written in as .page-head--photo
 and the --photo, --photo-webp (and --photo-focus) properties, so the photo is
 there before any script runs. When the page has more to choose from - a pool of
 several photos, or entries for its #/... addresses - the section is also marked
-data-page-photos, and assets/js/page-photos.js picks a photo when the page loads
-and again as the #/... part changes. A page with no entry, or "photo": "none",
-has the plain band.
+data-page-photos and given a small script straight after the band's opening tag
+(tools/head-photo-pick.js, with the page's choices) that picks this visit's
+photo before the page is first drawn, so it doesn't jump. assets/js/page-photos.js
+then keeps that photo unless the live settings rule it out, and fades in a new
+one as the #/... part changes. A page with no entry, or "photo": "none", has
+the plain band.
 
 The checks (the same run, and Checks on every pull request):
 
@@ -32,6 +35,7 @@ Standard library only. See tools/README.md ("Header photos").
 """
 import argparse
 import io
+import json
 import os
 import re
 import sys
@@ -40,11 +44,32 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import page_photos as P  # noqa: E402
 from pages import pages as site_pages  # noqa: E402
 
-HEAD = re.compile(r'<section class="page-head[ "][^>]*>')
+# the band's opening tag, and the picker script written after it, if any
+HEAD = re.compile(r'<section class="page-head[ "][^>]*>(?:<script data-head-pick>.*?</script>)?', re.S)
+PICKER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'head-photo-pick.js')
+
+
+def picker_code():
+    """tools/head-photo-pick.js on one line: the notes before "function" left
+    out, each line trimmed, // lines dropped."""
+    with io.open(PICKER, encoding='utf-8') as f:
+        text = f.read()
+    text = text[text.index('\nfunction') + 1:]
+    lines = [ln.strip() for ln in text.splitlines()]
+    return ''.join(ln for ln in lines if ln and not ln.startswith('//'))
+
+
+def picker_script(data, address):
+    """The <script> that picks the page's photo as the page is read."""
+    choices = json.dumps(P.pick_data(data, address), ensure_ascii=False, separators=(',', ':'))
+    choices = choices.replace('</', '<\\/').replace('\u2028', '\\u2028').replace('\u2029', '\\u2029')
+    return '<script data-head-pick>(%s)(document.currentScript,%s)</script>' % (picker_code(), choices)
 
 
 def rewrite_tag(tag, data, address, entry):
-    """The page head's opening tag for the page's entry."""
+    """The page head's opening tag for the page's entry, and the picker script
+    after it when the page picks from several photos."""
+    tag = tag[:tag.index('>') + 1]
     t = re.sub(r'\s+style="[^"]*"', '', tag)
     t = re.sub(r'\s+data-page-photos(="[^"]*")?', '', t)
     t = t.replace(' page-head--photo', '')
@@ -54,9 +79,11 @@ def rewrite_tag(tag, data, address, entry):
         extra = ' style="%s"' % P.head_style(photo, entry.get('focus', ''))
     else:
         extra = ''
+    script = ''
     if P.needs_script(data, address, entry):
         extra += ' data-page-photos'
-    return t[:-1] + extra + '>'
+        script = picker_script(data, address)
+    return t[:-1] + extra + '>' + script
 
 
 def main():

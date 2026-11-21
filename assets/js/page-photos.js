@@ -37,7 +37,13 @@
 
    tools/make-head-photo.py writes each page's first photo into the page, so
    it shows with no flash, and marks a page data-page-photos when this script
-   has more to do (a pool to pick from, or #/... entries). Unmarked pages are
+   has more to do (a pool to pick from, or #/... entries). A marked page also
+   gets a small script after the band's opening tag (tools/head-photo-pick.js)
+   that picks this visit's photo before the page is first drawn. This script
+   then keeps whatever photo is showing while the settings still allow it for
+   the address (and tags), so it doesn't jump; otherwise it preloads the new
+   photo and fades it in over the old (.page-head--fade in styles.css; no fade
+   for people who ask for reduced motion). Unmarked pages are
    left as written and the file is never fetched for them, so a page that
    had no photo before gets one at the next publish (every half hour when the
    settings have changed).
@@ -61,6 +67,8 @@
   var API_URL = LOCAL ? 'http://' + location.hostname + ':8765/v1/page-photos'
     : 'https://api.ncan.nz/v1/page-photos';
   var API_WAIT = 2500;   // ms before giving up on the API and using the file's copy
+  var PRELOAD_WAIT = 4000;   // ms to wait for a new photo before showing it anyway
+  var FADE_MS = 400;         // the fade's length, as in styles.css (.page-head--fade)
   var MAX_DEPTH = 4;
   var STORE_KEY = 'ncan-page-photo:';
   // older link spellings that mean the same #/... address
@@ -191,6 +199,28 @@
 
   /* ---------------------------------------------------------- the pick */
 
+  // the groups to choose from: only photos carrying one of the tags, when
+  // any do
+  function candidates(groups, tags) {
+    tags = tags || [];
+    if (!tags.length) { return groups; }
+    var tagged = groups.map(function (g) {
+      return g.filter(function (p) { return p.tags.some(function (t) { return tags.indexOf(t) >= 0; }); });
+    }).filter(function (g) { return g.length; });
+    return tagged.length ? tagged : groups;
+  }
+
+  // the photo with address src among those the groups (and tags) would pick
+  // from, or null: a photo already showing is kept when it is one of them
+  function allowed(groups, tags, src) {
+    var found = null;
+    if (!src) { return null; }
+    candidates(groups, tags).forEach(function (g) {
+      g.forEach(function (p) { if (!found && p.src === src) { found = p; } });
+    });
+    return found;
+  }
+
   // one photo from the groups: a random group, then a random photo in it,
   // preferring photos carrying one of the tags, and not the one shown last
   // time when there is another
@@ -198,13 +228,7 @@
     opts = opts || {};
     var random = opts.random || Math.random;
     if (!groups.length) { return null; }
-    var tags = opts.tags || [];
-    if (tags.length) {
-      var tagged = groups.map(function (g) {
-        return g.filter(function (p) { return p.tags.some(function (t) { return tags.indexOf(t) >= 0; }); });
-      }).filter(function (g) { return g.length; });
-      if (tagged.length) { groups = tagged; }
-    }
+    groups = candidates(groups, opts.tags);
     var group = groups[Math.floor(random() * groups.length)];
     var choices = group;
     if (opts.last && group.length > 1) {
@@ -228,6 +252,71 @@
     head.style.setProperty('--photo-webp', cssUrl(photo.webp));
     focus = focus || photo.focus;
     if (focus) { head.style.setProperty('--photo-focus', focus); } else { head.style.removeProperty('--photo-focus'); }
+  }
+
+  // the address of the photo showing in the band, or null
+  function showing(head) {
+    if (!head.classList.contains('page-head--photo')) { return null; }
+    var m = /url\('([^']*)'\)/.exec(head.style.getPropertyValue('--photo') || '');
+    return m ? m[1].replace(/%27/g, "'") : null;
+  }
+
+  function reducedMotion() {
+    try {
+      return !!(global.matchMedia && global.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    } catch (e) { return false; }
+  }
+
+  // resolves once the photo has loaded (and decoded), or failed, or after
+  // PRELOAD_WAIT, so the band never waits long on a slow photo
+  function preload(photo) {
+    return new Promise(function (done) {
+      if (typeof global.Image !== 'function') { done(); return; }
+      var img = new global.Image();
+      var timer = global.setTimeout(done, PRELOAD_WAIT);
+      var end = function () { global.clearTimeout(timer); done(); };
+      img.onload = function () { if (img.decode) { img.decode().then(end, end); } else { end(); } };
+      img.onerror = end;
+      img.src = photo.webp || photo.src;
+    });
+  }
+
+  var OLD_VARS = ['--photo-old', '--photo-old-webp', '--photo-old-focus'];
+  var swaps = 0;
+
+  // show a new photo: preloaded, then faded in over the one showing (or the
+  // plain band). A later swap overtakes one still loading.
+  function swap(head, photo, focus) {
+    var n = ++swaps;
+    if (!photo) { show(head, null); return Promise.resolve(); }
+    return preload(photo).then(function () {
+      if (n !== swaps) { return; }
+      var style = head.style;
+      var fade = !reducedMotion() && typeof global.getComputedStyle === 'function';
+      if (fade) {
+        head.classList.remove('page-head--faded', 'page-head--fade-plain');
+        OLD_VARS.forEach(function (v) { style.removeProperty(v); });
+        if (head.classList.contains('page-head--photo')) {
+          style.setProperty('--photo-old', style.getPropertyValue('--photo'));
+          style.setProperty('--photo-old-webp', style.getPropertyValue('--photo-webp'));
+          var was = style.getPropertyValue('--photo-focus');
+          if (was) { style.setProperty('--photo-old-focus', was); }
+        } else {
+          head.classList.add('page-head--fade-plain');
+        }
+        head.classList.add('page-head--fade');
+      }
+      show(head, photo, focus);
+      if (!fade) { return; }
+      // read the old photo's opacity, so the fade starts from it
+      void global.getComputedStyle(head, '::before').opacity;
+      head.classList.add('page-head--faded');
+      global.setTimeout(function () {
+        if (n !== swaps) { return; }
+        head.classList.remove('page-head--fade', 'page-head--faded', 'page-head--fade-plain');
+        OLD_VARS.forEach(function (v) { style.removeProperty(v); });
+      }, FADE_MS + 100);
+    });
   }
 
   function remember(key, src) {
@@ -293,16 +382,15 @@
       written(head);
       pinned = true;
       lastKey = null;
-      show(head, photoOf(opts.photo, ''), opts.focus);
-      return Promise.resolve(opts.photo);
+      return swap(head, photoOf(opts.photo, ''), opts.focus).then(function () { return opts.photo; });
     }
     if (opts.release) {
       pinned = false;
       lastKey = null;
       if (!head.hasAttribute('data-page-photos')) {
         var first = written(head);
-        show(head, first ? photoOf(first, '') : null, first && first.focus);
-        return Promise.resolve(null);
+        return swap(head, first ? photoOf(first, '') : null, first && first.focus)
+          .then(function () { return null; });
       }
     }
     if (pinned || !head.hasAttribute('data-page-photos')) { return Promise.resolve(null); }
@@ -311,16 +399,24 @@
       if (pinned) { return null; }
       var found = findEntry(data, global.location.pathname, global.location.hash);
       var tagKey = (opts.tags || []).join(',');
-      if (!found) { show(head, null); lastKey = null; return null; }
+      if (!found) { swaps++; show(head, null); lastKey = null; return null; }
       // the same entry as last time: leave the photo alone
       if (found.key === lastKey && tagKey === lastTags) { return null; }
       lastKey = found.key;
       lastTags = tagKey;
       var groups = entryGroups(data, found.entry);
+      // the photo showing (picked as the page was read, or for the last
+      // address) is kept while it's one this address may show
+      var kept = allowed(groups, opts.tags, showing(head));
+      if (kept) {
+        swaps++;
+        var focus = found.entry.focus || kept.focus;
+        if (focus) { head.style.setProperty('--photo-focus', focus); } else { head.style.removeProperty('--photo-focus'); }
+        return kept;
+      }
       var photo = pick(groups, { tags: opts.tags, last: remember(found.key) });
-      show(head, photo, found.entry.focus);
       if (photo) { remember(found.key, photo.src); }
-      return photo;
+      return swap(head, photo, found.entry.focus).then(function () { return photo; });
     }).catch(function () { return null; /* keep the photo the page was written with */ });
   }
 
@@ -333,6 +429,8 @@
     findEntry: findEntry,
     normalHash: normalHash,
     normalPath: normalPath,
+    candidates: candidates,
+    allowed: allowed,
     pick: pick,
     apply: apply
   };
