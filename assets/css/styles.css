@@ -3796,7 +3796,7 @@ html:has(.plan-editor:not([hidden])) { scroll-padding-bottom: 5rem; }
    @property still shows a turning full ring. */
 @property --s { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
 @property --e { syntax: "<angle>"; inherits: false; initial-value: 360deg; }
-.src-add.is-locked::before, .is-busy::before, .review-pending__spin {
+.is-locked::before, .is-busy::before, .review-pending__spin {
   --ring: 2px; border-radius: 50%;
   background: conic-gradient(transparent var(--s), var(--link) var(--s) var(--e), transparent var(--e));
   -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - var(--ring) - .5px), #000 calc(100% - var(--ring)));
@@ -3813,17 +3813,20 @@ html:has(.plan-editor:not([hidden])) { scroll-padding-bottom: 5rem; }
 @keyframes ncan-breathe { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .5; transform: scale(.5); } }
 @media (prefers-reduced-motion: reduce) {
   /* !important to get past the site-wide reduced-motion reset, which stops every animation */
-  .src-add.is-locked::before, .is-busy::before, .review-pending__spin {
+  .is-locked::before, .is-busy::before, .review-pending__spin {
     animation: ncan-breathe 2s ease-in-out infinite; animation-duration: 2s !important; }
 }
-/* locked while a meeting is checked, added or its results collected (form-lock.js):
-   the form is shaded with a spinner over it; the status line stays readable above */
-.src-add.is-locked { position: relative; cursor: progress; }
-.src-add.is-locked::after { content: ""; position: absolute; inset: -.6rem; z-index: 1;
+/* locked while the club's API works on what a form sent (form-lock.js): the form is
+   shaded with a spinner over it. .lock-quiet (a tall area, where the middle may be off
+   screen) is shaded with no spinner: its status line shows a small one instead.
+   .lock-keep stays readable above the shading. */
+.is-locked { position: relative; cursor: progress; }
+.is-locked::after { content: ""; position: absolute; inset: -.6rem; z-index: 1;
   background: color-mix(in srgb, var(--surface-tint) 65%, transparent); border-radius: var(--radius-sm); }
-.src-add.is-locked::before { content: ""; position: absolute; z-index: 2; top: 50%; left: 50%;
+.is-locked::before { content: ""; position: absolute; z-index: 2; top: 50%; left: 50%;
   width: 2.4rem; height: 2.4rem; margin: -1.2rem 0 0 -1.2rem; --ring: 3px; }
-.src-add.is-locked > .src-add__status { position: relative; z-index: 2; }
+.is-locked.lock-quiet::before { content: none; }
+.is-locked > .src-add__status, .is-locked > .lock-keep { position: relative; z-index: 2; }
 /* a small spinner before a status line while it's working */
 .is-busy::before { content: ""; display: inline-block; vertical-align: -.2em;
   width: 1em; height: 1em; margin-right: .5em; }

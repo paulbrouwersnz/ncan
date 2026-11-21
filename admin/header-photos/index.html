@@ -105,6 +105,8 @@
     <!-- ================= Header photos (assets/js/admin-photos.js) ================= -->
     <section class="section" id="page-photos" aria-labelledby="page-heading" hidden>
       <div class="wrap">
+        <!-- the editor: locked while a save or a going back is sent (form-lock.js) -->
+        <div class="lock-quiet" id="pp-editor">
 
         <p class="records-note" id="pp-version"></p>
 
@@ -150,7 +152,7 @@
           <button type="button" class="btn btn--ghost" id="pp-reload">Load the latest</button>
           <span class="pp-dirty" id="pp-dirty" hidden>Not saved yet</span>
         </div>
-        <p class="access-status" id="pp-status" role="status"></p>
+        <p class="access-status lock-keep" id="pp-status" role="status"></p>
         <div id="pp-problems"></div>
 
         <details class="pp-card" id="pp-text-wrap">
@@ -170,6 +172,7 @@
             <span class="pp-card__meta">the last 50 saves; going back saves a new version, so it can be undone too</span></summary>
           <div class="pp-card__body" id="pp-history"></div>
         </details>
+        </div>
 
         <h3 class="pp-heading">Athletes&rsquo; own photos</h3>
         <p class="mem-help">
@@ -323,6 +326,7 @@
   </script>
 
   <script src="/assets/js/ncan-account.js"></script>
+  <script src="/assets/js/form-lock.js"></script>
   <script src="/assets/js/admin-photos.js"></script>
   <script src="/assets/js/admin.js"></script>
 

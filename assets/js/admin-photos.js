@@ -394,16 +394,29 @@
     return NCAN.get('/admin/page-photos').then(loaded);
   }
 
+  // The editor is locked while a save or a going back is sent, and until the saved
+  // settings are loaded back, so nothing changed meanwhile is lost or out of date.
+  function busy(on) {
+    FormLock.lock($('pp-editor'), on);
+    $('pp-status').classList.toggle('is-busy', !!on);
+    if (!on) { $('pp-save').disabled = !dirty; }
+  }
+
+  // after a save or a going back: load what was saved, then unlock
+  function reloadThenUnlock(words) {
+    return load().then(function () { busy(false); say(words); },
+                       function (err) { busy(false); say(words + ' ' + err.message); });
+  }
+
   function save() {
+    busy(true);
     say('Saving…');
-    $('pp-save').disabled = true;
     NCAN.send('/admin/page-photos', { settings: draft, since: version, note: $('pp-note').value.trim() }).then(function (r) {
       if (r.status === 200) {
         $('pp-note').value = '';
-        say('Saved as version ' + r.body.version + '. Pages that already have header photos update within 5 minutes. Pages getting photos for the first time update at the next automatic publish, usually within 30 minutes.');
-        return load();
+        return reloadThenUnlock('Saved as version ' + r.body.version + '. Pages that already have header photos update within 5 minutes. Pages getting photos for the first time update at the next automatic publish, usually within 30 minutes.');
       }
-      $('pp-save').disabled = false;
+      busy(false);
       if (r.status === 409) {
         say('');
         problemsList(['Someone (' + (r.body.saved_by || 'another admin') + ') saved the header photos ' + when(r.body.saved_at) +
@@ -412,16 +425,18 @@
       }
       say(r.status === 400 ? 'Not saved: fix these first.' : (r.body && r.body.error) || 'Sorry, that didn’t save.');
       if (r.body && r.body.problems) { problemsList(r.body.problems); }
-    }, function (err) { $('pp-save').disabled = false; say(err.message); });
+    }, function (err) { busy(false); say(err.message); });
   }
 
   function undo(to) {
     if (dirty && !window.confirm('Your changes here aren’t saved; going back loses them. Go back anyway?')) { return; }
+    busy(true);
     say('Going back…');
     NCAN.send('/admin/page-photos/undo', { version: to, since: version }).then(function (r) {
-      if (r.status === 200) { say('Back to version ' + to + ', saved as version ' + r.body.version + '.'); return load(); }
+      if (r.status === 200) { return reloadThenUnlock('Back to version ' + to + ', saved as version ' + r.body.version + '.'); }
+      busy(false);
       say((r.body && r.body.error) || 'Sorry, that didn’t work.');
-    }, function (err) { say(err.message); });
+    }, function (err) { busy(false); say(err.message); });
   }
 
   function drawHistory(list) {

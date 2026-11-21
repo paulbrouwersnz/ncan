@@ -740,10 +740,11 @@
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       if (tick && !tick.checked) { $('upload-status').textContent = 'Tick that you’ve checked the warnings first.'; return; }
-      go.disabled = true;
+      uploadBusy(true, true);
       $('upload-status').textContent = 'Importing…';
       NCAN.send('/admin/members/import', { token: rep.token, checked: !!(tick && tick.checked) }).then(function (r) {
-        if (r.status !== 200) { failed('upload-status')(r); go.disabled = false; return; }
+        uploadBusy(false, true);
+        if (r.status !== 200) { failed('upload-status')(r); return; }
         out.textContent = '';
         $('upload-form').reset();
         $('upload-status').textContent = 'Imported: ' + r.body.members + ' members and ' + r.body.emails +
@@ -751,9 +752,17 @@
           'update when that finishes (a few minutes). If that changes a confirmed club championships Saturday, ' +
           'it appears under Needs a look, to review and confirm again. Delete your downloaded copies.';
         loadAll();
-      }, function (err) { $('upload-status').textContent = err.message; go.disabled = false; });
+      }, function (err) { uploadBusy(false, true); $('upload-status').textContent = err.message; });
     });
     out.appendChild(form);
+  }
+
+  // Locked while the server checks or imports: the file boxes and Check, and while
+  // importing the report too (the tick, Import and Cancel), so nothing is sent twice.
+  function uploadBusy(on, report) {
+    FormLock.lock($('upload-form'), on);
+    if (report) { FormLock.lock($('upload-report'), on); }
+    $('upload-status').classList.toggle('is-busy', !!on);
   }
 
   function readFile(input) {
@@ -770,15 +779,15 @@
       Promise.all([readFile($('upload-members')), readFile($('upload-tx'))]).then(function (texts) {
         if (!texts[0] || !texts[1]) { $('upload-status').textContent = 'Choose both files first.'; return; }
         $('upload-status').textContent = 'Checking…';
-        $('upload-check').disabled = true;
+        uploadBusy(true);
         return NCAN.send('/admin/members/check', { member_csv: texts[0], transactions_csv: texts[1] }).then(function (r) {
-          $('upload-check').disabled = false;
+          uploadBusy(false);
           if (r.status !== 200) { failed('upload-status')(r); return; }
           $('upload-status').textContent = r.body.problems.length ? '' :
             'Checked. Nothing has changed yet: read the report, then Import or Cancel.';
           renderUpload(r.body);
         });
-      }).catch(function (err) { $('upload-check').disabled = false; $('upload-status').textContent = err.message; });
+      }).catch(function (err) { uploadBusy(false); $('upload-status').textContent = err.message; });
     });
   }
 

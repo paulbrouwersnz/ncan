@@ -73,3 +73,14 @@ test('running is true only while a collect is going', () => {
   assert.strictEqual(running(null), false);
   assert.strictEqual(running(undefined), false);
 });
+
+// the members upload and header photos editor unlock on every way out, even when
+// nothing was locked (a file that can't be read fails before the lock)
+test('unlocking a form that was never locked changes nothing', () => {
+  const on = el('input'), off = el('button', true);
+  const form = box([on, off]);
+  lock(form, false);
+  assert.strictEqual(on.disabled, false);
+  assert.strictEqual(off.disabled, true);
+  assert.ok(!form.classes.has('is-locked'));
+});
