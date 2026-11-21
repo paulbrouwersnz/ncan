@@ -1,6 +1,7 @@
 /*
-  admin.js - the club admin pages, for club administrators only: /admin/ (the list of
-  tools) and each tool's own page (/admin/review/, /admin/members-list/, /admin/membership/,
+  admin.js - the club admin pages: /admin/ (the staff tools, for coaches, the
+  committee and administrators, each seeing the groups their role reaches) and,
+  for club administrators only, each admin tool's own page (/admin/review/, /admin/members-list/, /admin/membership/,
   /admin/merges/, /admin/corrections/, /admin/addresses/, /admin/blocked/; header photos,
   /admin/header-photos/, are admin-photos.js). Old /admin/#section links go to the tool's page.
 
@@ -1206,10 +1207,37 @@
       });
   }
 
-  /* /admin/: the tools, and how many things need a look */
-  function startTools() {
+  /* /admin/: the staff tools. Each group of cards says its lowest role
+     (data-lowest); a person sees the groups their role reaches, and an admin
+     can "View as" the committee or a coach to check what they see. Hiding is
+     only tidiness: each tool's page and the API still refuse anyone below it. */
+  var VIEWS = {
+    admin: { heading: 'Club admin', title: 'Club Admin',
+             lede: 'Keeping the athlete pages right, the members list and the website. Every change is recorded with who made it and why, and results are collected again afterwards (5\u201310 minutes).' },
+    staff: { heading: 'Staff tools', title: 'Staff Tools',
+             lede: 'The tools coaches and the committee use. Each tool\u2019s own page shows what you can do there.' }
+  };
+  function showTools(role) {
+    var groups = document.querySelectorAll('#admin-tools [data-lowest]');
+    for (var i = 0; i < groups.length; i++) {
+      groups[i].hidden = !NCAN.atLeast({ role: role }, groups[i].getAttribute('data-lowest'));
+    }
+    var v = role === 'admin' ? VIEWS.admin : VIEWS.staff;
+    $('page-heading').textContent = v.heading;
+    $('admin-lede').textContent = v.lede;
+    document.title = v.title + ' \u2014 North Canterbury Athletic Club';
+    var crumb = document.querySelector('.breadcrumb span:last-child');
+    if (crumb) { crumb.textContent = v.heading; }
+  }
+  function startTools(who) {
     $('admin-status').hidden = true;
     $('admin-tools').hidden = false;
+    showTools(who.role);
+    if (who.role !== 'admin') { return; }
+    var view = $('admin-view');
+    $('admin-view-row').hidden = false;
+    view.value = 'admin';
+    view.addEventListener('change', function () { showTools(view.value); });
     NCAN.get('/admin/review').then(function (r) {
       var done = appliedKeys(r.collect).keys || [];
       var n = (r.items || []).filter(function (i) { return done.indexOf(i.key) === -1; }).length;
@@ -1233,21 +1261,24 @@
 
   NCAN.me().then(function (who) {
     NCAN.account($('account'), who);
+    var tools = has('admin-tools');
     if (!who) {
       $('admin-status').textContent = '';
       $('admin-signin').hidden = false;
-      NCAN.signIn($('admin-signin'), 'This page is for club administrators. Sign in with your email address.');
+      NCAN.signIn($('admin-signin'), tools
+        ? 'This page is for club staff: coaches, the committee and administrators. Sign in with your email address.'
+        : 'This page is for club administrators. Sign in with your email address.');
       return;
     }
+    if (tools && NCAN.atLeast(who, 'coach')) { startTools(who); return; }
     if (!NCAN.atLeast(who, 'admin')) {
-      $('admin-status').textContent = 'This page is for club administrators. ';
+      $('admin-status').textContent = tools ? 'This page is for club staff. ' : 'This page is for club administrators. ';
       var mine = el('a', null, 'Go to your own page');
       mine.href = NCAN.home(who);
       $('admin-status').appendChild(mine);
       $('admin-status').appendChild(document.createTextNode('.'));
       return;
     }
-    if (has('admin-tools')) { startTools(); return; }
     loadAll().then(function () {
       $('admin-status').hidden = true;
       ['review', 'upload', 'members', 'merges', 'corrections', 'addresses', 'blocks'].forEach(function (x) {

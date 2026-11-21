@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Tests for tools/staff_tools.py, the staff tools cards. Run with
+"""Tests for tools/staff_tools.py, the staff tools cards on /admin/. Run with
 
     python -m unittest discover -s tests/py
 """
@@ -15,14 +15,21 @@ sys.path.insert(0, os.path.join(ROOT, 'tools'))
 import staff_tools as S  # noqa: E402
 
 DATA = S.load()
+HTML = S.render(DATA, 'admin')
 
 
-def titles(page):
-    return re.findall(r'class="card__link" href="[^"]*">([^<]*)</a>', S.render(DATA, page))
+def titles(markup):
+    return re.findall(r'class="card__link" href="[^"]*">([^<]*)</a>', markup)
 
 
-def heads(page):
-    return re.findall(r'<h2 class="admin-tools__head">([^<]*)</h2>', S.render(DATA, page))
+def heads(markup):
+    return re.findall(r'<h2 class="admin-tools__head">([^<]*)</h2>', markup)
+
+
+def groups(markup):
+    """[(lowest, markup of that group)] in page order."""
+    return re.findall(r'<div class="admin-tools__group" data-lowest="([a-z]+)">(.*?)\n\s*</div>(?=\s*(?:<div class="admin-tools__group"|$))',
+                      markup, re.S)
 
 
 def exists(href):
@@ -53,53 +60,53 @@ class TheList(unittest.TestCase):
             self.assertIn(words, out)
 
 
-class ThePages(unittest.TestCase):
-    def test_admin_shows_every_group(self):
-        self.assertEqual(heads('admin'), [g['name'] for g in DATA['groups']])
-        self.assertEqual(sorted(titles('admin')), sorted(t['title'] for t in DATA['tools']))
-        self.assertNotIn('Other staff tools', S.render(DATA, 'admin'))
+class ThePage(unittest.TestCase):
+    def test_every_group_and_tool_written(self):
+        self.assertEqual(heads(HTML), [g['name'] for g in DATA['groups']])
+        self.assertEqual(sorted(titles(HTML)), sorted(t['title'] for t in DATA['tools']))
 
-    def test_committee_page(self):
-        self.assertEqual(heads('committee'), ['Committee tools', 'Coaches’ tools'])
-        want = [t['title'] for t in DATA['tools'] if t['lowest'] in ('committee', 'coach')]
-        self.assertEqual(titles('committee'), want)
-        self.assertIn('Club champs review', titles('committee'))
+    def test_each_group_says_its_lowest_role(self):
+        found = groups(HTML)
+        self.assertEqual([low for low, _ in found], [g['lowest'] for g in DATA['groups']])
+        for low, markup in found:
+            for title in titles(markup):
+                tool = [t for t in DATA['tools'] if t['title'] == title][0]
+                self.assertEqual(tool['lowest'], low, title)
 
-    def test_coaches_page(self):
-        self.assertEqual(heads('coaches'), [])   # one group: a hidden "Tools" heading
-        self.assertIn('id="tools-heading"', S.render(DATA, 'coaches'))
-        self.assertEqual(titles('coaches'), [t['title'] for t in DATA['tools'] if t['lowest'] == 'coach'])
-
-    def test_higher_tools_never_shown_lower(self):
-        for page, role in S.PAGES.items():
+    def test_what_each_role_would_see(self):
+        # admin.js shows a group when the role reaches its data-lowest
+        def seen(role):
             reach = S.RANK.index(role)
-            shown = set(titles(page))
-            for t in DATA['tools']:
-                if S.RANK.index(t['lowest']) > reach:
-                    self.assertNotIn(t['title'], shown, '%s on %s' % (t['title'], page))
+            return [t for low, m in groups(HTML) if S.RANK.index(low) <= reach for t in titles(m)]
+        self.assertEqual(seen('coach'), [t['title'] for t in DATA['tools'] if t['lowest'] == 'coach'])
+        self.assertIn('Club champs review', seen('committee'))
+        self.assertIn('Club committee', seen('committee'))
+        self.assertNotIn('Needs a look', seen('committee'))
+        self.assertEqual(sorted(seen('admin')), sorted(t['title'] for t in DATA['tools']))
 
-    def test_who_else_notes_only_on_admin(self):
-        self.assertIn('Committee members see these', S.render(DATA, 'admin'))
-        self.assertIn('Coaches and the committee see these', S.render(DATA, 'admin'))
-        for page in ('committee', 'coaches'):
-            self.assertNotIn('see these on their own page', S.render(DATA, page))
+    def test_no_old_pages_mentioned(self):
+        self.assertNotIn('see these on their own page', HTML)
+        self.assertEqual(sorted(S.PAGES), ['admin'])
 
     def test_count_badge(self):
-        self.assertIn('id="admin-count-review"', S.render(DATA, 'admin'))
+        self.assertIn('id="admin-count-review"', HTML)
 
     def test_apply_is_stable(self):
-        text = '<div>\n        <!-- @tools:coaches --><!-- /@tools:coaches -->\n</div>\n'
+        text = '<div>\n        <!-- @tools:admin --><!-- /@tools:admin -->\n</div>\n'
         once, changed = S.apply(text, DATA)
-        self.assertEqual(changed, ['tools:coaches'])
+        self.assertEqual(changed, ['tools:admin'])
         twice, changed = S.apply(once, DATA)
         self.assertEqual((twice, changed), (once, []))
 
-    def test_pages_are_in_step(self):
-        for page, path in (('admin', 'admin'), ('committee', 'committee-tools'), ('coaches', 'coaches-tools')):
-            with open(os.path.join(ROOT, path, 'index.html'), encoding='utf-8') as fh:
-                text = fh.read()
-            self.assertIn('<!-- @tools:%s -->' % page, text)
-            self.assertEqual(S.apply(text, DATA)[1], [], path)
+    def test_page_is_in_step(self):
+        with open(os.path.join(ROOT, 'admin', 'index.html'), encoding='utf-8') as fh:
+            text = fh.read()
+        self.assertIn('<!-- @tools:admin -->', text)
+        self.assertEqual(S.apply(text, DATA)[1], [])
+
+    def test_old_pages_are_gone(self):
+        for path in ('coaches-tools', 'committee-tools'):
+            self.assertFalse(os.path.exists(os.path.join(ROOT, path)), path)
 
 
 if __name__ == '__main__':

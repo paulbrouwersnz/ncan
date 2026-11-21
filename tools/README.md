@@ -158,14 +158,15 @@ It rewrites the whole block between the markers, so a page whose shared blocks
 have been reformatted (e.g. by an editor) shows a large but harmless diff the
 next time it runs.
 
-It also writes the **staff tools cards** on `/admin/`, `/committee-tools/` and
-`/coaches-tools/`, between `<!-- @tools:admin -->` (or `committee`, `coaches`)
-markers, from one list: `partials/staff-tools.json` (`tools/staff_tools.py`).
+It also writes the **staff tools cards** on `/admin/`, between
+`<!-- @tools:admin -->` markers, from one list: `partials/staff-tools.json`
+(`tools/staff_tools.py`).
 Each tool is one entry: `title`, `href`, `blurb`, `lowest` (coach, committee or
-admin), `group`, and an optional `count` for a waiting-count badge. A page shows
-every group its role reaches: `/admin/` all of them, `/committee-tools/`
-Committee tools then Coaches' tools, `/coaches-tools/` Coaches' tools only. A
-tool for a higher role is never listed on a lower role's page. To add a tool,
+admin), `group`, and an optional `count` for a waiting-count badge. Each group
+is written with its lowest role (`data-lowest`), and `admin.js` shows each
+person only the groups their role reaches; an admin can **View as** the
+committee or a coach to check what they see. Hiding is only tidiness: each
+tool's page and the API still refuse anyone below its role. To add a tool,
 add one entry and run the script; it refuses a list with an unknown role or
 group, a tool whose role doesn't match its group, or an address listed twice.
 Tests: `tests/py/test_staff_tools.py`.
@@ -760,9 +761,11 @@ first, and each can do everything the roles below it can:
   pages GameDay links them to. GameDay contacts also choose who else sees the
   page and upload its photo.
 - **coach**: every athlete's page, training plans, the club champs review,
-  results sources, removing an athlete's photo. Lands on `/coaches-tools/`.
+  results sources, removing an athlete's photo. Lands on `/admin/`, which
+  shows them the Coaches' tools.
 - **committee**: everything a coach can, plus committee tools as they're
-  added. Lands on `/committee-tools/`. On the training plans and the club champs
+  added. Lands on `/admin/`, which shows them Committee tools and Coaches'
+  tools. On the training plans and the club champs
   review they see a note that coaches usually make changes there.
 - **admin**: everything. Lands on `/admin/`.
 
@@ -771,8 +774,8 @@ page like any parent, and the "Signed in as ..." line links to their own
 athletes (`own` from `GET /v1/auth/me`).
 
 In code, check the lowest role allowed with `NCAN.atLeast(who, 'coach')`
-(`assets/js/ncan-account.js`), never by listing role names. A staff tools page
-says its lowest role on `<main data-lowest="coach">` (`assets/js/staff-tools.js`).
+(`assets/js/ncan-account.js`), never by listing role names. Each group of
+cards on `/admin/` says its lowest role in `data-lowest`.
 
 ## Athlete pages
 
@@ -830,16 +833,13 @@ Signed in, `/sign-in/` sends people on to the page named after `#/next`, for
 example `/sign-in/#/next/athlete/%23/sam-brown` (the page's own `#` written `%23`;
 `NCAN.nextFromHash` and `NCAN.signInLink`), kept after the `#` so it never reaches
 a server or its logs (a page of this site only,
-`NCAN.safeNext`) or to their own page (`NCAN.home`): administrators to `/admin/`,
-the committee to `/committee-tools/`, coaches to `/coaches-tools/` and families
-to `/athletes/`. The emailed link comes back to `/sign-in/`, which does the same.
+`NCAN.safeNext`) or to their own page (`NCAN.home`): staff (coaches, the
+committee and administrators) to `/admin/` and families to `/athletes/`. The emailed link comes back to `/sign-in/`, which does the same.
 Pages that need signing in keep their own sign-in box, which brings people back
-to that page. The two tools pages (`assets/js/staff-tools.js`) are cards linking
-to the tools each role uses, written from `partials/staff-tools.json` by
-`sync-partials.py`; the lowest role allowed is in `data-lowest` on `<main>`.
-`/admin/` shows the same cards under Committee tools and Coaches' tools, below
-its own admin groups.
-All three are noindex and left out of the sitemap. The API's plain sign-in form
+to that page. `/admin/` is the one staff tools page: cards linking to the
+tools, written from `partials/staff-tools.json` by `sync-partials.py`, each
+group shown only to the roles it's for (Club admin for administrators, Staff
+tools for everyone else). Both are noindex and left out of the sitemap. The API's plain sign-in form
 (`/v1/auth/sign-in`) redirects here; `?plain=1` keeps the plain form, for
 browsers without JavaScript.
 

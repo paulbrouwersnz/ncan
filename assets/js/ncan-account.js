@@ -26,9 +26,8 @@
                               comes back to `next` (by default, this page as it is).
     account(el, who)       -> fills el with "Signed in as ... Sign out".
     home(who)              -> where someone lands after signing in with nowhere
-                              else to go: admin /admin/, committee
-                              /committee-tools/, coach /coaches-tools/, family
-                              /athletes/.
+                              else to go: staff (coach and above) /admin/,
+                              family /athletes/.
     safeNext(value)        -> value as a path on this website ("/athlete/#/x"),
                               or null if it points anywhere else (or back to
                               /sign-in/ itself).
@@ -140,7 +139,7 @@
     return note;
   }
 
-  var HOMES = { admin: '/admin/', committee: '/committee-tools/', coach: '/coaches-tools/', family: '/athletes/' };
+  var HOMES = { admin: '/admin/', committee: '/admin/', coach: '/admin/', family: '/athletes/' };
   function home(who) {
     return (who && HOMES[who.role]) || '/athletes/';
   }

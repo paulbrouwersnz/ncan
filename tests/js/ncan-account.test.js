@@ -124,8 +124,8 @@ function account(replies, store) {
 test('each role has its own page to land on', () => {
   const N = account([], {});
   assert.equal(N.home({ role: 'admin' }), '/admin/');
-  assert.equal(N.home({ role: 'committee' }), '/committee-tools/');
-  assert.equal(N.home({ role: 'coach' }), '/coaches-tools/');
+  assert.equal(N.home({ role: 'committee' }), '/admin/');
+  assert.equal(N.home({ role: 'coach' }), '/admin/');
   assert.equal(N.home({ role: 'family' }), '/athletes/');
   assert.equal(N.home(null), '/athletes/');
 });
