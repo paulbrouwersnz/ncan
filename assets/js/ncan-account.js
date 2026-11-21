@@ -135,14 +135,32 @@
     note.appendChild(document.createTextNode('.'));
     box.appendChild(note);
 
+    // The API gives the same reply for addresses it doesn't know (so it never says
+    // who is a member), so after a send the button stays off only until the address
+    // is changed: a mistyped address can be corrected and sent again.
+    var sent = null;
+    input.addEventListener('input', function () {
+      if (sent !== null && input.value.trim() !== sent) {
+        sent = null;
+        button.disabled = false;
+        said.textContent = '';
+      }
+    });
+
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       button.disabled = true;
       said.textContent = 'Sending…';
-      post('/auth/request-link', { email: input.value, next: next || location.href })
+      var email = input.value.trim();
+      post('/auth/request-link', { email: email, next: next || location.href })
         .then(function (res) {
           return res.json().catch(function () { return {}; }).then(function (data) {
-            if (res.status === 202) { said.textContent = data.message || 'Check your email for a sign-in link.'; return; }
+            if (res.status === 202) {
+              sent = email;
+              said.textContent = (data.message || 'Check your email for a sign-in link.') +
+                ' Wrong address? Change it above and send again.';
+              return;
+            }
             if (res.status === 429) { said.textContent = 'Too many requests. Please try again in 15 minutes.'; }
             else if (res.status === 400) { said.textContent = 'That doesn’t look like an email address.'; }
             else { said.textContent = 'Sorry, that didn’t work. Please try again later.'; }
