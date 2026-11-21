@@ -3788,17 +3788,33 @@ html:has(.plan-editor:not([hidden])) { scroll-padding-bottom: 5rem; }
 .src-add__status { margin: 0; font-weight: 600; color: var(--heading); }
 .src-add__status:empty { display: none; }
 /* Spinners: one look for every "working" sign (the results sources form and status line,
-   the admin review). With reduced motion the ring doesn't turn; it pulses slowly instead,
-   so it still shows the page is busy without the motion (#191). */
+   the admin review). A full ring that erases itself, then draws back, while slowly turning.
+   With reduced motion it doesn't turn or erase; the full ring breathes instead (shrinks to
+   half its size and back, fading), so it still shows the page is busy without the motion (#191).
+   The ring is a conic-gradient masked to a band --ring wide; --s and --e are where the drawn
+   arc starts and ends. They're registered so they animate smoothly; a browser without
+   @property still shows a turning full ring. */
+@property --s { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+@property --e { syntax: "<angle>"; inherits: false; initial-value: 360deg; }
 .src-add.is-locked::before, .is-busy::before, .review-pending__spin {
-  border: 2px solid var(--surface-strong); border-top-color: var(--link); border-radius: 50%;
-  animation: ncan-spin .9s linear infinite; }
+  --ring: 2px; border-radius: 50%;
+  background: conic-gradient(transparent var(--s), var(--link) var(--s) var(--e), transparent var(--e));
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - var(--ring) - .5px), #000 calc(100% - var(--ring)));
+          mask: radial-gradient(farthest-side, transparent calc(100% - var(--ring) - .5px), #000 calc(100% - var(--ring)));
+  animation: ncan-unwind 1.6s ease-in-out infinite, ncan-spin 2.4s linear infinite; }
 @keyframes ncan-spin { to { transform: rotate(360deg); } }
-@keyframes ncan-pulse { 50% { opacity: .3; } }
+/* erase from the start, then draw back from 12 o'clock */
+@keyframes ncan-unwind {
+  0%     { --s: 0deg;   --e: 360deg; }
+  50%    { --s: 360deg; --e: 360deg; }
+  50.01% { --s: 0deg;   --e: 0deg; }
+  100%   { --s: 0deg;   --e: 360deg; } }
+/* breathes in to half its diameter and back */
+@keyframes ncan-breathe { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .5; transform: scale(.5); } }
 @media (prefers-reduced-motion: reduce) {
   /* !important to get past the site-wide reduced-motion reset, which stops every animation */
   .src-add.is-locked::before, .is-busy::before, .review-pending__spin {
-    animation: ncan-pulse 1.8s ease-in-out infinite; animation-duration: 1.8s !important; }
+    animation: ncan-breathe 2s ease-in-out infinite; animation-duration: 2s !important; }
 }
 /* locked while a meeting is checked, added or its results collected (form-lock.js):
    the form is shaded with a spinner over it; the status line stays readable above */
@@ -3806,11 +3822,11 @@ html:has(.plan-editor:not([hidden])) { scroll-padding-bottom: 5rem; }
 .src-add.is-locked::after { content: ""; position: absolute; inset: -.6rem; z-index: 1;
   background: color-mix(in srgb, var(--surface-tint) 65%, transparent); border-radius: var(--radius-sm); }
 .src-add.is-locked::before { content: ""; position: absolute; z-index: 2; top: 50%; left: 50%;
-  width: 2.4rem; height: 2.4rem; margin: -1.2rem 0 0 -1.2rem; border-width: 3px; }
+  width: 2.4rem; height: 2.4rem; margin: -1.2rem 0 0 -1.2rem; --ring: 3px; }
 .src-add.is-locked > .src-add__status { position: relative; z-index: 2; }
 /* a small spinner before a status line while it's working */
 .is-busy::before { content: ""; display: inline-block; vertical-align: -.2em;
-  width: 1em; height: 1em; margin-right: .5em; border-width: 2px; }
+  width: 1em; height: 1em; margin-right: .5em; }
 .src-remove { margin: .2rem 0 1rem; }
 .src-remove__ask { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem .6rem; max-width: 40rem; }
 .src-remove [hidden] { display: none; }   /* a .btn sets its own display */
@@ -3916,7 +3932,7 @@ html:has(.plan-editor:not([hidden])) { scroll-padding-bottom: 5rem; }
 .review-item { position: relative; }
 .review-item__cover { position: absolute; inset: 0; z-index: 2; display: flex; align-items: center; justify-content: center;
   gap: .6rem; background: var(--veil); font-weight: 700; color: var(--heading); }
-.review-item__cover .review-pending__spin { width: 1.6rem; height: 1.6rem; border-width: 3px; }
+.review-item__cover .review-pending__spin { width: 1.6rem; height: 1.6rem; --ring: 3px; }
 .review-pending { display: flex; align-items: center; gap: .6rem; max-width: 60rem; margin: 0 0 1rem;
   padding: .7rem .9rem; border-radius: var(--radius-sm); background: var(--surface-tint); color: var(--heading);
   font-weight: 600; }
