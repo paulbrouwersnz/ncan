@@ -16,9 +16,18 @@ test('a timed event goes into the form and comes back unchanged', () => {
   assert.strictEqual(f.endTime, '16:30');
   assert.deepStrictEqual(f.calendars, ['events-senior', 'events-childrens']);
   const back = C.toEvent(f);
-  for (const k of ['id', 'calendars', 'title', 'location', 'description', 'link', 'all_day', 'start', 'end', 'repeat', 'status']) {
+  for (const k of ['id', 'calendars', 'title', 'location', 'description', 'link', 'all_day', 'start', 'end', 'repeat']) {
     assert.deepStrictEqual(back[k], timed[k], k);
   }
+});
+
+test('a CONFIRMED event shows as "On (confirmed)" and doesn’t count as changed', () => {
+  const f = C.fromEvent(timed);
+  assert.strictEqual(f.status, '');
+  assert.strictEqual(C.toEvent(f).status, null);
+  assert.strictEqual(C.same(f, C.fromEvent({ ...timed, status: null })), true);
+  assert.strictEqual(C.fromEvent({ ...timed, status: 'TENTATIVE' }).status, 'TENTATIVE');
+  assert.strictEqual(C.fromEvent({ ...timed, status: 'CANCELLED' }).status, 'CANCELLED');
 });
 
 test('an all-day event shows its last day, and sends the day after', () => {
@@ -137,4 +146,57 @@ test('dates step and name their weekdays without the machine’s time zone', () 
   assert.strictEqual(C.dayCode('2026-11-24'), 'TU');
   assert.ok(C.realDate('2028-02-29'));
   assert.ok(!C.realDate('2027-02-29'));
+});
+
+test('duplicate: a new event, without the original’s id, cancelled dates or Cancelled status', () => {
+  const src = C.fromEvent({ ...timed, repeat: { freq: 'weekly', days: ['SA'], until: '2027-03-27T23:59' },
+                            skip: ['2026-12-26T13:30'], status: 'CANCELLED' });
+  const c = C.duplicate(src, '2026-11-22');
+  assert.strictEqual(c.id, null);
+  assert.deepStrictEqual(c.skip, []);
+  assert.strictEqual(c.status, '');
+  assert.strictEqual(c.title, 'Interclub 5');
+  assert.deepStrictEqual(c.calendars, ['events-senior', 'events-childrens']);
+  assert.strictEqual(c.description, 'Line one\nLine two');
+  // still to come: the dates stay for the person to change
+  assert.strictEqual(c.startDate, '2026-12-05');
+  assert.strictEqual(c.until, '2027-03-27');
+  assert.strictEqual(C.toEvent(c).id, undefined);
+  // the original form is untouched
+  assert.strictEqual(src.id, 'e-abc@ncan.nz');
+  assert.deepStrictEqual(src.skip, ['2026-12-26T13:30']);
+});
+
+test('duplicate: a past event moves forward by whole weeks, keeping weekday, times and length', () => {
+  // Saturday 7 Nov 2026, 1:30-4:30pm; today Sunday 22 Nov -> Saturday 28 Nov
+  const past = C.fromEvent({ ...timed, start: '2026-11-07T13:30', end: '2026-11-07T16:30' });
+  const c = C.duplicate(past, '2026-11-22');
+  assert.strictEqual(c.startDate, '2026-11-28');
+  assert.strictEqual(c.endDate, '2026-11-28');
+  assert.strictEqual(c.startTime, '13:30');
+  assert.strictEqual(c.endTime, '16:30');
+  assert.strictEqual(C.dayCode(c.startDate), C.dayCode(past.startDate));
+  // on the same weekday as today: lands today
+  assert.strictEqual(C.duplicate(C.fromEvent({ ...timed, start: '2026-11-08T09:00', end: '2026-11-08T10:00' }), '2026-11-22').startDate, '2026-11-22');
+  // a two-day all-day event keeps both days; an until date moves with it
+  const champs = C.fromEvent({ calendars: ['x'], title: 'Champs', all_day: true, start: '2026-03-07', end: '2026-03-09',
+                               repeat: { freq: 'weekly', days: ['SA'], until: '2026-03-28' } });
+  const d = C.duplicate(champs, '2026-11-22');
+  assert.strictEqual(C.dayCode(d.startDate), 'SA');
+  assert.strictEqual(C.addDays(d.startDate, 1), d.endDate);
+  assert.ok(d.startDate >= '2026-11-22' && d.startDate < '2026-11-29');
+  assert.strictEqual(d.until, C.addDays('2026-03-28', Math.round((Date.parse(d.startDate) - Date.parse('2026-03-07')) / 86400000)));
+});
+
+test('sameAsCopied: an unchanged copy of an event still to come is caught, any change is not', () => {
+  const src = C.fromEvent(timed);
+  const c = C.duplicate(src, '2026-11-22');
+  assert.strictEqual(C.sameAsCopied(c, src), true);
+  assert.strictEqual(C.sameAsCopied({ ...c, startDate: '2026-12-12', endDate: '2026-12-12' }, src), false);
+  assert.strictEqual(C.sameAsCopied({ ...c, startTime: '14:00' }, src), false);
+  assert.strictEqual(C.sameAsCopied({ ...c, calendars: ['events-childrens', 'events-senior'] }, src), true);
+  assert.strictEqual(C.sameAsCopied(c, null), false);
+  // a moved copy of a past event is already different
+  const past = C.fromEvent({ ...timed, start: '2026-11-07T13:30', end: '2026-11-07T16:30' });
+  assert.strictEqual(C.sameAsCopied(C.duplicate(past, '2026-11-22'), past), false);
 });

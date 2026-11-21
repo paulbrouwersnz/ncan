@@ -42,6 +42,7 @@
   var form = null;           // the event being edited (calendar-edit.js's form values)
   var orig = null;           // as it was when opened
   var tried = false;         // Save pressed: show the checks as they change
+  var copiedFrom = null;     // a new event made with Duplicate: the event it was copied from
   var busy = false;
 
   function el(tag, cls, words) {
@@ -202,6 +203,7 @@
     form = e ? C.fromEvent(e) : C.blank(slug, today());
     orig = JSON.parse(JSON.stringify(form));
     tried = false;
+    copiedFrom = null;
     $('ce-heading').textContent = e ? 'Change an event' : 'Add an event';
     var meta = '';
     if (e && e.updated) { meta = 'Last changed ' + stamp(e.updated) + (e.updated_by ? ' by ' + e.updated_by : '') + '.'; }
@@ -263,6 +265,7 @@
     $('ce-remove').hidden = !existing || form.calendars.length < 2 || orig.calendars.indexOf(slug) === -1;
     $('ce-delete').hidden = !existing;
     $('ce-delete').textContent = existing && orig.calendars.length > 1 ? 'Delete everywhere' : 'Delete';
+    $('ce-duplicate').hidden = !existing;
     remember();
     update();
   }
@@ -408,10 +411,39 @@
     renderProblems([why(r) + ' What you typed here will be lost.'], b);
   }
 
+  // Duplicate: the same form, as a new event. The original is left as it was saved.
+  function duplicate() {
+    if (busy || !form || !form.id) { return; }
+    read();
+    var title = orig.title;
+    if (!C.same(form, orig) &&
+        !window.confirm('Your changes to “' + title + '” haven’t been saved. Copy them into a new event, ' +
+                        'and leave “' + title + '” as it was?')) { return; }
+    var source = JSON.parse(JSON.stringify(form));
+    form = C.duplicate(form, today());
+    orig = C.blank(slug, today());     // nothing saved yet, so Save is on
+    copiedFrom = source;
+    tried = false;
+    $('ce-heading').textContent = 'Add an event';
+    var moved = form.startDate !== source.startDate;
+    $('ce-meta').textContent = 'A copy of “' + title + '”' +
+      (moved ? ', moved to ' + C.dayText(form.startDate) + '.' : '.') +
+      ' Change what’s different, then Save.';
+    $('ce-meta').hidden = false;
+    fill();
+    renderProblems([]);
+    say('ce-status-line', '');
+    setHash();
+    $('ce-start-date').focus();
+  }
+
   function save() {
     read();
     tried = true;
     var p = C.check(form);
+    if (!form.id && C.sameAsCopied(form, copiedFrom)) {
+      p.push('This copy is the same as the event it came from. Change the date, time or details first.');
+    }
     renderProblems(p);
     if (p.length) { return; }
     var body = C.toEvent(form);
@@ -496,6 +528,7 @@
     $('ce-cancel').addEventListener('click', function () { closeEvent(); });
     $('ce-remove').addEventListener('click', function () { remove(false); });
     $('ce-delete').addEventListener('click', function () { remove(true); });
+    $('ce-duplicate').addEventListener('click', duplicate);
     $('ce-skip-add').addEventListener('click', addSkip);
     dialog.addEventListener('cancel', function (ev) {      // Escape
       ev.preventDefault();
