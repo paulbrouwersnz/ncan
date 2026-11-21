@@ -536,11 +536,14 @@ virtual host's document root, shown in Web Station → Virtual Host) as
 3. lets ncan.nz's pages fetch photos (`Access-Control-Allow-Origin` for
    `https://ncan.nz`, `https://www.ncan.nz` and `localhost` for testing, plus
    `Vary: Origin`), so the viewer's download button can save the photo straight
-   to the device instead of opening it in a new tab. Browsers only let a page
+   to the device instead of opening it in a new tab (`gallery-viewer.js`
+   checks once, with a HEAD request, the first time the viewer opens). Browsers only let a page
    read a photo from another site when that site says so; JavaScript on ncan.nz
    can't add the header itself;
 4. makes any photo address ending in `?download=1` save rather than show
-   (`Content-Disposition: attachment`), with no JavaScript needed.
+   (`Content-Disposition: attachment`), with no JavaScript needed. The
+   viewer's download button links there, so it saves even when the check in
+   3 says no; on a host without either rule the photo opens in a new tab.
 
 Check it after uploading (each should show the header named):
 

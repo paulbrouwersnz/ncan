@@ -2623,6 +2623,9 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 }
 .lightbox__tools .lightbox__btn { background: rgba(255, 255, 255, .16); }
 .lightbox__tools .lightbox__btn:hover { background: rgba(255, 255, 255, .28); }
+/* saving the photo: the button pulses until the browser has it */
+.lightbox__download.is-busy { animation: lightbox-busy 1s ease-in-out infinite; cursor: progress; }
+@keyframes lightbox-busy { 50% { opacity: .45; } }
 
 /* On a phone the arrows sit under the photo rather than squeezing it */
 @media (max-width: 600px) {
@@ -2637,6 +2640,7 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 
 @media (prefers-reduced-motion: reduce) {
   .lightbox__btn { transition: none; }
+  .lightbox__download.is-busy { animation: none; opacity: .6; }
 }
 
 /* ---------- Calendar agenda ---------- */
