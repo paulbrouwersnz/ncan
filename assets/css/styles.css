@@ -3753,6 +3753,7 @@ html:has(.plan-editor:not([hidden])) { scroll-padding-bottom: 5rem; }
 .signin__form { display: flex; flex-wrap: wrap; align-items: flex-end; gap: .8rem; margin-top: 1rem; }
 .signin__status { margin: .9rem 0 0; font-weight: 600; color: var(--heading); }
 .signin__status:empty { display: none; }
+.signin__help { margin: 1.1rem 0 0; font-size: .95rem; }
 .signin__privacy { margin: .9rem 0 0; font-size: .88rem; color: var(--text-soft); }
 .account-line { margin: 1.2rem 0 0; font-size: .95rem; color: rgba(255, 255, 255, .85); }
 .account-line[hidden] { display: none; }
