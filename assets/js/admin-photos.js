@@ -1,5 +1,5 @@
 /*
-  admin-photos.js - "Header photos" on the Club admin page (/admin/#page-photos).
+  admin-photos.js - "Header photos" on the Club admin header photos page (/admin/header-photos/).
 
   The photos behind the green heading band at the top of the site's pages:
   pools of approved photos, and which pages (and #/... addresses, such as one

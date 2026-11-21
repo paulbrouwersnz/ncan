@@ -102,7 +102,7 @@ browser's console on the Athletics NZ eLearning library (see below).
 | changed links, moved or removed a file, or a pull request's "Checks" failed | `check-links.py` (and `sync-partials.py`) |
 | renamed or removed a button in the Junior Athletics planner (`assets/js/training*.js`) | update "How to use the planner" in `junior-athletics/index.html`, then `check-planner-help.py` |
 | edited `assets/data/page-photos.json` (header photos) | `make-head-photo.py` (see "Header photos") |
-| changed header photos on the Club admin page | nothing: published within the half hour (see "Header photos") |
+| changed header photos on the Club admin header photos page | nothing: published within the half hour (see "Header photos") |
 
 ## Publishing the site
 
@@ -343,7 +343,7 @@ python tools/check-planner-help.py
 Writes `sitemap.xml` and `robots.txt`, listing every page (the home page as
 `https://ncan.nz/`, the others as `https://ncan.nz/calendar/` and so on). Add a
 page's folder name to `SKIP` in the script to leave it out; `athlete`, `athletes`,
-`admin` and `results-sources` are skipped, as they show nothing until someone signs in (and carry a noindex tag).
+`admin` (and its tool pages under it) and `results-sources` are skipped, as they show nothing until someone signs in (and carry a noindex tag).
 `junior-athletics` is skipped while the coaches and committee review it. Folders
 that only redirect (`tuesday-training/`) are never listed. The sitemap was submitted once in Google Search
 Console; Google re-reads it by itself.
@@ -370,7 +370,7 @@ Any page with a green heading band (`.page-head--photo` in `styles.css`; not
 the home page, which has its own hero) can have a photo behind it. A page with
 no entry keeps the plain band.
 
-**Admins change them on the Club admin page** (`/admin/#page-photos`): pools,
+**Admins change them on the Club admin page** (`/admin/header-photos/`): pools,
 pages and `#/...` addresses, a "which photo shows here?" tester, versions with
 undo, and the athletes' own photos most recently uploaded, each with Remove
 (`assets/js/admin-photos.js`). The club's API keeps those settings
@@ -767,10 +767,15 @@ athletes page shows its link only to staff. Administrators, coaches and the
 committee add meetings there; administrators also change a meeting's type and
 remove meetings.
 
-The Club admin page (`/admin/`) is for club administrators: what the last collect
-found that needs a look, merges, membership changes, the members list upload,
-corrections and site-wide blocks (`assets/js/admin.js`); administrators get a
-"Club admin" link on the "Signed in as" line. Each athlete page also has a
+The Club admin pages are for club administrators. `/admin/` lists the tools,
+each on its own page: needs a look (`/admin/review/`), the members list upload
+(`/admin/members-list/`), membership changes (`/admin/membership/`), merges
+(`/admin/merges/`), corrections (`/admin/corrections/`), athlete addresses
+(`/admin/addresses/`), site-wide blocks (`/admin/blocked/`) and header photos
+(`/admin/header-photos/`). They all use `assets/js/admin.js`, which draws only
+the sections a page has; old `/admin/#section` links go on to the tool's page.
+To add a tool: a new folder under `admin/` with its section, and a card on
+`/admin/`. Administrators get a "Club admin" link on the "Signed in as" line. Each athlete page also has a
 "Manage this athlete" section for administrators only: its numbers, with links
 to their athletic.net bios, and adding or taking out a number: an athletic.net
 number, or a page number given by hand (900000001 up), whose results move to

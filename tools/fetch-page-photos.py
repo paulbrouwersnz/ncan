@@ -5,7 +5,7 @@
     python tools/fetch-page-photos.py --compare-live    print "true" when they differ
                                                         from those on the live site
 
-Admins change header photos on the Club admin page (/admin/#page-photos); the
+Admins change header photos on the Club admin header photos page (/admin/header-photos/); the
 club's API keeps them (GET /v1/page-photos). The Publish site workflow
 (.github/workflows/pages.yml) runs this before tools/make-head-photo.py, so the
 published assets/data/page-photos.json carries them as an "api" part, laid over

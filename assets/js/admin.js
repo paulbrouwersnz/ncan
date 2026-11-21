@@ -1,5 +1,8 @@
 /*
-  admin.js - the club admin page (/admin/), for club administrators only.
+  admin.js - the club admin pages, for club administrators only: /admin/ (the list of
+  tools) and each tool's own page (/admin/review/, /admin/members-list/, /admin/membership/,
+  /admin/merges/, /admin/corrections/, /admin/addresses/, /admin/blocked/; header photos,
+  /admin/header-photos/, are admin-photos.js). Old /admin/#section links go to the tool's page.
 
   Everything comes from the club's API (see assets/js/ncan-account.js), which
   answers only an administrator; anyone else sees a sign-in box or a note.
@@ -1169,21 +1172,54 @@
     loadAddresses();
   }
 
-  /* Loading ------------------------------------------------------------------- */
+  /* Loading -------------------------------------------------------------------
+     Each tool has its own page (/admin/review/, /admin/merges/ ...), all using
+     this file: a page draws only the sections it has. /admin/ itself is the
+     list of tools (#admin-tools), with how many things need a look. */
+  var has = function (x) { return !!$(x); };
+
   function loadAll() {
-    return Promise.all([NCAN.get('/admin/review'), NCAN.get('/membership'), NCAN.get('/access/blocks')])
+    var wants = has('members') || has('review');       // the members' names, for suggestions
+    return Promise.all([NCAN.get('/admin/review'),
+                        wants ? NCAN.get('/membership') : Promise.resolve({}),
+                        has('blocks') ? NCAN.get('/access/blocks') : Promise.resolve({})])
       .then(function (r) {
         members = r[1].members || [];
         addresses = r[0].addresses || {};    // before anything draws a link to a page
-        renderReview(r[0]);
+        if (has('review')) { renderReview(r[0]); }
         corrNames = r[0].names || {};
-        renderCorrections(r[0].corrections);
+        if (has('corrections')) { renderCorrections(r[0].corrections); }
         merges = r[0].merges || [];
-        renderMerges();
-        renderOverrides(r[1].overrides || []);
-        renderBlocks(r[2].blocked || []);
-        watch(r[0].collect);
+        if (has('merges')) { renderMerges(); }
+        if (has('members')) { renderOverrides(r[1].overrides || []); }
+        if (has('blocks')) { renderBlocks(r[2].blocked || []); }
+        if (has('collect-status')) { watch(r[0].collect); }
       });
+  }
+
+  /* /admin/: the tools, and how many things need a look */
+  function startTools() {
+    $('admin-status').hidden = true;
+    $('admin-tools').hidden = false;
+    NCAN.get('/admin/review').then(function (r) {
+      var done = appliedKeys(r.collect).keys || [];
+      var n = (r.items || []).filter(function (i) { return done.indexOf(i.key) === -1; }).length;
+      var badge = $('admin-count-review');
+      if (!badge || !n) { return; }
+      badge.textContent = String(n);
+      badge.setAttribute('aria-label', n + ' to look at');
+      badge.hidden = false;
+    }, function () { /* the list still works without the count */ });
+  }
+
+  // The tools were once sections of /admin/ itself: old links (/admin/#corrections) go to their pages.
+  var MOVED = { review: 'review', upload: 'members-list', roll: 'members-list', members: 'membership',
+                merges: 'merges', corrections: 'corrections', addresses: 'addresses', blocks: 'blocked',
+                'page-photos': 'header-photos' };
+  var old = location.hash.slice(1);
+  if (has('admin-tools') && MOVED[old]) {
+    location.replace('/admin/' + MOVED[old] + '/');
+    return;
   }
 
   NCAN.me().then(function (who) {
@@ -1194,22 +1230,26 @@
       NCAN.signIn($('admin-signin'), 'This page is for club administrators. Sign in with your email address.');
       return;
     }
-    if (who.role !== 'admin') {
-      $('admin-status').textContent = 'This page is for club administrators.';
+    if (!NCAN.atLeast(who, 'admin')) {
+      $('admin-status').textContent = 'This page is for club administrators. ';
+      var mine = el('a', null, 'Go to your own page');
+      mine.href = NCAN.home(who);
+      $('admin-status').appendChild(mine);
+      $('admin-status').appendChild(document.createTextNode('.'));
       return;
     }
+    if (has('admin-tools')) { startTools(); return; }
     loadAll().then(function () {
       $('admin-status').hidden = true;
-      $('admin-jump').hidden = false;
-      ['review', 'upload', 'members', 'merges', 'corrections', 'addresses', 'blocks'].forEach(function (x) { $(x).hidden = false; });
-      setUpUpload();
-      loadRoll();
-      setUpMembership();
-      setUpMerges();
-      setUpCorrections();
-      setUpAddresses();
-      setUpOptOut();
-      setUpBlocks();
+      ['review', 'upload', 'members', 'merges', 'corrections', 'addresses', 'blocks'].forEach(function (x) {
+        if (has(x)) { $(x).hidden = false; }
+      });
+      if (has('upload')) { setUpUpload(); loadRoll(); }
+      if (has('members')) { setUpMembership(); }
+      if (has('merges')) { setUpMerges(); }
+      if (has('corrections')) { setUpCorrections(); setUpOptOut(); }
+      if (has('addresses')) { setUpAddresses(); }
+      if (has('blocks')) { setUpBlocks(); }
       if (window.AdminPhotos) { AdminPhotos.start(); }
     }, function (err) { $('admin-status').textContent = err.message || 'Sorry, this page could not be loaded.'; });
   }, function () { $('admin-status').textContent = 'The club’s results service could not be reached.'; });

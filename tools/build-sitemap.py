@@ -71,7 +71,7 @@ def pages():
     """[(address, file)] of every page in the sitemap: index.html is the bare domain,
     calendar/index.html is /calendar/ (see tools/pages.py)."""
     return [(address, os.path.relpath(path, ROOT).replace(os.sep, '/'))
-            for name, address, path in site_pages(ROOT) if name not in SKIP]
+            for name, address, path in site_pages(ROOT) if name.split('/')[0] not in SKIP]
 
 
 def last_changed(name):
