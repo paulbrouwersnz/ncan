@@ -56,7 +56,7 @@ jobs:
       - name: Header photos are approved and written into the pages
         run: python tools/make-head-photo.py --check
 
-      - name: Header photo check tests
+      - name: Python tests (tests/py)
         run: python -m unittest discover -s tests/py
 
       - name: Set up Node
@@ -64,8 +64,9 @@ jobs:
         with:
           node-version: '24'
 
-      # the helpers must not depend on the machine's time zone, so run twice
-      - name: Calendar date tests
+      # every test in tests/js (calendar dates, header photos); the helpers must
+      # not depend on the machine's time zone, so run twice
+      - name: JS tests (tests/js)
         run: |
           TZ=UTC node --test "tests/js/*.test.js"
           TZ=Pacific/Auckland node --test "tests/js/*.test.js"

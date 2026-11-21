@@ -28,10 +28,24 @@
      3. the page itself.
    An entry gives "pool", "photos", or "photo": "none" for the plain band.
 
+   Admins change the settings on the Club admin page (/admin/#page-photos);
+   the club's API keeps them (GET /v1/page-photos), laid over the file's: a
+   pool or page entry there replaces the file's of the same name (overlay()).
+   This script reads them from the API as the page loads, so a change shows
+   within minutes; if the API can't be reached it uses the copy the Publish
+   site workflow put in the file as its "api" part (tools/fetch-page-photos.py).
+
    tools/make-head-photo.py writes each page's first photo into the page, so
    it shows with no flash, and marks a page data-page-photos when this script
    has more to do (a pool to pick from, or #/... entries). Unmarked pages are
-   left as written and the file is never fetched for them.
+   left as written and the file is never fetched for them, so a page that
+   had no photo before gets one at the next publish (every half hour when the
+   settings have changed).
+
+   A page can show a photo of its own instead (the athlete page, an athlete's
+   own photo): NCAN.pageHead.photo({ photo: {src, webp}, focus }) shows it and
+   keeps it, whatever the settings say, until NCAN.pageHead.photo({ release:
+   true }) goes back to them.
 
    The helpers are pure, so the same file runs in Node for the tests in
    tests/js/page-photos.test.js. tools/page_photos.py resolves pools the same
@@ -41,6 +55,12 @@
   'use strict';
 
   var DATA_URL = '/assets/data/page-photos.json';
+  // the settings changed on the Club admin page; on this computer, the API run
+  // locally (as in ncan-account.js)
+  var LOCAL = typeof location !== 'undefined' && /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+  var API_URL = LOCAL ? 'http://' + location.hostname + ':8765/v1/page-photos'
+    : 'https://api.ncan.nz/v1/page-photos';
+  var API_WAIT = 2500;   // ms before giving up on the API and using the file's copy
   var MAX_DEPTH = 4;
   var STORE_KEY = 'ncan-page-photo:';
   // older link spellings that mean the same #/... address
@@ -111,6 +131,25 @@
     }
     var own = (entry.photos || []).map(function (p) { return photoOf(p, ''); });
     return own.length ? [own] : [];
+  }
+
+  // base's settings with layer's laid over them: a pool or page entry in
+  // layer replaces base's of the same name. The same as overlay() in
+  // tools/page_photos.py.
+  function overlay(base, layer) {
+    var out = { pools: {}, pages: {} };
+    ['pools', 'pages'].forEach(function (part) {
+      [base[part] || {}, (layer && layer[part]) || {}].forEach(function (from) {
+        Object.keys(from).forEach(function (k) { out[part][k] = from[k]; });
+      });
+    });
+    return out;
+  }
+
+  // the settings to use: the file's, with the API's laid over them, or the
+  // file's copy of the API's ("api") when the API couldn't be reached
+  function settings(file, live) {
+    return overlay(file, live || file.api || {});
   }
 
   /* ------------------------------------------------------- which entry */
@@ -202,33 +241,76 @@
   var dataPromise = null;
   var lastKey = null;
   var lastTags = '';
+  var pinned = false;
+
+  function fetchJson(url) {
+    return global.fetch(url).then(function (r) {
+      if (!r.ok) { throw new Error('page photos: ' + r.status); }
+      return r.json();
+    });
+  }
+
+  // the API's settings, or null if they don't come in time
+  function fetchLive() {
+    var live = fetchJson(API_URL).catch(function () { return null; });
+    var late = new Promise(function (done) { global.setTimeout(function () { done(null); }, API_WAIT); });
+    return Promise.race([live, late]);
+  }
 
   function loadData() {
     if (!dataPromise) {
-      dataPromise = global.fetch(DATA_URL).then(function (r) {
-        if (!r.ok) { throw new Error('page photos: ' + r.status); }
-        return r.json();
+      dataPromise = Promise.all([fetchJson(DATA_URL), fetchLive()]).then(function (r) {
+        return settings(r[0], r[1]);
       });
     }
     return dataPromise;
   }
 
+  // the photo the page was written with, to go back to after a page's own
+  function written(head) {
+    if (!head.hasAttribute('data-photo-first')) {
+      var src = /url\('([^']*)'\)/.exec(head.style.getPropertyValue('--photo') || '');
+      var webp = /url\('([^']*)'\)/.exec(head.style.getPropertyValue('--photo-webp') || '');
+      head.setAttribute('data-photo-first', src ? JSON.stringify({
+        src: src[1], webp: webp ? webp[1] : src[1],
+        focus: head.style.getPropertyValue('--photo-focus').trim()
+      }) : '');
+    }
+    var first = head.getAttribute('data-photo-first');
+    return first ? JSON.parse(first) : null;
+  }
+
   // choose and show the photo for the current address. opts.tags prefers
   // photos with those tags (a training plan's events, say); opts.photo shows
-  // that photo outright (a coach's choice saved with the plan).
+  // that photo outright and keeps it (an athlete's own photo, a coach's choice
+  // saved with the plan) until opts.release goes back to the settings.
   function apply(opts) {
     opts = opts || {};
     var doc = global.document;
     var head = doc.querySelector('.page-head');
-    if (!head || !head.hasAttribute('data-page-photos')) { return Promise.resolve(null); }
+    if (!head) { return Promise.resolve(null); }
+    if (opts.photo) {
+      written(head);
+      pinned = true;
+      lastKey = null;
+      show(head, photoOf(opts.photo, ''), opts.focus);
+      return Promise.resolve(opts.photo);
+    }
+    if (opts.release) {
+      pinned = false;
+      lastKey = null;
+      if (!head.hasAttribute('data-page-photos')) {
+        var first = written(head);
+        show(head, first ? photoOf(first, '') : null, first && first.focus);
+        return Promise.resolve(null);
+      }
+    }
+    if (pinned || !head.hasAttribute('data-page-photos')) { return Promise.resolve(null); }
+    written(head);
     return loadData().then(function (data) {
+      if (pinned) { return null; }
       var found = findEntry(data, global.location.pathname, global.location.hash);
       var tagKey = (opts.tags || []).join(',');
-      if (opts.photo) {
-        show(head, photoOf(opts.photo, ''), opts.focus);
-        lastKey = null;
-        return opts.photo;
-      }
       if (!found) { show(head, null); lastKey = null; return null; }
       // the same entry as last time: leave the photo alone
       if (found.key === lastKey && tagKey === lastTags) { return null; }
@@ -243,6 +325,8 @@
   }
 
   var api = {
+    overlay: overlay,
+    settings: settings,
     poolGroups: poolGroups,
     poolPhotos: poolPhotos,
     entryGroups: entryGroups,

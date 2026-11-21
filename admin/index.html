@@ -91,7 +91,7 @@
         <h1 id="page-heading">Club admin</h1>
         <p class="lede">
           Keeping the athlete pages right: what the last collect found that needs a look, membership
-          changes, corrections and who is blocked. Every change is recorded with who made it and why,
+          changes, corrections, who is blocked, and the header photos. Every change is recorded with who made it and why,
           and results are collected again afterwards (5&ndash;10 minutes).
         </p>
         <div class="btn-row" id="admin-jump" hidden>
@@ -102,6 +102,7 @@
           <a class="btn btn--ghost-light" href="#corrections">Corrections</a>
           <a class="btn btn--ghost-light" href="#addresses">Addresses</a>
           <a class="btn btn--ghost-light" href="#blocks">Blocked</a>
+          <a class="btn btn--ghost-light" href="#page-photos">Header photos</a>
         </div>
         <p class="account-line" id="account" hidden></p>
       </div>
@@ -409,6 +410,93 @@
         <p class="access-status" id="block-status" role="status"></p>
       </div>
     </section>
+
+    <!-- ================= Header photos (assets/js/admin-photos.js) ================= -->
+    <section class="section section--tint" id="page-photos" aria-labelledby="page-photos-heading" hidden>
+      <div class="wrap">
+        <div class="section-head section-head--wide">
+          <p class="eyebrow">The website</p>
+          <h2 id="page-photos-heading">Header photos</h2>
+          <p class="lede">
+            The photos behind the green band at the top of the site&rsquo;s pages. Put approved photos in
+            pools, then choose which pages use which pool, down to one address such as a single training
+            plan (<code>/junior-athletics/#/plan/2026-11-24</code>); a page shows one of its photos at random
+            on each visit. Photos must be on <code>photos.ncan.nz</code>. Only put photos of children in a
+            pool for public pages when the club has consent to publish them.
+          </p>
+        </div>
+
+        <p class="records-note" id="pp-version"></p>
+
+        <h3 class="pp-heading">Pools</h3>
+        <div id="pp-pools"></div>
+        <form class="mem-add" id="pp-pool-add" novalidate autocomplete="off">
+          <p class="records-field">
+            <label for="pp-pool-name">New pool</label>
+            <input type="text" id="pp-pool-name" placeholder="e.g. junior" maxlength="40">
+          </p>
+          <button type="submit" class="btn btn--ghost">Add the pool</button>
+        </form>
+
+        <h3 class="pp-heading">Pages</h3>
+        <div id="pp-pages"></div>
+        <p class="records-note" id="pp-file-note"></p>
+        <form class="mem-add" id="pp-page-add" novalidate autocomplete="off">
+          <p class="records-field records-field--grow">
+            <label for="pp-page-key">New page or address</label>
+            <input type="text" id="pp-page-key" placeholder="/junior-athletics/ or /junior-athletics/#/plan/* or one plan">
+          </p>
+          <button type="submit" class="btn btn--ghost">Add the page</button>
+        </form>
+        <p class="mem-help">
+          An address with <code>#/&hellip;</code> wins over its page, and one ending in <code>*</code> covers
+          every address that starts that way (<code>#/plan/*</code>: every training plan). The most exact
+          entry is used.
+        </p>
+
+        <h3 class="pp-heading">Which photo shows here?</h3>
+        <p class="records-field records-field--grow pp-test">
+          <label for="pp-test">An address on the site</label>
+          <input type="text" id="pp-test" placeholder="/junior-athletics/#/plan/2026-11-24" autocomplete="off">
+        </p>
+        <div id="pp-test-out"></div>
+
+        <div class="pp-save">
+          <p class="records-field records-field--grow">
+            <label for="pp-note">What changed (optional, kept with the version)</label>
+            <input type="text" id="pp-note" maxlength="300">
+          </p>
+          <button type="button" class="btn btn--accent" id="pp-save" disabled>Save</button>
+          <button type="button" class="btn btn--ghost" id="pp-reload">Load the latest</button>
+          <span class="pp-dirty" id="pp-dirty" hidden>Not saved yet</span>
+        </div>
+        <p class="access-status" id="pp-status" role="status"></p>
+        <div id="pp-problems"></div>
+
+        <details class="pp-card" id="pp-text-wrap">
+          <summary class="pp-card__head"><strong>Edit as text</strong>
+            <span class="pp-card__meta">all the settings at once, in the layout of the website&rsquo;s page-photos.json</span></summary>
+          <div class="pp-card__body">
+            <textarea id="pp-text" rows="16" spellcheck="false"></textarea>
+            <button type="button" class="btn btn--ghost btn--sm" id="pp-text-apply">Use this text</button>
+          </div>
+        </details>
+
+        <details class="pp-card">
+          <summary class="pp-card__head"><strong>Versions</strong>
+            <span class="pp-card__meta">the last 50 saves; going back saves a new version, so it can be undone too</span></summary>
+          <div class="pp-card__body" id="pp-history"></div>
+        </details>
+
+        <h3 class="pp-heading">Athletes&rsquo; own photos</h3>
+        <p class="mem-help">
+          Uploaded on athlete pages by the athlete&rsquo;s contacts in the membership system, and shown
+          at once to the people who can see that page. The newest first.
+        </p>
+        <div id="pp-uploads"></div>
+        <p class="access-status" id="pp-uploads-status" role="status"></p>
+      </div>
+    </section>
   </main>
 
   <!-- @partial:footer -->
@@ -552,6 +640,7 @@
   </script>
 
   <script src="/assets/js/ncan-account.js"></script>
+  <script src="/assets/js/admin-photos.js"></script>
   <script src="/assets/js/admin.js"></script>
 
 </body>

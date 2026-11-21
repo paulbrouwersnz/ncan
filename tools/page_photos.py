@@ -36,9 +36,28 @@ class PhotoError(Exception):
     pass
 
 
-def load(path=DATA):
+def load(path=DATA, raw=False):
+    """The file's settings. At publish time tools/fetch-page-photos.py adds the
+    ones changed on the Club admin page (from the club's API) as an "api"
+    part; they are laid over the file's (overlay()) unless raw is True, as
+    when the file is to be written back (tools/build-gallery.py)."""
     with io.open(path, encoding='utf-8') as f:
-        return json.load(f)
+        data = json.load(f)
+    if raw or 'api' not in data:
+        return data
+    return overlay(data, data.get('api') or {})
+
+
+def overlay(base, layer):
+    """base's settings with layer's laid over them: a pool or page entry in
+    layer replaces base's of the same name; the rest of base's are kept (the
+    gallery album entries, say). The same as overlay() in page-photos.js."""
+    out = {'about': base.get('about', '')}
+    for part in ('pools', 'pages'):
+        merged = dict(base.get(part) or {})
+        merged.update(layer.get(part) or {})
+        out[part] = merged
+    return out
 
 
 def save(data, path=DATA):

@@ -104,3 +104,28 @@ test('by-pool picks the pool first', () => {
   assert.equal(P.pick(groups, { random: () => 0.99 }).src, H + 'c.jpg');
   assert.equal(P.pick(groups, { random: () => 0 }).src, H + 'a.webp');
 });
+
+test('the API settings are laid over the file, entry by entry', () => {
+  const file = {
+    pools: { a: [H + 'a.webp'], b: [H + 'b.webp'] },
+    pages: { '/gallery/x/': { photos: [H + 'g.webp'] }, '/': { pool: 'a' } }
+  };
+  const live = { pools: { b: [H + 'new.webp'] }, pages: { '/': { pool: 'b' } } };
+  const out = P.overlay(file, live);
+  assert.deepEqual(out.pools.a, [H + 'a.webp']);
+  assert.deepEqual(out.pools.b, [H + 'new.webp']);
+  assert.deepEqual(out.pages['/'], { pool: 'b' });
+  assert.ok(out.pages['/gallery/x/']);
+  // the file is left as it was
+  assert.deepEqual(file.pages['/'], { pool: 'a' });
+});
+
+test('without the API, the file\'s copy of its settings is used', () => {
+  const file = { pools: {}, pages: { '/': { photo: 'none' } },
+    api: { version: 3, pools: {}, pages: { '/': { photos: [H + 'api.webp'] } } } };
+  assert.deepEqual(P.settings(file, null).pages['/'], { photos: [H + 'api.webp'] });
+  const live = { version: 4, pools: {}, pages: {} };
+  // the API's own settings win over the copy, even when it has dropped an entry
+  assert.deepEqual(P.settings(file, live).pages['/'], { photo: 'none' });
+  assert.equal(P.settings({ pools: {}, pages: {} }, null).pages['/'], undefined);
+});

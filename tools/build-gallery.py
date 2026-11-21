@@ -776,7 +776,7 @@ def write_header_photos(albums):
     "source": "gallery") with one per album, its cover photo. Entries written
     by hand are left alone; one for an album page wins over the cover, and
     tools/make-head-photo.py then writes it into the page."""
-    data = page_photos.load()
+    data = page_photos.load(raw=True)
     pages = data.setdefault('pages', {})
     for key in [k for k, v in pages.items() if v.get('source') == 'gallery']:
         del pages[key]

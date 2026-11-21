@@ -25,6 +25,9 @@ The checks (the same run, and Checks on every pull request):
     focus written "x% y%"; one of "pool", "photos" or "photo": "none" per entry
     a warning for entries for training plans more than a year old
 
+At publish time tools/fetch-page-photos.py first adds the settings changed on
+the Club admin page, which are laid over the file's (page_photos.load).
+
 Standard library only. See tools/README.md ("Header photos").
 """
 import argparse
@@ -66,6 +69,9 @@ def main():
     found = site_pages()
     addresses = {address for _, address, _ in found}
     problems, warnings = P.check(data, addresses)
+    if args.check and 'api' in P.load(raw=True):
+        problems.append('the "api" part is added at publish time (tools/fetch-page-photos.py); '
+                        'take it out of the file')
     for w in warnings:
         print('warning: ' + w)
     if problems:
