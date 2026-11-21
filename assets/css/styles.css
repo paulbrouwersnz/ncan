@@ -3826,7 +3826,7 @@ html:has(.plan-editor:not([hidden])) { scroll-padding-bottom: 5rem; }
 .is-locked::before { content: ""; position: absolute; z-index: 2; top: 50%; left: 50%;
   width: 2.4rem; height: 2.4rem; margin: -1.2rem 0 0 -1.2rem; --ring: 3px; }
 .is-locked.lock-quiet::before { content: none; }
-.is-locked > .src-add__status, .is-locked > .lock-keep { position: relative; z-index: 2; }
+.is-locked > .src-add__status, .is-locked .lock-keep { position: relative; z-index: 2; }
 /* a small spinner before a status line while it's working */
 .is-busy::before { content: ""; display: inline-block; vertical-align: -.2em;
   width: 1em; height: 1em; margin-right: .5em; }
