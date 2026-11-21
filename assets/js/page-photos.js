@@ -28,7 +28,7 @@
      3. the page itself.
    An entry gives "pool", "photos", or "photo": "none" for the plain band.
 
-   Admins change the settings on the Club admin page (/admin/#page-photos);
+   Admins change the settings on the Club admin header photos page (/admin/header-photos/);
    the club's API keeps them (GET /v1/page-photos), laid over the file's: a
    pool or page entry there replaces the file's of the same name (overlay()).
    This script reads them from the API as the page loads, so a change shows

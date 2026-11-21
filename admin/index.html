@@ -87,25 +87,11 @@
       <div class="wrap">
         <nav class="breadcrumb" aria-label="Breadcrumb">
           <a href="/">Home</a> <span aria-hidden="true">/</span>
-          <a href="/athletes/">Athletes</a> <span aria-hidden="true">/</span> <span>Club admin</span>
+          <span>Club admin</span>
         </nav>
         <p class="eyebrow eyebrow--light">For club administrators</p>
         <h1 id="page-heading">Club admin</h1>
-        <p class="lede">
-          Keeping the athlete pages right: what the last collect found that needs a look, membership
-          changes, corrections, who is blocked, and the header photos. Every change is recorded with who made it and why,
-          and results are collected again afterwards (5&ndash;10 minutes).
-        </p>
-        <div class="btn-row" id="admin-jump" hidden>
-          <a class="btn btn--accent" href="#review">Needs a look</a>
-          <a class="btn btn--ghost-light" href="#upload">Members list</a>
-          <a class="btn btn--ghost-light" href="#members">Membership</a>
-          <a class="btn btn--ghost-light" href="#merges">Merges</a>
-          <a class="btn btn--ghost-light" href="#corrections">Corrections</a>
-          <a class="btn btn--ghost-light" href="#addresses">Addresses</a>
-          <a class="btn btn--ghost-light" href="#blocks">Blocked</a>
-          <a class="btn btn--ghost-light" href="#page-photos">Header photos</a>
-        </div>
+        <p class="lede">Keeping the athlete pages right, the members list and the website. Every change is recorded with who made it and why, and results are collected again afterwards (5&ndash;10 minutes).</p>
         <p class="account-line" id="account" hidden></p>
       </div>
     </section>
@@ -115,393 +101,80 @@
     <div class="wrap"><div id="admin-signin" class="admin-gate" hidden></div></div>
     <p class="wrap admin-gate records-status" id="admin-status" role="status">Loading&hellip;</p>
 
-    <!-- ================= Needs a look ================= -->
-    <section class="section" id="review" aria-labelledby="review-heading" hidden>
+    <section class="section" id="admin-tools" aria-labelledby="page-heading" hidden>
       <div class="wrap">
-        <div class="section-head section-head--wide">
-          <p class="eyebrow">From the last collect</p>
-          <h2 id="review-heading">Needs a look</h2>
-          <p class="lede">
-            Things the collector couldn&rsquo;t settle by itself. Fix one, or dismiss it if it&rsquo;s
-            fine as it is: dismissed items stay hidden until something about them changes.
-          </p>
-        </div>
-        <p class="records-note" id="collect-status"></p>
-        <p class="review-pending" id="review-pending" role="status" hidden></p>
-        <div id="review-out"></div>
-        <p class="access-status" id="review-said" role="status"></p>
-      </div>
-    </section>
-
-    <!-- ================= Members list from GameDay ================= -->
-    <section class="section section--tint" id="upload" aria-labelledby="upload-heading" hidden>
-      <div class="wrap">
-        <div class="section-head section-head--wide">
-          <p class="eyebrow">From GameDay</p>
-          <h2 id="upload-heading">Members list</h2>
-          <p class="lede">
-            The members list decides who has a page, and which seasons&rsquo; results count for the club.
-            Update it from two GameDay exports whenever memberships change. Nothing changes until
-            you&rsquo;ve seen the check and pressed Import.
-          </p>
-        </div>
-        <details class="upload-how">
-          <summary>Where to get the two files</summary>
-          <ol>
-            <li>Sign in to <a href="https://admin.mygameday.app/" target="_blank" rel="noopener">GameDay</a>
-              (admin.mygameday.app) as the club.</li>
-            <li>Go to <strong>Reporting</strong>, then <strong>Tabular Reports</strong>.</li>
-            <li>Open <strong>Advanced Member</strong>. Choose <strong>Export</strong>, set it to
-              <strong>All rows</strong> and <strong>All columns</strong>, and export as CSV. No need to change
-              the page&rsquo;s filters.</li>
-            <li>Do the same with <strong>Transactions</strong>: <strong>All rows</strong> and
-              <strong>All columns</strong>, with no date filter, so it holds every season&rsquo;s memberships.</li>
-            <li>The files download straight away, or GameDay shows a notification when they&rsquo;re ready.
-              Choose them below.</li>
-          </ol>
-          <p>The files hold members&rsquo; personal details. They go only to the club&rsquo;s server, and are
-            deleted there once imported (or after three hours). Delete your downloaded copies afterwards.</p>
-        </details>
-        <form class="upload-form" id="upload-form" novalidate>
-          <p class="records-field">
-            <label for="upload-members">Advanced Member report (CSV)</label>
-            <input type="file" id="upload-members" accept=".csv,text/csv">
-          </p>
-          <p class="records-field">
-            <label for="upload-tx">Transactions (CSV)</label>
-            <input type="file" id="upload-tx" accept=".csv,text/csv">
-          </p>
-          <button type="submit" class="btn btn--accent" id="upload-check">Check the files</button>
-        </form>
-        <p class="access-status" id="upload-status" role="status"></p>
-        <div id="upload-report"></div>
-
-        <!-- every member on the list, with all the club holds about them except results -->
-        <!-- folded by default: open it to see the list -->
-        <details class="champs-day roll" id="roll">
-          <summary class="champs-day__head">
-            <h3 class="roll__head" id="roll-heading">Club members</h3>
-          </summary>
-          <div class="champs-day__body">
-          <p class="records-note">
-            Everyone on the members list, from the last collect: date of birth, seasons, GameDay
-            registrations, their page and the emails that can sign in to see it. For administrators only.
-          </p>
-          <div class="records-bar champs-bar">
-            <div class="records-filters">
-              <p class="records-field">
-                <label for="roll-season">Season</label>
-                <select id="roll-season"><option value="">All seasons</option></select>
-              </p>
-              <p class="records-field records-field--grow">
-                <label for="roll-text">Search</label>
-                <input type="search" id="roll-text" placeholder="name or email" autocomplete="off">
-              </p>
+        <h2 class="admin-tools__head">Athlete pages</h2>
+        <div class="cards">
+          <article class="card">
+            <div class="card__body">
+              <h3><a class="card__link" href="/admin/review/">Needs a look</a> <span class="admin-count" id="admin-count-review" hidden></span></h3>
+              <p>What the last collect couldn&rsquo;t settle by itself. Fix each one, or dismiss it.</p>
             </div>
-          </div>
-          <p class="records-status" id="roll-status" role="status">Loading the members&hellip;</p>
-          <div id="roll-out"></div>
-          </div>
-        </details>
-      </div>
-    </section>
-
-    <!-- ================= Membership ================= -->
-    <section class="section" id="members" aria-labelledby="members-heading" hidden>
-      <div class="wrap">
-        <div class="section-head section-head--wide">
-          <p class="eyebrow">On top of the GameDay list</p>
-          <h2 id="members-heading">Membership changes</h2>
-          <p class="lede">
-            The members list comes from the club&rsquo;s membership system (GameDay), and a result counts
-            for the club only while the athlete was a member. Changes here sit on top of that list, so the
-            next import doesn&rsquo;t undo them.
-          </p>
-        </div>
-        <div id="mem-out"></div>
-        <form class="mem-add" id="mem-add" novalidate autocomplete="off">
-          <p class="records-field records-field--grow suggest">
-            <label for="mem-name">Member</label>
-            <input type="text" id="mem-name" placeholder="start typing a name" role="combobox"
-                   aria-autocomplete="list" aria-expanded="false" aria-controls="mem-name-list">
-            <span class="suggest__list" id="mem-name-list" role="listbox" hidden></span>
-          </p>
-          <p class="records-field">
-            <label for="mem-kind">Change</label>
-            <select id="mem-kind">
-              <option value="left">Left on a date</option>
-              <option value="joined">Joined on a date</option>
-              <option value="member">A member for a season</option>
-              <option value="not">Not a member for a season</option>
-            </select>
-          </p>
-          <p class="records-field" id="mem-day-field">
-            <label for="mem-day">Date</label>
-            <input type="date" id="mem-day">
-          </p>
-          <p class="records-field" id="mem-season-field" hidden>
-            <label for="mem-season">Season</label>
-            <input type="text" id="mem-season" placeholder="2025/26" size="8">
-          </p>
-          <p class="records-field" id="mem-born-field" hidden>
-            <label for="mem-born">Birth year</label>
-            <input type="number" id="mem-born" min="1900" max="2100" placeholder="not on the list">
-          </p>
-          <p class="records-field records-field--grow">
-            <label for="mem-why">Why</label>
-            <input type="text" id="mem-why" maxlength="200" placeholder="e.g. transferred to another club; paid in cash">
-          </p>
-          <button type="submit" class="btn btn--accent">Make the change</button>
-        </form>
-        <p class="mem-help" id="mem-help"></p>
-        <p class="access-status" id="mem-status" role="status"></p>
-      </div>
-    </section>
-
-    <!-- ================= Merges ================= -->
-    <section class="section section--tint" id="merges" aria-labelledby="merges-heading" hidden>
-      <div class="wrap">
-        <div class="section-head section-head--wide">
-          <p class="eyebrow">athletic.net numbers</p>
-          <h2 id="merges-heading">Merges</h2>
-          <p class="lede">
-            AthleticLIVE sometimes gives one athlete a second athletic.net number, after a change of school
-            or club, or at a school meeting. The collector joins them into one page when their grades
-            match, or when one member has that name; a person can join or separate any. Each number&rsquo;s
-            latest results show what&rsquo;s under it.
-          </p>
-        </div>
-        <form class="mem-add" id="link-add" novalidate autocomplete="off">
-          <p class="records-field records-field--grow">
-            <label for="link-a">Join this page</label>
-            <input type="text" id="link-a" placeholder="an athlete page's address, or its number">
-          </p>
-          <p class="records-field records-field--grow">
-            <label for="link-b">with this one</label>
-            <input type="text" id="link-b" placeholder="the other page">
-          </p>
-          <button type="submit" class="btn btn--accent">Join them</button>
-        </form>
-        <p class="access-status" id="merge-status" role="status"></p>
-        <div class="merge-bar">
-          <p class="records-status" id="merge-count"></p>
-          <!-- the list is long: it and its search are hidden until asked for -->
-          <button type="button" class="btn btn--ghost btn--sm" id="merge-show" aria-expanded="false"
-                  aria-controls="merge-list" hidden>Show the athletes</button>
-        </div>
-        <div id="merge-list" hidden>
-        <div class="records-bar champs-bar">
-          <div class="records-filters">
-            <p class="records-field records-field--grow">
-              <label for="merge-find">Find</label>
-              <input type="search" id="merge-find" placeholder="athlete name or number" autocomplete="off">
-            </p>
-            <p class="records-field">
-              <label for="merge-why">Joined by</label>
-              <select id="merge-why">
-                <option value="">Anything</option>
-                <option value="grades">Matching grades</option>
-                <option value="members">The members list</option>
-                <option value="same">A person</option>
-              </select>
-            </p>
-          </div>
-        </div>
-        <p class="records-status" id="merge-match"></p>
-        <div id="merge-out"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ================= Corrections ================= -->
-    <section class="section" id="corrections" aria-labelledby="corrections-heading" hidden>
-      <div class="wrap">
-        <div class="section-head section-head--wide">
-          <p class="eyebrow">Made on the website</p>
-          <h2 id="corrections-heading">Corrections</h2>
-          <p class="lede">
-            Athletes taken off the site at a family&rsquo;s request, athletic.net numbers joined into one
-            athlete (or kept apart), and names a meeting spells differently. Undo puts things back at the
-            next collect.
-          </p>
-        </div>
-        <form class="mem-add" id="optout-add" novalidate autocomplete="off">
-          <p class="records-field records-field--grow">
-            <label for="optout-page">Remove an athlete</label>
-            <input type="text" id="optout-page" placeholder="their page&rsquo;s address, or the number after id=">
-          </p>
-          <p class="records-field records-field--grow">
-            <label for="optout-why">Why</label>
-            <input type="text" id="optout-why" maxlength="200" placeholder="e.g. asked by a parent">
-          </p>
-          <button type="submit" class="btn btn--ghost">Remove the athlete</button>
-        </form>
-        <p class="access-status" id="corr-status" role="status"></p>
-        <!-- the list is long: hidden until asked for -->
-        <div class="merge-bar">
-          <p class="records-status" id="corr-count"></p>
-          <button type="button" class="btn btn--ghost btn--sm" id="corr-show" aria-expanded="false"
-                  aria-controls="corr-out" hidden>Show the corrections</button>
-        </div>
-        <div id="corr-out" hidden></div>
-      </div>
-    </section>
-
-    <!-- ================= Athlete addresses ================= -->
-    <section class="section section--tint" id="addresses" aria-labelledby="addresses-heading" hidden>
-      <div class="wrap">
-        <div class="section-head section-head--wide">
-          <p class="eyebrow">Athlete pages</p>
-          <h2 id="addresses-heading">Athlete addresses</h2>
-          <p class="lede">
-            Each athlete&rsquo;s page address comes from their name (/athlete/#/sam-brown). An athlete can
-            have several: after a name change the old one still leads to the page. Add an address, choose
-            the primary (the one links use), or retire one so it leads nowhere, after a name change the family
-            would rather not have linked, say. An address is never given to anyone else, even once retired.
-            Changes take effect at once.
-          </p>
-        </div>
-        <p class="access-status" id="addr-status" role="status"></p>
-        <div class="merge-bar">
-          <p class="records-status" id="addr-count"></p>
-          <button type="button" class="btn btn--ghost btn--sm" id="addr-show" aria-expanded="false"
-                  aria-controls="addr-list" hidden>Show the athletes</button>
-        </div>
-        <div id="addr-list" hidden>
-          <div class="records-bar champs-bar">
-            <div class="records-filters">
-              <p class="records-field records-field--grow">
-                <label for="addr-find">Find</label>
-                <input type="search" id="addr-find" placeholder="athlete name or address" autocomplete="off">
-              </p>
-              <div class="ath-checks">
-                <p class="records-field ath-check">
-                  <input type="checkbox" id="addr-many" checked>
-                  <label for="addr-many">Only athletes with more than one address</label>
-                </p>
-              </div>
+          </article>
+          <article class="card">
+            <div class="card__body">
+              <h3><a class="card__link" href="/admin/merges/">Merges</a></h3>
+              <p>Join athletic.net numbers that are one athlete, or keep them apart.</p>
             </div>
-          </div>
-          <p class="records-status" id="addr-match"></p>
-          <div id="addr-out"></div>
+          </article>
+          <article class="card">
+            <div class="card__body">
+              <h3><a class="card__link" href="/admin/corrections/">Corrections</a></h3>
+              <p>Every correction made on the website, with undo, and taking an athlete off the site.</p>
+            </div>
+          </article>
+          <article class="card">
+            <div class="card__body">
+              <h3><a class="card__link" href="/admin/addresses/">Athlete addresses</a></h3>
+              <p>Each athlete page&rsquo;s addresses: add one, choose the primary, or retire one.</p>
+            </div>
+          </article>
         </div>
-      </div>
-    </section>
-
-    <!-- ================= Blocks ================= -->
-    <section class="section" id="blocks" aria-labelledby="blocks-heading" hidden>
-      <div class="wrap">
-        <div class="section-head section-head--wide">
-          <p class="eyebrow">Sign-in</p>
-          <h2 id="blocks-heading">Blocked from the whole site</h2>
-          <p class="lede">
-            A blocked email can&rsquo;t sign in, whatever the membership system says, and is signed out at
-            once. To stop someone seeing one athlete only, use that athlete&rsquo;s page.
-          </p>
+        <h2 class="admin-tools__head">Members</h2>
+        <div class="cards">
+          <article class="card">
+            <div class="card__body">
+              <h3><a class="card__link" href="/admin/members-list/">Members list</a></h3>
+              <p>Update the members list from the GameDay exports, and see everything held about each member.</p>
+            </div>
+          </article>
+          <article class="card">
+            <div class="card__body">
+              <h3><a class="card__link" href="/admin/membership/">Membership changes</a></h3>
+              <p>Joined, left or a member for a season, on top of the GameDay list so imports don&rsquo;t undo it.</p>
+            </div>
+          </article>
         </div>
-        <div id="blocks-out"></div>
-        <form class="access-add" id="block-add" novalidate autocomplete="off">
-          <p class="records-field records-field--grow">
-            <label for="block-email">Email address</label>
-            <input type="email" id="block-email" placeholder="name@example.com">
-          </p>
-          <p class="records-field records-field--grow">
-            <label for="block-why">Why</label>
-            <input type="text" id="block-why" maxlength="200">
-          </p>
-          <button type="submit" class="btn btn--ghost">Block</button>
-        </form>
-        <p class="access-status" id="block-status" role="status"></p>
-      </div>
-    </section>
-
-    <!-- ================= Header photos (assets/js/admin-photos.js) ================= -->
-    <section class="section section--tint" id="page-photos" aria-labelledby="page-photos-heading" hidden>
-      <div class="wrap">
-        <div class="section-head section-head--wide">
-          <p class="eyebrow">The website</p>
-          <h2 id="page-photos-heading">Header photos</h2>
-          <p class="lede">
-            The photos behind the green band at the top of the site&rsquo;s pages. Put approved photos in
-            pools, then choose which pages use which pool, down to one address such as a single training
-            plan (<code>/junior-athletics/#/plan/2026-11-24</code>); a page shows one of its photos at random
-            on each visit. Photos must be on <code>photos.ncan.nz</code>. Only put photos of children in a
-            pool for public pages when the club has consent to publish them.
-          </p>
+        <h2 class="admin-tools__head">Sign-in and the website</h2>
+        <div class="cards">
+          <article class="card">
+            <div class="card__body">
+              <h3><a class="card__link" href="/admin/blocked/">Blocked</a></h3>
+              <p>Stop an email address signing in anywhere on the site.</p>
+            </div>
+          </article>
+          <article class="card">
+            <div class="card__body">
+              <h3><a class="card__link" href="/admin/header-photos/">Header photos</a></h3>
+              <p>The photos at the top of pages: pools, which pages use them, and athletes&rsquo; own photos.</p>
+            </div>
+          </article>
         </div>
-
-        <p class="records-note" id="pp-version"></p>
-
-        <h3 class="pp-heading">Pools</h3>
-        <div id="pp-pools"></div>
-        <form class="mem-add" id="pp-pool-add" novalidate autocomplete="off">
-          <p class="records-field">
-            <label for="pp-pool-name">New pool</label>
-            <input type="text" id="pp-pool-name" placeholder="e.g. junior" maxlength="40">
-          </p>
-          <button type="submit" class="btn btn--ghost">Add the pool</button>
-        </form>
-
-        <h3 class="pp-heading">Pages</h3>
-        <div id="pp-pages"></div>
-        <p class="records-note" id="pp-file-note"></p>
-        <form class="mem-add" id="pp-page-add" novalidate autocomplete="off">
-          <p class="records-field records-field--grow">
-            <label for="pp-page-key">New page or address</label>
-            <input type="text" id="pp-page-key" placeholder="/junior-athletics/ or /junior-athletics/#/plan/* or one plan">
-          </p>
-          <button type="submit" class="btn btn--ghost">Add the page</button>
-        </form>
-        <p class="mem-help">
-          An address with <code>#/&hellip;</code> wins over its page, and one ending in <code>*</code> covers
-          every address that starts that way (<code>#/plan/*</code>: every training plan). The most exact
-          entry is used.
-        </p>
-
-        <h3 class="pp-heading">Which photo shows here?</h3>
-        <p class="records-field records-field--grow pp-test">
-          <label for="pp-test">An address on the site</label>
-          <input type="text" id="pp-test" placeholder="/junior-athletics/#/plan/2026-11-24" autocomplete="off">
-        </p>
-        <div id="pp-test-out"></div>
-
-        <div class="pp-save">
-          <p class="records-field records-field--grow">
-            <label for="pp-note">What changed (optional, kept with the version)</label>
-            <input type="text" id="pp-note" maxlength="300">
-          </p>
-          <button type="button" class="btn btn--accent" id="pp-save" disabled>Save</button>
-          <button type="button" class="btn btn--ghost" id="pp-reload">Load the latest</button>
-          <span class="pp-dirty" id="pp-dirty" hidden>Not saved yet</span>
+        <h2 class="admin-tools__head">Other staff tools</h2>
+        <div class="cards">
+          <article class="card">
+            <div class="card__body">
+              <h3><a class="card__link" href="/coaches-tools/">Coaches&rsquo; tools</a></h3>
+              <p>Training plans, the club champs review, and the other tools coaches use.</p>
+            </div>
+          </article>
+          <article class="card">
+            <div class="card__body">
+              <h3><a class="card__link" href="/committee-tools/">Committee tools</a></h3>
+              <p>The tools the committee uses, and the committee page.</p>
+            </div>
+          </article>
         </div>
-        <p class="access-status" id="pp-status" role="status"></p>
-        <div id="pp-problems"></div>
-
-        <details class="pp-card" id="pp-text-wrap">
-          <summary class="pp-card__head"><strong>Edit as text</strong>
-            <span class="pp-card__meta">all the settings at once, in the layout of the website&rsquo;s page-photos.json</span></summary>
-          <div class="pp-card__body">
-            <textarea id="pp-text" rows="16" spellcheck="false"></textarea>
-            <p class="records-note" id="pp-text-note" hidden>The settings have changed since you typed here.
-              Use this text to replace them, or Show the current settings to drop what you typed.</p>
-            <button type="button" class="btn btn--ghost btn--sm" id="pp-text-apply">Use this text</button>
-            <button type="button" class="btn btn--ghost btn--sm" id="pp-text-reset">Show the current settings</button>
-          </div>
-        </details>
-
-        <details class="pp-card">
-          <summary class="pp-card__head"><strong>Versions</strong>
-            <span class="pp-card__meta">the last 50 saves; going back saves a new version, so it can be undone too</span></summary>
-          <div class="pp-card__body" id="pp-history"></div>
-        </details>
-
-        <h3 class="pp-heading">Athletes&rsquo; own photos</h3>
-        <p class="mem-help">
-          Uploaded on athlete pages by the athlete&rsquo;s contacts in the membership system, and shown
-          at once to the people who can see that page. The newest first.
-        </p>
-        <div id="pp-uploads"></div>
-        <p class="access-status" id="pp-uploads-status" role="status"></p>
       </div>
     </section>
   </main>
@@ -647,7 +320,6 @@
   </script>
 
   <script src="/assets/js/ncan-account.js"></script>
-  <script src="/assets/js/admin-photos.js"></script>
   <script src="/assets/js/admin.js"></script>
 
 </body>
