@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 """Sync the shared head, header and footer into every page.
 
-Edit partials/head.html, partials/header.html or partials/footer.html, then run:
+Edit partials/head.html, partials/header.html, partials/footer.html or
+partials/staff-tools.json (the staff tools cards), then run:
 
     python tools/sync-partials.py
 
@@ -29,10 +30,12 @@ import io, os, re, sys, time
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from pages import pages as site_pages  # noqa: E402
+import staff_tools  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # head first, so a page reads in the order it is written
 PARTIALS = ('head', 'header', 'footer')
+STAFF_TOOLS = None  # partials/staff-tools.json, loaded in main()
 
 
 ATTEMPTS = 5
@@ -117,6 +120,10 @@ def sync(page_path, page):
             html = html[:start] + block + html[end:]
             changed.append(name)
 
+    # the staff tools cards, from partials/staff-tools.json (tools/staff_tools.py)
+    html, tools_changed = staff_tools.apply(html, STAFF_TOOLS)
+    changed += tools_changed
+
     if changed:
         write_atomic(page_path, html)
     print('   %s: %s' % (page, ', '.join(changed) if changed else 'already up to date'))
@@ -124,6 +131,14 @@ def sync(page_path, page):
 
 
 def main():
+    global STAFF_TOOLS
+    STAFF_TOOLS = staff_tools.load()
+    problems = staff_tools.check(STAFF_TOOLS)
+    if problems:
+        print('partials/staff-tools.json has problems:')
+        for p in problems:
+            print('   ! ' + p)
+        return 1
     pages = site_pages(ROOT)
     print('syncing partials into %d page(s):' % len(pages))
     any_changed = False
