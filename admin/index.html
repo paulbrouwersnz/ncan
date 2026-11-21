@@ -93,14 +93,23 @@
         <h1 id="page-heading">Club admin</h1>
         <p class="lede" id="admin-lede">Keeping the athlete pages right, the members list and the website. Every change is recorded with who made it and why, and results are collected again afterwards (5&ndash;10 minutes).</p>
         <p class="account-line" id="account" hidden></p>
-        <p class="admin-view" id="admin-view-row" hidden>
-          <label for="admin-view">View as</label>
-          <select id="admin-view">
-            <option value="admin">An admin</option>
-            <option value="committee">The committee</option>
-            <option value="coach">A coach</option>
-          </select>
-        </p>
+        <div class="admin-view" id="admin-view-row" hidden>
+          <p class="admin-view__row">
+            <label for="admin-view">Act as</label>
+            <select id="admin-view">
+              <option value="">Myself (admin)</option>
+              <option value="coach">A coach</option>
+              <option value="committee">The committee</option>
+              <option value="family">A family&hellip;</option>
+            </select>
+            <span class="admin-view__find" id="admin-act-find" hidden>
+              <label class="visually-hidden" for="admin-act-q">Find a family by email or athlete&rsquo;s name</label>
+              <input type="search" id="admin-act-q" placeholder="Email or athlete&rsquo;s name" autocomplete="off" maxlength="80">
+            </span>
+          </p>
+          <ul class="admin-view__found" id="admin-act-found" hidden></ul>
+          <p class="admin-view__note" id="admin-act-status" role="status">See and use the site as that role does. Anything you change is still recorded as you.</p>
+        </div>
       </div>
     </section>
 
