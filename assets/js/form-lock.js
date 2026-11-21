@@ -8,7 +8,9 @@
    FormLock.running(collect) says whether a results collect is still going,
    from the `collect` part of GET /v1/sources.
 
-   Used by results-sources/index.html; tests in tests/js/form-lock.test.js. */
+   Used by results-sources/index.html (Add a meeting), the members upload on
+   admin/members-list/ and the header photos editor on admin/header-photos/;
+   tests in tests/js/form-lock.test.js. */
 (function (root) {
   'use strict';
 
