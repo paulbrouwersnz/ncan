@@ -2663,7 +2663,7 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 
 @media (prefers-reduced-motion: reduce) {
   .lightbox__btn { transition: none; }
-  .lightbox__download.is-busy { animation: none; opacity: .6; }
+  .lightbox__download.is-busy { animation-duration: 1.8s !important; }   /* a slower pulse, never still */
 }
 
 /* ---------- Calendar agenda ---------- */
@@ -3787,23 +3787,30 @@ html:has(.plan-editor:not([hidden])) { scroll-padding-bottom: 5rem; }
 .src-add__fields { display: flex; flex-wrap: wrap; align-items: flex-end; gap: .8rem; }
 .src-add__status { margin: 0; font-weight: 600; color: var(--heading); }
 .src-add__status:empty { display: none; }
+/* Spinners: one look for every "working" sign (the results sources form and status line,
+   the admin review). With reduced motion the ring doesn't turn; it pulses slowly instead,
+   so it still shows the page is busy without the motion (#191). */
+.src-add.is-locked::before, .is-busy::before, .review-pending__spin {
+  border: 2px solid var(--surface-strong); border-top-color: var(--link); border-radius: 50%;
+  animation: ncan-spin .9s linear infinite; }
+@keyframes ncan-spin { to { transform: rotate(360deg); } }
+@keyframes ncan-pulse { 50% { opacity: .3; } }
+@media (prefers-reduced-motion: reduce) {
+  /* !important to get past the site-wide reduced-motion reset, which stops every animation */
+  .src-add.is-locked::before, .is-busy::before, .review-pending__spin {
+    animation: ncan-pulse 1.8s ease-in-out infinite; animation-duration: 1.8s !important; }
+}
 /* locked while a meeting is checked, added or its results collected (form-lock.js):
    the form is shaded with a spinner over it; the status line stays readable above */
 .src-add.is-locked { position: relative; cursor: progress; }
 .src-add.is-locked::after { content: ""; position: absolute; inset: -.6rem; z-index: 1;
   background: color-mix(in srgb, var(--surface-tint) 65%, transparent); border-radius: var(--radius-sm); }
 .src-add.is-locked::before { content: ""; position: absolute; z-index: 2; top: 50%; left: 50%;
-  width: 2.4rem; height: 2.4rem; margin: -1.2rem 0 0 -1.2rem; }
-.src-add.is-locked::before, .is-busy::before { border: 3px solid var(--surface-strong);
-  border-top-color: var(--link); border-radius: 50%; animation: review-spin .9s linear infinite; }
+  width: 2.4rem; height: 2.4rem; margin: -1.2rem 0 0 -1.2rem; border-width: 3px; }
 .src-add.is-locked > .src-add__status { position: relative; z-index: 2; }
 /* a small spinner before a status line while it's working */
 .is-busy::before { content: ""; display: inline-block; vertical-align: -.2em;
   width: 1em; height: 1em; margin-right: .5em; border-width: 2px; }
-@media (prefers-reduced-motion: reduce) {
-  .src-add.is-locked::before, .is-busy::before { animation: none; border-top-color: var(--surface-strong);
-    border-right-color: var(--link); }   /* still: a quarter ring, no spinning */
-}
 .src-remove { margin: .2rem 0 1rem; }
 .src-remove__ask { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem .6rem; max-width: 40rem; }
 .src-remove [hidden] { display: none; }   /* a .btn sets its own display */
@@ -3912,10 +3919,7 @@ html:has(.plan-editor:not([hidden])) { scroll-padding-bottom: 5rem; }
   padding: .7rem .9rem; border-radius: var(--radius-sm); background: var(--surface-tint); color: var(--heading);
   font-weight: 600; }
 .review-pending[hidden] { display: none; }
-.review-pending__spin { flex: none; width: 1rem; height: 1rem; border: 2px solid var(--surface-strong);
-  border-top-color: var(--link); border-radius: 50%; animation: review-spin .9s linear infinite; }
-@keyframes review-spin { to { transform: rotate(360deg); } }
-@media (prefers-reduced-motion: reduce) { .review-pending__spin { animation: none; } }
+.review-pending__spin { flex: none; width: 1rem; height: 1rem; }
 .review-item__text { margin: 0 0 .6rem; }
 .review-item__acts { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem 1rem; }
 .review-form { margin-top: .8rem; }
