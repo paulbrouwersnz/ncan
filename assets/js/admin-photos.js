@@ -11,9 +11,10 @@
   or page here replaces the file's of the same name (the gallery's album pages
   take their cover photo from the file).
 
-  A page that picks photos as it loads shows a change within five minutes; a
-  page that had none before gets its photo at the next publish (within the half
-  hour).
+  A page that already has header photos picks them as it loads, so it shows a
+  change within 5 minutes (the API's reply is cached for up to 300 seconds). A
+  page getting photos for the first time gets them at the next automatic publish
+  (pages.yml, at 11 and 41 past each hour), usually within 30 minutes.
 
   Also here: the athletes' own photos most recently uploaded, each with Remove.
 
@@ -399,7 +400,7 @@
     NCAN.send('/admin/page-photos', { settings: draft, since: version, note: $('pp-note').value.trim() }).then(function (r) {
       if (r.status === 200) {
         $('pp-note').value = '';
-        say('Saved as version ' + r.body.version + '. Pages that pick photos show it within five minutes; others at the next publish (within the half hour).');
+        say('Saved as version ' + r.body.version + '. Pages that already have header photos update within 5 minutes. Pages getting photos for the first time update at the next automatic publish, usually within 30 minutes.');
         return load();
       }
       $('pp-save').disabled = false;
