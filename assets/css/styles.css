@@ -753,10 +753,15 @@ ul { margin: 0; padding: 0; list-style: none; }
 .card__link:hover { color: var(--accent); }
 
 /* /admin/: the tools, in groups; "Needs a look" shows how many are waiting */
-.admin-tools__head { font-size: 1.15rem; margin: 2.2rem 0 1rem; }
-.admin-tools__head:first-child { margin-top: 0; }
-.admin-tools__head + .admin-tools__note { margin: -.6rem 0 1rem; }
+/* each group carries its lowest role (data-lowest); admin.js hides the groups
+   the signed-in role does not reach, so space them by the visible ones only */
+.admin-tools__head { font-size: 1.15rem; margin: 0 0 1rem; }
+.admin-tools__group:not([hidden]) ~ .admin-tools__group:not([hidden]) { margin-top: 2.2rem; }
 .admin-tools__note { color: var(--text-soft); font-size: .95rem; margin: .8rem 0 0; }
+/* an admin's "View as" switch, in the green band */
+.admin-view { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; margin: .8rem 0 0; font-size: .95rem; }
+.admin-view select { font: inherit; padding: .25rem .5rem; border-radius: 6px; border: 1px solid rgba(255,255,255,.5);
+  background: #fff; color: #14261f; }
 .admin-count { display: inline-block; min-width: 1.7rem; margin-left: .5rem; padding: .05rem .5rem;
   border-radius: 999px; font-size: .8rem; font-weight: 700; line-height: 1.5; text-align: center;
   vertical-align: .15em; background: var(--yellow-400); color: var(--green-900, #0b3b2e); }

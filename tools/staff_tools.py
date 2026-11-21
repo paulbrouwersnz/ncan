@@ -1,18 +1,16 @@
 # -*- coding: utf-8 -*-
 """The staff tools cards, written from one list (partials/staff-tools.json).
 
-Each staff page carries marker comments, and tools/sync-partials.py replaces
-what sits between them with the cards for that page:
+/admin/ is the one staff tools page, for coaches, the committee and admins.
+It carries marker comments, and tools/sync-partials.py replaces what sits
+between them with every group of cards:
 
-    <!-- @tools:admin -->      ... generated ...  <!-- /@tools:admin -->
-    <!-- @tools:committee -->  ... generated ...  <!-- /@tools:committee -->
-    <!-- @tools:coaches -->    ... generated ...  <!-- /@tools:coaches -->
+    <!-- @tools:admin -->  ... generated ...  <!-- /@tools:admin -->
 
-A page shows every group whose lowest role it reaches: /admin/ every group,
-/committee-tools/ Committee tools then Coaches' tools, /coaches-tools/ only
-Coaches' tools. A tool for a higher role is never listed on a lower role's
-page, not even greyed out. The pages still check the signed-in role
-(staff-tools.js, admin.js); the cards only point the way.
+Each group is wrapped in <div class="admin-tools__group" data-lowest="...">,
+and admin.js shows only the groups the signed-in role reaches (an admin can
+"View as" a coach or the committee). Hiding is only for tidiness: each tool's
+own page, and the club's API behind it, still refuse anyone below its role.
 """
 import html
 import io
@@ -23,7 +21,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LIST = os.path.join(ROOT, 'partials', 'staff-tools.json')
 RANK = ['coach', 'committee', 'admin']
 # each marked page and the role it is for
-PAGES = {'admin': 'admin', 'committee': 'committee', 'coaches': 'coach'}
+PAGES = {'admin': 'admin'}
 INDENT = '        '
 
 
@@ -105,24 +103,20 @@ def card(t, pad):
 
 
 def render(data, page, nl='\n'):
-    """The markup between a page's markers (page: admin, committee or coaches)."""
+    """The markup between a page's markers: every group its role reaches, each
+    wrapped with its lowest role for admin.js to show or hide."""
     role = PAGES[page]
-    shown = groups_for(data, role)
     lines = []
-    for g, tools in shown:
-        if len(shown) == 1:
-            # one group: the page's own heading already names it
-            lines.append(INDENT + '<h2 id="tools-heading" class="visually-hidden">Tools</h2>')
-        else:
-            lines.append(INDENT + '<h2 class="admin-tools__head">%s</h2>' % esc(g['name']))
-            # on /admin/ only, say who else sees these groups
-            if g.get('also') and role == 'admin' and g['lowest'] != 'admin':
-                lines.append(INDENT + '<p class="admin-tools__note">%s</p>' % esc(g['also']))
-        lines.append(INDENT + '<div class="cards">')
-        lines.extend(card(t, INDENT + '  ') for t in tools)
-        lines.append(INDENT + '</div>')
+    for g, tools in groups_for(data, role):
+        lines.append(INDENT + '<div class="admin-tools__group" data-lowest="%s">' % esc(g['lowest']))
+        pad = INDENT + '  '
+        lines.append(pad + '<h2 class="admin-tools__head">%s</h2>' % esc(g['name']))
+        lines.append(pad + '<div class="cards">')
+        lines.extend(card(t, pad + '  ') for t in tools)
+        lines.append(pad + '</div>')
         if g.get('more'):
-            lines.append(INDENT + '<p class="admin-tools__note">%s</p>' % esc(g['more']))
+            lines.append(pad + '<p class="admin-tools__note">%s</p>' % esc(g['more']))
+        lines.append(INDENT + '</div>')
     return nl + nl.join(nl.join(lines).split('\n')) + nl + INDENT
 
 

@@ -1,14 +1,12 @@
 {
-  "about": "Every staff tool, described once. tools/sync-partials.py writes the cards into /admin/, /committee-tools/ and /coaches-tools/ between <!-- @tools:PAGE --> markers. 'lowest' is the lowest role that may use the tool (coach, committee or admin); 'group' sets its section; 'count' adds a waiting-count badge (id admin-count-<count>). Order here is the order on the pages.",
+  "about": "Every staff tool, described once. tools/sync-partials.py writes the cards into /admin/ between <!-- @tools:admin --> markers; admin.js shows each person only the groups their role reaches. 'lowest' is the lowest role that may use the tool (coach, committee or admin); 'group' sets its section; 'count' adds a waiting-count badge (id admin-count-<count>). Order here is the order on the pages.",
   "groups": [
     {"name": "Athlete pages", "lowest": "admin"},
     {"name": "Members", "lowest": "admin"},
     {"name": "Sign-in and the website", "lowest": "admin"},
     {"name": "Committee tools", "lowest": "committee",
-     "more": "More committee tools are on the way.",
-     "also": "Committee members see these on their own page too."},
-    {"name": "Coaches’ tools", "lowest": "coach",
-     "also": "Coaches and the committee see these on their own page too."}
+     "more": "More committee tools are on the way."},
+    {"name": "Coaches’ tools", "lowest": "coach"}
   ],
   "tools": [
     {"title": "Needs a look", "href": "/admin/review/", "lowest": "admin", "group": "Athlete pages", "count": "review",

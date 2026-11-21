@@ -33,9 +33,9 @@
 <link rel="canonical" href="https://ncan.nz/admin/">
 
 <title>Club Admin &mdash; North Canterbury Athletic Club</title>
-<meta name="description" content="For North Canterbury Athletic Club administrators: members, corrections and access.">
+<meta name="description" content="For North Canterbury Athletic Club staff: the tools for coaches, the committee and administrators.">
 <meta property="og:title" content="Club Admin &mdash; North Canterbury Athletic Club">
-<meta property="og:description" content="For club administrators.">
+<meta property="og:description" content="For club staff.">
 </head>
 <body>
 
@@ -89,10 +89,18 @@
           <a href="/">Home</a> <span aria-hidden="true">/</span>
           <span>Club admin</span>
         </nav>
-        <p class="eyebrow eyebrow--light">For club administrators</p>
+        <p class="eyebrow eyebrow--light" id="admin-eyebrow">For club staff</p>
         <h1 id="page-heading">Club admin</h1>
-        <p class="lede">Keeping the athlete pages right, the members list and the website. Every change is recorded with who made it and why, and results are collected again afterwards (5&ndash;10 minutes).</p>
+        <p class="lede" id="admin-lede">Keeping the athlete pages right, the members list and the website. Every change is recorded with who made it and why, and results are collected again afterwards (5&ndash;10 minutes).</p>
         <p class="account-line" id="account" hidden></p>
+        <p class="admin-view" id="admin-view-row" hidden>
+          <label for="admin-view">View as</label>
+          <select id="admin-view">
+            <option value="admin">An admin</option>
+            <option value="committee">The committee</option>
+            <option value="coach">A coach</option>
+          </select>
+        </p>
       </div>
     </section>
 
@@ -104,113 +112,121 @@
     <section class="section" id="admin-tools" aria-labelledby="page-heading" hidden>
       <div class="wrap">
         <!-- @tools:admin -->
-        <h2 class="admin-tools__head">Athlete pages</h2>
-        <div class="cards">
-          <article class="card">
-            <div class="card__body">
-              <h3><a class="card__link" href="/admin/review/">Needs a look</a> <span class="admin-count" id="admin-count-review" hidden></span></h3>
-              <p>What the last collect couldn’t settle by itself. Fix each one, or dismiss it.</p>
-            </div>
-          </article>
-          <article class="card">
-            <div class="card__body">
-              <h3><a class="card__link" href="/admin/merges/">Merges</a></h3>
-              <p>Join athletic.net numbers that are one athlete, or keep them apart.</p>
-            </div>
-          </article>
-          <article class="card">
-            <div class="card__body">
-              <h3><a class="card__link" href="/admin/corrections/">Corrections</a></h3>
-              <p>Every correction made on the website, with undo, and taking an athlete off the site.</p>
-            </div>
-          </article>
-          <article class="card">
-            <div class="card__body">
-              <h3><a class="card__link" href="/admin/addresses/">Athlete addresses</a></h3>
-              <p>Each athlete page’s addresses: add one, choose the primary, or retire one.</p>
-            </div>
-          </article>
+        <div class="admin-tools__group" data-lowest="admin">
+          <h2 class="admin-tools__head">Athlete pages</h2>
+          <div class="cards">
+            <article class="card">
+              <div class="card__body">
+                <h3><a class="card__link" href="/admin/review/">Needs a look</a> <span class="admin-count" id="admin-count-review" hidden></span></h3>
+                <p>What the last collect couldn’t settle by itself. Fix each one, or dismiss it.</p>
+              </div>
+            </article>
+            <article class="card">
+              <div class="card__body">
+                <h3><a class="card__link" href="/admin/merges/">Merges</a></h3>
+                <p>Join athletic.net numbers that are one athlete, or keep them apart.</p>
+              </div>
+            </article>
+            <article class="card">
+              <div class="card__body">
+                <h3><a class="card__link" href="/admin/corrections/">Corrections</a></h3>
+                <p>Every correction made on the website, with undo, and taking an athlete off the site.</p>
+              </div>
+            </article>
+            <article class="card">
+              <div class="card__body">
+                <h3><a class="card__link" href="/admin/addresses/">Athlete addresses</a></h3>
+                <p>Each athlete page’s addresses: add one, choose the primary, or retire one.</p>
+              </div>
+            </article>
+          </div>
         </div>
-        <h2 class="admin-tools__head">Members</h2>
-        <div class="cards">
-          <article class="card">
-            <div class="card__body">
-              <h3><a class="card__link" href="/admin/members-list/">Members list</a></h3>
-              <p>Update the members list from the GameDay exports, and see everything held about each member.</p>
-            </div>
-          </article>
-          <article class="card">
-            <div class="card__body">
-              <h3><a class="card__link" href="/admin/membership/">Membership changes</a></h3>
-              <p>Joined, left or a member for a season, on top of the GameDay list so imports don’t undo it.</p>
-            </div>
-          </article>
+        <div class="admin-tools__group" data-lowest="admin">
+          <h2 class="admin-tools__head">Members</h2>
+          <div class="cards">
+            <article class="card">
+              <div class="card__body">
+                <h3><a class="card__link" href="/admin/members-list/">Members list</a></h3>
+                <p>Update the members list from the GameDay exports, and see everything held about each member.</p>
+              </div>
+            </article>
+            <article class="card">
+              <div class="card__body">
+                <h3><a class="card__link" href="/admin/membership/">Membership changes</a></h3>
+                <p>Joined, left or a member for a season, on top of the GameDay list so imports don’t undo it.</p>
+              </div>
+            </article>
+          </div>
         </div>
-        <h2 class="admin-tools__head">Sign-in and the website</h2>
-        <div class="cards">
-          <article class="card">
-            <div class="card__body">
-              <h3><a class="card__link" href="/admin/blocked/">Blocked</a></h3>
-              <p>Stop an email address signing in anywhere on the site.</p>
-            </div>
-          </article>
-          <article class="card">
-            <div class="card__body">
-              <h3><a class="card__link" href="/admin/header-photos/">Header photos</a></h3>
-              <p>The photos at the top of pages: pools, which pages use them, and athletes’ own photos.</p>
-            </div>
-          </article>
+        <div class="admin-tools__group" data-lowest="admin">
+          <h2 class="admin-tools__head">Sign-in and the website</h2>
+          <div class="cards">
+            <article class="card">
+              <div class="card__body">
+                <h3><a class="card__link" href="/admin/blocked/">Blocked</a></h3>
+                <p>Stop an email address signing in anywhere on the site.</p>
+              </div>
+            </article>
+            <article class="card">
+              <div class="card__body">
+                <h3><a class="card__link" href="/admin/header-photos/">Header photos</a></h3>
+                <p>The photos at the top of pages: pools, which pages use them, and athletes’ own photos.</p>
+              </div>
+            </article>
+          </div>
         </div>
-        <h2 class="admin-tools__head">Committee tools</h2>
-        <p class="admin-tools__note">Committee members see these on their own page too.</p>
-        <div class="cards">
-          <article class="card">
-            <div class="card__body">
-              <h3><a class="card__link" href="/committee/">Club committee</a></h3>
-              <p>The committee page: who’s on it, documents and links, and the annual general meetings.</p>
-            </div>
-          </article>
+        <div class="admin-tools__group" data-lowest="committee">
+          <h2 class="admin-tools__head">Committee tools</h2>
+          <div class="cards">
+            <article class="card">
+              <div class="card__body">
+                <h3><a class="card__link" href="/committee/">Club committee</a></h3>
+                <p>The committee page: who’s on it, documents and links, and the annual general meetings.</p>
+              </div>
+            </article>
+          </div>
+          <p class="admin-tools__note">More committee tools are on the way.</p>
         </div>
-        <p class="admin-tools__note">More committee tools are on the way.</p>
-        <h2 class="admin-tools__head">Coaches’ tools</h2>
-        <p class="admin-tools__note">Coaches and the committee see these on their own page too.</p>
-        <div class="cards">
-          <article class="card">
-            <div class="card__body">
-              <h3><a class="card__link" href="/junior-athletics/#training">Training plans</a></h3>
-              <p>Write, schedule and release the junior training plans, or start from the latest one.</p>
-            </div>
-          </article>
-          <article class="card">
-            <div class="card__body">
-              <h3><a class="card__link" href="/club-champs/#champs-review">Club champs review</a></h3>
-              <p>Check and confirm club champs results before they count in the standings.</p>
-            </div>
-          </article>
-          <article class="card">
-            <div class="card__body">
-              <h3><a class="card__link" href="/athletes/">Athletes</a></h3>
-              <p>Every athlete’s page, with their results and personal bests.</p>
-            </div>
-          </article>
-          <article class="card">
-            <div class="card__body">
-              <h3><a class="card__link" href="/results-sources/">Results sources</a></h3>
-              <p>The meetings the athlete pages are built from. Add a meeting once its results are complete.</p>
-            </div>
-          </article>
-          <article class="card">
-            <div class="card__body">
-              <h3><a class="card__link" href="/resources/">Resources</a></h3>
-              <p>Coaching, officiating and safeguarding resources.</p>
-            </div>
-          </article>
-          <article class="card">
-            <div class="card__body">
-              <h3><a class="card__link" href="/calendar/">Calendar</a></h3>
-              <p>Club and Athletics Canterbury events for the season.</p>
-            </div>
-          </article>
+        <div class="admin-tools__group" data-lowest="coach">
+          <h2 class="admin-tools__head">Coaches’ tools</h2>
+          <div class="cards">
+            <article class="card">
+              <div class="card__body">
+                <h3><a class="card__link" href="/junior-athletics/#training">Training plans</a></h3>
+                <p>Write, schedule and release the junior training plans, or start from the latest one.</p>
+              </div>
+            </article>
+            <article class="card">
+              <div class="card__body">
+                <h3><a class="card__link" href="/club-champs/#champs-review">Club champs review</a></h3>
+                <p>Check and confirm club champs results before they count in the standings.</p>
+              </div>
+            </article>
+            <article class="card">
+              <div class="card__body">
+                <h3><a class="card__link" href="/athletes/">Athletes</a></h3>
+                <p>Every athlete’s page, with their results and personal bests.</p>
+              </div>
+            </article>
+            <article class="card">
+              <div class="card__body">
+                <h3><a class="card__link" href="/results-sources/">Results sources</a></h3>
+                <p>The meetings the athlete pages are built from. Add a meeting once its results are complete.</p>
+              </div>
+            </article>
+            <article class="card">
+              <div class="card__body">
+                <h3><a class="card__link" href="/resources/">Resources</a></h3>
+                <p>Coaching, officiating and safeguarding resources.</p>
+              </div>
+            </article>
+            <article class="card">
+              <div class="card__body">
+                <h3><a class="card__link" href="/calendar/">Calendar</a></h3>
+                <p>Club and Athletics Canterbury events for the season.</p>
+              </div>
+            </article>
+          </div>
         </div>
         <!-- /@tools:admin -->
       </div>
