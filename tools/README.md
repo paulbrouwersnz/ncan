@@ -262,6 +262,7 @@ Each `tests/js/<name>.test.js` tests the helpers in `assets/js/<name>.js` (or
 | `form-lock.test.js` | locking a form while it works (below) |
 | `gallery-viewer.test.js` | the photo viewer's download button |
 | `meeting-links.test.js` | a meeting's other links on the results sources and athlete pages |
+| `calendar-edit.test.js` | the calendar editor: form to event and back, its checks, the words for dates and repeats |
 
 `tests/py/test_page_photos.py` tests the header photo checks
 (`python -m unittest discover -s tests/py`). Add a test file with any new helper
@@ -709,7 +710,32 @@ python tools/build-calendar-list.py --page-only        # only rewrite the page l
 ```
 
 The event calendars themselves (`events-*.ics`, `other-meetings.ics`) are
-edited by hand.
+edited by hand, until the website switches to the calendar editor below.
+
+### The calendar editor (`/admin/calendars/`)
+
+Coaches, the committee and administrators add, change and cancel events in the
+club's calendars at `/admin/calendars/` (the **Calendars** card on the staff
+tools page). The club's API keeps them (`private/calendars.json` in ncan-api;
+its `docs/API.md`, "Calendars"): each event is stored once with the calendars
+it shows in, and every save is a version, the last 50 kept, so **Versions** on
+the page can go back. Administrators also get **Calendar settings**: change a
+calendar's name, colour, kind, order, description or whether it is public; make
+a new one (its subscription name becomes `<name>.ics` and never changes); delete
+one; and how many years of past events the feeds keep.
+
+- `assets/js/admin-calendars.js` is the page; `assets/js/calendar-edit.js` holds
+  its pure parts (form to event and back, the checks, the words for dates and
+  repeats), tested by `tests/js/calendar-edit.test.js`.
+- Each change sends the version the page loaded. The API refuses only if *that*
+  event changed since, and the page offers **Load the latest**.
+- The address names the calendar and event: `/admin/calendars/#/events-senior`,
+  or `#/events-senior/<event id>` to open one event's editor.
+- **Not on the website yet** (calendar plan, step 4): the calendar page and
+  phones that subscribe still read the published files in `assets/calendar/`.
+  The yellow note at the top of the editor (`#cal-switch-note`) comes out when
+  they switch. Until then, a change to a published file needs the API's copy
+  updating too (`ncan import-calendars <folder> --replace` in ncan-api).
 
 ## Children's club records
 

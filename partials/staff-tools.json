@@ -37,7 +37,7 @@
      "blurb": "The meetings the athlete pages are built from. Add a meeting once its results are complete."},
     {"title": "Resources", "href": "/resources/", "lowest": "coach", "group": "Coaches’ tools",
      "blurb": "Coaching, officiating and safeguarding resources."},
-    {"title": "Calendar", "href": "/calendar/", "lowest": "coach", "group": "Coaches’ tools",
-     "blurb": "Club and Athletics Canterbury events for the season."}
+    {"title": "Calendars", "href": "/admin/calendars/", "lowest": "coach", "group": "Coaches’ tools",
+     "blurb": "Add, change or cancel events in the club’s calendars, and choose which calendars each one shows in."}
   ]
 }

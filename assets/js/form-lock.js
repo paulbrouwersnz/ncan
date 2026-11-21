@@ -9,7 +9,8 @@
    from the `collect` part of GET /v1/sources.
 
    Used by results-sources/index.html (Add a meeting), the members upload on
-   admin/members-list/ and the header photos editor on admin/header-photos/;
+   admin/members-list/, the header photos editor on admin/header-photos/ and the
+   calendar editor on admin/calendars/;
    tests in tests/js/form-lock.test.js. */
 (function (root) {
   'use strict';

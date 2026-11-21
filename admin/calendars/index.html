@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en-NZ">
+
+<head>
+<!-- @partial:head -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0B3B2E">
+<!-- the site has its own dark mode: the Dark Reader browser extension leaves it alone -->
+<meta name="darkreader-lock">
+
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://ncan.nz/assets/img/share.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="North Canterbury Athletic Club">
+<meta property="og:locale" content="en_NZ">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" href="/assets/img/logo.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="preload" href="/assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/archivo-variable.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/css/styles.css">
+<script src="/assets/js/page-photos.js" defer></script>
+<script src="/assets/js/account-link.js" defer></script>
+<!-- /@partial:head -->
+
+<meta name="robots" content="noindex">
+<link rel="canonical" href="https://ncan.nz/admin/calendars/">
+
+<title>Calendars &mdash; Staff tools &mdash; North Canterbury Athletic Club</title>
+<meta name="description" content="For North Canterbury Athletic Club coaches, committee and administrators: edit the club calendars.">
+<meta property="og:title" content="Calendars &mdash; Staff tools &mdash; North Canterbury Athletic Club">
+<meta property="og:description" content="For club staff.">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<!-- @partial:header -->
+<!-- ================= Header ================= -->
+<header class="site-header" id="site-header">
+  <div class="wrap site-header__bar">
+    <a class="brand" href="/" aria-label="North Canterbury Athletic Club — home">
+      <img class="brand__logo" src="/assets/img/logo.svg" alt="" width="888" height="508">
+      <img class="brand__logo-dark" src="/assets/img/logo-dark.svg" alt="" width="888" height="508">
+      <span class="brand__name">
+        North Canterbury<br>Athletic Club
+      </span>
+    </a>
+
+    <button class="nav-toggle" type="button" id="nav-toggle" aria-expanded="false" aria-controls="primary-nav">
+      <span class="nav-toggle__bars" aria-hidden="true"><i></i></span>
+      Menu
+    </button>
+
+    <nav class="nav" id="primary-nav" aria-label="Primary">
+      <ul>
+        <li><a href="/#why">Why NCAN</a></li>
+        <li><a href="/#programmes">Programmes</a></li>
+        <li><a href="/#training">Training</a></li>
+        <li><a href="/calendar/">Calendar</a></li>
+        <li><a href="/gallery/">Gallery</a></li>
+        <li><a href="/#contact">Contact</a></li>
+        <li class="nav__account"><a href="/sign-in/" data-account-link>Sign in</a></li>
+        <li class="nav__cta"><a class="btn btn--accent" href="/#join">Join the club</a></li>
+      </ul>
+    </nav>
+
+    <div class="site-header__cta">
+      <a class="site-header__account" href="/sign-in/" data-account-link>Sign in</a>
+      <a class="btn btn--accent btn--sm" href="/#join">Join the club</a>
+    </div>
+  </div>
+</header>
+<!-- /@partial:header -->
+
+
+  <main id="main">
+    <span id="top"></span>
+    <section class="page-head" aria-labelledby="page-heading">
+      <div class="wrap">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="/">Home</a> <span aria-hidden="true">/</span>
+          <a href="/admin/">Staff tools</a> <span aria-hidden="true">/</span>
+          <span>Calendars</span>
+        </nav>
+        <p class="eyebrow eyebrow--light">Coaches&rsquo; tools</p>
+        <h1 id="page-heading">Calendars</h1>
+        <p class="lede">The club&rsquo;s calendars: add, change or cancel events, and choose which calendars each one shows in. Coaches, the committee and administrators can edit events; administrators can also make and change the calendars themselves. Everyone sees them on <a href="/calendar/">the calendar page</a>, and phones that subscribe get each change.</p>
+        <p class="account-line" id="account" hidden></p>
+      </div>
+    </section>
+    <!-- the card inside a plain wrap: a .signin card that is itself the .wrap loses the
+         wrap's centring and sits against the left edge -->
+    <div class="wrap"><div id="cal-signin" class="admin-gate" hidden></div></div>
+    <p class="wrap admin-gate records-status" id="cal-status" role="status">Loading&hellip;</p>
+    <!-- ================= Calendars (assets/js/admin-calendars.js) ================= -->
+    <section class="section cal-ed-section" id="cal-editor" aria-labelledby="page-heading" hidden>
+      <div class="wrap">
+        <!-- taken out once the website reads its calendars from the API (calendar plan, step 4) -->
+        <p class="cal-switch-note" id="cal-switch-note"><strong>Not on the website yet.</strong>
+          Changes saved here are kept by the club&rsquo;s results service, but the calendar page and
+          phones that subscribe still use the published calendar files until the website switches over.</p>
+        <div class="cal-ed">
+          <nav class="cal-ed__cals" aria-label="Calendars">
+            <ul class="cal-list" id="cal-list"></ul>
+          </nav>
+          <div class="cal-ed__main" id="cal-main">
+            <div class="cal-ed__head">
+              <h2 class="cal-ed__name" id="cal-name"></h2>
+              <p class="cal-ed__about" id="cal-about"></p>
+            </div>
+            <div class="cal-ed__bar">
+              <p class="records-field">
+                <label for="cal-which">Show</label>
+                <select id="cal-which">
+                  <option value="upcoming">Upcoming</option>
+                  <option value="past">Past</option>
+                  <option value="all">All</option>
+                </select>
+              </p>
+              <p class="records-field records-field--grow">
+                <label for="cal-search">Search</label>
+                <input type="search" id="cal-search" placeholder="a title or place" autocomplete="off">
+              </p>
+              <button type="button" class="btn btn--accent" id="cal-add">Add an event</button>
+            </div>
+            <p class="access-status" id="cal-list-status" role="status"></p>
+            <ul class="cal-events" id="cal-events"></ul>
+          </div>
+        </div>
+
+        <details class="pp-card" id="cal-admin" hidden>
+          <summary class="pp-card__head"><strong>Calendar settings</strong>
+            <span class="pp-card__meta">administrators: this calendar&rsquo;s name, colour and who sees it; new calendars; how long past events stay</span></summary>
+          <div class="pp-card__body">
+            <form class="cal-cal" id="cal-cal-form" novalidate autocomplete="off">
+              <h3 class="cal-sub" id="cal-cal-heading">This calendar</h3>
+              <div class="cal-row">
+                <p class="records-field records-field--grow"><label for="cc-name">Name</label>
+                  <input type="text" id="cc-name" maxlength="80" required></p>
+                <p class="records-field cal-colour"><label for="cc-colour">Colour</label>
+                  <input type="color" id="cc-colour"></p>
+                <p class="records-field"><label for="cc-kind">Kind</label>
+                  <select id="cc-kind"><option value="events">Events</option><option value="training">Training</option></select></p>
+                <p class="records-field cal-order"><label for="cc-order">Order</label>
+                  <input type="number" id="cc-order" min="0" max="9999" step="1"></p>
+              </div>
+              <p class="ath-check"><input type="checkbox" id="cc-public"><label for="cc-public">Public: on the calendar page and open to subscribe (untick for staff only)</label></p>
+              <p class="records-field"><label for="cc-description">Description</label>
+                <textarea id="cc-description" rows="3" maxlength="1000"></textarea></p>
+              <p class="records-note cal-slug" id="cc-slug"></p>
+              <div class="cal-actions">
+                <button type="submit" class="btn btn--ghost" id="cc-save">Save calendar changes</button>
+                <button type="button" class="btn btn--ghost cal-danger" id="cc-delete">Delete this calendar&hellip;</button>
+              </div>
+              <p class="access-status" id="cc-status" role="status"></p>
+            </form>
+            <form class="cal-cal" id="cal-new-form" novalidate autocomplete="off">
+              <h3 class="cal-sub">A new calendar</h3>
+              <div class="cal-row">
+                <p class="records-field records-field--grow"><label for="cn-name">Name</label>
+                  <input type="text" id="cn-name" maxlength="80" placeholder="e.g. Masters events"></p>
+                <p class="records-field records-field--grow"><label for="cn-slug">Subscription name</label>
+                  <input type="text" id="cn-slug" maxlength="61" placeholder="events-masters" spellcheck="false"></p>
+                <p class="records-field cal-colour"><label for="cn-colour">Colour</label>
+                  <input type="color" id="cn-colour" value="#12684d"></p>
+                <p class="records-field"><label for="cn-kind">Kind</label>
+                  <select id="cn-kind"><option value="events">Events</option><option value="training">Training</option></select></p>
+              </div>
+              <p class="ath-check"><input type="checkbox" id="cn-public" checked><label for="cn-public">Public</label></p>
+              <p class="mem-help">The subscription name becomes its address, <code>https://ncan.nz/assets/calendar/<span id="cn-file">name</span>.ics</code>, and can&rsquo;t change once made: phones that subscribe keep using it.</p>
+              <div class="cal-actions"><button type="submit" class="btn btn--ghost" id="cn-make">Make the calendar</button></div>
+              <p class="access-status" id="cn-status" role="status"></p>
+            </form>
+            <form class="cal-cal" id="cal-set-form" novalidate autocomplete="off">
+              <h3 class="cal-sub">Past events</h3>
+              <div class="cal-row">
+                <p class="records-field cal-order"><label for="cs-years">Years kept</label>
+                  <input type="number" id="cs-years" min="1" max="20" step="1"></p>
+                <button type="submit" class="btn btn--ghost" id="cs-save">Save</button>
+              </div>
+              <p class="mem-help">How many years of past events the calendar page and subscriptions keep. Older ones stay here, under Past.</p>
+              <p class="access-status" id="cs-status" role="status"></p>
+            </form>
+          </div>
+        </details>
+
+        <details class="pp-card" id="cal-versions">
+          <summary class="pp-card__head"><strong>Versions</strong>
+            <span class="pp-card__meta">the last 50 saves, of every calendar; going back saves a new version, so it can be undone too</span></summary>
+          <div class="pp-card__body">
+            <ul class="cal-history" id="cal-history"></ul>
+            <p class="access-status" id="cal-history-status" role="status"></p>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- one event: locked while it is sent (form-lock.js) -->
+    <dialog class="cal-dialog" id="cal-dialog" aria-labelledby="ce-heading">
+      <form class="cal-form lock-quiet" id="cal-form" novalidate autocomplete="off">
+        <div class="cal-form__head">
+          <h2 id="ce-heading">Event</h2>
+          <button type="button" class="cal-form__close" id="ce-close" aria-label="Close">&times;</button>
+        </div>
+        <p class="cal-form__meta" id="ce-meta"></p>
+        <p class="records-field"><label for="ce-title">Title</label>
+          <input type="text" id="ce-title" maxlength="120" required></p>
+        <p class="ath-check"><input type="checkbox" id="ce-allday"><label for="ce-allday">All day</label></p>
+        <div class="cal-row">
+          <p class="records-field"><label for="ce-start-date" id="ce-start-label">Starts</label>
+            <input type="date" id="ce-start-date" required></p>
+          <p class="records-field cal-time"><label for="ce-start-time">Time</label>
+            <input type="time" id="ce-start-time" step="300"></p>
+          <p class="records-field"><label for="ce-end-date" id="ce-end-label">Ends</label>
+            <input type="date" id="ce-end-date"></p>
+          <p class="records-field cal-time"><label for="ce-end-time">Time</label>
+            <input type="time" id="ce-end-time" step="300"></p>
+        </div>
+        <p class="records-field"><label for="ce-location">Where</label>
+          <input type="text" id="ce-location" maxlength="200" placeholder="e.g. Ng&amacr; Puna Wai Sports Hub, Augustine Drive, Christchurch"></p>
+        <p class="records-field"><label for="ce-description">Description</label>
+          <textarea id="ce-description" rows="5" maxlength="2000" aria-describedby="ce-description-count"></textarea>
+          <span class="cal-count" id="ce-description-count"></span></p>
+        <p class="records-field"><label for="ce-link">Link</label>
+          <input type="url" id="ce-link" maxlength="400" placeholder="https://" spellcheck="false"></p>
+        <fieldset class="cal-fieldset">
+          <legend>Show in calendars</legend>
+          <div class="ath-checks" id="ce-calendars"></div>
+        </fieldset>
+        <fieldset class="cal-fieldset">
+          <legend>Repeats</legend>
+          <p class="records-field"><label for="ce-freq" class="visually-hidden">How often</label>
+            <select id="ce-freq">
+              <option value="">Doesn&rsquo;t repeat</option>
+              <option value="weekly">Every week</option>
+              <option value="fortnightly">Every second week</option>
+              <option value="monthly">Every month, on the same date</option>
+            </select></p>
+          <div class="ath-checks" id="ce-days" aria-label="On these days" role="group"></div>
+          <div class="cal-row cal-ends" id="ce-ends">
+            <p class="ath-check"><input type="radio" name="ce-ends" id="ce-ends-until" value="until"><label for="ce-ends-until">Until</label></p>
+            <p class="records-field"><label for="ce-until" class="visually-hidden">The last date</label>
+              <input type="date" id="ce-until"></p>
+            <p class="ath-check"><input type="radio" name="ce-ends" id="ce-ends-count" value="count"><label for="ce-ends-count">This many times</label></p>
+            <p class="records-field cal-order"><label for="ce-count" class="visually-hidden">How many times</label>
+              <input type="number" id="ce-count" min="1" max="500" step="1"></p>
+            <p class="ath-check"><input type="radio" name="ce-ends" id="ce-ends-never" value="never"><label for="ce-ends-never">No end date</label></p>
+          </div>
+          <div class="cal-skips" id="ce-skips">
+            <p class="cal-skips__head">Cancelled dates</p>
+            <ul class="cal-skips__list" id="ce-skip-list"></ul>
+            <div class="cal-row">
+              <p class="records-field"><label for="ce-skip-date">Cancel one date</label>
+                <input type="date" id="ce-skip-date"></p>
+              <button type="button" class="btn btn--ghost btn--sm" id="ce-skip-add">Cancel that date</button>
+            </div>
+          </div>
+        </fieldset>
+        <p class="records-field"><label for="ce-status">Status</label>
+          <select id="ce-status">
+            <option value="">On (confirmed)</option>
+            <option value="TENTATIVE">To be confirmed</option>
+            <option value="CANCELLED">Cancelled</option>
+          </select></p>
+        <p class="cal-preview" id="ce-preview" aria-live="polite"></p>
+        <ul class="cal-problems" id="ce-problems"></ul>
+        <p class="access-status lock-keep" id="ce-status-line" role="status"></p>
+        <div class="cal-actions cal-form__actions">
+          <button type="submit" class="btn btn--accent" id="ce-save">Save</button>
+          <button type="button" class="btn btn--ghost" id="ce-cancel">Close</button>
+          <span class="cal-actions__gap"></span>
+          <button type="button" class="btn btn--ghost cal-danger" id="ce-remove" hidden>Take out of this calendar</button>
+          <button type="button" class="btn btn--ghost cal-danger" id="ce-delete" hidden>Delete</button>
+        </div>
+      </form>
+    </dialog>
+  </main>
+
+  <!-- @partial:footer -->
+<!-- ================= Footer ================= -->
+<footer class="site-footer" aria-labelledby="footer-heading">
+  <div class="wrap">
+    <h2 class="visually-hidden" id="footer-heading">Site footer</h2>
+
+    <div class="site-footer__grid">
+      <div>
+        <div class="footer-brand">
+          <img src="/assets/img/logo.svg" alt="" width="888" height="508">
+          <div>
+            <strong><a href="/">North Canterbury<br>Athletic Club</a></strong>
+            <span>Rangiora, New Zealand</span>
+          </div>
+        </div>
+        <p>A volunteer-run club affiliated with <a href="https://athletics.org.nz/">Athletics New Zealand</a> and <a href="https://athleticscanterbury.org.nz/">Athletics Canterbury</a>, welcoming athletes of every age and ability since 1978.</p>
+
+        <div class="socials">
+          <a href="https://www.facebook.com/NorthCanterburyAthleticClub" aria-label="North Canterbury Athletic Club on Facebook">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 22v-8h2.8l.4-3.2h-3.2V8.7c0-.9.3-1.5 1.6-1.5h1.7V4.1A22 22 0 0 0 14.4 4C12 4 10.3 5.5 10.3 8.3v2.5H7.6V14h2.7v8Z"/></svg>
+            <span>Club</span>
+          </a>
+          <a href="https://www.facebook.com/NorthCanterburyChildrensAthletics" aria-label="Children's Athletics on Facebook">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 22v-8h2.8l.4-3.2h-3.2V8.7c0-.9.3-1.5 1.6-1.5h1.7V4.1A22 22 0 0 0 14.4 4C12 4 10.3 5.5 10.3 8.3v2.5H7.6V14h2.7v8Z"/></svg>
+            <span>Children&rsquo;s</span>
+          </a>
+        </div>
+      </div>
+      <div>
+        <h3>Quick links</h3>
+        <ul>
+          <li><a href="/#programmes">Our programmes</a></li>
+          <li><a href="/#training">Training times</a></li>
+          <li><a href="/#join">Register &amp; fees</a></li>
+          <li><a href="/#news">News &amp; results</a></li>
+          <li><a href="/club-champs/">Children&rsquo;s Club Champs</a></li>
+          <li><a href="/gallery/">Photo gallery</a></li>
+          <li><a href="/#contact">Contact the club</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3>Get involved</h3>
+        <ul>
+          <li><a href="/#join">Become a member</a></li>
+          <li><a href="/calendar/">Club calendar</a></li>
+          <li><a href="/coaches-officials-volunteers/#volunteer">Volunteer roles</a></li>
+          <li><a href="/coaches-officials-volunteers/#coaching">Coaching development</a></li>
+          <li><a href="/coaches-officials-volunteers/#officials">Officials training</a></li>
+          <li><a href="/#sponsors">Sponsor the club</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3>Club information</h3>
+        <ul>
+          <li><a href="/committee/">Committee and documents</a></li>
+          <li><a href="/safeguarding/">Child safeguarding</a></li>
+          <li><a href="/privacy/">Privacy</a></li>
+          <li><a href="/records/">Children&rsquo;s records</a></li>
+          <li><a href="/history/">History</a></li>
+          <li><a href="https://codesport.co.nz/catalog/%20NorthCanterburyAthleticsClub%20-1107550.htmx">Uniform and apparel</a></li>
+          <li><a href="/resources/">Athletics resources</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="site-footer__base">
+      <p>&copy; 2026 <a href="/">North Canterbury Athletic Club Incorporated</a>. All rights reserved.</p>
+      <ul>
+        <li><a href="/">Back to top</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+<!-- /@partial:footer -->
+
+  <script>
+    (function () {
+      'use strict';
+
+      /* Mobile navigation ------------------------------------------------ */
+      var toggle = document.getElementById('nav-toggle');
+      var nav = document.getElementById('primary-nav');
+
+      function closeNav() {
+        nav.removeAttribute('data-open');
+        toggle.setAttribute('aria-expanded', 'false');
+      }
+
+      toggle.addEventListener('click', function () {
+        if (nav.getAttribute('data-open') === 'true') {
+          closeNav();
+        } else {
+          nav.setAttribute('data-open', 'true');
+          toggle.setAttribute('aria-expanded', 'true');
+        }
+      });
+
+      nav.addEventListener('click', function (event) {
+        if (event.target.closest('a')) { closeNav(); }
+      });
+
+      document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && nav.getAttribute('data-open') === 'true') {
+          closeNav();
+          toggle.focus();
+        }
+      });
+
+      /* Header shadow once scrolled ------------------------------------- */
+      var header = document.getElementById('site-header');
+      var onScroll = function () {
+        header.classList.toggle('is-stuck', window.scrollY > 8);
+      };
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+
+      /* Reveal on scroll ------------------------------------------------- */
+      var targets = document.querySelectorAll('[data-reveal]');
+
+      if (!('IntersectionObserver' in window) ||
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        Array.prototype.forEach.call(targets, function (el) { el.classList.add('is-visible'); });
+        return;
+      }
+
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { rootMargin: '0px 0px -8% 0px', threshold: 0.12 });
+
+      Array.prototype.forEach.call(targets, function (el) { observer.observe(el); });
+    }());
+  </script>
+
+  <script src="/assets/js/ncan-account.js"></script>
+  <script src="/assets/js/form-lock.js"></script>
+  <script src="/assets/js/calendar-edit.js"></script>
+  <script src="/assets/js/admin-calendars.js"></script>
+
+</body>
+
+</html>
