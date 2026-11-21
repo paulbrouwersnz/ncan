@@ -105,6 +105,7 @@ test('a refused address can be fixed straight away', async () => {
 function account(replies, store) {
   const sandbox = {
     location: { hostname: 'ncan.nz', protocol: 'https:', host: 'ncan.nz', href: 'https://ncan.nz/sign-in/' },
+    document: { createElement: makeEl, createTextNode: (t) => ({ text: t, children: [] }) },
     localStorage: {
       getItem: (k) => (k in store ? store[k] : null),
       setItem: (k, v) => { store[k] = String(v); },
@@ -127,6 +128,50 @@ test('each role has its own page to land on', () => {
   assert.equal(N.home({ role: 'coach' }), '/coaches-tools/');
   assert.equal(N.home({ role: 'family' }), '/athletes/');
   assert.equal(N.home(null), '/athletes/');
+});
+
+test('each role can do everything the roles below it can', () => {
+  const N = account([], {});
+  assert.deepEqual(Array.from(N.RANK), ['family', 'coach', 'committee', 'admin']);
+  const rows = [['family', false, false, false], ['coach', true, false, false],
+    ['committee', true, true, false], ['admin', true, true, true], [undefined, false, false, false]];
+  for (const [role, coach, committee, admin] of rows) {
+    const who = role ? { role } : null;
+    assert.deepEqual([N.atLeast(who, 'coach'), N.atLeast(who, 'committee'), N.atLeast(who, 'admin')],
+      [coach, committee, admin], String(role));
+  }
+  assert.equal(N.atLeast('committee', 'coach'), true);       // a role name works too
+  assert.equal(N.atLeast({ role: 'nobody' }, 'family'), false);
+});
+
+test('the coaches note shows for the committee only', () => {
+  const N = account([], {});
+  for (const role of ['family', 'coach', 'committee', 'admin']) {
+    const parent = makeEl('div');
+    const list = parent.appendChild(makeEl('div'));
+    parent.insertBefore = (n, ref) => { parent.children.splice(parent.children.indexOf(ref), 0, n); return n; };
+    list.parentNode = parent;
+    const note = N.coachesNote(list, { role });
+    assert.equal(!!note, role === 'committee', role);
+    if (note) {
+      assert.equal(parent.children[0], note);
+      assert.match(note.textContent, /Coaches usually make changes here/);
+    }
+  }
+});
+
+test('staff who are also family see their own athletes in the account line', () => {
+  const N = account([], {});
+  const box = makeEl('p');
+  N.account(box, { email: 'pat@club.example', role: 'coach', athletes: 'all',
+    own: [{ id: 1, name: 'Sam Brown', slug: 'sam-brown' }, { id: 2, name: 'Amy Brown', slug: 'amy-brown' }] });
+  const links = box.children.filter((c) => c.className === 'account-line__own');
+  assert.deepEqual(links.map((a) => [a.textContent, a.href]),
+    [['Sam Brown', '/athlete/#/sam-brown'], ['Amy Brown', '/athlete/#/amy-brown']]);
+  // a family's own pages are their whole athletes list: nothing extra
+  const fam = makeEl('p');
+  N.account(fam, { email: 'p@home.example', role: 'family', athletes: [], own: [{ id: 1, name: 'Sam Brown', slug: 'sam-brown' }] });
+  assert.equal(fam.children.filter((c) => c.className === 'account-line__own').length, 0);
 });
 
 test('#/next/ addresses read and write the page to go on to', () => {

@@ -638,7 +638,7 @@
       // a sign-in that comes back to it there
       var inPlanner = '/junior-athletics/#plan-' + date;
       NCAN.me().then(function (who) {
-        if (who && /^(admin|coach|committee)$/.test(who.role)) {
+        if (NCAN.atLeast(who, 'coach')) {
           var open = el('a', 'btn btn--ghost btn--sm', 'Open in the planner (with coaches’ notes)');
           open.href = inPlanner;
           signInBox.textContent = '';
@@ -784,8 +784,9 @@
     noPlanNotice();
 
     NCAN.me().then(function (who) {
-      var staff = who && /^(admin|coach|committee)$/.test(who.role);
+      var staff = NCAN.atLeast(who, 'coach');
       NCAN.account(accountBox, staff ? who : null);
+      if (staff) { NCAN.coachesNote(listBox, who); }
       if (!who) { offerSignIn(); }
     }).catch(function () { /* the plans still show */ }).then(function () {
       list.textContent = '';

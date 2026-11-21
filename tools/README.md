@@ -722,12 +722,38 @@ The programme for each season (which events count on each Saturday, and the
 points) is in the private **ncan-api** project, `config/club-champs/`, with the
 procedures in its `docs/DATA.md`.
 
+## Roles
+
+Who can do what is decided by the club's API (its `docs/API.md` has the full
+table); the site only chooses what to show. There are four roles, lowest
+first, and each can do everything the roles below it can:
+
+**family < coach < committee < admin**
+
+- **family**: an adult athlete (their own page), a parent or guardian: the
+  pages GameDay links them to. GameDay contacts also choose who else sees the
+  page and upload its photo.
+- **coach**: every athlete's page, training plans, the club champs review,
+  results sources, removing an athlete's photo. Lands on `/coaches-tools/`.
+- **committee**: everything a coach can, plus committee tools as they're
+  added. Lands on `/committee-tools/`. On the training plans and the club champs
+  review they see a note that coaches usually make changes there.
+- **admin**: everything. Lands on `/admin/`.
+
+Staff keep their family links: a coach who is a parent manages their child's
+page like any parent, and the "Signed in as ..." line links to their own
+athletes (`own` from `GET /v1/auth/me`).
+
+In code, check the lowest role allowed with `NCAN.atLeast(who, 'coach')`
+(`assets/js/ncan-account.js`), never by listing role names. A staff tools page
+says its lowest role on `<main data-lowest="coach">` (`assets/js/staff-tools.js`).
+
 ## Athlete pages
 
 The athletes page (`/athletes/`) and each athlete's page (`/athlete/#/<their name>`) hold no results themselves. They
 read them from the club's API at `https://api.ncan.nz`, and only for someone
-signed in: a family sees their own children, coaches and the committee see
-everyone. Both show totals for what's shown (results, meetings, events,
+signed in: a family sees their own children, coaches and above see everyone
+(see [Roles](#roles)). Both show totals for what's shown (results, meetings, events,
 distances), with 1st, 2nd and 3rd places in a row of medal blocks of their own
 (only when there's a podium; a relay team's place counts once), and the
 athletes page counts the athletes on the podium.
