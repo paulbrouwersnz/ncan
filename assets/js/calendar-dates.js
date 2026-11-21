@@ -376,6 +376,30 @@
     return (stem || 'club-event') + '-' + isoDate(item.start) + '.ics';
   }
 
+  /* The calendars the club's API lists (GET /v1/calendars), as the calendar
+     page's entries: the published file the page falls back on, and the API's
+     own copy of the .ics to read first. Staff-only calendars, and any entry
+     that doesn't look right, are left out; null when nothing usable came back,
+     so the page uses the published calendars.json instead. */
+  var SLUG = /^[a-z0-9][a-z0-9-]{0,60}$/;
+  function fromApiList(data, apiBase) {
+    var list = data && data.calendars;
+    if (!list || !list.length) { return null; }
+    var base = String(apiBase || '').replace(/\/+$/, '');
+    var out = [];
+    list.forEach(function (c) {
+      if (!c || c.public === false || !SLUG.test(c.slug || '')) { return; }
+      if (c.file !== c.slug + '.ics' || !c.name) { return; }
+      out.push({
+        file: c.file,
+        name: c.name,
+        colour: /^#[0-9a-fA-F]{6}$/.test(c.colour || '') ? c.colour : undefined,
+        api: base + '/' + c.file
+      });
+    });
+    return out.length ? out : null;
+  }
+
   var CalendarDates = {
     DAY_MS: DAY_MS,
     WEEKDAYS: WEEKDAYS,
@@ -405,7 +429,8 @@
     icsEscape: icsEscape,
     icsFold: icsFold,
     buildIcs: buildIcs,
-    fileNameFor: fileNameFor
+    fileNameFor: fileNameFor,
+    fromApiList: fromApiList
   };
 
   if (typeof module !== 'undefined' && module.exports) { module.exports = CalendarDates; }

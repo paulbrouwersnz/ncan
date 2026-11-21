@@ -4100,11 +4100,7 @@ table.schedule.manage-mem { min-width: 640px; }
 
 /* ================= Calendar editor (/admin/calendars/, assets/js/admin-calendars.js) ================= */
 .cal-ed-section { padding-top: clamp(1.5rem, 4vw, 2.5rem); }
-.cal-switch-note {
-  max-width: 60rem; margin: 0 0 1.5rem; padding: .8rem 1rem;
-  border-left: 4px solid var(--yellow-500); background: var(--surface-warm); border-radius: var(--radius-sm);
-  color: var(--text); font-size: .95rem;
-}
+.cal-timing { max-width: 60rem; margin: 0 0 1.5rem; }
 .cal-ed { display: grid; grid-template-columns: minmax(14rem, 18rem) minmax(0, 1fr); gap: clamp(1.2rem, 3vw, 2.5rem); align-items: start; }
 @media (max-width: 760px) { .cal-ed { grid-template-columns: minmax(0, 1fr); } }
 .cal-list { list-style: none; margin: 0; padding: 0; display: grid; gap: .25rem; }

@@ -89,8 +89,7 @@ browser's console on the Athletics NZ eLearning library (see below).
 | added a new page (a folder with an `index.html`) | `sync-partials.py`, `build-sitemap.py`, then `indexnow.py <page>` |
 | changed a page's content and want search engines to notice | `indexnow.py <page>` |
 | added photos or albums to the gallery | put the originals in the photo host's `gallery/` folder, then `gallery-photos.py`, upload, `build-gallery.py`, and `build-sitemap.py` if an album was added, renamed or removed (see "Gallery") |
-| added or changed a calendar in `assets/calendar/` | `build-calendar-list.py` |
-| changed the weekly training times | `build-training-calendar.py`, then `build-calendar-list.py` |
+| added, changed or cancelled a calendar event, or changed a calendar | nothing here: use the calendar editor at `/admin/calendars/` (see "Calendars"); don't edit `assets/calendar/` by hand |
 | added AGM papers to `assets/docs/agm/` | `build-agm-list.py` |
 | a club championships Saturday has finished | add its meeting on the results sources page, then confirm it under "Review results" on the club champs page |
 | a meeting's results are out, or a family asks for a page to be removed | in the private ncan-api project: `ncan add-meeting` / `ncan opt-out`, then `ncan collect` |
@@ -109,9 +108,12 @@ browser's console on the Athletics NZ eLearning library (see below).
 `.github/workflows/pages.yml` publishes the site to GitHub Pages whenever `main`
 changes: on a push or merge, after the Facebook updater (`main.yml`) has
 committed new posts (its commits start no workflows of their own), or by hand
-(Actions → Publish site → Run workflow). It runs `sync-partials.py` and
-`stamp-assets.py`, gathers the public files with `build-site.py`, and deploys
-them.
+(Actions → Publish site → Run workflow). It brings in the header photo
+settings and the calendars kept by the club's API (`fetch-page-photos.py`,
+`fetch-calendars.py`), runs `sync-partials.py` and `stamp-assets.py`, gathers
+the public files with `build-site.py`, and deploys them. Every half hour it also
+checks whether the header photos or calendars in the API differ from the live
+site's, and publishes if they do.
 
 Pages is set to publish this way (Settings → Pages → Build and deployment →
 Source: **GitHub Actions**).
@@ -681,10 +683,44 @@ NCAN_PHOTOS_URL=http://127.0.0.1:8152/ python tools/build-gallery.py   # preview
 
 ## Calendars
 
+The club's calendars are edited on the calendar editor (`/admin/calendars/`,
+below) and kept by the club's API. The files in `assets/calendar/` are the
+website's fallback copy, refreshed from the API at every publish and not
+committed:
+
+- **The calendar page** (`assets/js/calendar.js`) reads `GET /v1/calendars` and
+  each calendar's `.ics` from the API as it loads, so an edit shows there within
+  a minute. If the API doesn't answer within 2.5 seconds it uses the published
+  files.
+- **Phones that subscribe** keep using `https://ncan.nz/assets/calendar/<name>.ics`.
+  The publish workflow writes those files from the API (`fetch-calendars.py`),
+  on every publish and on the half-hour check when the calendars have changed,
+  so subscribers get an edit within about 30 minutes, plus their calendar app's
+  own refresh time (Google Calendar can take up to a day).
+
+Don't edit the `.ics` files or `calendars.json` by hand: the next publish
+replaces them with the API's copy. The repository's copy is only refreshed if
+someone commits a fresh one (run `fetch-calendars.py` and commit), which is
+worth doing now and then so the fallback isn't far behind.
+
+### `fetch-calendars.py`
+Run by the publish workflow: fetches the API's public calendars into
+`assets/calendar/` (one `.ics` per calendar, and `calendars.json` with the
+API's version), then `build-calendar-list.py --page-only` rewrites the calendar
+page's no-JavaScript list. It never stops a publish and never publishes half a
+set: if the API can't be reached, or its list or any `.ics` doesn't look right,
+every file is left as it is. A calendar deleted on the editor keeps its file,
+so a subscriber's link still answers, but is no longer listed.
+
+```bash
+python tools/fetch-calendars.py                  # fetch into assets/calendar/
+python tools/fetch-calendars.py --compare-live   # "true" if the API's version differs from the live site's
+```
+
 ### `build-training-calendar.py`
-Generates the weekly training `.ics` files (`training-*.ics`) for a season,
-which runs April to March. File names carry no season, so subscriptions keep
-working year to year.
+Retired: weekly training is now a repeating event on the calendar editor. It
+used to generate the weekly training `.ics` files (`training-*.ics`) for a
+season (April to March); its output would now be replaced at the next publish.
 
 ```bash
 python tools/build-training-calendar.py                # current season
@@ -709,8 +745,8 @@ python tools/build-calendar-list.py --dry-run          # exits 1 if the manifest
 python tools/build-calendar-list.py --page-only        # only rewrite the page list from the manifest
 ```
 
-The event calendars themselves (`events-*.ics`, `other-meetings.ics`) are
-edited by hand, until the website switches to the calendar editor below.
+Since the switch to the calendar editor, the publish workflow is what runs it
+(`--page-only`); the other options are for the old hand-kept files.
 
 ### The calendar editor (`/admin/calendars/`)
 
@@ -731,11 +767,8 @@ one; and how many years of past events the feeds keep.
   event changed since, and the page offers **Load the latest**.
 - The address names the calendar and event: `/admin/calendars/#/events-senior`,
   or `#/events-senior/<event id>` to open one event's editor.
-- **Not on the website yet** (calendar plan, step 4): the calendar page and
-  phones that subscribe still read the published files in `assets/calendar/`.
-  The yellow note at the top of the editor (`#cal-switch-note`) comes out when
-  they switch. Until then, a change to a published file needs the API's copy
-  updating too (`ncan import-calendars <folder> --replace` in ncan-api).
+- A saved change shows on the calendar page within a minute and reaches
+  subscribers at the next publish (see "Calendars" above).
 
 ## Children's club records
 

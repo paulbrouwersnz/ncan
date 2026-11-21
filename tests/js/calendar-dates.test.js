@@ -304,3 +304,40 @@ test('clock times read as a person would say them', () => {
   assert.equal(D.clockTime(D.wallDate(2026, 0, 1, 17, 30)), '5:30pm');
   assert.equal(D.clockTime(D.wallDate(2026, 0, 1, 9, 5)), '9:05am');
 });
+
+// ---------------------------------------------------- the API's calendar list
+
+test('fromApiList: the API’s public calendars, with the API copy to read first', () => {
+  const api = 'https://api.ncan.nz/v1/calendars/';
+  const out = D.fromApiList({
+    version: 4,
+    calendars: [
+      { slug: 'events-senior', file: 'events-senior.ics', name: 'Senior', colour: '#7b57c8', public: true },
+      { slug: 'staff-only', file: 'staff-only.ics', name: 'Staff', colour: '#000000', public: false },
+      { slug: 'training-x', file: 'training-x.ics', name: 'Training', colour: 'purple' }
+    ]
+  }, api);
+  assert.deepEqual(out, [
+    { file: 'events-senior.ics', name: 'Senior', colour: '#7b57c8',
+      api: 'https://api.ncan.nz/v1/calendars/events-senior.ics' },
+    { file: 'training-x.ics', name: 'Training', colour: undefined,
+      api: 'https://api.ncan.nz/v1/calendars/training-x.ics' }
+  ]);
+});
+
+test('fromApiList: entries that don’t look right are left out', () => {
+  const out = D.fromApiList({ calendars: [
+    { slug: '../x', file: '../x.ics', name: 'Bad' },
+    { slug: 'a', file: 'b.ics', name: 'Mismatch' },
+    { slug: 'c', file: 'c.ics', name: '' },
+    { slug: 'ok', file: 'ok.ics', name: 'Fine' }
+  ] }, 'https://api.test/v1/calendars');
+  assert.deepEqual(out.map((c) => c.file), ['ok.ics']);
+});
+
+test('fromApiList: nothing usable falls back to the published files (null)', () => {
+  assert.equal(D.fromApiList(null, 'x'), null);
+  assert.equal(D.fromApiList({}, 'x'), null);
+  assert.equal(D.fromApiList({ calendars: [] }, 'x'), null);
+  assert.equal(D.fromApiList({ calendars: [{ slug: 'a', file: 'a.ics', name: 'A', public: false }] }, 'x'), null);
+});

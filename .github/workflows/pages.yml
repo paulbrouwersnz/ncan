@@ -6,7 +6,8 @@ name: Publish site
 #
 # The stamps (?v=...) and the shared head, header and footer are brought up to
 # date here, at publish time, so a pull request needn't commit them. So are the
-# header photo settings changed on the Club admin page (tools/fetch-page-photos.py).
+# header photo settings changed on the Club admin page (tools/fetch-page-photos.py),
+# and the calendars edited on /admin/calendars/ (tools/fetch-calendars.py).
 # See tools/README.md ("Publishing the site").
 
 on:
@@ -19,8 +20,8 @@ on:
     workflows: ['Update Facebook posts']
     types: [completed]
     branches: [main]
-  # Header photos changed on the Club admin page: published within the half
-  # hour, only when they differ from the live site's (see "Anything new").
+  # Header photos or calendars changed on the admin pages: published within
+  # the half hour, only when they differ from the live site's (see "Anything new").
   schedule:
     - cron: '11,41 * * * *'
 
@@ -54,15 +55,21 @@ jobs:
           RUN_SHA: ${{ github.event.workflow_run.head_sha }}
         run: |
           # On the half-hour schedule, publish only when the header photo
-          # settings on the Club admin page differ from the live site's.
+          # settings or the calendars in the API differ from the live site's.
           if [ "$EVENT" = "schedule" ]; then
+            publish=false
             if [ "$(python3 tools/fetch-page-photos.py --compare-live | tail -n 1)" = "true" ]; then
               echo "Header photo settings changed on the Club admin page."
-              echo "publish=true" >> "$GITHUB_OUTPUT"
-            else
-              echo "Header photo settings unchanged; nothing to publish."
-              echo "publish=false" >> "$GITHUB_OUTPUT"
+              publish=true
             fi
+            if [ "$(python3 tools/fetch-calendars.py --compare-live | tail -n 1)" = "true" ]; then
+              echo "Calendars changed on the calendar editor."
+              publish=true
+            fi
+            if [ "$publish" = "false" ]; then
+              echo "Header photos and calendars unchanged; nothing to publish."
+            fi
+            echo "publish=$publish" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           # The Facebook updater runs several times a day and often finds nothing
@@ -86,6 +93,12 @@ jobs:
         run: |
           python tools/fetch-page-photos.py
           python tools/make-head-photo.py
+
+      - name: Calendars from the calendar editor
+        if: steps.changed.outputs.publish == 'true'
+        run: |
+          python tools/fetch-calendars.py
+          python tools/build-calendar-list.py --page-only
 
       - name: Shared parts and stamps
         if: steps.changed.outputs.publish == 'true'
