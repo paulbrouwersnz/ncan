@@ -32,6 +32,12 @@
     safeNext(value)        -> value as a path on this website ("/athlete/#/x"),
                               or null if it points anywhere else (or back to
                               /sign-in/ itself).
+    nextFromHash(hash)     -> the page asked for in a /sign-in/ address,
+                              "#/next/athlete/%23/sam-brown" ->
+                              "/athlete/#/sam-brown" (a plain # works too),
+                              checked with safeNext; null if none.
+    signInLink(path)       -> "/sign-in/#/next/athlete/%23/sam-brown" for a page
+                              of this site, or "/sign-in/" if it isn't one.
 
   On this computer (http://localhost:8123), pages call an API run locally on
   port 8765: see the ncan-api project's docs/API.md.
@@ -132,6 +138,22 @@
     if (value.charAt(0) !== '/' || value.charAt(1) === '/') { return null; }
     if (/^\/sign-in\/?([?#].*)?$/.test(value) || /^\/sign-in\/index\.html/.test(value)) { return null; }
     return value;
+  }
+
+  // The page to go on to is kept after the # (#/next/...), like the site's other
+  // #/ addresses, so it never reaches a server or its logs. The page's own # is
+  // written %23; a plain # typed by hand is read the same way.
+  function nextFromHash(hash) {
+    var m = /^#\/next(\/.*)$/.exec(typeof hash === 'string' ? hash : '');
+    if (!m) { return null; }
+    var path;
+    try { path = decodeURIComponent(m[1]); } catch (e) { return null; }
+    return safeNext(path);
+  }
+
+  function signInLink(path) {
+    var next = safeNext(path);
+    return next ? '/sign-in/#/next' + next.replace(/%/g, '%25').replace(/#/g, '%23') : '/sign-in/';
   }
 
   function el(tag, cls, text) {
@@ -255,5 +277,5 @@
   }
 
   window.NCAN = { api: API, get: get, send: send, sendFile: sendFile, me: me, signIn: signIn, account: account,
-    home: home, safeNext: safeNext };
+    home: home, safeNext: safeNext, nextFromHash: nextFromHash, signInLink: signInLink };
 }());

@@ -1,7 +1,8 @@
 /*
   sign-in.js - the /sign-in/ page.
 
-  /sign-in/?next=/athlete/%23/sam-brown   (next: a page of this website, optional)
+  /sign-in/#/next/athlete/%23/sam-brown   (next: a page of this website, optional;
+                                          the page's own # is written %23)
 
   Signed in already: straight on to `next`, or with no `next`, to the
   person's own page (NCAN.home: admin /admin/, committee /committee-tools/,
@@ -22,8 +23,7 @@
   var status = document.getElementById('si-status');
   var box = document.getElementById('si-box');
 
-  var asked = new URLSearchParams(location.search).get('next');
-  var next = NCAN.safeNext(asked);
+  var next = NCAN.nextFromHash(location.hash);
 
   function show(note) {
     status.textContent = note || '';

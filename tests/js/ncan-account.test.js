@@ -129,6 +129,25 @@ test('each role has its own page to land on', () => {
   assert.equal(N.home(null), '/athletes/');
 });
 
+test('#/next/ addresses read and write the page to go on to', () => {
+  const N = account([], {});
+  assert.equal(N.nextFromHash('#/next/athlete/%23/sam-brown'), '/athlete/#/sam-brown');
+  assert.equal(N.nextFromHash('#/next/athlete/#/sam-brown'), '/athlete/#/sam-brown');
+  assert.equal(N.nextFromHash('#/next/junior-athletics/%23/plan/2026-11-24'), '/junior-athletics/#/plan/2026-11-24');
+  assert.equal(N.nextFromHash('#/next/admin/'), '/admin/');
+  for (const bad of ['', '#', '#/next', '#/next/', '#/next//evil.example/x', '#/next/%2F%2Fevil.example',
+    '#/next/sign-in/', '#/next/%E0%A4%A', '#/other/admin/', null, undefined]) {
+    const got = N.nextFromHash(bad);
+    assert.ok(got === null || got === '/', String(bad) + ' -> ' + got);
+  }
+  assert.equal(N.signInLink('/athlete/#/sam-brown'), '/sign-in/#/next/athlete/%23/sam-brown');
+  assert.equal(N.signInLink('/admin/'), '/sign-in/#/next/admin/');
+  assert.equal(N.signInLink('https://evil.example/'), '/sign-in/');
+  for (const path of ['/athlete/#/sam-brown', '/junior-athletics/#/plan/2026-11-24', '/admin/#page-photos', '/a%20b/']) {
+    assert.equal(N.nextFromHash(N.signInLink(path).slice('/sign-in/'.length)), path, path);
+  }
+});
+
 test('next only ever points to a page of this website', () => {
   const N = account([], {});
   assert.equal(N.safeNext('/athletes/'), '/athletes/');
