@@ -376,6 +376,7 @@
   </script>
 
   <script src="/assets/js/ncan-account.js"></script>
+  <script src="/assets/js/form-lock.js"></script>
   <script>
     (function () {
       'use strict';
@@ -553,6 +554,7 @@
           out.appendChild(group);
         });
         $('src-folds').hidden = seasons.length < 2;
+        if (collecting) { lockList(true); }
       }
 
       var seasonOpen = {};    // seasons opened or folded by hand, by season
@@ -570,6 +572,27 @@
       var CAN_REMOVE = false;
       var TYPES = [];         // the meeting types, from GET /v1/sources
       var checked = null;     // the meeting the Check button found
+      var collecting = false; // results are being collected: everything that starts another collect is locked
+
+      var COLLECT_NOW = 'Collecting results now. This takes 5–10 minutes; this page updates when it’s done.';
+      var LIST_CONTROLS = '.src-type-form select, .src-type-form button, .src-remove button';
+
+      function lockList(on) { FormLock.lock($('src-out'), on, LIST_CONTROLS); }
+
+      // lock the Add a meeting form (shaded, with a spinner) while a request or a collect runs
+      function busy(on) {
+        FormLock.lock($('src-add'), on);
+      }
+
+      // a collect is running: lock the form and the list's controls until it's done.
+      // The page reloads when it finishes (watchCollect), which unlocks everything.
+      function startCollecting(words) {
+        collecting = true;
+        busy(true);
+        lockList(true);
+        $('collect-status').textContent = words || COLLECT_NOW;
+        $('collect-status').classList.add('is-busy');
+      }
 
       function collectWords(c) {
         if (!c || !c.state) { return ''; }
@@ -583,7 +606,7 @@
       function watchCollect() {
         NCAN.get('/sources').then(function (info) {
           $('collect-status').textContent = collectWords(info.collect);
-          if (info.collect && info.collect.state === 'running') { setTimeout(watchCollect, 15000); }
+          if (FormLock.running(info.collect)) { setTimeout(watchCollect, 15000); }
           else { location.reload(); }
         }, function () { setTimeout(watchCollect, 30000); });
       }
@@ -594,7 +617,12 @@
           TYPES = info.types;
           info.types.forEach(function (t) { var o = text('option', null, t); o.value = t; $('add-type').appendChild(o); });
           $('collect-status').textContent = collectWords(info.collect);
-          if (info.collect && info.collect.state === 'running') { setTimeout(watchCollect, 15000); }
+          if (FormLock.running(info.collect)) {
+            // opened (or reloaded) mid-collect: stay locked until it's done
+            startCollecting(collectWords(info.collect));
+            $('add-status').textContent = 'Results are being collected. You can add a meeting when that’s done.';
+            setTimeout(watchCollect, 15000);
+          }
           if (info.can_remove) { CAN_REMOVE = true; if (all.length) { render(); } }
         }, function () { /* not staff after all: nothing to show */ });
 
@@ -604,7 +632,9 @@
           if (!url) { $('add-status').textContent = 'Paste the meeting’s address first.'; return; }
           $('add-status').textContent = 'Checking with AthleticLIVE…';
           $('add-found').hidden = true;
+          busy(true);
           NCAN.send('/sources/check', { url: url }).then(function (r) {
+            busy(false);
             if (r.status !== 200) { $('add-status').textContent = r.body.error || 'Sorry, that didn’t work.'; return; }
             var m = r.body;
             if (m.already) {
@@ -619,22 +649,20 @@
             $('add-found').hidden = false;
             $('add-status').textContent = 'Give it a name and type, then add it.';
             $('add-name').focus();
-          }, function (err) { $('add-status').textContent = err.message; });
+          }, function (err) { busy(false); $('add-status').textContent = err.message; });
         });
         $('src-add').addEventListener('submit', function (e) {
           e.preventDefault();
           if (!checked) { $('add-status').textContent = 'Check the address first.'; return; }
-          $('add-go').disabled = true;
+          busy(true);
           $('add-status').textContent = 'Adding…';
           NCAN.send('/sources', { url: checked.url, name: $('add-name').value, type: $('add-type').value }).then(function (r) {
-            $('add-go').disabled = false;
-            if (r.status !== 201) { $('add-status').textContent = r.body.error || 'Sorry, that didn’t work.'; return; }
-            $('add-status').textContent = 'Added “' + r.body.meeting.name + '”. Its results are being collected now.';
-            $('src-add').reset();
-            $('add-found').hidden = true;
+            if (r.status !== 201) { busy(false); $('add-status').textContent = r.body.error || 'Sorry, that didn’t work.'; return; }
+            startCollecting();
+            $('add-status').textContent = 'Added “' + r.body.meeting.name + '”. Its results are being collected now: this form unlocks when that’s done.';
             checked = null;
             setTimeout(watchCollect, 3000);
-          }, function (err) { $('add-go').disabled = false; $('add-status').textContent = err.message; });
+          }, function (err) { busy(false); $('add-status').textContent = err.message; });
         });
       }
 
@@ -663,7 +691,7 @@
           NCAN.send('/sources/type', { url: m.link, type: pick.value }).then(function (r) {
             if (r.status !== 200) { go.disabled = pick.disabled = false; said.textContent = r.body.error || 'Sorry, that didn’t work.'; return; }
             said.textContent = 'Now ' + r.body.meeting.type + ': updating the results…';
-            $('collect-status').textContent = 'Collecting results now. This takes 5–10 minutes; this page updates when it’s done.';
+            startCollecting();
             setTimeout(watchCollect, 3000);
           }, function (err) { go.disabled = pick.disabled = false; said.textContent = err.message; });
         });
@@ -700,7 +728,7 @@
             if (r.status !== 200) { said.textContent = (r.body && r.body.error) || 'Sorry, that didn’t work.'; return; }
             ask.hidden = true;
             said.textContent = 'Removed. The results are being collected again: this meeting goes from the list when that’s done.';
-            $('collect-status').textContent = 'Collecting results now. This takes 5–10 minutes; this page updates when it’s done.';
+            startCollecting();
             setTimeout(watchCollect, 3000);
           }, function (err) { yes.disabled = no.disabled = false; said.textContent = err.message; });
         });
