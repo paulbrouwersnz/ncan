@@ -1261,7 +1261,7 @@ table.schedule.champs-table { min-width: 0; }
   border-radius: var(--radius);
   box-shadow: var(--shadow-sm);
 }
-.ath-chart__title { display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+.ath-chart__title { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .4rem 1rem;
   margin: 0 0 .4rem; font-family: var(--font-display); font-weight: 700; color: var(--heading); }
 .ath-chart__dir { font-family: var(--font-sans); font-size: .78rem; font-weight: 700; color: var(--accent); }
 .ath-chart__svg { display: block; width: 100%; height: auto; overflow: visible; }
@@ -1312,7 +1312,34 @@ table.schedule.champs-table { min-width: 0; }
 .ath-point-link.is-selected .ath-point { stroke: var(--heading); stroke-width: 4; }
 
 /* the maximise button on each chart */
-.ath-chart__end { display: inline-flex; align-items: center; gap: .6rem; }
+.ath-chart__end { display: inline-flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: .4rem .6rem; }
+
+/* Timeline / By season on each chart with more than one season */
+.ath-view { display: inline-flex; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); overflow: hidden; }
+.ath-view__btn {
+  min-height: 32px; padding: .25rem .6rem;
+  font-family: var(--font-sans); font-size: .76rem; font-weight: 700;
+  background: var(--surface); color: var(--heading); border: 0; cursor: pointer;
+}
+.ath-view__btn + .ath-view__btn { border-left: 1px solid var(--line-strong); }
+.ath-view__btn[aria-pressed="true"] { background: var(--heading); color: var(--surface); }
+.ath-view__btn:hover:not([aria-pressed="true"]) { background: var(--surface-tint); }
+.ath-view__btn:focus-visible { outline: 2px solid var(--yellow-500); outline-offset: -2px; }
+@media (pointer: coarse) { .ath-view__btn { min-height: 44px; } }
+/* By season: each season's line and points in its own colour, the current season thicker */
+.ath-line--season { stroke: var(--season); stroke-width: 2; }
+.ath-line--current { stroke-width: 3.5; }
+.ath-chart--seasons .ath-point { fill: var(--season); }
+.ath-chart--seasons .ath-point--wind { fill: var(--surface); stroke: var(--season); }
+.ath-chart--seasons .ath-point--pb { fill: var(--yellow-500); stroke: var(--heading); }
+.ath-chart--seasons .ath-point--newpb { stroke: var(--yellow-500); }
+.ath-chart__key { display: flex; flex-wrap: wrap; gap: .15rem .85rem; margin: 0 0 .35rem; padding: 0; list-style: none; font-size: .78rem; color: var(--text-soft); }
+.ath-chart__key li { display: inline-flex; align-items: center; gap: .35rem; }
+.ath-chart__key .ath-key__swatch { width: 16px; height: 4px; border-radius: 2px; background: var(--season); }
+.ath-chart__key .is-current { font-weight: 700; color: var(--heading); }
+.ath-chart__key .is-current .ath-key__swatch { height: 6px; }
+/* the chart key copied under the enlarged chart */
+.ath-zoom__key { margin: .6rem 0 0; }
 .ath-chart__zoom {
   display: inline-grid; place-items: center;
   width: 32px; height: 32px; padding: 0;
@@ -1362,7 +1389,9 @@ table.schedule.champs-table { min-width: 0; }
 .ath-zoom__pick input { margin-left: .25rem; font: inherit; padding: .2rem .4rem; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); }
 .ath-zoom__body { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) 17rem; gap: 1rem; align-items: start; }
 .ath-zoom__chart .ath-chart { padding: 0; border: 0; box-shadow: none; }
-.ath-zoom__chart .ath-chart__title { display: none; }
+/* the dialog's heading names the chart; its row keeps the Timeline / By season switch */
+.ath-zoom__chart .ath-chart__title { justify-content: flex-end; }
+.ath-zoom__chart .ath-chart__name { display: none; }
 .ath-zoom__details { padding: .9rem 1rem; background: var(--surface-tint); border: 1px solid var(--line); border-radius: var(--radius); font-size: .9rem; }
 .ath-zoom__prompt { margin: 0; color: var(--text-soft); }
 .ath-zoom__mark { margin: 0 0 .35rem; font-family: var(--font-display); font-size: 1.6rem; font-weight: 700; color: var(--heading); font-variant-numeric: tabular-nums; }

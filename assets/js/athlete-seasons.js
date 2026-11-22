@@ -5,7 +5,8 @@
   badges. Within a season, winter (April to September) is shaded light grey and
   summer (October to March) left white.
 
-  Also the maths for the zoomed chart: its date range chips (All results, This
+  Also the By season view's maths (each date's day within its season, and each
+  season's colour), and the maths for the zoomed chart: its date range chips (All results, This
   season, Last season, Last 12 months, Pick dates) and its #/<athlete>/chart/<event>
   address.
 
@@ -131,7 +132,34 @@
     return Math.max(0, Math.min(count - 1, at + dir));
   }
 
+  /* The By season view: every season drawn on one April-to-March axis.
+     dayOfSeason('2026-04-01') is 0 and '2027-03-31' is 365. Days are counted on a
+     leap year's calendar, so 29 February is day 334 and 1 March is always day 335:
+     the same date lines up in every season. */
+  var SEASON_DAYS = 366;
+  var MONTH_START = [0, 30, 61, 91, 122, 153, 183, 214, 244, 275, 306, 335];   // 1 April .. 1 March
+  function dayOfSeason(day) {
+    var m = +day.slice(5, 7), d = +day.slice(8, 10);
+    return MONTH_START[(m + 8) % 12] + d - 1;
+  }
+  // each month's first day on that axis, for its labels: [{ day, month: 'Apr' }, ...]
+  var MONTH_NAMES = ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'];
+  function seasonMonths() {
+    return MONTH_START.map(function (day, i) { return { day: day, month: MONTH_NAMES[i] }; });
+  }
+
+  /* Each season's colour, from the calendar's rainbow. A season keeps its colour
+     whatever the filters (it goes by the season's start year), and colours repeat
+     every seven seasons, so the key names every season. Ordered so seasons
+     side by side never get look-alike colours. */
+  var SEASON_COLOURS = ['#da404e', '#36892f', '#4385e4', '#ea6f2f', '#008f9f', '#aa4ba9', '#b16f23'];
+  function seasonColour(season) {
+    var y = +String(season).slice(0, 4);
+    return SEASON_COLOURS[((y % 7) + 7) % 7];
+  }
+
   return { seasonOf: seasonOf, bounds: bounds, spans: spans, boundaries: boundaries, label: label,
            bests: bests, RANGES: RANGES, range: range, inRange: inRange, slug: slug, step: step,
-           nextDay: nextDay };
+           nextDay: nextDay, SEASON_DAYS: SEASON_DAYS, dayOfSeason: dayOfSeason, seasonMonths: seasonMonths,
+           SEASON_COLOURS: SEASON_COLOURS, seasonColour: seasonColour };
 }));

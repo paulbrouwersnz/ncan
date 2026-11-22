@@ -100,3 +100,46 @@ test('the day after crosses months and leap days', () => {
   assert.equal(S.nextDay('2027-02-28'), '2027-03-01');
   assert.equal(S.nextDay('2026-12-31'), '2027-01-01');
 });
+
+test('day of season: 1 April is day 0, 31 March day 365', () => {
+  assert.equal(S.dayOfSeason('2026-04-01'), 0);
+  assert.equal(S.dayOfSeason('2027-03-31'), 365);
+  assert.equal(S.dayOfSeason('2026-10-01'), 183);
+  assert.equal(S.dayOfSeason('2026-12-01'), 244);
+  assert.equal(S.dayOfSeason('2027-01-01'), 275);
+});
+
+test('day of season: 29 February has its own day and 1 March always lines up', () => {
+  assert.equal(S.dayOfSeason('2028-02-28'), 333);
+  assert.equal(S.dayOfSeason('2028-02-29'), 334);
+  assert.equal(S.dayOfSeason('2028-03-01'), 335);
+  assert.equal(S.dayOfSeason('2027-03-01'), 335);   // no 29 February that season
+  assert.equal(S.SEASON_DAYS, 366);
+});
+
+test('day of season: every date of a season is in order, with no gaps or repeats', () => {
+  let day = '2027-04-01', last = -1;
+  while (day <= '2028-03-31') {
+    const n = S.dayOfSeason(day);
+    assert.equal(n, last + 1, day);
+    last = n;
+    day = S.nextDay(day);
+  }
+  assert.equal(last, 365);
+});
+
+test('season months run April to March', () => {
+  const m = S.seasonMonths();
+  assert.equal(m.length, 12);
+  assert.deepEqual(m[0], { day: 0, month: 'Apr' });
+  assert.deepEqual(m[11], { day: 335, month: 'Mar' });
+  assert.equal(m[9].day, S.dayOfSeason('2027-01-01'));
+});
+
+test('season colours: fixed per season, repeating every seven', () => {
+  assert.equal(S.seasonColour('2026/27'), S.seasonColour('2026/27'));
+  assert.equal(S.seasonColour('2019/20'), S.seasonColour('2026/27'));
+  const seven = ['2020/21', '2021/22', '2022/23', '2023/24', '2024/25', '2025/26', '2026/27'].map(S.seasonColour);
+  assert.equal(new Set(seven).size, 7);
+  seven.forEach((c) => assert.ok(S.SEASON_COLOURS.includes(c)));
+});
