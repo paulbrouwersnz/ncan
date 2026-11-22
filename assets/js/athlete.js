@@ -36,6 +36,14 @@
   try { BY_SEASON = localStorage.getItem('ncan-athlete-chart-view') === 'season'; } catch (e) { /* default */ }
   var HIDE_EMPTY = false;    // "Hide empty months": off by default; kept on the device
   try { HIDE_EMPTY = localStorage.getItem('ncan-athlete-hide-months') === '1'; } catch (e) { /* default */ }
+  // the downloaded image's shape: what's picked beside Download, which starts as last time's pick
+  function storedShape() {
+    try { return localStorage.getItem('ncan-chart-shape') || 'auto'; } catch (e) { return 'auto'; }
+  }
+  function shapeChoice() {
+    var sel = document.getElementById('ath-zoom-shape');
+    return sel && sel.value ? sel.value : storedShape();
+  }
   function pad2(n) { return (n < 10 ? '0' : '') + n; }
   function isoOf(d) { return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
   var TODAY = isoOf(new Date());
@@ -927,7 +935,7 @@
      the athlete, event and dates above it, the key for the marks it has, and ncan.nz.
      Made on the device; phones that can share files open the share sheet. */
   function zoomDownload() {
-    var b = $('ath-zoom-download'), said = $('ath-zoom-said');
+    var b = $('ath-zoom-download'), said = $('ath-zoom-said'), sel = $('ath-zoom-shape');
     var chartSvg = zoom.card && zoom.card.querySelector('svg.ath-chart__svg');
     if (!chartSvg || b.disabled) {
       said.textContent = 'There are no marks in these dates to save.';
@@ -983,9 +991,10 @@
     }());
     b.disabled = true;
     b.classList.add('is-busy');
+    if (sel) { sel.disabled = true; }
     said.textContent = 'Making the image…';
     IMG.render({
-      shape: IMG.shapeFor(window.innerWidth, window.innerHeight),
+      shape: IMG.pick(shapeChoice(), window.innerWidth, window.innerHeight),
       draw: draw,
       done: done,
       dark: dark,
@@ -1004,6 +1013,7 @@
     }).then(function () {
       b.disabled = false;
       b.classList.remove('is-busy');
+      if (sel) { sel.disabled = false; }
     });
   }
 
@@ -1071,8 +1081,16 @@
       });
     }
     $('ath-zoom-close').addEventListener('click', function () { zoomClose(); });
-    var dl = $('ath-zoom-download');
+    var dl = $('ath-zoom-download'), shapeSel = $('ath-zoom-shape');
     if (dl) { if (window.NCANChartImage) { dl.addEventListener('click', zoomDownload); } else { dl.hidden = true; } }
+    if (shapeSel) {
+      if (!window.NCANChartImage) { shapeSel.hidden = true; }
+      shapeSel.value = storedShape();
+      if (!shapeSel.value) { shapeSel.value = 'auto'; }
+      shapeSel.addEventListener('change', function () {
+        try { localStorage.setItem('ncan-chart-shape', shapeSel.value); } catch (e) { /* this visit only */ }
+      });
+    }
     // Esc: close the same way as the button, so the address goes back too
     dlg.addEventListener('cancel', function (e) { e.preventDefault(); zoomClose(); });
     Array.prototype.forEach.call(document.querySelectorAll('#ath-zoom-ranges [data-range]'), function (b) {

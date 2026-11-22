@@ -1422,8 +1422,19 @@ table.schedule.champs-table { min-width: 0; }
 .ath-zoom__download:focus-visible { outline: 2px solid var(--yellow-500); outline-offset: 2px; }
 .ath-zoom__download:disabled { cursor: progress; opacity: .7; }
 .ath-zoom__download[hidden] { display: none; }
+/* the image's shape, beside Download */
+.ath-zoom__shape {
+  min-height: 44px; padding: 0 .6rem; max-width: 9.5rem;
+  font: inherit; font-size: .88rem; font-weight: 600;
+  background: var(--surface); color: var(--heading);
+  border: 1px solid var(--line-strong); border-radius: 999px; cursor: pointer;
+}
+.ath-zoom__shape:focus-visible { outline: 2px solid var(--yellow-500); outline-offset: 2px; }
+.ath-zoom__shape:disabled { cursor: progress; opacity: .7; }
+.ath-zoom__shape[hidden] { display: none; }
 @media (max-width: 480px) {
   .ath-zoom__download { width: 44px; padding: 0; justify-content: center; }
+  .ath-zoom__shape { max-width: 7.5rem; font-size: .82rem; }
   .ath-zoom__download-words { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 }
 .ath-zoom__close:hover { background: var(--surface-strong); }
