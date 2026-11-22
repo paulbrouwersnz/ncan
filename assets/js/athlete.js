@@ -680,8 +680,8 @@
         : svg('rect', { x: cx - 6, y: cy - 6, width: 12, height: 12, transform: 'rotate(45 ' + cx + ' ' + cy + ')', class: cls });
       var title = svg('title'); title.textContent = label;
       shape.appendChild(title);
-      // each season's best gets a ring; the personal best keeps its larger dot, and both when it is both
-      if (isSb) { g.appendChild(svg('circle', { cx: cx, cy: cy, r: (isPb ? 8 : 5.5) + 4.5, class: 'ath-ring' })); }
+      // a season's best gets a light green surround behind the point, like the new PB's yellow one; it shows round PB and new PB markers too
+      if (isSb) { g.appendChild(svg('circle', { cx: cx, cy: cy, r: (isPb ? 8 : 5.5) + 4.5, class: 'ath-sb' })); }
       g.appendChild(shape);
       links.push(g);
       if (opts.select) {
