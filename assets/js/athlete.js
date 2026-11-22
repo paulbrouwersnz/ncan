@@ -864,12 +864,24 @@
     if (t1 - t0 > 0) { var padMs = (t1 - t0) * 0.04; t0 = new Date(t0 - padMs); t1 = new Date(+t1 + padMs); }
     // drawn at the size it shows, so its labels stay the page's size: not a scaled-up copy
     var W = Math.max(320, Math.round(out.clientWidth || 1100));
-    var H = Math.max(260, Math.min(560, Math.round(W * 0.5), window.innerHeight - 240));
+    // wide screens: the chart fills the height left in the dialog, so there's no gap above the key.
+    // Phones stack the details under the chart, so they keep a shape set by the width.
+    var room = window.matchMedia('(max-width: 760px)').matches ? 0 : Math.round(out.clientHeight);
+    var H = room > 320 ? room - 52 : Math.max(260, Math.min(560, Math.round(W * 0.5), window.innerHeight - 240));
     // Hide empty months here goes by this event's results in every season, whatever the dates picked
     var hide = HIDE_EMPTY ? SEASONS.emptyMonths(countable(zoom.group.results).map(function (x) { return x.date; })) : null;
     zoom.card = chart({ name: zoom.group.name, results: rs }, t0, t1, CHART.pbOf,
       { W: W, H: H, yTicks: H > 380 ? 8 : 6, dateTicks: 90, zoom: true, sbOf: CHART.sbOf, select: zoomSelect, hide: hide });
     out.appendChild(zoom.card);
+    // the row above the chart (switch, "↑ faster") may be taller or shorter than allowed for:
+    // drawn once more at the height that fits exactly
+    var over = room > 320 ? zoom.card.offsetHeight - room : 0;
+    if (over > 2 || over < -2) {
+      out.textContent = '';
+      zoom.card = chart({ name: zoom.group.name, results: rs }, t0, t1, CHART.pbOf,
+        { W: W, H: Math.max(260, H - over), yTicks: H - over > 380 ? 8 : 6, dateTicks: 90, zoom: true, sbOf: CHART.sbOf, select: zoomSelect, hide: hide });
+      out.appendChild(zoom.card);
+    }
   }
 
   function zoomSelect(i) {
