@@ -5,7 +5,8 @@
   badges. Within a season, winter (April to September) is shaded light grey and
   summer (October to March) left white.
 
-  Also the By season view's maths (each date's day within its season, and each
+  Also the maths for hiding empty months (months with no result in any season),
+  the By season view's maths (each date's day within its season, and each
   season's colour), and the maths for the zoomed chart: its date range chips (All results, This
   season, Last season, Last 12 months, Pick dates) and its #/<athlete>/chart/<event>
   address.
@@ -158,8 +159,78 @@
     return SEASON_COLOURS[((y % 7) + 7) % 7];
   }
 
+  /* Hide empty months. emptyMonths(days) gives the calendar months (1-12) with no
+     result in any season: with no July result ever, July is empty. Only those are
+     hidden, so a month with a result in any year always shows.
+     squash(from, to, hide) lays out a date axis from `from` to `to` (day numbers,
+     dayNum(), and may be fractional) with the hidden months taken out: the result's
+     parts are the shown and hidden stretches in order, hidden ones at either end
+     dropped. place(sq, n, inner, gap) is day number n's distance along an axis
+     `inner` wide, where each run of hidden months is a break `gap` wide. */
+  function dayNum(day) { return Date.UTC(+day.slice(0, 4), +day.slice(5, 7) - 1, +day.slice(8, 10)) / 864e5; }
+  // the By season axis on day numbers: a season with a 29 February, so dayOfSeason() lines up
+  var REF_SEASON = dayNum('2003-04-01');
+  function emptyMonths(days) {
+    var seen = {}, out = [];
+    days.forEach(function (d) { if (d) { seen[+d.slice(5, 7)] = true; } });
+    if (!Object.keys(seen).length) { return out; }
+    for (var m = 1; m <= 12; m++) { if (!seen[m]) { out.push(m); } }
+    return out;
+  }
+  function squash(from, to, hide) {
+    var off = {}, parts = [];
+    (hide || []).forEach(function (m) { off[m] = true; });
+    if (!(to > from)) { return null; }
+    var d = new Date(Math.floor(from) * 864e5);
+    var y = d.getUTCFullYear(), m = d.getUTCMonth();
+    for (;;) {
+      var a = Date.UTC(y, m, 1) / 864e5, b = Date.UTC(y, m + 1, 1) / 864e5;
+      if (a >= to) { break; }
+      a = Math.max(a, from); b = Math.min(b, to);
+      var hid = !!off[m + 1], last = parts[parts.length - 1];
+      if (last && last.hidden === hid) { last.b = b; } else { parts.push({ a: a, b: b, hidden: hid }); }
+      if (++m > 11) { m = 0; y++; }
+    }
+    var whole = parts.length;
+    while (parts.length && parts[0].hidden) { parts.shift(); }
+    while (parts.length && parts[parts.length - 1].hidden) { parts.pop(); }
+    var gaps = parts.filter(function (p) { return p.hidden; });
+    // nothing hidden (or everything): the plain axis
+    if (!parts.length || (!gaps.length && parts.length === whole)) { return null; }
+    var shown = 0;
+    parts.forEach(function (p) { if (!p.hidden) { shown += p.b - p.a; } });
+    return { parts: parts, gaps: gaps.length, shown: shown, from: parts[0].a, to: parts[parts.length - 1].b };
+  }
+  function place(sq, n, inner, gap) {
+    var room = inner - sq.gaps * gap, pos = 0;
+    for (var i = 0; i < sq.parts.length; i++) {
+      var p = sq.parts[i];
+      if (p.hidden) {
+        if (n <= p.a) { return pos; }            // the edge of the break
+        if (n < p.b) { return pos + gap / 2; }   // inside a hidden month: the break's middle
+      } else if (n <= p.b || i === sq.parts.length - 1) {
+        return pos + (Math.max(p.a, Math.min(p.b, n)) - p.a) / sq.shown * room;
+      }
+      pos += p.hidden ? gap : (p.b - p.a) / sq.shown * room;
+    }
+    return pos;
+  }
+  // whether day number n falls in a hidden month (or off the squashed axis)
+  function isHidden(sq, n) {
+    if (n < sq.from || n > sq.to) { return true; }
+    return sq.parts.some(function (p) { return p.hidden && n >= p.a && n < p.b; });
+  }
+  // the middle of each break, as a distance along the axis
+  function breaks(sq, inner, gap) {
+    var out = [];
+    sq.parts.forEach(function (p) { if (p.hidden) { out.push(place(sq, (p.a + p.b) / 2, inner, gap)); } });
+    return out;
+  }
+
   return { seasonOf: seasonOf, bounds: bounds, spans: spans, boundaries: boundaries, label: label,
            bests: bests, RANGES: RANGES, range: range, inRange: inRange, slug: slug, step: step,
            nextDay: nextDay, SEASON_DAYS: SEASON_DAYS, dayOfSeason: dayOfSeason, seasonMonths: seasonMonths,
-           SEASON_COLOURS: SEASON_COLOURS, seasonColour: seasonColour };
+           SEASON_COLOURS: SEASON_COLOURS, seasonColour: seasonColour,
+           dayNum: dayNum, REF_SEASON: REF_SEASON, emptyMonths: emptyMonths, squash: squash, place: place,
+           isHidden: isHidden, breaks: breaks };
 }));

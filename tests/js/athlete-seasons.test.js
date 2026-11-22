@@ -143,3 +143,54 @@ test('season colours: fixed per season, repeating every seven', () => {
   assert.equal(new Set(seven).size, 7);
   seven.forEach((c) => assert.ok(S.SEASON_COLOURS.includes(c)));
 });
+
+test('empty months: only months with no result in any season', () => {
+  // results in Nov, Dec and Feb one season and March the next: the other eight are empty
+  assert.deepEqual(S.emptyMonths(['2025-11-08', '2025-12-13', '2026-02-07', '2027-03-06']),
+    [1, 4, 5, 6, 7, 8, 9, 10]);
+  // a July result in any year keeps July
+  assert.ok(!S.emptyMonths(['2019-07-20', '2026-11-08']).includes(7));
+  assert.deepEqual(S.emptyMonths([]), []);
+});
+
+test('squash: hidden months become breaks, the shown ones share the width', () => {
+  const from = S.dayNum('2025-10-01'), to = S.dayNum('2026-04-01');   // Oct to Mar
+  const sq = S.squash(from, to, [12, 1]);                               // Dec and Jan hidden
+  assert.equal(sq.gaps, 1);
+  assert.equal(sq.shown, 31 + 30 + 28 + 31);                           // Oct, Nov, Feb, Mar
+  assert.equal(S.place(sq, S.dayNum('2025-10-01'), 1000, 20), 0);
+  // the end of November and the start of February sit either side of the one break
+  const endNov = S.place(sq, S.dayNum('2025-12-01'), 1000, 20);
+  const startFeb = S.place(sq, S.dayNum('2026-02-01'), 1000, 20);
+  assert.ok(Math.abs(startFeb - endNov - 20) < 1e-9);
+  assert.ok(Math.abs(S.place(sq, to, 1000, 20) - 1000) < 1e-9);
+  // a date in a hidden month sits in the middle of its break
+  assert.ok(S.isHidden(sq, S.dayNum('2026-01-15')));
+  assert.ok(Math.abs(S.place(sq, S.dayNum('2026-01-15'), 1000, 20) - (endNov + 10)) < 1e-9);
+  assert.ok(!S.isHidden(sq, S.dayNum('2026-02-15')));
+  assert.deepEqual(S.breaks(sq, 1000, 20).map(Math.round), [Math.round(endNov + 10)]);
+});
+
+test('squash: hidden months at either end are dropped, nothing hidden is the plain axis', () => {
+  const from = S.dayNum('2025-09-20'), to = S.dayNum('2026-03-10');
+  const sq = S.squash(from, to, [9, 12]);     // September (the start) and December
+  assert.equal(sq.from, S.dayNum('2025-10-01'));
+  assert.equal(sq.gaps, 1);
+  assert.equal(S.squash(from, to, [6, 7]), null);   // winter months not on this axis
+  assert.equal(S.squash(from, to, []), null);
+});
+
+test('squash on the By season axis lines up with dayOfSeason', () => {
+  const at = (d) => S.REF_SEASON + S.dayOfSeason(d);
+  const sq = S.squash(S.REF_SEASON, S.REF_SEASON + S.SEASON_DAYS, [5, 6, 7, 8]);   // May to August
+  assert.equal(sq.gaps, 1);
+  assert.ok(S.isHidden(sq, at('2026-07-04')));
+  assert.ok(!S.isHidden(sq, at('2027-02-29'.replace('2027', '2028'))));
+  assert.ok(!S.isHidden(sq, at('2026-04-30')) && !S.isHidden(sq, at('2026-09-01')));
+  // winter empty: the axis starts at October, with no break to mark
+  const summer = S.squash(S.REF_SEASON, S.REF_SEASON + S.SEASON_DAYS, [4, 5, 6, 7, 8, 9]);
+  assert.equal(summer.gaps, 0);
+  assert.equal(summer.from, at('2026-10-01'));
+  assert.equal(S.place(summer, at('2026-10-01'), 600, 14), 0);
+  assert.ok(S.isHidden(summer, at('2026-06-01')));
+});

@@ -1306,6 +1306,27 @@ table.schedule.champs-table { min-width: 0; }
 .ath-winter { fill: var(--chart-winter); }
 .ath-season-line { stroke: var(--line-strong); stroke-width: 1; stroke-dasharray: 4 4; }
 .ath-season-label { font-family: var(--font-sans); font-size: 11px; font-weight: 700; fill: var(--text-soft); text-anchor: middle; }
+.ath-break { stroke: var(--line-strong); stroke-width: 1.5; stroke-linecap: round; }
+.ath-break-mask { fill: var(--surface); }
+.ath-zoom__hide { margin: .25rem 0 0; min-height: 2.25rem; }
+/* A small "?" beside a setting: its explanation shows on hover or focus, and stays
+   open after a tap (assets/js/athlete.js keeps aria-expanded in step). */
+.help-tip { position: relative; display: inline-flex; }
+.help-tip__btn { width: 1.35rem; height: 1.35rem; padding: 0; border: 1px solid var(--line-strong); border-radius: 50%;
+  background: transparent; color: var(--text-soft); font: 700 .75rem/1 var(--font-sans); cursor: help; }
+.help-tip__btn:hover, .help-tip__btn:focus-visible { color: var(--heading); border-color: var(--heading); }
+.help-tip__text { position: absolute; z-index: 20; left: 50%; bottom: calc(100% + .45rem); transform: translateX(-50%);
+  width: max-content; max-width: min(19rem, 80vw); padding: .5rem .65rem; border-radius: 6px;
+  background: var(--heading); color: var(--bg); font-size: .82rem; font-weight: 400; line-height: 1.4;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, .18); visibility: hidden; opacity: 0; transition: opacity .12s; pointer-events: none; }
+.help-tip:hover .help-tip__text, .help-tip__btn:focus-visible + .help-tip__text,
+.help-tip.is-open .help-tip__text { visibility: visible; opacity: 1; }
+/* on a phone the tip spans its row, under the setting, so it never runs off the screen */
+@media (max-width: 480px) {
+  .ath-check { position: relative; }
+  .ath-check .help-tip { position: static; }
+  .ath-check .help-tip__text { left: 0; right: 0; top: calc(100% + .2rem); bottom: auto; transform: none; width: auto; max-width: none; }
+}
 .ath-band-word { font-family: var(--font-sans); font-size: 10px; letter-spacing: .04em; fill: var(--text-soft); opacity: .5; text-anchor: middle; }
 /* each season's best: a ring round the point */
 .ath-ring { fill: none; stroke: var(--accent); stroke-width: 2; }

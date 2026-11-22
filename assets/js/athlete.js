@@ -34,6 +34,8 @@
   try { SEASONS_ON = localStorage.getItem('ncan-athlete-seasons') !== '0'; } catch (e) { /* default */ }
   var BY_SEASON = false;     // the charts' view: Timeline (false) or By season; kept on the device
   try { BY_SEASON = localStorage.getItem('ncan-athlete-chart-view') === 'season'; } catch (e) { /* default */ }
+  var HIDE_EMPTY = false;    // "Hide empty months": off by default; kept on the device
+  try { HIDE_EMPTY = localStorage.getItem('ncan-athlete-hide-months') === '1'; } catch (e) { /* default */ }
   function pad2(n) { return (n < 10 ? '0' : '') + n; }
   function isoOf(d) { return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
   var TODAY = isoOf(new Date());
@@ -53,6 +55,10 @@
     return el;
   }
   function parseDate(iso) { var p = iso.split('-'); return new Date(+p[0], +p[1] - 1, +p[2]); }
+  // a Date's wall-clock time as a day number, the same count as NCANSeasons.dayNum()
+  function dayNumOf(d) {
+    return Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds()) / 864e5;
+  }
   function longDate(iso) { var d = parseDate(iso); return d.getDate() + ' ' + MONTHS[d.getMonth()] + ' ' + d.getFullYear(); }
   function shortDate(d) { return d.getDate() + ' ' + MONTHS[d.getMonth()].slice(0, 3); }
   function ordinal(n) {
@@ -408,7 +414,8 @@
      dateTicks, the span in days under which every result date is a tick; sbOf,
      each season's best (key|season -> result); zoom, drawn in the enlarged view
      (no maximise button, points select rather than open); select(i), called
-     with the point picked.
+     with the point picked; hide, the calendar months (1-12) to take out of the date
+     axis (Hide empty months), each run of them drawn as a narrow // break.
      The By season view (BY_SEASON, for an event with results in more than one
      season) draws every season on one April-to-March axis instead, one line per
      season in its own colour, with the season names as the key. */
@@ -483,6 +490,15 @@
     var x = bySeason
       ? function (d) { return L + SEASONS.dayOfSeason(d) / (SEASONS.SEASON_DAYS - 1) * (W - L - R); }
       : function (d) { return L + (oneDay ? (W - L - R) / 2 : (parseDate(d) - t0) / (t1 - t0) * (W - L - R)); };
+    // Hide empty months: the axis without them, each run of them a break GAP wide
+    var GAP = 14, EDGE = 8, sq = null;
+    if (SEASONS && opts.hide && opts.hide.length && (bySeason || !oneDay)) {
+      sq = bySeason ? SEASONS.squash(SEASONS.REF_SEASON, SEASONS.REF_SEASON + SEASONS.SEASON_DAYS, opts.hide)
+                    : SEASONS.squash(dayNumOf(t0), dayNumOf(t1), opts.hide);
+    }
+    var sqX = function (n) { return L + EDGE + SEASONS.place(sq, n, W - L - R - 2 * EDGE, GAP); };
+    var dayN = function (d) { return bySeason ? SEASONS.REF_SEASON + SEASONS.dayOfSeason(d) : SEASONS.dayNum(d); };
+    if (sq) { x = function (d) { return sqX(dayN(d)); }; }
     // times: smaller is better, so smaller goes higher
     var y = function (v) { var f = (v - lo) / (hi - lo); return field ? T + (1 - f) * (H - T - B) : T + f * (H - T - B); };
 
@@ -490,14 +506,17 @@
                          'aria-label': group.name + ' progression, ' + pts.length + ' marks' +
                                        (bySeason ? '; by season, one line per season on an April to March axis' +
                                                    (SEASONS_ON ? ', winter months shaded grey' : '')
-                                                 : bands ? '; grey bands mark winter months' : '') });
+                                                 : bands ? '; grey bands mark winter months' : '') +
+                                       (sq ? '; months with no results in any season left out' : '') });
     s.classList.add('ath-chart__svg');
 
     // seasons, behind everything: winter (April to September) shaded, a dashed line
     // at each 1 April, the season's name above, a faint "Winter" or "Summer" in each band
     if (bands) {
       var from = isoOf(t0), to = isoOf(t1), sp = SEASONS.spans(from, to);
-      var xd = function (day) { return Math.max(L, Math.min(W - R, L + (parseDate(day) - t0) / (t1 - t0) * (W - L - R))); };
+      var xd = function (day) {
+        return Math.max(L, Math.min(W - R, sq ? sqX(SEASONS.dayNum(day)) : L + (parseDate(day) - t0) / (t1 - t0) * (W - L - R)));
+      };
       var short = !opts.zoom && window.matchMedia && window.matchMedia('(max-width: 480px)').matches;
       sp.halves.forEach(function (h) {
         var a = xd(h.from), b = xd(SEASONS.nextDay(h.to));
@@ -511,6 +530,7 @@
         }
       });
       SEASONS.boundaries(from, to).forEach(function (day) {
+        if (sq && SEASONS.isHidden(sq, SEASONS.dayNum(day))) { return; }   // in a break
         var bx = xd(day);
         s.appendChild(svg('line', { x1: bx, x2: bx, y1: T - 4, y2: H - B, class: 'ath-season-line' }));
       });
@@ -529,6 +549,7 @@
       var oct = x('2000-10-01');
       s.appendChild(svg('rect', { x: L, y: T, width: oct - L, height: H - T - B, class: 'ath-winter' }));
       [['Winter', L, oct], ['Summer', oct, W - R]].forEach(function (h) {
+        if (h[2] - h[1] < 60) { return; }   // too narrow, e.g. winter's months hidden
         var bw = svg('text', { x: (h[1] + h[2]) / 2, y: H - B - 7, class: 'ath-band-word', 'aria-hidden': 'true' });
         bw.textContent = h[0];
         s.appendChild(bw);
@@ -549,7 +570,8 @@
       // month starts, April to March
       var lastM = -Infinity;
       SEASONS.seasonMonths().forEach(function (m) {
-        var mx = L + m.day / (SEASONS.SEASON_DAYS - 1) * (W - L - R);
+        if (sq && SEASONS.isHidden(sq, SEASONS.REF_SEASON + m.day)) { return; }
+        var mx = sq ? sqX(SEASONS.REF_SEASON + m.day) : L + m.day / (SEASONS.SEASON_DAYS - 1) * (W - L - R);
         s.appendChild(svg('line', { x1: mx, x2: mx, y1: H - B, y2: H - B + 5, class: 'ath-tick' }));
         if (mx - lastM < 34) { return; }
         lastM = mx;
@@ -563,12 +585,15 @@
     } else {
       var d = new Date(t0.getFullYear(), t0.getMonth() + 1, 1);
       var wide = W > 700;   // the enlarged chart has room for more month starts
-      var every = span > (wide ? 1460 : 730) ? 6 : span > (wide ? 730 : 365) ? 3 : 1;
-      for (; d <= t1; d = new Date(d.getFullYear(), d.getMonth() + every, 1)) { ticks.push(d); }
+      var shownDays = sq ? sq.shown : span;   // with months hidden, fewer to fit
+      var every = shownDays > (wide ? 1460 : 730) ? 6 : shownDays > (wide ? 730 : 365) ? 3 : 1;
+      for (; d <= t1; d = new Date(d.getFullYear(), d.getMonth() + every, 1)) {
+        if (!sq || !SEASONS.isHidden(sq, dayNumOf(d))) { ticks.push(d); }
+      }
     }
     var lastTick = -Infinity;
     ticks.forEach(function (d) {
-      var tx = oneDay ? (W - L - R) / 2 + L : L + (d - t0) / (t1 - t0) * (W - L - R);
+      var tx = sq ? sqX(dayNumOf(d)) : oneDay ? (W - L - R) / 2 + L : L + (d - t0) / (t1 - t0) * (W - L - R);
       s.appendChild(svg('line', { x1: tx, x2: tx, y1: H - B, y2: H - B + 5, class: 'ath-tick' }));
       if (tx - lastTick < 44) { return; }   // a tick, but no label on top of the last one
       lastTick = tx;
@@ -577,6 +602,16 @@
       s.appendChild(lab);
     });
     s.appendChild(svg('line', { x1: L, x2: W - R, y1: H - B, y2: H - B, class: 'ath-baseline' }));
+    // a // on the date axis where each run of hidden months was
+    if (sq) {
+      SEASONS.breaks(sq, W - L - R - 2 * EDGE, GAP).forEach(function (b) {
+        var bx = L + EDGE + b, by = H - B;
+        s.appendChild(svg('rect', { x: bx - 6, y: by - 4, width: 12, height: 8, class: 'ath-break-mask' }));
+        [-3, 3].forEach(function (o) {
+          s.appendChild(svg('line', { x1: bx + o - 2.5, y1: by + 6, x2: bx + o + 2.5, y2: by - 6, class: 'ath-break' }));
+        });
+      });
+    }
 
     // The line breaks where the implement changes: for a throw where its weight
     // changes (labelled with the weight), for hurdles where the grade changes. A
@@ -712,7 +747,9 @@
     // and each season's best, the same as the table's "Season best" badge
     var sbOf = SEASONS ? SEASONS.bests(countable(rs), pbKey, isBetter) : {};
     CHART = { groups: groups, pbOf: pbOf, sbOf: sbOf };
-    groups.forEach(function (g) { out.appendChild(chart(g, t0, t1, pbOf, { sbOf: sbOf })); });
+    // Hide empty months: only months with no result for any event shown, so the charts still line up
+    var hide = HIDE_EMPTY && SEASONS ? SEASONS.emptyMonths(all.map(function (r) { return r.date; })) : null;
+    groups.forEach(function (g) { out.appendChild(chart(g, t0, t1, pbOf, { sbOf: sbOf, hide: hide })); });
   }
 
   /* The enlarged chart ---------------------------------------------------
@@ -828,8 +865,10 @@
     // drawn at the size it shows, so its labels stay the page's size: not a scaled-up copy
     var W = Math.max(320, Math.round(out.clientWidth || 1100));
     var H = Math.max(260, Math.min(560, Math.round(W * 0.5), window.innerHeight - 240));
+    // Hide empty months here goes by this event's results in every season, whatever the dates picked
+    var hide = HIDE_EMPTY ? SEASONS.emptyMonths(countable(zoom.group.results).map(function (x) { return x.date; })) : null;
     zoom.card = chart({ name: zoom.group.name, results: rs }, t0, t1, CHART.pbOf,
-      { W: W, H: H, yTicks: H > 380 ? 8 : 6, dateTicks: 90, zoom: true, sbOf: CHART.sbOf, select: zoomSelect });
+      { W: W, H: H, yTicks: H > 380 ? 8 : 6, dateTicks: 90, zoom: true, sbOf: CHART.sbOf, select: zoomSelect, hide: hide });
     out.appendChild(zoom.card);
   }
 
@@ -1277,7 +1316,32 @@
         try { localStorage.setItem('ncan-athlete-seasons', SEASONS_ON ? '1' : '0'); } catch (e) { /* not kept */ }
         render();
       });
+      // "Hide empty months", on the page and in the enlarged chart: one setting, off by default
+      $('ath-hidemonths-field').hidden = false;
+      var hideBoxes = [$('ath-hidemonths'), $('ath-zoom-hidemonths')].filter(Boolean);
+      hideBoxes.forEach(function (box) {
+        box.checked = HIDE_EMPTY;
+        box.addEventListener('change', function () {
+          HIDE_EMPTY = this.checked;
+          hideBoxes.forEach(function (b) { b.checked = HIDE_EMPTY; });
+          try { localStorage.setItem('ncan-athlete-hide-months', HIDE_EMPTY ? '1' : '0'); } catch (e) { /* not kept */ }
+          render();
+          if ($('ath-zoom') && $('ath-zoom').open && zoom.group) { zoomDraw(); }
+        });
+      });
     }
+    // help tips: shown on hover and focus by the stylesheet; a tap or click keeps one open
+    Array.prototype.forEach.call(document.querySelectorAll('.help-tip__btn'), function (b) {
+      b.addEventListener('click', function () {
+        var open = b.getAttribute('aria-expanded') !== 'true';
+        b.setAttribute('aria-expanded', open ? 'true' : 'false');
+        b.parentNode.classList.toggle('is-open', open);
+      });
+      b.addEventListener('blur', function () {
+        b.setAttribute('aria-expanded', 'false');
+        b.parentNode.classList.remove('is-open');
+      });
+    });
 
     // grouping is a viewing preference, kept on this device when it can be
     try {

@@ -273,7 +273,7 @@ Each `tests/js/<name>.test.js` tests the helpers in `assets/js/<name>.js` (or
 | `gallery-viewer.test.js` | the photo viewer's download button |
 | `meeting-links.test.js` | a meeting's other links on the results sources and athlete pages |
 | `calendar-edit.test.js` | the calendar editor: form to event and back, its checks, the words for dates and repeats |
-| `athlete-seasons.test.js` | seasons on the athlete charts (1 April to 31 March, winter and summer bands, "so far", season bests per weight), the By season view (each date's day in its season, 29 February included, and each season's colour) and the enlarged chart's date ranges |
+| `athlete-seasons.test.js` | seasons on the athlete charts (1 April to 31 March, winter and summer bands, "so far", season bests per weight), the By season view (each date's day in its season, 29 February included, and each season's colour), Hide empty months (only months with no result in any season, each run of them a break on the axis) and the enlarged chart's date ranges |
 
 `tests/py/test_page_photos.py` tests the header photo checks
 (`python -m unittest discover -s tests/py`). Add a test file with any new helper
