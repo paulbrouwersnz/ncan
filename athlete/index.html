@@ -381,9 +381,32 @@
           </p>
         </div>
         <p class="photo-now" id="photo-now"></p>
+        <div class="btn-row photo-actions" id="photo-actions" hidden>
+          <button type="button" class="btn btn--ghost" id="photo-edit-open">Edit photo</button>
+        </div>
+        <div class="photo-edit" id="photo-edit" hidden>
+          <p class="mem-help">
+            Choose which part of the photo stays in view as the heading gets narrower or wider, or click
+            the photo to pick a point yourself. The heading at the top of the page changes as you choose;
+            the narrow box shows a phone.
+          </p>
+          <div class="photo-edit__row">
+            <fieldset class="anchor-grid" id="photo-edit-anchor"><legend>Keep in view</legend></fieldset>
+            <div class="photo-edit__full" id="photo-edit-full" title="Click to pick the point to keep in view">
+              <img id="photo-edit-img" alt="The photo now on this page">
+              <span class="photo-edit__dot" id="photo-edit-dot" aria-hidden="true"></span>
+            </div>
+            <div class="photo-edit__phone" id="photo-edit-phone" aria-hidden="true"></div>
+          </div>
+          <p class="photo-edit__status" id="photo-edit-status" role="status"></p>
+          <div class="btn-row">
+            <button type="button" class="btn btn--accent" id="photo-edit-save" disabled>Save</button>
+            <button type="button" class="btn btn--ghost" id="photo-edit-cancel">Cancel</button>
+          </div>
+        </div>
         <div id="photo-choose">
           <p class="records-field">
-            <label for="photo-file">Choose a photo</label>
+            <label for="photo-file" id="photo-file-label">Choose a photo</label>
             <input type="file" id="photo-file" accept="image/*">
           </p>
           <div class="photo-crop" id="photo-crop" hidden>
@@ -399,6 +422,7 @@
               <label for="photo-zoom">Zoom</label>
               <input type="range" id="photo-zoom" step="1" style="direction: rtl">
             </p>
+            <fieldset class="anchor-grid" id="photo-crop-anchor"><legend>Keep in view</legend></fieldset>
             <p class="records-field ath-check">
               <input type="checkbox" id="photo-confirm">
               <label for="photo-confirm">I have the right to share this photo, and it shows
@@ -603,6 +627,8 @@
 
   <script src="/assets/js/ncan-account.js"></script>
   <script src="/assets/js/athlete-access.js" defer></script>
+  <script src="/assets/js/form-lock.js" defer></script>
+  <script src="/assets/js/anchor-grid.js" defer></script>
   <script src="/assets/js/athlete-photo.js" defer></script>
   <script src="/assets/js/athlete-manage.js" defer></script>
   <script src="/assets/js/meeting-links.js"></script>

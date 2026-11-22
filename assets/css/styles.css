@@ -3919,6 +3919,35 @@ html:has(.plan-editor:not([hidden])) { scroll-padding-bottom: 5rem; }
 .photo-crop__stage canvas:focus-visible { outline: 3px solid var(--yellow-500); outline-offset: 2px; }
 .photo-crop__zoom { max-width: 20rem; margin-bottom: .8rem; }
 .photo-crop .ath-check { margin-bottom: 1rem; }
+
+/* "Keep in view": a 3 x 3 grid of radio buttons (anchor-grid.js), and Custom */
+.anchor-grid { border: 0; margin: 0 0 1rem; padding: 0; min-width: 0; }
+.anchor-grid[hidden] { display: none; }
+.anchor-grid legend { font-weight: 600; margin-bottom: .4rem; padding: 0; }
+.anchor-grid__cells { display: grid; grid-template-columns: repeat(3, 2.6rem); grid-template-rows: repeat(3, 1.6rem);
+  gap: 3px; padding: 3px; width: max-content; border-radius: 6px; background: var(--border, #cfd8d3); }
+.anchor-grid__cell { position: relative; display: block; cursor: pointer; background: #fff; border-radius: 3px; }
+.anchor-grid__cell input { position: absolute; inset: 0; margin: 0; opacity: 0; cursor: pointer; }
+.anchor-grid__cell i { position: absolute; top: 50%; left: 50%; width: .5rem; height: .5rem; margin: -.25rem 0 0 -.25rem;
+  border-radius: 50%; background: #b5c2bc; }
+.anchor-grid__cell:has(input:checked) { background: var(--green-700, #12573f); }
+.anchor-grid__cell:has(input:checked) i { background: var(--yellow-400); width: .7rem; height: .7rem; margin: -.35rem 0 0 -.35rem; }
+.anchor-grid__cell:has(input:focus-visible) { outline: 3px solid var(--yellow-500); outline-offset: 1px; }
+.anchor-grid__custom { display: inline-flex; align-items: center; gap: .4rem; margin-top: .5rem; font-size: .95rem; }
+.anchor-grid__custom[hidden] { display: none; }
+
+/* Edit photo: the grid, the whole photo (click to pick a point) and a phone's narrow view */
+.photo-actions[hidden], .photo-edit[hidden] { display: none; }
+.photo-edit { max-width: 52rem; margin: 0 0 1.2rem; }
+.photo-edit__row { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 1rem 1.4rem; margin: .8rem 0; }
+.photo-edit__full { position: relative; flex: 1 1 16rem; max-width: 26rem; aspect-ratio: 2 / 1; cursor: crosshair;
+  border-radius: var(--radius-sm); overflow: hidden; }
+.photo-edit__full img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.photo-edit__dot { position: absolute; width: 14px; height: 14px; margin: -7px 0 0 -7px; border-radius: 50%;
+  background: rgba(255,255,255,.9); border: 2px solid #0B3B2E; pointer-events: none; }
+.photo-edit__phone { flex: 0 0 auto; width: 4.5rem; height: 6.5rem; border-radius: 8px; border: 3px solid #14261f;
+  background-size: cover; background-repeat: no-repeat; }
+.photo-edit__status { min-height: 1.4em; margin: 0 0 .6rem; }
 #photo-remove-row { margin-top: 1.2rem; }
 
 /* Header photos on the Club admin page (admin.html, admin-photos.js) */

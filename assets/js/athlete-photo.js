@@ -22,6 +22,12 @@
   - the person confirms they have the right to share it and that it shows the
     athlete suitably; it's shown at once (POST .../photo), and the club can see
     who uploaded it and remove it.
+
+  With a photo already there, "Choose a photo" becomes Replace photo: the new one
+  takes the old one's place in one step (the heading never goes blank), starting
+  from the current "Keep in view". Edit photo changes only what stays in view (a
+  3 x 3 grid, anchor-grid.js, or a point clicked on the photo: Custom) and saves
+  just that (POST .../photo/settings), with no new upload.
 */
 (function () {
   'use strict';
@@ -38,6 +44,8 @@
   var who = null;            // NCAN.athlete: slug, name, photo, can_change_photo, can_remove_photo
   var shownUrl = '';         // object URL of the photo shown now
   var crop = null;           // the photo being cropped: {img, w, h, x, y, cw, fx, fy}
+  var cropGrid = null;       // "Keep in view" while cropping
+  var edit = null;           // Edit photo: {grid, focus}
 
   function say(words) { $('photo-status').textContent = words || ''; }
   function first() { return (who.name || 'the athlete').split(' ')[0]; }
@@ -173,7 +181,10 @@
           (MIN_WIDTH / ASPECT) + ' high).');
         return;
       }
-      crop = { img: img, w: w, h: h, fx: 50, fy: 50 };
+      // a replacement starts from the current photo's "Keep in view"
+      var was = window.NCANAnchor && who.photo ? NCANAnchor.parse(who.photo.focus) : null;
+      crop = { img: img, w: w, h: h, fx: was ? was[0] : 50, fy: was ? was[1] : 50 };
+      if (cropGrid) { cropGrid.set(focus()); }
       crop.cw = largest();
       crop.x = (w - crop.cw) / 2;
       crop.y = (h - crop.cw / ASPECT) / 2;
@@ -226,6 +237,7 @@
         if (sx >= crop.x && sx <= crop.x + crop.cw && sy >= crop.y && sy <= crop.y + ch) {
           crop.fx = (sx - crop.x) / crop.cw * 100;
           crop.fy = (sy - crop.y) / ch * 100;
+          if (cropGrid) { cropGrid.set(focus()); }
         }
       }
       drag = null;
@@ -257,6 +269,100 @@
       preview();
     });
     window.addEventListener('resize', function () { if (crop) { draw(); } });
+    if (window.NCANAnchor) {
+      cropGrid = NCANAnchor.build($('photo-crop-anchor'), 'photo-crop-anchor', function (f) {
+        if (!crop) { return; }
+        var p = NCANAnchor.parse(f);
+        crop.fx = p[0];
+        crop.fy = p[1];
+        draw();
+        preview();
+      });
+    } else {
+      $('photo-crop-anchor').hidden = true;
+    }
+  }
+
+  /* Edit photo: only what stays in view --------------------------------------- */
+
+  function editShow(focusValue) {
+    edit.focus = focusValue;
+    var p = NCANAnchor.parse(focusValue) || [50, 50];
+    var dot = $('photo-edit-dot');
+    dot.style.left = p[0] + '%';
+    dot.style.top = p[1] + '%';
+    $('photo-edit-phone').style.backgroundPosition = focusValue;
+    // the same photo: only its focus point moves (no fade)
+    var head = document.querySelector('.page-head');
+    if (head) { head.style.setProperty('--photo-focus', focusValue); }
+    $('photo-edit-save').disabled = focusValue === who.photo.focus;
+    $('photo-edit-status').textContent = '';
+  }
+
+  function openEdit() {
+    if (!who.photo || !shownUrl || !window.NCANAnchor) { return; }
+    $('photo-edit').hidden = false;
+    $('photo-actions').hidden = true;
+    $('photo-choose').hidden = true;
+    $('photo-edit-img').src = shownUrl;
+    $('photo-edit-phone').style.backgroundImage = 'url("' + shownUrl + '")';
+    if (!edit) {
+      edit = { grid: NCANAnchor.build($('photo-edit-anchor'), 'photo-edit-anchor', editShow) };
+      $('photo-edit-full').addEventListener('click', function (e) {
+        var r = this.getBoundingClientRect();
+        var x = Math.round(Math.max(0, Math.min(100, (e.clientX - r.left) / r.width * 100)));
+        var y = Math.round(Math.max(0, Math.min(100, (e.clientY - r.top) / r.height * 100)));
+        var f = x + '% ' + y + '%';
+        edit.grid.set(f);
+        editShow(f);
+      });
+      $('photo-edit-save').addEventListener('click', saveEdit);
+      $('photo-edit-cancel').addEventListener('click', closeEdit);
+    }
+    edit.grid.set(who.photo.focus);
+    editShow(who.photo.focus || '50% 50%');
+    $('photo-edit-save').disabled = true;
+  }
+
+  function closeEdit() {
+    $('photo-edit').hidden = true;
+    showOwn();
+    render0();
+  }
+
+  function saveEdit() {
+    var box = $('photo-edit');
+    var said = $('photo-edit-status');
+    if (window.FormLock) { FormLock.lock(box, true, 'button, input'); }
+    said.classList.add('is-busy', 'lock-keep');
+    said.textContent = 'Saving…';
+    function done() {
+      if (window.FormLock) { FormLock.lock(box, false, 'button, input'); }
+      said.classList.remove('is-busy');
+    }
+    NCAN.send('/athletes/' + who.slug + '/photo/settings', { focus: edit.focus }).then(function (r) {
+      done();
+      if (r.status === 200 && r.body.photo) {
+        who.photo = r.body.photo;
+        closeEdit();
+        say('Saved: the heading keeps ' + (NCANAnchor.keyOf(who.photo.focus) === 'custom' ? 'the point you picked'
+          : 'the ' + labelOf(who.photo.focus).toLowerCase() + ' of the photo') + ' in view.');
+      } else {
+        said.textContent = (r.body && r.body.error) || 'Sorry, that couldn’t be saved.';
+        $('photo-edit-save').disabled = false;
+      }
+    }, function (err) {
+      done();
+      said.textContent = err.message || 'Sorry, that couldn’t be saved.';
+    });
+  }
+
+  function labelOf(focusValue) {
+    var key = NCANAnchor.keyOf(focusValue);
+    for (var i = 0; i < NCANAnchor.POSITIONS.length; i++) {
+      if (NCANAnchor.POSITIONS[i].key === key) { return NCANAnchor.POSITIONS[i].label; }
+    }
+    return 'Custom';
   }
 
   /* Saving and removing -------------------------------------------------------- */
@@ -314,6 +420,8 @@
       ? first() + '’s page shows a photo of their own.'
       : 'No photo of ' + first() + '’s own yet' + (who.can_change_photo ? ': choose one below.' : '.');
     $('photo-choose').hidden = !who.can_change_photo;
+    $('photo-file-label').textContent = who.photo ? 'Replace photo' : 'Choose a photo';
+    $('photo-actions').hidden = !(who.photo && who.can_change_photo && window.NCANAnchor);
     $('photo-remove-row').hidden = !(who.photo && who.can_remove_photo);
     $('photo-confirm-name').textContent = who.name || 'the athlete';
   }
@@ -330,6 +438,7 @@
     $('photo-save').addEventListener('click', save);
     $('photo-cancel').addEventListener('click', function () { say(''); stopCrop(); });
     $('photo-remove').addEventListener('click', remove);
+    $('photo-edit-open').addEventListener('click', openEdit);
     setUpCropping();
   }
 
