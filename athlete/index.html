@@ -209,6 +209,14 @@
           <input type="checkbox" id="ath-seasons" checked>
           <label for="ath-seasons">Show seasons (winter shaded grey)</label>
         </p>
+        <p class="records-field ath-check" id="ath-hidemonths-field" hidden>
+          <input type="checkbox" id="ath-hidemonths" aria-describedby="ath-hidemonths-tip">
+          <label for="ath-hidemonths">Hide empty months</label>
+          <span class="help-tip">
+            <button type="button" class="help-tip__btn" aria-label="About hiding empty months" aria-expanded="false" aria-controls="ath-hidemonths-tip">?</button>
+            <span class="help-tip__text" id="ath-hidemonths-tip" role="tooltip">Hides a month only when no result falls in it in any season: for example, no July result ever. A // on the date axis marks where months were left out. The enlarged chart goes by its own event's results.</span>
+          </span>
+        </p>
         <div class="ath-charts" id="ath-charts"></div>
 
         <!-- one chart enlarged: opened by the button on each chart (assets/js/athlete.js) -->
@@ -230,6 +238,14 @@
               <label>To <input type="date" id="ath-zoom-to"></label>
             </span>
           </div>
+          <p class="ath-check ath-zoom__hide">
+            <input type="checkbox" id="ath-zoom-hidemonths" aria-describedby="ath-zoom-hidemonths-tip">
+            <label for="ath-zoom-hidemonths">Hide empty months</label>
+            <span class="help-tip">
+              <button type="button" class="help-tip__btn" aria-label="About hiding empty months" aria-expanded="false" aria-controls="ath-zoom-hidemonths-tip">?</button>
+              <span class="help-tip__text" id="ath-zoom-hidemonths-tip" role="tooltip">Hides a month only when no result falls in it in any season: for example, no July result ever. A // on the date axis marks where months were left out. The enlarged chart goes by its own event's results.</span>
+            </span>
+          </p>
           <div class="ath-zoom__body">
             <div class="ath-zoom__chart" id="ath-zoom-chart"></div>
             <aside class="ath-zoom__details" id="ath-zoom-details" aria-live="polite" aria-label="Result details"></aside>
