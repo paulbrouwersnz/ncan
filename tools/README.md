@@ -25,7 +25,8 @@ the tools learn this.
   Pages opened straight from the disk (`file://`) don't work any more: use the
   local preview (`python -m http.server 8123`).
 - **The athlete page and club champs keep their place after `#/`**:
-  `/athlete/#/sam-brown` (a section follows: `/athlete/#/sam-brown/out-of-stadia`)
+  `/athlete/#/sam-brown` (a section follows: `/athlete/#/sam-brown/out-of-stadia`;
+  an enlarged chart: `/athlete/#/sam-brown/chart/100m-hurdles`, so Back closes it)
   and `/club-champs/#/season/2026-27` (with `/club-champs/` alone opening the
   newest season). An in-page link (`#out-of-stadia`) is turned into that form by
   the page. The part after `#` never reaches the web server.
@@ -272,6 +273,7 @@ Each `tests/js/<name>.test.js` tests the helpers in `assets/js/<name>.js` (or
 | `gallery-viewer.test.js` | the photo viewer's download button |
 | `meeting-links.test.js` | a meeting's other links on the results sources and athlete pages |
 | `calendar-edit.test.js` | the calendar editor: form to event and back, its checks, the words for dates and repeats |
+| `athlete-seasons.test.js` | seasons on the athlete charts (1 April to 31 March, winter and summer bands, "so far", season bests per weight) and the enlarged chart's date ranges |
 
 `tests/py/test_page_photos.py` tests the header photo checks
 (`python -m unittest discover -s tests/py`). Add a test file with any new helper

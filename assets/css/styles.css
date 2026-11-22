@@ -47,6 +47,7 @@
 
   --line: rgba(11, 59, 46, .12);
   --line-strong: rgba(11, 59, 46, .22);
+  --chart-winter: rgba(11, 59, 46, .055);   /* winter months on the athlete charts */
 
   /* arrow-out-of-box, used as a mask so it takes the surrounding text colour */
   --icon-folder: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z'/%3E%3C/svg%3E");
@@ -1260,7 +1261,7 @@ table.schedule.champs-table { min-width: 0; }
   border-radius: var(--radius);
   box-shadow: var(--shadow-sm);
 }
-.ath-chart__title { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem;
+.ath-chart__title { display: flex; align-items: center; justify-content: space-between; gap: 1rem;
   margin: 0 0 .4rem; font-family: var(--font-display); font-weight: 700; color: var(--heading); }
 .ath-chart__dir { font-family: var(--font-sans); font-size: .78rem; font-weight: 700; color: var(--accent); }
 .ath-chart__svg { display: block; width: 100%; height: auto; overflow: visible; }
@@ -1300,6 +1301,82 @@ table.schedule.champs-table { min-width: 0; }
   box-shadow: var(--shadow);
 }
 .ath-tip[hidden] { display: none; }
+
+/* seasons on the charts: winter (April to September) shaded, summer left white */
+.ath-winter { fill: var(--chart-winter); }
+.ath-season-line { stroke: var(--line-strong); stroke-width: 1; stroke-dasharray: 4 4; }
+.ath-season-label { font-family: var(--font-sans); font-size: 11px; font-weight: 700; fill: var(--text-soft); text-anchor: middle; }
+.ath-band-word { font-family: var(--font-sans); font-size: 10px; letter-spacing: .04em; fill: var(--text-soft); opacity: .5; text-anchor: middle; }
+/* each season's best: a ring round the point */
+.ath-ring { fill: none; stroke: var(--accent); stroke-width: 2; }
+.ath-point-link.is-selected .ath-point { stroke: var(--heading); stroke-width: 4; }
+
+/* the maximise button on each chart */
+.ath-chart__end { display: inline-flex; align-items: center; gap: .6rem; }
+.ath-chart__zoom {
+  display: inline-grid; place-items: center;
+  width: 32px; height: 32px; padding: 0;
+  background: var(--surface); color: var(--heading);
+  border: 1px solid var(--line-strong); border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+.ath-chart__zoom svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.ath-chart__zoom:hover { background: var(--surface-tint); }
+.ath-chart__zoom:focus-visible { outline: 2px solid var(--yellow-500); outline-offset: 2px; }
+@media (pointer: coarse) { .ath-chart__zoom { width: 44px; height: 44px; } }
+
+/* one chart enlarged: a dialog nearly the window's size, the whole screen on phones.
+   Only [open] gets a display, so the closed dialog keeps the UA's display:none */
+.ath-zoom {
+  width: calc(100vw - 32px); max-width: 1280px;
+  height: calc(100dvh - 32px); max-height: none;
+  padding: 0; border: 0; border-radius: var(--radius);
+  background: var(--surface); color: var(--text);
+  box-shadow: var(--shadow-lg);
+}
+.ath-zoom[open] { display: flex; flex-direction: column; gap: .75rem; padding: 1rem 1.25rem 1.25rem; overflow: auto; }
+.ath-zoom::backdrop { background: rgba(6, 28, 22, .72); }
+.ath-zoom__head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.ath-zoom__title { margin: 0; font-family: var(--font-display); font-size: 1.4rem; color: var(--heading); }
+.ath-zoom__title:focus { outline: none; }
+.ath-zoom__close {
+  display: inline-grid; place-items: center; flex: none;
+  width: 44px; height: 44px; padding: 0;
+  background: var(--surface-tint); color: var(--heading);
+  border: 1px solid var(--line); border-radius: 50%; cursor: pointer;
+}
+.ath-zoom__close svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; }
+.ath-zoom__close:hover { background: var(--surface-strong); }
+.ath-zoom__close:focus-visible, .ath-zoom__chip:focus-visible { outline: 2px solid var(--yellow-500); outline-offset: 2px; }
+.ath-zoom__ranges { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; }
+.ath-zoom__chip {
+  min-height: 36px; padding: .3rem .85rem;
+  font: inherit; font-size: .88rem; font-weight: 600;
+  background: var(--surface); color: var(--heading);
+  border: 1px solid var(--line-strong); border-radius: 999px; cursor: pointer;
+}
+.ath-zoom__chip[aria-pressed="true"] { background: var(--solid); border-color: var(--solid); color: var(--white); }
+@media (pointer: coarse) { .ath-zoom__chip { min-height: 44px; } }
+.ath-zoom__pick { display: inline-flex; flex-wrap: wrap; gap: .5rem; margin-left: .25rem; font-size: .88rem; }
+.ath-zoom__pick[hidden] { display: none; }
+.ath-zoom__pick input { margin-left: .25rem; font: inherit; padding: .2rem .4rem; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); }
+.ath-zoom__body { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) 17rem; gap: 1rem; align-items: start; }
+.ath-zoom__chart .ath-chart { padding: 0; border: 0; box-shadow: none; }
+.ath-zoom__chart .ath-chart__title { display: none; }
+.ath-zoom__details { padding: .9rem 1rem; background: var(--surface-tint); border: 1px solid var(--line); border-radius: var(--radius); font-size: .9rem; }
+.ath-zoom__prompt { margin: 0; color: var(--text-soft); }
+.ath-zoom__mark { margin: 0 0 .35rem; font-family: var(--font-display); font-size: 1.6rem; font-weight: 700; color: var(--heading); font-variant-numeric: tabular-nums; }
+.ath-zoom__tags { margin: 0 0 .6rem; }
+.ath-zoom__tags .ath-badge:first-child { margin-left: 0; }
+.ath-zoom__facts { display: grid; grid-template-columns: auto 1fr; gap: .25rem .75rem; margin: 0 0 .6rem; }
+.ath-zoom__facts dt { color: var(--text-soft); }
+.ath-zoom__facts dd { margin: 0; overflow-wrap: anywhere; }
+.ath-zoom__link { margin: 0; }
+@media (max-width: 760px) {
+  .ath-zoom { width: 100vw; max-width: 100vw; height: 100dvh; border-radius: 0; }
+  .ath-zoom[open] { padding: .75rem 16px 1rem; }
+  .ath-zoom__body { grid-template-columns: minmax(0, 1fr); }
+}
 .ath-badge { margin-left: .4rem; }
 /* ✍️ beside a mark entered manually (not from AthleticLIVE); its title says so */
 .ath-manual { margin-left: .35rem; font-size: .9em; cursor: help;
@@ -4084,6 +4161,7 @@ table.schedule.manage-mem { min-width: 640px; }
     --text-soft: light-dark(#4B6157, #a3b8ae);
     --line: light-dark(rgba(11, 59, 46, .12), rgba(255, 255, 255, .11));
     --line-strong: light-dark(rgba(11, 59, 46, .22), rgba(255, 255, 255, .22));
+    --chart-winter: light-dark(rgba(11, 59, 46, .055), rgba(255, 255, 255, .055));
     --header-bg: light-dark(rgba(255, 255, 255, .92), rgba(12, 24, 19, .92));
     --veil: light-dark(rgba(255, 255, 255, .78), rgba(12, 24, 19, .78));
     --danger: light-dark(#8c2f2f, #ff9d8f);
