@@ -5,9 +5,13 @@
   links will reuse it.
 
   The image explains itself: a title strip (athlete, event, dates shown), the
-  chart exactly as shown (date range, Timeline or By season, hidden months, the
-  selected result, a lit key entry), the key for the marks it has, and
-  "ncan.nz" in a corner. It's drawn at twice the size, so it's sharp on phones.
+  chart as shown (date range, Timeline or By season, hidden months, the
+  selected result, a lit key entry), the key for the marks it has, and a footer
+  with the club's share image (the crest and name) and "ncan.nz". It's a
+  photo-friendly shape whatever the window: landscape 3:2 on wide screens,
+  portrait 4:5 on phones. The chart is drawn again at the size that shape
+  leaves for it, so nothing is stretched, and the image is made at twice the
+  size so it's sharp on phones.
 
   The SVG is styled by the site's stylesheet, which a picture can't see, so each
   element's computed style is copied onto a copy of it first. Phones that can
@@ -69,6 +73,24 @@
     if (row.length) { rows.push(row); }
     return rows;
   }
+
+  // the image's shape: portrait on phones and tall windows, landscape otherwise
+  function shapeFor(width, height) {
+    return width <= 760 || height > width ? 'portrait' : 'landscape';
+  }
+  var SIZES = { landscape: { w: 1080, h: 720 }, portrait: { w: 720, h: 900 } };
+  var PAD = 28, TITLE = 76, KEY_ROW = 26, FOOT = 72;
+  // where everything goes in an image of this shape with this many key rows
+  function layout(shape, keyRows) {
+    var size = SIZES[shape] || SIZES.landscape;
+    var key = keyRows ? keyRows * KEY_ROW + 14 : 0;
+    var chartH = size.h - TITLE - 12 - key - FOOT;
+    return { w: size.w, h: size.h, pad: PAD, chartX: PAD, chartY: TITLE, chartW: size.w - PAD * 2,
+             chartH: chartH, keyY: TITLE + chartH + 12 + 13, footY: size.h - FOOT };
+  }
+
+  // the club's lockup in share.png (1200 x 630, white around it): the part with the crest and name
+  var SHARE = { src: '/assets/img/share.png', x: 88, y: 198, w: 1024, h: 234 };
 
   // a computed box-shadow ("rgb(1, 2, 3) 0px 0px 0px 3px"): the first one's colour and spread
   function shadow(css) {
@@ -154,47 +176,86 @@
     return 16;
   }
 
-  /* opts: svg, the chart's SVG; title, the athlete; subtitle; key, a list of
-     { swatch: element, words: text }; colours { bg, heading, text, soft };
-     fonts { display, sans }. Resolves with a canvas. */
-  function render(opts) {
-    return svgImage(opts.svg).then(function (s) {
-      var S = 2, PAD = 28, col = opts.colours, font = opts.fonts;
-      var W = Math.max(s.w, 480) + PAD * 2;
-      var measure = document.createElement('canvas').getContext('2d');
-      measure.font = '14px ' + font.sans;
-      var widths = (opts.key || []).map(function (k) { return 24 + measure.measureText(k.words).width; });
-      var rows = keyRows(widths, W - PAD * 2, 22);
-      var TITLE = 76, KEY = rows.length ? rows.length * 26 + 14 : 0, FOOT = 34;
-      var H = TITLE + s.h + 16 + KEY + FOOT;
-      var canvas = document.createElement('canvas');
-      canvas.width = W * S; canvas.height = H * S;
-      var c = canvas.getContext('2d');
-      c.scale(S, S);
-      c.fillStyle = col.bg; c.fillRect(0, 0, W, H);
-      c.textBaseline = 'alphabetic';
-      c.fillStyle = col.heading; c.font = '700 24px ' + font.display;
-      c.fillText(opts.title || '', PAD, PAD + 20);
-      c.fillStyle = col.text; c.font = '15px ' + font.sans;
-      c.fillText(opts.subtitle || '', PAD, PAD + 44);
-      c.drawImage(s.img, PAD + (W - PAD * 2 - s.w) / 2, TITLE, s.w, s.h);
-      var y = TITLE + s.h + 16 + 13;
-      c.font = '14px ' + font.sans; c.textBaseline = 'middle';
-      rows.forEach(function (row) {
-        row.forEach(function (it) {
-          var k = opts.key[it.i], x = PAD + it.x;
-          drawSwatch(c, k.swatch, x, y);
-          c.fillStyle = col.text;
-          c.fillText(k.words, x + 24, y + 1);
-        });
-        y += 26;
-      });
-      c.textBaseline = 'alphabetic';
-      c.fillStyle = col.soft; c.font = '600 13px ' + font.sans;
-      c.textAlign = 'right';
-      c.fillText('ncan.nz', W - PAD, H - 14);
-      return canvas;
+  function loadImage(src) {
+    return new Promise(function (ok) {
+      var img = new Image();
+      img.onload = function () { ok(img); };
+      img.onerror = function () { ok(null); };   // no logo is better than no image
+      img.src = src;
     });
+  }
+
+  /* The footer's club lockup. On a light background it's the share image itself (its
+     white surround matches); on a dark one the white would show as a box, so it's the
+     dark crest with the club's name beside it, set like the share image. */
+  function drawLockup(c, logo, x, y, h, dark, col, font) {
+    if (!logo) { return; }
+    if (!dark) {
+      c.drawImage(logo, SHARE.x, SHARE.y, SHARE.w, SHARE.h, x, y, h * SHARE.w / SHARE.h, h);
+      return;
+    }
+    var cw = h * 888 / 508;   // logo-dark.svg's shape
+    c.drawImage(logo, x, y, cw, h);
+    c.fillStyle = col.heading; c.font = '700 ' + Math.round(h * 0.36) + 'px ' + font.display;
+    c.textBaseline = 'alphabetic';
+    c.fillText('North Canterbury', x + cw + 12, y + h * 0.46);
+    c.fillText('Athletic Club', x + cw + 12, y + h * 0.9);
+  }
+
+  /* opts: shape ('landscape' or 'portrait'); draw(w, h), which puts the chart's SVG at
+     that size on the page (so it's styled) and returns it; done(), called after;
+     title, the athlete; subtitle; key, a list of { swatch: element, words: text };
+     colours { bg, heading, text, soft }; dark; fonts { display, sans }.
+     Resolves with a canvas. */
+  function render(opts) {
+    var S = 2, col = opts.colours, font = opts.fonts;
+    var measure = document.createElement('canvas').getContext('2d');
+    measure.font = '14px ' + font.sans;
+    var widths = (opts.key || []).map(function (k) { return 24 + measure.measureText(k.words).width; });
+    var rows = keyRows(widths, layout(opts.shape, 0).chartW, 22);
+    var L = layout(opts.shape, rows.length);
+    var svgEl;
+    try { svgEl = opts.draw(L.chartW, L.chartH); } catch (e) { if (opts.done) { opts.done(); } return Promise.reject(e); }
+    var finish = function () { if (opts.done) { opts.done(); } };
+    return Promise.all([svgImage(svgEl), loadImage(opts.dark ? '/assets/img/logo-dark.svg' : SHARE.src)])
+      .then(function (got) {
+        finish();
+        var s = got[0], logo = got[1];
+        var canvas = document.createElement('canvas');
+        canvas.width = L.w * S; canvas.height = L.h * S;
+        var c = canvas.getContext('2d');
+        c.scale(S, S);
+        c.fillStyle = col.bg; c.fillRect(0, 0, L.w, L.h);
+        c.textBaseline = 'alphabetic';
+        c.fillStyle = col.heading; c.font = '700 24px ' + font.display;
+        c.fillText(opts.title || '', L.pad, L.pad + 20);
+        c.fillStyle = col.text; c.font = '15px ' + font.sans;
+        c.fillText(opts.subtitle || '', L.pad, L.pad + 44);
+        // the chart was drawn at the size it gets, so it fits as it is
+        var scale = Math.min(1, L.chartW / s.w, L.chartH / s.h);
+        c.drawImage(s.img, L.chartX + (L.chartW - s.w * scale) / 2, L.chartY, s.w * scale, s.h * scale);
+        var y = L.keyY;
+        c.font = '14px ' + font.sans; c.textBaseline = 'middle';
+        rows.forEach(function (row) {
+          row.forEach(function (it) {
+            var k = opts.key[it.i], x = L.pad + it.x;
+            drawSwatch(c, k.swatch, x, y);
+            c.fillStyle = col.text;
+            c.fillText(k.words, x + 24, y + 1);
+          });
+          y += KEY_ROW;
+        });
+        // the footer: a hairline, the club's lockup, ncan.nz
+        c.strokeStyle = col.soft; c.globalAlpha = 0.35; c.lineWidth = 1;
+        c.beginPath(); c.moveTo(L.pad, L.footY + 0.5); c.lineTo(L.w - L.pad, L.footY + 0.5); c.stroke();
+        c.globalAlpha = 1;
+        drawLockup(c, logo, L.pad, L.footY + 14, 44, opts.dark, col, font);
+        c.textBaseline = 'middle';
+        c.fillStyle = col.soft; c.font = '600 14px ' + font.sans;
+        c.textAlign = 'right';
+        c.fillText('ncan.nz', L.w - L.pad, L.footY + 36);
+        return canvas;
+      }, function (e) { finish(); throw e; });
   }
 
   // the image saved: the share sheet on phones that can share files, else a download.
@@ -225,5 +286,6 @@
   }
 
   return { slug: slug, fileName: fileName, day: day, dateRange: dateRange, subtitle: subtitle,
-           keyRows: keyRows, shadow: shadow, PROPS: PROPS, render: render, save: save };
+           keyRows: keyRows, shadow: shadow, shapeFor: shapeFor, layout: layout, SIZES: SIZES,
+           PROPS: PROPS, render: render, save: save };
 }));

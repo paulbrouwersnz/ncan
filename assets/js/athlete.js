@@ -877,6 +877,7 @@
     var H = room > 320 ? room - 52 : Math.max(260, Math.min(560, Math.round(W * 0.5), window.innerHeight - 240));
     // Hide empty months here goes by this event's results in every season, whatever the dates picked
     var hide = HIDE_EMPTY ? SEASONS.emptyMonths(countable(zoom.group.results).map(function (x) { return x.date; })) : null;
+    zoom.drawn = { rs: rs, t0: t0, t1: t1, hide: hide };
     zoom.card = chart({ name: zoom.group.name, results: rs }, t0, t1, CHART.pbOf,
       { W: W, H: H, yTicks: H > 380 ? 8 : 6, dateTicks: 90, zoom: true, sbOf: CHART.sbOf, select: zoomSelect, hide: hide });
     out.appendChild(zoom.card);
@@ -953,11 +954,41 @@
     var chip = dlg.querySelector('#ath-zoom-ranges [aria-pressed="true"]');
     var who = (window.NCAN && NCAN.athlete && NCAN.athlete.name) || '';
     var name = IMG.fileName(who, zoom.group.name);
+    // the chart drawn again at the size the image's shape leaves for it, out of sight on the
+    // page so the stylesheet reaches it, with the same result selected and key entry lit
+    var holder = null;
+    var draw = function (w, h) {
+      var d = zoom.drawn;
+      holder = document.createElement('div');
+      holder.setAttribute('aria-hidden', 'true');
+      // off screen, not hidden: its styles are copied into the image, visibility included
+      holder.style.cssText = 'position:absolute;left:-10000px;top:0;width:' + w + 'px;pointer-events:none';
+      var card = chart({ name: zoom.group.name, results: d.rs }, d.t0, d.t1, CHART.pbOf,
+        { W: w, H: h, yTicks: h > 380 ? 8 : 6, dateTicks: 90, zoom: true, sbOf: CHART.sbOf, select: function () {}, hide: d.hide });
+      holder.appendChild(card);
+      $('ath-zoom-chart').appendChild(holder);
+      var links = card.ncanLinks || [];
+      if (zoom.at >= 0 && links[zoom.at]) { links[zoom.at].classList.add('is-selected'); }
+      var s = card.querySelector('svg.ath-chart__svg');
+      if (zoom.key && s) {
+        s.classList.add('is-keying');
+        links.forEach(function (g) { g.classList.toggle('is-lit', keyMatch(g, zoom.key)); });
+      }
+      return s;
+    };
+    var done = function () { if (holder) { holder.remove(); holder = null; } };
+    var dark = (function () {
+      var m = String(cs.backgroundColor).match(/\d+(\.\d+)?/g);
+      return m ? (+m[0] * 299 + +m[1] * 587 + +m[2] * 114) / 1000 < 128 : false;
+    }());
     b.disabled = true;
     b.classList.add('is-busy');
     said.textContent = 'Making the image…';
     IMG.render({
-      svg: chartSvg,
+      shape: IMG.shapeFor(window.innerWidth, window.innerHeight),
+      draw: draw,
+      done: done,
+      dark: dark,
       title: who,
       subtitle: IMG.subtitle(zoom.group.name, chip ? chip.textContent.trim() : '', dates[0], dates[dates.length - 1]),
       key: key,

@@ -46,3 +46,33 @@ test('a swatch ring is read from its CSS shadow', () => {
   // a soft drop shadow (no spread) isn't a ring
   assert.equal(I.shadow('rgba(0, 0, 0, 0.2) 0px 4px 12px 0px'), null);
 });
+
+test('the image is portrait on phones and tall windows, landscape otherwise', () => {
+  assert.equal(I.shapeFor(1440, 900), 'landscape');
+  assert.equal(I.shapeFor(1024, 768), 'landscape');
+  assert.equal(I.shapeFor(375, 812), 'portrait');
+  assert.equal(I.shapeFor(760, 500), 'portrait');
+  assert.equal(I.shapeFor(900, 1200), 'portrait');
+});
+
+test('the image sizes are 3:2 landscape and 4:5 portrait', () => {
+  assert.equal(I.SIZES.landscape.w / I.SIZES.landscape.h, 1.5);
+  assert.equal(I.SIZES.portrait.w / I.SIZES.portrait.h, 0.8);
+});
+
+test('the chart gets the room the title, key and footer leave, and they never overlap', () => {
+  for (const shape of ['landscape', 'portrait']) {
+    for (const rows of [0, 1, 2, 3]) {
+      const L = I.layout(shape, rows);
+      assert.equal(L.w, I.SIZES[shape].w);
+      assert.equal(L.h, I.SIZES[shape].h);
+      assert.equal(L.chartW, L.w - 2 * L.pad);
+      assert.ok(L.chartH >= 300, shape + ' ' + rows + ' rows: chart ' + L.chartH);
+      assert.ok(L.chartY + L.chartH < L.keyY, 'key below the chart');
+      assert.ok(L.keyY + rows * 26 <= L.footY + 13, 'key above the footer');
+      assert.ok(L.footY < L.h);
+    }
+  }
+  assert.ok(I.layout('landscape', 2).chartH < I.layout('landscape', 1).chartH);
+  assert.deepEqual(I.layout('nonsense', 0), I.layout('landscape', 0));
+});
