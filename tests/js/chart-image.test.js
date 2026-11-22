@@ -55,13 +55,25 @@ test('the image is portrait on phones and tall windows, landscape otherwise', ()
   assert.equal(I.shapeFor(900, 1200), 'portrait');
 });
 
-test('the image sizes are 3:2 landscape and 4:5 portrait', () => {
+test('the image sizes are 3:2 landscape, 4:5 portrait and 1:1 square', () => {
   assert.equal(I.SIZES.landscape.w / I.SIZES.landscape.h, 1.5);
   assert.equal(I.SIZES.portrait.w / I.SIZES.portrait.h, 0.8);
+  assert.equal(I.SIZES.square.w, I.SIZES.square.h);
+});
+
+test('a picked shape wins; Auto, or anything unknown, goes by the window', () => {
+  assert.equal(I.pick('square', 1440, 900), 'square');
+  assert.equal(I.pick('portrait', 1440, 900), 'portrait');
+  assert.equal(I.pick('landscape', 375, 812), 'landscape');
+  assert.equal(I.pick('auto', 1440, 900), 'landscape');
+  assert.equal(I.pick('auto', 375, 812), 'portrait');
+  assert.equal(I.pick('nonsense', 375, 812), 'portrait');
+  assert.equal(I.pick(null, 1440, 900), 'landscape');
+  assert.equal(I.pick('hasOwnProperty', 1440, 900), 'landscape');
 });
 
 test('the chart gets the room the title, key and footer leave, and they never overlap', () => {
-  for (const shape of ['landscape', 'portrait']) {
+  for (const shape of ['landscape', 'portrait', 'square']) {
     for (const rows of [0, 1, 2, 3]) {
       const L = I.layout(shape, rows);
       assert.equal(L.w, I.SIZES[shape].w);

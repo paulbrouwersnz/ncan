@@ -8,8 +8,9 @@
   chart as shown (date range, Timeline or By season, hidden months, the
   selected result, a lit key entry), the key for the marks it has, and a footer
   with the club's share image (the crest and name) and "ncan.nz". It's a
-  photo-friendly shape whatever the window: landscape 3:2 on wide screens,
-  portrait 4:5 on phones. The chart is drawn again at the size that shape
+  photo-friendly shape the viewer picks beside Download: Auto (landscape 3:2
+  on wide screens, portrait 4:5 on phones), Landscape, Portrait or Square 1:1,
+  remembered on the device. The chart is drawn again at the size that shape
   leaves for it, so nothing is stretched, and the image is made at twice the
   size so it's sharp on phones.
 
@@ -78,7 +79,11 @@
   function shapeFor(width, height) {
     return width <= 760 || height > width ? 'portrait' : 'landscape';
   }
-  var SIZES = { landscape: { w: 1080, h: 720 }, portrait: { w: 720, h: 900 } };
+  var SIZES = { landscape: { w: 1080, h: 720 }, portrait: { w: 720, h: 900 }, square: { w: 900, h: 900 } };
+  // the viewer's choice ('auto', or one of SIZES) as the shape to make
+  function pick(choice, width, height) {
+    return SIZES.hasOwnProperty(choice) ? choice : shapeFor(width, height);
+  }
   var PAD = 28, TITLE = 76, KEY_ROW = 26, FOOT = 72;
   // where everything goes in an image of this shape with this many key rows
   function layout(shape, keyRows) {
@@ -202,7 +207,7 @@
     c.fillText('Athletic Club', x + cw + 12, y + h * 0.9);
   }
 
-  /* opts: shape ('landscape' or 'portrait'); draw(w, h), which puts the chart's SVG at
+  /* opts: shape ('landscape', 'portrait' or 'square'); draw(w, h), which puts the chart's SVG at
      that size on the page (so it's styled) and returns it; done(), called after;
      title, the athlete; subtitle; key, a list of { swatch: element, words: text };
      colours { bg, heading, text, soft }; dark; fonts { display, sans }.
@@ -286,6 +291,6 @@
   }
 
   return { slug: slug, fileName: fileName, day: day, dateRange: dateRange, subtitle: subtitle,
-           keyRows: keyRows, shadow: shadow, shapeFor: shapeFor, layout: layout, SIZES: SIZES,
+           keyRows: keyRows, shadow: shadow, shapeFor: shapeFor, pick: pick, layout: layout, SIZES: SIZES,
            PROPS: PROPS, render: render, save: save };
 }));
