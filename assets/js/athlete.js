@@ -922,6 +922,60 @@
     zoomDetails(zoom.card.ncanPoints[i]);
   }
 
+  /* The enlarged chart saved as a PNG (assets/js/chart-image.js): exactly as shown, with
+     the athlete, event and dates above it, the key for the marks it has, and ncan.nz.
+     Made on the device; phones that can share files open the share sheet. */
+  function zoomDownload() {
+    var b = $('ath-zoom-download'), said = $('ath-zoom-said');
+    var chartSvg = zoom.card && zoom.card.querySelector('svg.ath-chart__svg');
+    if (!chartSvg || b.disabled) {
+      said.textContent = 'There are no marks in these dates to save.';
+      return;
+    }
+    var IMG = window.NCANChartImage;
+    var dlg = $('ath-zoom'), cs = window.getComputedStyle(dlg);
+    var css = function (sel, prop, dflt) {
+      var el = dlg.querySelector(sel);
+      return el ? window.getComputedStyle(el)[prop] : dflt;
+    };
+    // the key: each season's line (By season), then the marks this chart has
+    var key = [];
+    Array.prototype.forEach.call(zoom.card.querySelectorAll('.ath-chart__key li'), function (li) {
+      var sw = li.querySelector('.ath-key__swatch');
+      if (sw) { key.push({ swatch: sw, words: li.textContent.trim() }); }
+    });
+    Array.prototype.forEach.call(dlg.querySelectorAll('.ath-zoom__key li[data-key]'), function (li) {
+      var sw = li.querySelector('.ath-key__mark');
+      if (sw && !li.classList.contains('is-none')) { key.push({ swatch: sw, words: li.dataset.words || li.textContent.trim() }); }
+    });
+    var pts = zoom.card.ncanPoints || [];
+    var dates = pts.map(function (p) { return p.date; }).sort();
+    var chip = dlg.querySelector('#ath-zoom-ranges [aria-pressed="true"]');
+    var who = (window.NCAN && NCAN.athlete && NCAN.athlete.name) || '';
+    var name = IMG.fileName(who, zoom.group.name);
+    b.disabled = true;
+    b.classList.add('is-busy');
+    said.textContent = 'Making the image…';
+    IMG.render({
+      svg: chartSvg,
+      title: who,
+      subtitle: IMG.subtitle(zoom.group.name, chip ? chip.textContent.trim() : '', dates[0], dates[dates.length - 1]),
+      key: key,
+      colours: { bg: cs.backgroundColor, heading: css('.ath-zoom__title', 'color', cs.color),
+                 text: cs.color, soft: css('.ath-zoom__prompt', 'color', cs.color) },
+      fonts: { display: css('.ath-zoom__title', 'fontFamily', cs.fontFamily), sans: cs.fontFamily }
+    }).then(function (canvas) { return IMG.save(canvas, name); }).then(function (how) {
+      said.textContent = how === 'shared' ? 'Chart shared.' : how === 'cancelled' ? '' : 'Chart saved as ' + name + '.';
+    }).catch(function () {
+      said.textContent = 'Sorry, the chart could not be saved as an image.';
+      var words = b.querySelector('.ath-zoom__download-words');
+      if (words) { words.textContent = 'Couldn’t save'; setTimeout(function () { words.textContent = 'Download'; }, 3000); }
+    }).then(function () {
+      b.disabled = false;
+      b.classList.remove('is-busy');
+    });
+  }
+
   // the result picked: mark, date, meeting, wind, grade or weight, PB or season best
   function zoomDetails(p) {
     var out = $('ath-zoom-details');
@@ -986,6 +1040,8 @@
       });
     }
     $('ath-zoom-close').addEventListener('click', function () { zoomClose(); });
+    var dl = $('ath-zoom-download');
+    if (dl) { if (window.NCANChartImage) { dl.addEventListener('click', zoomDownload); } else { dl.hidden = true; } }
     // Esc: close the same way as the button, so the address goes back too
     dlg.addEventListener('cancel', function (e) { e.preventDefault(); zoomClose(); });
     Array.prototype.forEach.call(document.querySelectorAll('#ath-zoom-ranges [data-range]'), function (b) {
