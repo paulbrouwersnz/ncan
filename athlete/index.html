@@ -205,7 +205,36 @@
           <input type="checkbox" id="ath-perweight">
           <label for="ath-perweight">A separate chart for each throwing weight</label>
         </p>
+        <p class="records-field ath-check" id="ath-seasons-field" hidden>
+          <input type="checkbox" id="ath-seasons" checked>
+          <label for="ath-seasons">Show seasons (winter shaded grey)</label>
+        </p>
         <div class="ath-charts" id="ath-charts"></div>
+
+        <!-- one chart enlarged: opened by the button on each chart (assets/js/athlete.js) -->
+        <dialog class="ath-zoom" id="ath-zoom" aria-labelledby="ath-zoom-title">
+          <div class="ath-zoom__head">
+            <h2 class="ath-zoom__title" id="ath-zoom-title" tabindex="-1">Chart</h2>
+            <button type="button" class="ath-zoom__close" id="ath-zoom-close" aria-label="Close the enlarged chart">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg>
+            </button>
+          </div>
+          <div class="ath-zoom__ranges" id="ath-zoom-ranges" role="group" aria-label="Dates shown">
+            <button type="button" class="ath-zoom__chip" data-range="all" aria-pressed="true">All results</button>
+            <button type="button" class="ath-zoom__chip" data-range="this" aria-pressed="false">This season</button>
+            <button type="button" class="ath-zoom__chip" data-range="last" aria-pressed="false">Last season</button>
+            <button type="button" class="ath-zoom__chip" data-range="year" aria-pressed="false">Last 12 months</button>
+            <button type="button" class="ath-zoom__chip" data-range="pick" aria-pressed="false">Pick dates</button>
+            <span class="ath-zoom__pick" id="ath-zoom-pick" hidden>
+              <label>From <input type="date" id="ath-zoom-from"></label>
+              <label>To <input type="date" id="ath-zoom-to"></label>
+            </span>
+          </div>
+          <div class="ath-zoom__body">
+            <div class="ath-zoom__chart" id="ath-zoom-chart"></div>
+            <aside class="ath-zoom__details" id="ath-zoom-details" aria-live="polite" aria-label="Result details"></aside>
+          </div>
+        </dialog>
       </div>
     </div>
 
@@ -632,6 +661,7 @@
   <script src="/assets/js/athlete-photo.js" defer></script>
   <script src="/assets/js/athlete-manage.js" defer></script>
   <script src="/assets/js/meeting-links.js"></script>
+  <script src="/assets/js/athlete-seasons.js"></script>
   <script src="/assets/js/athlete.js"></script>
 
 </body>

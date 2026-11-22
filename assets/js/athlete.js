@@ -28,6 +28,15 @@
 
   var $ = function (id) { return document.getElementById(id); };
   var athlete = null;
+  // seasons on the charts (assets/js/athlete-seasons.js); the page still works without it
+  var SEASONS = window.NCANSeasons || null;
+  var SEASONS_ON = true;     // "Show seasons": winter bands and season names; kept on the device
+  try { SEASONS_ON = localStorage.getItem('ncan-athlete-seasons') !== '0'; } catch (e) { /* default */ }
+  function pad2(n) { return (n < 10 ? '0' : '') + n; }
+  function isoOf(d) { return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
+  var TODAY = isoOf(new Date());
+  // what the last drawing of the charts used, for the enlarged chart
+  var CHART = { groups: [], pbOf: {}, sbOf: {} };
   var eventsOff = {};    // events switched off with the chips
 
   function text(tag, cls, value) {
@@ -393,8 +402,19 @@
     return pow * (n < 1.5 ? 1 : n < 3 ? 2 : n < 3.5 ? 2.5 : n < 7.5 ? 5 : 10);
   }
 
-  function chart(group, t0, t1, pbOf) {
-    var W = 600, H = 250, L = 62, R = 18, T = 18, B = 40;
+  /* opts (all optional): W and H, the size; yTicks, about how many value labels;
+     dateTicks, the span in days under which every result date is a tick; sbOf,
+     each season's best (key|season -> result); zoom, drawn in the enlarged view
+     (no maximise button, points select rather than open); select(i), called
+     with the point picked. */
+  function chart(group, t0, t1, pbOf, opts) {
+    opts = opts || {};
+    var W = opts.W || 600, H = opts.H || 250, L = 62, R = 18, T = 18, B = 40;
+    var sbOf = opts.sbOf || {};
+    var span = (t1 - t0) / 864e5;
+    // season bands and names: over 60 days only, as one season adds nothing
+    var bands = !!SEASONS && SEASONS_ON && span > 60;
+    if (bands) { T = 34; }   // season names sit just above the chart area
     var field = group.results[0].field;
     // Same-day results (heats, semi, final) are spread a little sideways so each
     // can be seen and hovered: qualifying rounds first, then the rest in order.
@@ -411,7 +431,10 @@
     var px = function (p) { return x(p.date) + (p.dx || 0); };
     var card = text('figure', 'ath-chart');
     var cap = text('figcaption', 'ath-chart__title', group.name);
-    cap.appendChild(text('span', 'ath-chart__dir', field ? '↑ further' : '↑ faster'));
+    var end = text('span', 'ath-chart__end');
+    end.appendChild(text('span', 'ath-chart__dir', field ? '↑ further' : '↑ faster'));
+    if (!opts.zoom && SEASONS) { end.appendChild(zoomButton(group)); }
+    cap.appendChild(end);
     card.appendChild(cap);
     if (!pts.length) {
       card.appendChild(text('p', 'ath-chart__empty', 'No measured marks to chart.'));
@@ -423,7 +446,7 @@
     // at least 3% of the mark either side, so marks a hundredth apart still get a readable scale
     var pad = Math.max((hi - lo) * 0.15, hi * 0.03);
     lo = Math.max(0, lo - pad); hi += pad;
-    var step = niceStep(hi - lo, 4);
+    var step = niceStep(hi - lo, opts.yTicks || 4);
     lo = Math.floor(lo / step) * step; hi = Math.ceil(hi / step) * step;
 
     // one date only: put it in the middle (dates compare by value, not as objects)
@@ -433,8 +456,40 @@
     var y = function (v) { var f = (v - lo) / (hi - lo); return field ? T + (1 - f) * (H - T - B) : T + f * (H - T - B); };
 
     var s = svg('svg', { viewBox: '0 0 ' + W + ' ' + H, role: 'img',
-                         'aria-label': group.name + ' progression, ' + pts.length + ' marks' });
+                         'aria-label': group.name + ' progression, ' + pts.length + ' marks' +
+                                       (bands ? '; grey bands mark winter months' : '') });
     s.classList.add('ath-chart__svg');
+
+    // seasons, behind everything: winter (April to September) shaded, a dashed line
+    // at each 1 April, the season's name above, a faint "Winter" or "Summer" in each band
+    if (bands) {
+      var from = isoOf(t0), to = isoOf(t1), sp = SEASONS.spans(from, to);
+      var xd = function (day) { return Math.max(L, Math.min(W - R, L + (parseDate(day) - t0) / (t1 - t0) * (W - L - R))); };
+      var short = !opts.zoom && window.matchMedia && window.matchMedia('(max-width: 480px)').matches;
+      sp.halves.forEach(function (h) {
+        var a = xd(h.from), b = xd(SEASONS.nextDay(h.to));
+        if (h.kind === 'winter') {
+          s.appendChild(svg('rect', { x: a, y: T, width: Math.max(0, b - a), height: H - T - B, class: 'ath-winter' }));
+        }
+        if (b - a > 60) {
+          var w = svg('text', { x: (a + b) / 2, y: H - B - 7, class: 'ath-band-word', 'aria-hidden': 'true' });
+          w.textContent = h.kind === 'winter' ? 'Winter' : 'Summer';
+          s.appendChild(w);
+        }
+      });
+      SEASONS.boundaries(from, to).forEach(function (day) {
+        var bx = xd(day);
+        s.appendChild(svg('line', { x1: bx, x2: bx, y1: T - 4, y2: H - B, class: 'ath-season-line' }));
+      });
+      sp.seasons.forEach(function (se) {
+        var a = xd(se.from), b = xd(SEASONS.nextDay(se.to));
+        var words = SEASONS.label(se.season, TODAY, short);
+        if (b - a < words.length * 6.6 + 8) { return; }   // too narrow: its name is in each point's label
+        var sl = svg('text', { x: (a + b) / 2, y: T - 10, class: 'ath-season-label', 'aria-hidden': 'true' });
+        sl.textContent = words;
+        s.appendChild(sl);
+      });
+    }
 
     // value grid
     for (var v = lo; v <= hi + step / 2; v += step) {
@@ -445,20 +500,24 @@
       s.appendChild(lab);
     }
     // date axis: each result date when close together, else month starts
-    var span = (t1 - t0) / 864e5, ticks = [];
-    if (span <= 60) {
+    var ticks = [], dateTicks = opts.dateTicks || 60;
+    if (span <= dateTicks) {
       pts.forEach(function (p) { if (ticks.indexOf(p.date) === -1) { ticks.push(p.date); } });
       ticks = ticks.map(parseDate);
     } else {
       var d = new Date(t0.getFullYear(), t0.getMonth() + 1, 1);
-      var every = span > 730 ? 6 : span > 365 ? 3 : 1;
+      var wide = W > 700;   // the enlarged chart has room for more month starts
+      var every = span > (wide ? 1460 : 730) ? 6 : span > (wide ? 730 : 365) ? 3 : 1;
       for (; d <= t1; d = new Date(d.getFullYear(), d.getMonth() + every, 1)) { ticks.push(d); }
     }
+    var lastTick = -Infinity;
     ticks.forEach(function (d) {
       var tx = oneDay ? (W - L - R) / 2 + L : L + (d - t0) / (t1 - t0) * (W - L - R);
       s.appendChild(svg('line', { x1: tx, x2: tx, y1: H - B, y2: H - B + 5, class: 'ath-tick' }));
+      if (tx - lastTick < 44) { return; }   // a tick, but no label on top of the last one
+      lastTick = tx;
       var lab = svg('text', { x: tx, y: H - B + 20, class: 'ath-axis ath-axis--x' });
-      lab.textContent = span <= 60 ? shortDate(d) : MONTHS[d.getMonth()].slice(0, 3) + ' ' + String(d.getFullYear()).slice(2);
+      lab.textContent = span <= dateTicks ? shortDate(d) : MONTHS[d.getMonth()].slice(0, 3) + ' ' + String(d.getFullYear()).slice(2);
       s.appendChild(lab);
     });
     s.appendChild(svg('line', { x1: L, x2: W - R, y1: H - B, y2: H - B, class: 'ath-baseline' }));
@@ -499,8 +558,10 @@
     });
 
     // points, each focusable with its details
-    pts.forEach(function (p) {
+    var links = [];
+    pts.forEach(function (p, i) {
       var isPb = p === pbOf[pbKey(p)];
+      var isSb = sbOf[pbKey(p) + '|' + p.season] === p;
       var cls = 'ath-point' + (isPb ? ' ath-point--pb' : isNewPb(p) ? ' ath-point--newpb' : '') +
                 (p.club ? '' : ' ath-point--rep') +
                 (windy(p) ? (isPb ? ' ath-point--pb-wind' : ' ath-point--wind') : '');
@@ -510,7 +571,8 @@
                   (isThrow(p) ? ', ' + weightWords(p) : '') +
                   (groupOf(p) ? ', ' + groupOf(p) : '') +
                   (typeof p.wind === 'number' ? ', wind ' + (p.wind > 0 ? '+' : '') + p.wind.toFixed(1) : '') +
-                  (p.unattached ? ', entered Unattached' : p.club ? '' : ', representing ' + p.team) + (isPb ? ', personal best' : isNewPb(p) ? ', a new personal best at the time' : '');
+                  (p.unattached ? ', entered Unattached' : p.club ? '' : ', representing ' + p.team) + (isPb ? ', personal best' : isNewPb(p) ? ', a new personal best at the time' : '') +
+                  (p.season ? ', ' + p.season + ' season' : '') + (isSb ? ', season best' : '');
       g.setAttribute('aria-label', label);
       var cx = px(p), cy = y(p.value);
       var shape = p.club
@@ -518,7 +580,19 @@
         : svg('rect', { x: cx - 6, y: cy - 6, width: 12, height: 12, transform: 'rotate(45 ' + cx + ' ' + cy + ')', class: cls });
       var title = svg('title'); title.textContent = label;
       shape.appendChild(title);
+      // each season's best gets a ring; the personal best keeps its larger dot, and both when it is both
+      if (isSb) { g.appendChild(svg('circle', { cx: cx, cy: cy, r: (isPb ? 8 : 5.5) + 4.5, class: 'ath-ring' })); }
       g.appendChild(shape);
+      links.push(g);
+      if (opts.select) {
+        // in the enlarged chart a point selects its result; the details panel links to it
+        g.addEventListener('click', function (e) {
+          if (e.ctrlKey || e.metaKey || e.shiftKey || e.button === 1) { return; }
+          e.preventDefault();
+          opts.select(i);
+        });
+        g.addEventListener('focus', function () { opts.select(i); });
+      }
       g.addEventListener('mouseenter', function () { tip(card, label, cx / W, cy / H); });
       g.addEventListener('focus', function () { tip(card, label, cx / W, cy / H); });
       g.addEventListener('mouseleave', function () { tip(card); });
@@ -527,6 +601,8 @@
     });
 
     card.appendChild(s);
+    card.ncanPoints = pts;
+    card.ncanLinks = links;
     var notes = [];
     if (breaks && runs.length > 1) {
       notes.push(throwChart ? 'The line breaks where the implement weight changes; the personal best is marked at each weight.'
@@ -568,7 +644,174 @@
     var pbOf = {}, rs = [];
     groups.forEach(function (g) { rs = rs.concat(g.results); });
     byWeight(rs).forEach(function (g) { pbOf[g.name] = best(countable(g.results)); });
-    groups.forEach(function (g) { out.appendChild(chart(g, t0, t1, pbOf)); });
+    // and each season's best, the same as the table's "Season best" badge
+    var sbOf = SEASONS ? SEASONS.bests(countable(rs), pbKey, isBetter) : {};
+    CHART = { groups: groups, pbOf: pbOf, sbOf: sbOf };
+    groups.forEach(function (g) { out.appendChild(chart(g, t0, t1, pbOf, { sbOf: sbOf })); });
+  }
+
+  /* The enlarged chart ---------------------------------------------------
+     A maximise button on each chart opens it in a dialog, redrawn larger by
+     chart() with more labels, its own date range (the chips) and a details
+     panel for the result picked. The page's filters carry in; the range picked
+     stays inside, so closing returns the page as it was. Opening adds
+     #/<athlete>/chart/<event> to the address, so Back closes it and the link
+     opens straight on that chart. */
+
+  var zoom = { slug: '', group: null, kind: 'all', card: null, at: -1, pushed: false };
+
+  function zoomButton(group) {
+    var b = text('button', 'ath-chart__zoom');
+    b.type = 'button';
+    b.dataset.chart = SEASONS.slug(group.name);
+    b.setAttribute('aria-label', 'Enlarge the ' + group.name + ' chart');
+    b.title = 'Enlarge';
+    var icon = svg('svg', { viewBox: '0 0 24 24', 'aria-hidden': 'true', focusable: 'false' });
+    icon.appendChild(svg('path', { d: 'M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5' }));
+    b.appendChild(icon);
+    b.addEventListener('click', function () {
+      if (window.history && history.pushState) {
+        history.pushState(null, '', '#/' + current + '/chart/' + b.dataset.chart);
+        zoom.pushed = true;
+      }
+      zoomOpen(b.dataset.chart);
+    });
+    return b;
+  }
+
+  // open the chart for this event (as in the address); false if the page has none
+  function zoomOpen(slug) {
+    var dlg = $('ath-zoom');
+    var g = CHART.groups.filter(function (x) { return SEASONS.slug(x.name) === slug; })[0];
+    if (!g || !dlg || !dlg.showModal) { return false; }
+    zoom.slug = slug; zoom.group = g; zoom.kind = 'all';
+    $('ath-zoom-from').value = ''; $('ath-zoom-to').value = '';
+    $('ath-zoom-title').textContent = g.name;
+    zoomChips();
+    if (!dlg.open) { dlg.showModal(); }
+    zoomDraw();
+    $('ath-zoom-title').focus();
+    return true;
+  }
+
+  // closing: back to where the address was before, and to the button that opened it
+  function zoomClose(byAddress) {
+    var dlg = $('ath-zoom');
+    if (dlg.open) { dlg.close(); }
+    if (!byAddress) {
+      if (zoom.pushed) { history.back(); }
+      else if (window.history && history.replaceState) { history.replaceState(null, '', '#/' + current); }
+    }
+    zoom.pushed = false;
+    var b = document.querySelector('.ath-chart__zoom[data-chart="' + zoom.slug + '"]');
+    if (b) { b.focus(); }
+  }
+
+  function zoomChips() {
+    Array.prototype.forEach.call(document.querySelectorAll('#ath-zoom-ranges [data-range]'), function (b) {
+      b.setAttribute('aria-pressed', b.dataset.range === zoom.kind ? 'true' : 'false');
+    });
+    $('ath-zoom-pick').hidden = zoom.kind !== 'pick';
+  }
+
+  function zoomDraw() {
+    var r = SEASONS.range(zoom.kind, TODAY, { from: $('ath-zoom-from').value, to: $('ath-zoom-to').value });
+    var rs = zoom.group.results.filter(function (x) { return SEASONS.inRange(x.date, r); });
+    var pts = countable(rs);
+    var out = $('ath-zoom-chart');
+    out.textContent = '';
+    zoom.card = null; zoom.at = -1;
+    zoomDetails(null);
+    if (!pts.length) {
+      out.appendChild(text('p', 'records-status', 'No measured marks in these dates.'));
+      return;
+    }
+    var dates = pts.map(function (x) { return parseDate(x.date); });
+    var t0 = new Date(Math.min.apply(null, dates)), t1 = new Date(Math.max.apply(null, dates));
+    if (t1 - t0 > 0) { var padMs = (t1 - t0) * 0.04; t0 = new Date(t0 - padMs); t1 = new Date(+t1 + padMs); }
+    // drawn at the size it shows, so its labels stay the page's size: not a scaled-up copy
+    var W = Math.max(320, Math.round(out.clientWidth || 1100));
+    var H = Math.max(260, Math.min(560, Math.round(W * 0.5), window.innerHeight - 240));
+    zoom.card = chart({ name: zoom.group.name, results: rs }, t0, t1, CHART.pbOf,
+      { W: W, H: H, yTicks: H > 380 ? 8 : 6, dateTicks: 90, zoom: true, sbOf: CHART.sbOf, select: zoomSelect });
+    out.appendChild(zoom.card);
+  }
+
+  function zoomSelect(i) {
+    if (!zoom.card) { return; }
+    zoom.at = i;
+    zoom.card.ncanLinks.forEach(function (g, n) { g.classList.toggle('is-selected', n === i); });
+    zoomDetails(zoom.card.ncanPoints[i]);
+  }
+
+  // the result picked: mark, date, meeting, wind, grade or weight, PB or season best
+  function zoomDetails(p) {
+    var out = $('ath-zoom-details');
+    out.textContent = '';
+    if (!p) {
+      out.appendChild(text('p', 'ath-zoom__prompt', 'Select a result to see its details, or use the ← and → keys.'));
+      return;
+    }
+    out.appendChild(text('p', 'ath-zoom__mark', markText(p) + (windy(p) ? ' (wind-assisted)' : '')));
+    var tags = text('p', 'ath-zoom__tags');
+    if (p === CHART.pbOf[pbKey(p)]) { tags.appendChild(text('span', 'champs-tag ath-badge', 'Personal best')); }
+    else if (isNewPb(p)) { tags.appendChild(text('span', 'champs-tag ath-badge ath-badge--newpb', 'New personal best at the time')); }
+    if (CHART.sbOf[pbKey(p) + '|' + p.season] === p) { tags.appendChild(text('span', 'champs-tag ath-badge', 'Season best')); }
+    if (tags.children.length) { out.appendChild(tags); }
+    var dl = text('dl', 'ath-zoom__facts');
+    var add = function (k, v) { if (v) { dl.appendChild(text('dt', null, k)); dl.appendChild(text('dd', null, v)); } };
+    add('Date', longDate(p.date) + (p.season ? ' (' + p.season + ' season)' : ''));
+    add('Meeting', p.meeting);
+    if (typeof p.wind === 'number') { add('Wind', windText(p.wind) + ' m/s'); }
+    if (isThrow(p)) { add('Weight', weightWords(p)); }
+    add(p.grade ? 'Grade' : 'Age group', groupOf(p));
+    if (p.place) { add('Place', ordinal(p.place) + (p.of ? ' of ' + p.of : '')); }
+    if (p.unattached) { add('Entered', 'Unattached'); } else if (!p.club) { add('Representing', p.team); }
+    if (p.combined) { add('Part of', p.combined); }
+    out.appendChild(dl);
+    if (p.source) {
+      var a = text('a', 'records-source', 'Official result');
+      a.href = p.source; a.target = '_blank'; a.rel = 'noopener';
+      var lp = text('p', 'ath-zoom__link'); lp.appendChild(a);
+      out.appendChild(lp);
+    }
+  }
+
+  function zoomSetUp() {
+    var dlg = $('ath-zoom');
+    if (!dlg || !SEASONS) { return; }
+    $('ath-zoom-close').addEventListener('click', function () { zoomClose(); });
+    // Esc: close the same way as the button, so the address goes back too
+    dlg.addEventListener('cancel', function (e) { e.preventDefault(); zoomClose(); });
+    Array.prototype.forEach.call(document.querySelectorAll('#ath-zoom-ranges [data-range]'), function (b) {
+      b.addEventListener('click', function () {
+        zoom.kind = b.dataset.range;
+        zoomChips();
+        zoomDraw();
+        if (zoom.kind === 'pick') { $('ath-zoom-from').focus(); }
+      });
+    });
+    ['ath-zoom-from', 'ath-zoom-to'].forEach(function (id) { $(id).addEventListener('change', zoomDraw); });
+    // a window resized or a phone turned: drawn again at the new size, keeping the result picked
+    var resizing = null;
+    window.addEventListener('resize', function () {
+      if (!dlg.open) { return; }
+      clearTimeout(resizing);
+      resizing = setTimeout(function () {
+        var at = zoom.at;
+        zoomDraw();
+        if (at >= 0 && zoom.card && at < zoom.card.ncanLinks.length) { zoomSelect(at); }
+      }, 150);
+    });
+    // Left and Right move between results in date order
+    dlg.addEventListener('keydown', function (e) {
+      if ((e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') || !zoom.card || /INPUT|SELECT/.test(e.target.tagName)) { return; }
+      var n = SEASONS.step(zoom.card.ncanLinks.length, zoom.at, e.key === 'ArrowRight' ? 1 : -1);
+      if (n < 0) { return; }
+      e.preventDefault();
+      zoom.card.ncanLinks[n].focus();
+      zoomSelect(n);
+    });
   }
 
   /* Table ---------------------------------------------------------------- */
@@ -919,6 +1162,17 @@
     $('ath-clear').addEventListener('click', clearAll);
     $('ath-clear-2').addEventListener('click', clearAll);
 
+    // "Show seasons": the winter bands and season names (season-best rings always show)
+    if (SEASONS) {
+      $('ath-seasons-field').hidden = false;
+      $('ath-seasons').checked = SEASONS_ON;
+      $('ath-seasons').addEventListener('change', function () {
+        SEASONS_ON = this.checked;
+        try { localStorage.setItem('ncan-athlete-seasons', SEASONS_ON ? '1' : '0'); } catch (e) { /* not kept */ }
+        render();
+      });
+    }
+
     // grouping is a viewing preference, kept on this device when it can be
     try {
       var saved = localStorage.getItem('ncan-athlete-group');
@@ -1065,6 +1319,9 @@
   function route() {
     var plain = RENAMED[location.hash.slice(1)];
     if (plain) { history.replaceState(null, '', '#' + plain); }
+    // an enlarged chart: /athlete/#/sam-brown/chart/100m-hurdles
+    var c = /^#\/([a-z0-9]+(?:-[a-z0-9]+)*)\/chart\/([a-z0-9]+(?:-[a-z0-9]+)*)$/.exec(location.hash);
+    if (c) { return { id: c[1], section: '', chart: c[2] }; }
     var m = /^#\/([a-z0-9]+(?:-[a-z0-9]+)*)(?:\/([A-Za-z][\w-]*))?$/.exec(location.hash);
     if (m && RENAMED[m[2]]) {
       history.replaceState(null, '', '#/' + m[1] + '/' + RENAMED[m[2]]);
@@ -1104,6 +1361,15 @@
       return;
     }
     if (now.id !== current && now.id !== id) { location.reload(); return; }
+    // Back (or Forward) into or out of an enlarged chart
+    var dlg = $('ath-zoom');
+    if (now.chart) {
+      if (!(dlg && dlg.open && zoom.slug === now.chart) && !zoomOpen(now.chart)) {
+        history.replaceState(null, '', '#/' + current);
+      }
+      return;
+    }
+    if (dlg && dlg.open) { zoomClose(true); return; }
     goTo(now.section);
   });
 
@@ -1228,8 +1494,13 @@
       }
       renderSources();
       setUp();
+      zoomSetUp();
       render();
-      // a section in the address: there once the page is drawn
+      // a section in the address: there once the page is drawn; a chart: opened
+      if (here.chart) {
+        if (!zoomOpen(here.chart) && window.history && history.replaceState) { history.replaceState(null, '', '#/' + current); }
+        return;
+      }
       setTimeout(function () { goTo(here.section, true); }, 0);
     })
     .catch(function (err) {
