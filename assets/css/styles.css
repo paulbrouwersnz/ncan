@@ -48,6 +48,8 @@
   --line: rgba(11, 59, 46, .12);
   --line-strong: rgba(11, 59, 46, .22);
   --chart-winter: rgba(11, 59, 46, .055);   /* winter months on the athlete charts */
+  --chart-key-hover: var(--green-050);       /* enlarged chart key entry pointed at */
+  --chart-key-on: var(--green-100);          /* enlarged chart key entry kept lit */
   --chart-sb: var(--green-100);             /* light green surround on each season's best, as the Year-round band */
 
   /* arrow-out-of-box, used as a mask so it takes the surrounding text colour */
@@ -1364,6 +1366,15 @@ table.schedule.champs-table { min-width: 0; }
 .ath-chart__key .is-current .ath-key__swatch { height: 6px; }
 /* the chart key copied under the enlarged chart */
 .ath-zoom__key { margin: .6rem 0 0; }
+/* the enlarged chart's key lights up its marks: on hover, focus, or kept by a click or tap */
+.ath-zoom__key li[data-key] { cursor: pointer; border-radius: 999px; padding: .15rem .5rem; margin: -.15rem -.5rem; }
+.ath-zoom__key li[data-key]:hover,
+.ath-zoom__key li[data-key]:focus-visible { background: var(--chart-key-hover); color: var(--heading); }
+.ath-zoom__key li[aria-pressed="true"] { background: var(--chart-key-on); color: var(--heading); font-weight: 600; }
+.ath-zoom__key li.is-none { opacity: .5; }
+.is-keying .ath-point-link { opacity: .18; transition: opacity .15s; }
+.is-keying .ath-point-link.is-lit { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .is-keying .ath-point-link { transition: none; } }
 .ath-chart__zoom {
   display: inline-grid; place-items: center;
   width: 32px; height: 32px; padding: 0;
@@ -4247,6 +4258,8 @@ table.schedule.manage-mem { min-width: 640px; }
     --line-strong: light-dark(rgba(11, 59, 46, .22), rgba(255, 255, 255, .22));
     --chart-winter: light-dark(rgba(11, 59, 46, .055), rgba(255, 255, 255, .055));
     --chart-sb: light-dark(#E7F1ED, #4f8a70);
+    --chart-key-hover: light-dark(#F4F9F7, rgba(124, 199, 160, .14));
+    --chart-key-on: light-dark(#E7F1ED, rgba(124, 199, 160, .26));
     --header-bg: light-dark(rgba(255, 255, 255, .92), rgba(12, 24, 19, .92));
     --veil: light-dark(rgba(255, 255, 255, .78), rgba(12, 24, 19, .78));
     --danger: light-dark(#8c2f2f, #ff9d8f);

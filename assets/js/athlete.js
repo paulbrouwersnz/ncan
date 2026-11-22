@@ -665,6 +665,10 @@
                 (p.club ? '' : ' ath-point--rep') +
                 (windy(p) ? (isPb ? ' ath-point--pb-wind' : ' ath-point--wind') : '');
       var g = svg('a', { href: p.source, target: '_blank', rel: 'noopener', class: 'ath-point-link' });
+      // which chart key entries this point belongs to, so the enlarged chart's key can light them up
+      g.setAttribute('data-key', [isPb ? 'pb' : isNewPb(p) ? 'newpb' : '', isSb ? 'sb' : '', p.club ? '' : 'rep',
+        windy(p) ? (isPb ? 'pbwind' : 'wind') : '', !isPb && !isNewPb(p) && p.club && !windy(p) ? 'result' : '']
+        .filter(Boolean).join(' '));
       if (bySeason) { g.setAttribute('style', '--season: ' + SEASONS.seasonColour(seasonOf(p))); }
       var label = markSpoken(p) + (windy(p) ? ' (wind-assisted)' : '') + ', ' + longDate(p.date) + ', ' + p.meeting +
                   (p.combined ? ', part of a ' + p.combined.toLowerCase() : '') +
@@ -760,7 +764,7 @@
      #/<athlete>/chart/<event> to the address, so Back closes it and the link
      opens straight on that chart. */
 
-  var zoom = { slug: '', group: null, kind: 'all', card: null, at: -1, pushed: false };
+  var zoom = { slug: '', group: null, kind: 'all', card: null, at: -1, pushed: false, key: '' };
 
   /* Timeline / By season, on each chart with more than one season. The choice
      applies to every chart on the page and the enlarged one, and is kept on the
@@ -831,6 +835,7 @@
   function zoomClose(byAddress) {
     var dlg = $('ath-zoom');
     if (dlg.open) { dlg.close(); }
+    zoom.key = '';
     if (!byAddress) {
       if (zoom.pushed) { history.back(); }
       else if (window.history && history.replaceState) { history.replaceState(null, '', '#/' + current); }
@@ -857,6 +862,7 @@
     zoomDetails(null);
     if (!pts.length) {
       out.appendChild(text('p', 'records-status', 'No measured marks in these dates.'));
+      keyCounts();
       return;
     }
     var dates = pts.map(function (x) { return parseDate(x.date); });
@@ -882,6 +888,30 @@
         { W: W, H: Math.max(260, H - over), yTicks: H - over > 380 ? 8 : 6, dateTicks: 90, zoom: true, sbOf: CHART.sbOf, select: zoomSelect, hide: hide });
       out.appendChild(zoom.card);
     }
+    keyCounts();
+    keyShow(zoom.key);
+  }
+
+  // the enlarged chart's key: which entry is kept lit, and how many marks each has here
+  function keyMatch(g, key) { return (' ' + (g.getAttribute('data-key') || '') + ' ').indexOf(' ' + key + ' ') !== -1; }
+  function keyShow(key) {
+    var links = zoom.card ? zoom.card.ncanLinks : [];
+    if (links.length && links[0].ownerSVGElement) { links[0].ownerSVGElement.classList.toggle('is-keying', !!key); }
+    links.forEach(function (g) { g.classList.toggle('is-lit', !!key && keyMatch(g, key)); });
+  }
+  function keyPin(key) {
+    zoom.key = zoom.key === key ? '' : key;
+    keyCounts();
+    keyShow(zoom.key);
+  }
+  function keyCounts() {
+    var links = zoom.card ? zoom.card.ncanLinks : [];
+    Array.prototype.forEach.call(document.querySelectorAll('#ath-zoom .ath-key li[data-key]'), function (li) {
+      var n = links.filter(function (g) { return keyMatch(g, li.dataset.key); }).length;
+      li.classList.toggle('is-none', n === 0);
+      li.setAttribute('aria-pressed', zoom.key === li.dataset.key ? 'true' : 'false');
+      li.setAttribute('aria-label', li.dataset.words + ': ' + (n === 1 ? '1 mark' : n + ' marks') + ' on this chart. Highlight them');
+    });
   }
 
   function zoomSelect(i) {
@@ -936,6 +966,23 @@
       k.removeAttribute('id');
       k.classList.add('ath-zoom__key');
       body.parentNode.insertBefore(k, body.nextSibling);
+      // pointing at (or tabbing to) a key entry lights up its marks; a click or tap keeps it lit
+      Array.prototype.forEach.call(k.querySelectorAll('li[data-key]'), function (li) {
+        li.setAttribute('tabindex', '0');
+        li.setAttribute('role', 'button');
+        li.setAttribute('aria-pressed', 'false');
+        li.dataset.words = li.textContent.trim();
+        var show = function () { keyShow(li.dataset.key); };
+        var back = function () { keyShow(zoom.key); };
+        li.addEventListener('mouseenter', show);
+        li.addEventListener('focus', show);
+        li.addEventListener('mouseleave', back);
+        li.addEventListener('blur', back);
+        li.addEventListener('click', function () { keyPin(li.dataset.key); });
+        li.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); keyPin(li.dataset.key); }
+        });
+      });
     }
     $('ath-zoom-close').addEventListener('click', function () { zoomClose(); });
     // Esc: close the same way as the button, so the address goes back too
