@@ -48,6 +48,7 @@
   --line: rgba(11, 59, 46, .12);
   --line-strong: rgba(11, 59, 46, .22);
   --chart-winter: rgba(11, 59, 46, .055);   /* winter months on the athlete charts */
+  --chart-sb: rgba(18, 104, 77, .2);        /* light green round each season's best (green-600) */
 
   /* arrow-out-of-box, used as a mask so it takes the surrounding text colour */
   --icon-folder: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z'/%3E%3C/svg%3E");
@@ -1237,7 +1238,7 @@ table.schedule.champs-table { min-width: 0; }
 .ath-key__mark--wind { background: var(--surface); box-shadow: 0 0 0 2px var(--link); }
 .ath-key__mark--newpb { box-shadow: 0 0 0 3px var(--yellow-500); }
 /* season best: the chart's ring round a result */
-.ath-key__mark--sb { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--accent); }
+.ath-key__mark--sb { box-shadow: 0 0 0 3px var(--chart-sb), 0 0 0 5px var(--accent); }
 /* sortable results headings: look like the heading, with an arrow */
 .ath-sort { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: .3rem; font: inherit; color: inherit; text-transform: inherit; letter-spacing: inherit; }
 .ath-sort:focus-visible { outline: 2px solid var(--yellow-500); outline-offset: 2px; border-radius: 3px; }
@@ -1330,8 +1331,8 @@ table.schedule.champs-table { min-width: 0; }
   .ath-check .help-tip__text { left: 0; right: 0; top: calc(100% + .2rem); bottom: auto; transform: none; width: auto; max-width: none; }
 }
 .ath-band-word { font-family: var(--font-sans); font-size: 10px; letter-spacing: .04em; fill: var(--text-soft); opacity: .5; text-anchor: middle; }
-/* each season's best: a ring round the point */
-.ath-ring { fill: none; stroke: var(--accent); stroke-width: 2; }
+/* each season's best: a light green disc with a ring round the point */
+.ath-ring { fill: var(--chart-sb); stroke: var(--accent); stroke-width: 2; }
 .ath-point-link.is-selected .ath-point { stroke: var(--heading); stroke-width: 4; }
 
 /* the maximise button on each chart */
@@ -4245,6 +4246,7 @@ table.schedule.manage-mem { min-width: 640px; }
     --line: light-dark(rgba(11, 59, 46, .12), rgba(255, 255, 255, .11));
     --line-strong: light-dark(rgba(11, 59, 46, .22), rgba(255, 255, 255, .22));
     --chart-winter: light-dark(rgba(11, 59, 46, .055), rgba(255, 255, 255, .055));
+    --chart-sb: light-dark(rgba(18, 104, 77, .2), rgba(124, 199, 160, .28));
     --header-bg: light-dark(rgba(255, 255, 255, .92), rgba(12, 24, 19, .92));
     --veil: light-dark(rgba(255, 255, 255, .78), rgba(12, 24, 19, .78));
     --danger: light-dark(#8c2f2f, #ff9d8f);
