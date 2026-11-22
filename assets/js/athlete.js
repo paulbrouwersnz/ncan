@@ -836,6 +836,7 @@
     var dlg = $('ath-zoom');
     if (dlg.open) { dlg.close(); }
     zoom.key = '';
+    keyCounts();
     if (!byAddress) {
       if (zoom.pushed) { history.back(); }
       else if (window.history && history.replaceState) { history.replaceState(null, '', '#/' + current); }
