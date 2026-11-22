@@ -32,6 +32,8 @@
   var SEASONS = window.NCANSeasons || null;
   var SEASONS_ON = true;     // "Show seasons": winter bands and season names; kept on the device
   try { SEASONS_ON = localStorage.getItem('ncan-athlete-seasons') !== '0'; } catch (e) { /* default */ }
+  var BY_SEASON = false;     // the charts' view: Timeline (false) or By season; kept on the device
+  try { BY_SEASON = localStorage.getItem('ncan-athlete-chart-view') === 'season'; } catch (e) { /* default */ }
   function pad2(n) { return (n < 10 ? '0' : '') + n; }
   function isoOf(d) { return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
   var TODAY = isoOf(new Date());
@@ -406,15 +408,15 @@
      dateTicks, the span in days under which every result date is a tick; sbOf,
      each season's best (key|season -> result); zoom, drawn in the enlarged view
      (no maximise button, points select rather than open); select(i), called
-     with the point picked. */
+     with the point picked.
+     The By season view (BY_SEASON, for an event with results in more than one
+     season) draws every season on one April-to-March axis instead, one line per
+     season in its own colour, with the season names as the key. */
   function chart(group, t0, t1, pbOf, opts) {
     opts = opts || {};
     var W = opts.W || 600, H = opts.H || 250, L = 62, R = 18, T = 18, B = 40;
     var sbOf = opts.sbOf || {};
     var span = (t1 - t0) / 864e5;
-    // season bands and names: over 60 days only, as one season adds nothing
-    var bands = !!SEASONS && SEASONS_ON && span > 60;
-    if (bands) { T = 34; }   // season names sit just above the chart area
     var field = group.results[0].field;
     // Same-day results (heats, semi, final) are spread a little sideways so each
     // can be seen and hovered: qualifying rounds first, then the rest in order.
@@ -429,13 +431,40 @@
       day.forEach(function (p, i) { p.dx = (i - (day.length - 1) / 2) * SPREAD; });
     });
     var px = function (p) { return x(p.date) + (p.dx || 0); };
-    var card = text('figure', 'ath-chart');
-    var cap = text('figcaption', 'ath-chart__title', group.name);
+    // the seasons charted, oldest first; By season needs at least two to compare
+    var seasonOf = function (p) { return p.season || (SEASONS ? SEASONS.seasonOf(p.date) : ''); };
+    var seasonsIn = [];
+    pts.forEach(function (p) { var se = seasonOf(p); if (se && seasonsIn.indexOf(se) === -1) { seasonsIn.push(se); } });
+    seasonsIn.sort();
+    var canSwitch = !!SEASONS && seasonsIn.length > 1;
+    var bySeason = canSwitch && BY_SEASON;
+    // season bands and names: over 60 days only, as one season adds nothing
+    var bands = !!SEASONS && SEASONS_ON && span > 60 && !bySeason;
+    if (bands) { T = 34; }   // season names sit just above the chart area
+    var card = text('figure', 'ath-chart' + (bySeason ? ' ath-chart--seasons' : ''));
+    var cap = text('figcaption', 'ath-chart__title');
+    cap.appendChild(text('span', 'ath-chart__name', group.name));
     var end = text('span', 'ath-chart__end');
+    if (canSwitch) { end.appendChild(viewToggle(group, bySeason, opts.zoom)); }
     end.appendChild(text('span', 'ath-chart__dir', field ? '↑ further' : '↑ faster'));
     if (!opts.zoom && SEASONS) { end.appendChild(zoomButton(group)); }
     cap.appendChild(end);
     card.appendChild(cap);
+    if (bySeason) {
+      // the key: each season's name in its line's colour
+      var key = text('ul', 'ath-chart__key');
+      key.setAttribute('aria-label', 'Seasons');
+      seasonsIn.forEach(function (se) {
+        var li = text('li', SEASONS.seasonOf(TODAY) === se ? 'is-current' : null);
+        li.setAttribute('style', '--season: ' + SEASONS.seasonColour(se));
+        var sw = text('span', 'ath-key__swatch');
+        sw.setAttribute('aria-hidden', 'true');
+        li.appendChild(sw);
+        li.appendChild(document.createTextNode(SEASONS.label(se, TODAY, false)));
+        key.appendChild(li);
+      });
+      card.appendChild(key);
+    }
     if (!pts.length) {
       card.appendChild(text('p', 'ath-chart__empty', 'No measured marks to chart.'));
       return card;
@@ -451,13 +480,17 @@
 
     // one date only: put it in the middle (dates compare by value, not as objects)
     var oneDay = +t1 === +t0;
-    var x = function (d) { return L + (oneDay ? (W - L - R) / 2 : (parseDate(d) - t0) / (t1 - t0) * (W - L - R)); };
+    var x = bySeason
+      ? function (d) { return L + SEASONS.dayOfSeason(d) / (SEASONS.SEASON_DAYS - 1) * (W - L - R); }
+      : function (d) { return L + (oneDay ? (W - L - R) / 2 : (parseDate(d) - t0) / (t1 - t0) * (W - L - R)); };
     // times: smaller is better, so smaller goes higher
     var y = function (v) { var f = (v - lo) / (hi - lo); return field ? T + (1 - f) * (H - T - B) : T + f * (H - T - B); };
 
     var s = svg('svg', { viewBox: '0 0 ' + W + ' ' + H, role: 'img',
                          'aria-label': group.name + ' progression, ' + pts.length + ' marks' +
-                                       (bands ? '; grey bands mark winter months' : '') });
+                                       (bySeason ? '; by season, one line per season on an April to March axis' +
+                                                   (SEASONS_ON ? ', winter months shaded grey' : '')
+                                                 : bands ? '; grey bands mark winter months' : '') });
     s.classList.add('ath-chart__svg');
 
     // seasons, behind everything: winter (April to September) shaded, a dashed line
@@ -491,6 +524,17 @@
       });
     }
 
+    // By season: winter (April to September) shaded across the one season's axis
+    if (bySeason && SEASONS_ON) {
+      var oct = x('2000-10-01');
+      s.appendChild(svg('rect', { x: L, y: T, width: oct - L, height: H - T - B, class: 'ath-winter' }));
+      [['Winter', L, oct], ['Summer', oct, W - R]].forEach(function (h) {
+        var bw = svg('text', { x: (h[1] + h[2]) / 2, y: H - B - 7, class: 'ath-band-word', 'aria-hidden': 'true' });
+        bw.textContent = h[0];
+        s.appendChild(bw);
+      });
+    }
+
     // value grid
     for (var v = lo; v <= hi + step / 2; v += step) {
       var gy = y(v);
@@ -501,7 +545,19 @@
     }
     // date axis: each result date when close together, else month starts
     var ticks = [], dateTicks = opts.dateTicks || 60;
-    if (span <= dateTicks) {
+    if (bySeason) {
+      // month starts, April to March
+      var lastM = -Infinity;
+      SEASONS.seasonMonths().forEach(function (m) {
+        var mx = L + m.day / (SEASONS.SEASON_DAYS - 1) * (W - L - R);
+        s.appendChild(svg('line', { x1: mx, x2: mx, y1: H - B, y2: H - B + 5, class: 'ath-tick' }));
+        if (mx - lastM < 34) { return; }
+        lastM = mx;
+        var ml = svg('text', { x: mx, y: H - B + 20, class: 'ath-axis ath-axis--x' });
+        ml.textContent = m.month;
+        s.appendChild(ml);
+      });
+    } else if (span <= dateTicks) {
       pts.forEach(function (p) { if (ticks.indexOf(p.date) === -1) { ticks.push(p.date); } });
       ticks = ticks.map(parseDate);
     } else {
@@ -533,6 +589,8 @@
     var runs = [], run = [], known = null;
     pts.forEach(function (p) {
       var g = stage(p) || known;
+      // By season: each season is its own line (results are in date order, so each season's are together)
+      if (run.length && bySeason && seasonOf(p) !== seasonOf(run[0])) { runs.push(run); run = []; known = null; g = stage(p); }
       if (run.length && breaks && g && known && g !== known) { runs.push(run); run = []; }
       if (g) { known = g; }
       p.lineGrade = g;
@@ -542,14 +600,20 @@
     var lastLabel = -Infinity;
     runs.forEach(function (r) {
       if (r.length > 1) {
-        s.appendChild(svg('polyline', { class: 'ath-line',
-          points: r.map(function (p) { return px(p) + ',' + y(p.value); }).join(' ') }));
+        var line = { 'class': 'ath-line',
+          points: r.map(function (p) { return px(p) + ',' + y(p.value); }).join(' ') };
+        if (bySeason) {
+          var rse = seasonOf(r[0]);
+          line['class'] += ' ath-line--season' + (rse === SEASONS.seasonOf(TODAY) ? ' ath-line--current' : '');
+          line.style = '--season: ' + SEASONS.seasonColour(rse);
+        }
+        s.appendChild(svg('polyline', line));
       }
       // a label where each grade's (or weight's) line starts, unless it would overlap
       // the last one; a line starting with unrecorded results takes the first it has
       var named = null;
       for (var i = 0; i < r.length && !named; i++) { named = r[i].lineGrade; }
-      if (breaks && runs.length > 1 && named && x(r[0].date) - lastLabel > 40) {
+      if (!bySeason && breaks && runs.length > 1 && named && x(r[0].date) - lastLabel > 40) {
         var gl = svg('text', { x: x(r[0].date), y: T + 2, class: 'ath-axis ath-axis--grade' });
         gl.textContent = named;
         s.appendChild(gl);
@@ -566,6 +630,7 @@
                 (p.club ? '' : ' ath-point--rep') +
                 (windy(p) ? (isPb ? ' ath-point--pb-wind' : ' ath-point--wind') : '');
       var g = svg('a', { href: p.source, target: '_blank', rel: 'noopener', class: 'ath-point-link' });
+      if (bySeason) { g.setAttribute('style', '--season: ' + SEASONS.seasonColour(seasonOf(p))); }
       var label = markSpoken(p) + (windy(p) ? ' (wind-assisted)' : '') + ', ' + longDate(p.date) + ', ' + p.meeting +
                   (p.combined ? ', part of a ' + p.combined.toLowerCase() : '') +
                   (isThrow(p) ? ', ' + weightWords(p) : '') +
@@ -604,7 +669,7 @@
     card.ncanPoints = pts;
     card.ncanLinks = links;
     var notes = [];
-    if (breaks && runs.length > 1) {
+    if (breaks && !bySeason && runs.length > 1) {
       notes.push(throwChart ? 'The line breaks where the implement weight changes; the personal best is marked at each weight.'
                             : 'The line breaks where the grade changes, as the hurdles get higher.');
     }
@@ -659,6 +724,37 @@
      opens straight on that chart. */
 
   var zoom = { slug: '', group: null, kind: 'all', card: null, at: -1, pushed: false };
+
+  /* Timeline / By season, on each chart with more than one season. The choice
+     applies to every chart on the page and the enlarged one, and is kept on the
+     device. */
+  function viewToggle(group, bySeason, inZoom) {
+    var w = text('span', 'ath-view');
+    w.setAttribute('role', 'group');
+    w.setAttribute('aria-label', 'Chart view for ' + group.name);
+    [['timeline', 'Timeline'], ['season', 'By season']].forEach(function (o) {
+      var b = text('button', 'ath-view__btn', o[1]);
+      b.type = 'button';
+      b.dataset.view = o[0];
+      b.dataset.chart = SEASONS.slug(group.name);
+      b.setAttribute('aria-pressed', (o[0] === 'season') === bySeason ? 'true' : 'false');
+      b.addEventListener('click', function () {
+        var next = o[0] === 'season';
+        if (next === BY_SEASON) { return; }
+        BY_SEASON = next;
+        try { localStorage.setItem('ncan-athlete-chart-view', next ? 'season' : 'timeline'); } catch (e) { /* not kept */ }
+        render();
+        var dlg = $('ath-zoom');
+        if (dlg && dlg.open && zoom.group) { zoomDraw(); }
+        // back to the same switch, now redrawn
+        var again = document.querySelector((inZoom ? '#ath-zoom-chart' : '#ath-charts') +
+          ' .ath-view__btn[data-chart="' + b.dataset.chart + '"][data-view="' + o[0] + '"]');
+        if (again) { again.focus(); }
+      });
+      w.appendChild(b);
+    });
+    return w;
+  }
 
   function zoomButton(group) {
     var b = text('button', 'ath-chart__zoom');
@@ -780,6 +876,16 @@
   function zoomSetUp() {
     var dlg = $('ath-zoom');
     if (!dlg || !SEASONS) { return; }
+    // the chart key (personal best, result, wind...) under the enlarged chart too: a copy
+    // of the page's, so the two never differ
+    var pageKey = document.querySelector('main .ath-key');
+    var body = dlg.querySelector('.ath-zoom__body');
+    if (pageKey && body && !dlg.querySelector('.ath-key')) {
+      var k = pageKey.cloneNode(true);
+      k.removeAttribute('id');
+      k.classList.add('ath-zoom__key');
+      body.parentNode.insertBefore(k, body.nextSibling);
+    }
     $('ath-zoom-close').addEventListener('click', function () { zoomClose(); });
     // Esc: close the same way as the button, so the address goes back too
     dlg.addEventListener('cancel', function (e) { e.preventDefault(); zoomClose(); });
