@@ -1408,6 +1408,24 @@ table.schedule.champs-table { min-width: 0; }
   border: 1px solid var(--line); border-radius: 50%; cursor: pointer;
 }
 .ath-zoom__close svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; }
+/* Download beside Close: saves the chart as an image (assets/js/chart-image.js) */
+.ath-zoom__actions { display: flex; align-items: center; gap: .5rem; flex: none; }
+.ath-zoom__download {
+  display: inline-flex; align-items: center; gap: .4rem; flex: none;
+  min-height: 44px; padding: 0 1rem;
+  font: inherit; font-size: .92rem; font-weight: 600;
+  background: var(--surface-tint); color: var(--heading);
+  border: 1px solid var(--line); border-radius: 999px; cursor: pointer;
+}
+.ath-zoom__download svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.ath-zoom__download:hover { background: var(--surface-strong); }
+.ath-zoom__download:focus-visible { outline: 2px solid var(--yellow-500); outline-offset: 2px; }
+.ath-zoom__download:disabled { cursor: progress; opacity: .7; }
+.ath-zoom__download[hidden] { display: none; }
+@media (max-width: 480px) {
+  .ath-zoom__download { width: 44px; padding: 0; justify-content: center; }
+  .ath-zoom__download-words { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+}
 .ath-zoom__close:hover { background: var(--surface-strong); }
 .ath-zoom__close:focus-visible, .ath-zoom__chip:focus-visible { outline: 2px solid var(--yellow-500); outline-offset: 2px; }
 .ath-zoom__ranges { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; }
@@ -1441,7 +1459,9 @@ table.schedule.champs-table { min-width: 0; }
 @media (max-width: 760px) {
   .ath-zoom { width: 100vw; max-width: 100vw; height: 100dvh; border-radius: 0; }
   .ath-zoom[open] { padding: .75rem 16px 1rem; }
-  .ath-zoom__body { grid-template-columns: minmax(0, 1fr); align-items: start; }
+  /* stacked: the body takes the height its chart and details need (the dialog scrolls),
+     rather than squeezing so the details slide under the chart */
+  .ath-zoom__body { grid-template-columns: minmax(0, 1fr); align-items: start; flex: none; }
 }
 .ath-badge { margin-left: .4rem; }
 /* ✍️ beside a mark entered manually (not from AthleticLIVE); its title says so */

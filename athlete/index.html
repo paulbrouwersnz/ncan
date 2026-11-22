@@ -224,9 +224,16 @@
         <dialog class="ath-zoom" id="ath-zoom" aria-labelledby="ath-zoom-title">
           <div class="ath-zoom__head">
             <h2 class="ath-zoom__title" id="ath-zoom-title" tabindex="-1">Chart</h2>
-            <button type="button" class="ath-zoom__close" id="ath-zoom-close" aria-label="Close the enlarged chart">
-              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg>
-            </button>
+            <div class="ath-zoom__actions">
+              <button type="button" class="ath-zoom__download" id="ath-zoom-download" aria-describedby="ath-zoom-said">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 4v11M7 10l5 5 5-5M5 19h14"/></svg>
+                <span class="ath-zoom__download-words">Download</span>
+              </button>
+              <button type="button" class="ath-zoom__close" id="ath-zoom-close" aria-label="Close the enlarged chart">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg>
+              </button>
+            </div>
+            <span class="visually-hidden" id="ath-zoom-said" aria-live="polite"></span>
           </div>
           <div class="ath-zoom__ranges" id="ath-zoom-ranges" role="group" aria-label="Dates shown">
             <button type="button" class="ath-zoom__chip" data-range="all" aria-pressed="true">All results</button>
@@ -679,6 +686,7 @@
   <script src="/assets/js/athlete-manage.js" defer></script>
   <script src="/assets/js/meeting-links.js"></script>
   <script src="/assets/js/athlete-seasons.js"></script>
+  <script src="/assets/js/chart-image.js"></script>
   <script src="/assets/js/athlete.js"></script>
 
 </body>

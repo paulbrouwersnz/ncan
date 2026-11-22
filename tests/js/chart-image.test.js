@@ -1,0 +1,48 @@
+// Tests for assets/js/chart-image.js: the enlarged chart saved as an image.
+// Run with: node --test "tests/js/*.test.js"
+'use strict';
+
+const test = require('node:test');
+const assert = require('node:assert/strict');
+const I = require('../../assets/js/chart-image.js');
+
+test('the file is named after the athlete and the event', () => {
+  assert.equal(I.fileName('Sam Brown', '60m'), 'sam-brown-60m.png');
+  assert.equal(I.fileName('Aroha Te Whāiti', 'Shot put (3kg)'), 'aroha-te-whaiti-shot-put-3kg.png');
+  assert.equal(I.fileName('Sam Brown', '100m Hurdles - 76.2cm'), 'sam-brown-100m-hurdles-76-2cm.png');
+  assert.equal(I.fileName('', ''), 'chart.png');
+  assert.equal(I.fileName('  ', '!!'), 'chart.png');
+});
+
+test('the dates line shows one date or a range, earliest first', () => {
+  assert.equal(I.day('2026-03-09'), '9 Mar 2026');
+  assert.equal(I.dateRange('2024-10-12', '2026-03-09'), '12 Oct 2024 – 9 Mar 2026');
+  assert.equal(I.dateRange('2026-03-09', '2024-10-12'), '12 Oct 2024 – 9 Mar 2026');
+  assert.equal(I.dateRange('2026-03-09', '2026-03-09'), '9 Mar 2026');
+  assert.equal(I.dateRange('2026-03-09'), '9 Mar 2026');
+  assert.equal(I.dateRange(''), '');
+});
+
+test('the subtitle names the range picked, but not All results', () => {
+  assert.equal(I.subtitle('60m', 'All results', '2024-10-12', '2026-03-09'), '60m · 12 Oct 2024 – 9 Mar 2026');
+  assert.equal(I.subtitle('60m', 'This season', '2026-10-12', '2026-11-20'), '60m · This season · 12 Oct 2026 – 20 Nov 2026');
+  assert.equal(I.subtitle('60m', '', '', ''), '60m');
+});
+
+test('key entries wrap into rows no wider than the image', () => {
+  assert.deepEqual(I.keyRows([100, 100, 100], 400, 20), [[{ i: 0, x: 0 }, { i: 1, x: 120 }, { i: 2, x: 240 }]]);
+  assert.deepEqual(I.keyRows([100, 100, 100], 300, 20), [[{ i: 0, x: 0 }, { i: 1, x: 120 }], [{ i: 2, x: 0 }]]);
+  // an entry wider than the row still gets a row of its own
+  assert.deepEqual(I.keyRows([500, 50], 300, 20), [[{ i: 0, x: 0 }], [{ i: 1, x: 0 }]]);
+  assert.deepEqual(I.keyRows([], 300), []);
+});
+
+test('a swatch ring is read from its CSS shadow', () => {
+  assert.deepEqual(I.shadow('rgb(159, 216, 184) 0px 0px 0px 3px'), { colour: 'rgb(159, 216, 184)', spread: 3 });
+  assert.deepEqual(I.shadow('0px 0px 0px 2px rgb(20, 38, 31)'), { colour: 'rgb(20, 38, 31)', spread: 2 });
+  assert.deepEqual(I.shadow('rgba(0, 0, 0, 0.5) 0px 0px 0px 1px, rgb(1, 2, 3) 0px 0px 0px 4px'), { colour: 'rgba(0, 0, 0, 0.5)', spread: 1 });
+  assert.equal(I.shadow('none'), null);
+  assert.equal(I.shadow(''), null);
+  // a soft drop shadow (no spread) isn't a ring
+  assert.equal(I.shadow('rgba(0, 0, 0, 0.2) 0px 4px 12px 0px'), null);
+});
