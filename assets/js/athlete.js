@@ -1223,6 +1223,8 @@
     document.dispatchEvent(new CustomEvent('ncan:shared', { detail: s }));   // the Shared charts list (shared-charts.js)
     link.focus();
     link.select();
+    if (link.scrollIntoView) { link.scrollIntoView({ block: 'nearest' }); }
+    shareCopy();   // copied straight away, so it's ready to paste
   }
 
   function shareCopy() {
@@ -1451,23 +1453,51 @@
     }).catch(function () { said.textContent = 'Sorry, the card could not be saved.'; });
   }
 
+  // copies the words, and says so on the button; resolves true when they were copied
   function copyText(button, value, words) {
     var said = function (w) { button.textContent = w; setTimeout(function () { button.textContent = words; }, 2500); };
     if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(value).then(function () { said('Copied'); }, function () { said('Press Ctrl+C to copy'); });
-    } else { said('Press Ctrl+C to copy'); }
+      return navigator.clipboard.writeText(value).then(function () { said('Copied'); return true; },
+                                                       function () { said('Press Ctrl+C to copy'); return false; });
+    }
+    said('Press Ctrl+C to copy');
+    return Promise.resolve(false);
+  }
+
+  // the card as a PNG within the API's limit: a photo card can be too big as drawn, so
+  // it is made smaller until it fits (never under the API's 400 px a side)
+  function cardBlob(canvas) {
+    var MAX = window.NCANChartImage.SHARE_MAX;
+    var fit = function (src, scale) {
+      return blobOf(src).then(function (blob) {
+        if (!blob || blob.size <= MAX) { return blob; }
+        // a PNG's size goes roughly with its area
+        var k = scale * Math.min(0.9, Math.sqrt(MAX / blob.size) * 0.95);
+        var w = Math.round(canvas.width * k), h = Math.round(canvas.height * k);
+        if (Math.min(w, h) < 400) { return blob; }
+        var small = document.createElement('canvas');
+        small.width = w; small.height = h;
+        var x = small.getContext('2d');
+        x.imageSmoothingEnabled = true; x.imageSmoothingQuality = 'high';
+        x.drawImage(canvas, 0, 0, w, h);
+        return fit(small, k);
+      });
+    };
+    return fit(canvas, 1);
   }
 
   function cardCreate() {
     var go = $('ath-card-go'), said = $('ath-card-said');
     if (go.disabled) { return; }
     var IMG = window.NCANChartImage, r = card.r;
+    var too = new Error('That card makes too big an image to share. Try another photo or shape.');
     card.busy = true;
     go.classList.add('is-busy');
     cardButtons();
     said.textContent = 'Making the public link…';
-    blobOf(card.canvas).then(function (blob) {
+    cardBlob(card.canvas).then(function (blob) {
       if (!blob) { throw new Error('Sorry, the card could not be made.'); }
+      if (blob.size > IMG.SHARE_MAX) { throw too; }
       return NCAN.sendFile('/athletes/' + encodeURIComponent(NCAN.athlete.slug) + '/shares?' +
         IMG.shareQuery({ event: eventLabel(r).slice(0, 60), from: r.date, to: r.date, view: 'pb-card',
                          name: card.surname ? 'full' : 'first' }), blob);
@@ -1482,9 +1512,16 @@
         $('ath-card-open').href = s.url;
         said.textContent = 'Your public link is ready.';
         document.dispatchEvent(new CustomEvent('ncan:shared', { detail: s }));   // the Shared charts list
-        $('ath-card-link').focus(); $('ath-card-link').select();
+        var link = $('ath-card-link');
+        link.focus(); link.select();
+        if (link.scrollIntoView) { link.scrollIntoView({ block: 'nearest' }); }
+        // copied straight away (where the browser lets it), so it's ready to paste
+        copyText($('ath-card-link-copy'), s.url, 'Copy link').then(function (ok) {
+          if (ok && card.url === s.url) { said.textContent = 'Your public link is ready, and copied.'; }
+        });
         return;
       }
+      if (res.status === 413) { throw too; }
       said.textContent = (res.body && res.body.error) || 'Sorry, the card could not be shared (' + res.status + ').';
       if (res.status === 403) { NCAN.athlete.can_share = false; $('ath-card-public').hidden = true; }
     }).catch(function (e) {
