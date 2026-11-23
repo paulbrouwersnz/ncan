@@ -550,6 +550,24 @@
       </div>
     </section>
 
+    <!-- Shared charts: the charts shared publicly from this page, for the people who
+         may share for this athlete; the API answers nobody else (assets/js/shared-charts.js) -->
+    <section class="section" id="ath-shares" aria-labelledby="shares-heading" hidden>
+      <div class="wrap">
+        <div class="section-head section-head--wide">
+          <p class="eyebrow">Shared publicly</p>
+          <h2 id="shares-heading">Shared charts</h2>
+          <p class="lede">
+            Charts from this page that have been shared with a public link, newest first, with how
+            often each has been opened. A shared chart is never changed: to show something different,
+            share a new one and remove the old. Removing a chart stops its link working straight away.
+          </p>
+        </div>
+        <p class="mem-help" id="ath-shares-note"></p>
+        <div id="ath-shares-out"></div>
+      </div>
+    </section>
+
     <!-- Manage this athlete: club administrators only; the API answers nobody else
          (assets/js/athlete-manage.js) -->
     <section class="section" id="ath-manage" aria-labelledby="manage-heading" hidden>
@@ -739,6 +757,7 @@
   <script src="/assets/js/meeting-links.js"></script>
   <script src="/assets/js/athlete-seasons.js"></script>
   <script src="/assets/js/chart-image.js"></script>
+  <script src="/assets/js/shared-charts.js"></script>
   <script src="/assets/js/athlete.js"></script>
 
 </body>

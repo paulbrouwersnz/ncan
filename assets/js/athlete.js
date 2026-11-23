@@ -1151,6 +1151,7 @@
     $('ath-share-open').href = s.url;
     $('ath-share-send').hidden = !navigator.share;
     $('ath-share-said').textContent = 'Your public link is ready.';
+    document.dispatchEvent(new CustomEvent('ncan:shared', { detail: s }));   // the Shared charts list (shared-charts.js)
     link.focus();
     link.select();
   }

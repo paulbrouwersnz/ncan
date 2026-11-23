@@ -275,6 +275,7 @@ Each `tests/js/<name>.test.js` tests the helpers in `assets/js/<name>.js` (or
 | `calendar-edit.test.js` | the calendar editor: form to event and back, its checks, the words for dates and repeats |
 | `athlete-seasons.test.js` | seasons on the athlete charts (1 April to 31 March, winter and summer bands, "so far", season bests per weight), the By season view (each date's day in its season, 29 February included, and each season's colour), Hide empty months (only months with no result in any season, each run of them a break on the axis) and the enlarged chart's date ranges |
 | `chart-image.test.js` | the enlarged chart saved as an image (Download, `assets/js/chart-image.js`): the file name (athlete and event, accents dropped), the dates line, the key wrapping into rows, reading a key swatch's ring from its CSS, the image shapes (Auto, landscape 3:2, portrait 4:5, square 1:1) and the layout leaving the chart room in each; for Share, the name on a shared image (full, or first name only) and the details sent with it |
+| `shared-charts.test.js` | the shared charts lists (`assets/js/shared-charts.js`): what each share shows (event, dates, view), its views and link previews, who shared it ("you" or someone else for families, the email for admins), the removed wording ("Removed by the club" for families, with who and why for admins) and the admin page's Show and Find |
 
 `tests/py/test_page_photos.py` tests the header photo checks
 (`python -m unittest discover -s tests/py`). Add a test file with any new helper
@@ -877,6 +878,20 @@ type, give it up to five other links (an organiser's PDF, a photo finish: shown 
 the page and on athlete pages, never collected; `assets/js/meeting-links.js`) and
 remove meetings. Adding, renaming, a type change or removing starts a collect
 (5–10 minutes), and the form stays locked until it ends.
+
+Charts shared publicly (Share in an enlarged chart) are listed by
+`assets/js/shared-charts.js`: **Shared charts** on the athlete page, for the
+people who may share for that athlete (`GET /v1/athletes/<address>/shares`;
+the API refuses everyone else, so nothing shows), **Your shared charts** on
+`/athletes/` when there are any (`GET /v1/me/shares`), and the admin tool page
+`/admin/shared-charts/` (`GET /v1/admin/shares`) with every share, Show (live,
+removed, all), Find, Remove with a required reason, and Pause sharing. Each
+share shows its thumbnail, event, dates and view, the name it shows, when it was
+made and its views (people once a day, link previews apart), with Copy link,
+Open and Remove. A share is never changed; Remove stops its link at once and
+can't be undone. A new share made on the page appears in the list straight away
+(the `ncan:shared` event from `athlete.js`). The admin landing card counts
+shares made in the last 7 days.
 
 **Locking a form while it works** (`assets/js/form-lock.js`):
 `FormLock.lock(box, true)` disables the controls in `box`, marks it `is-locked`
