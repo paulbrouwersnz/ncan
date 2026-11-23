@@ -1311,10 +1311,10 @@
       badge.hidden = false;
     }, function () { /* the list still works without the count */ });
     NCAN.get('/admin/shares').then(function (r) {
-      var n = r.made_this_week || 0, badge = $('admin-count-shares');
+      var n = r.live || 0, badge = $('admin-count-shares');
       if (!badge || !n) { return; }
       badge.textContent = String(n);
-      badge.setAttribute('aria-label', n + ' shared in the last 7 days');
+      badge.setAttribute('aria-label', n + (n === 1 ? ' live share' : ' live shares'));
       badge.hidden = false;
     }, function () { /* the card still works without the count */ });
   }
