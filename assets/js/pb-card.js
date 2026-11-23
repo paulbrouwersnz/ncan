@@ -315,37 +315,24 @@
         [12, 8, 5, 3.2].forEach(function (v) { for (var l = -4; l < 4; l++) { hurdle(l * 0.5, l * 0.5 + 0.5, v); } });
       }
     } else if (s === 'steeple') {
-      // the water jump from the infield, seen at an angle: its lane runs off to the right in front of the
-      // main track, the striped barrier stands across it and the water lies after it, deepest at the barrier
-      // closer than the other scenes, with a higher horizon, so the jump fills the space above the words
-      var h2 = H * 0.25, g2 = H * 0.58;
-      var Q = function (u, v) { var z = 1 + v * 0.6; return [W / 2 + u * W * 0.5 / z, h2 + (g2 - h2) / z]; };
-      var u2 = function (v) { return W * 0.5 / (1 + v * 0.6); };
-      var sk = c.createLinearGradient(0, 0, 0, h2); sk.addColorStop(0, '#0C2F3C'); sk.addColorStop(1, '#4D8C9A');
-      c.fillStyle = sk; c.fillRect(0, 0, W, h2 + 1);
-      c.fillStyle = '#123A33'; c.fillRect(0, h2 - H * 0.05, W, H * 0.05);
-      for (var k2 = 0; k2 < 9; k2++) { c.fillStyle = 'rgba(255,255,255,.18)'; c.fillRect(W * (k2 + 0.3) / 9, h2 - H * 0.04, W / 30, H * 0.01); }
-      c.fillStyle = GRASS; c.fillRect(0, h2, W, H - h2);
-      // ground along the lane (a, runners go this way) and across it (b, away from the infield)
-      var gv = function (a, b) { return 0.35 + a * 0.22 + b * 0.75; };
-      var G = function (a, b) { return Q(-0.75 + a * 0.7 + b * 0.42, gv(a, b)); };
-      var gq = function (col, a0, a1, b0, b1) { fill(col, [G(a0, b0), G(a1, b0), G(a1, b1), G(a0, b1)]); };
-      var Gup = function (a, b, h) { var p = G(a, b); return [p[0], p[1] - u2(gv(a, b)) * h]; };
-      gq(S.track, -12, 30, 2.1, 7);                                          // the main track
-      for (var t = 0; t <= 6; t++) { var tb = 2.1 + t * 0.8; gq(LINE, -12, 30, tb, tb + 0.03); }
-      gq(S.track, -12, 30, 0, 1.5);                                          // the water jump lane
-      gq(LINE, -12, 30, -0.04, 0); gq(LINE, -12, 30, 1.5, 1.54);
-      gq('#3E9BD1', 0.1, 3.2, 0, 1.5);
-      gq('#2C7FB8', 0.1, 1.3, 0, 1.5);
-      gq('rgba(255,255,255,.8)', 3.2, 3.26, 0, 1.5);                        // where the pit ends
-      [[0.6, 0.3], [1.6, 0.9], [2.3, 0.4], [1.0, 1.2], [2.7, 1.1]].forEach(function (r) { gq('rgba(255,255,255,.35)', r[0], r[0] + 0.35, r[1], r[1] + 0.04); });
-      // the barrier: legs, then the striped beam across the lane, top and face
-      [0.1, 0.75, 1.4].forEach(function (b) { line('#2A2A2A', Math.max(2, u2(gv(0, b)) * 0.04), [G(0, b), Gup(0, b, 0.3)]); });
-      fill('#D9D9D9', [Gup(-0.1, -0.1, 0.4), Gup(-0.1, 1.6, 0.4), Gup(0.05, 1.6, 0.4), Gup(0.05, -0.1, 0.4)]);
-      for (var k = 0; k < 6; k++) {
-        var b0 = -0.1 + k * 1.7 / 6, b1 = b0 + 1.7 / 6;
-        fill(k % 2 ? '#1A1A1A' : '#FFFFFF', [Gup(-0.1, b0, 0.4), Gup(-0.1, b1, 0.4), Gup(-0.1, b1, 0.29), Gup(-0.1, b0, 0.29)]);
+      // the water jump from the infield: its lane runs across in front of the main track. Runners come from the
+      // right, clear the striped barrier into the deep end of the water and run out of the shallow end on the left
+      stadium();
+      var up = function (u, v, h) { var p = P(u, v); return [p[0], p[1] - unit(v) * h]; };
+      quad(S.track, -30, 30, 4.4, 9.5);                                       // the main track
+      for (var t = 0; t <= 6; t++) { var tv = 4.4 + t * 0.85; quad(LINE, -30, 30, tv, tv + 0.03); }
+      quad(S.track, -30, 30, 1.9, 3.9);                                       // the water jump lane
+      quad(LINE, -30, 30, 1.9, 1.95); quad(LINE, -30, 30, 3.85, 3.9);
+      quad('#3E9BD1', -1.3, 0.7, 2.0, 3.8);
+      quad('#2C7FB8', -0.1, 0.7, 2.0, 3.8);                                   // deep, right after the barrier
+      quad('rgba(255,255,255,.75)', -1.33, -1.27, 2.0, 3.8);                   // where the pit runs out
+      [[0.2, 2.4], [0.7, 3.1], [0.45, 2.8], [-0.3, 3.3], [1.0, 2.3]].forEach(function (r) { quad('rgba(255,255,255,.35)', -r[0] - 0.25, -r[0], r[1], r[1] + 0.04); });
+      [2.1, 2.9, 3.7].forEach(function (v) { line('#2A2A2A', Math.max(2, unit(v) * 0.04), [P(0.7, v), up(0.7, v, 0.3)]); });
+      for (var bv = 1.85; bv < 3.95; bv += 0.3) {
+        var v1 = Math.min(bv + 0.3, 3.95);
+        fill(Math.round((bv - 1.85) / 0.3) % 2 ? '#1A1A1A' : '#FFFFFF', [up(0.7, bv, 0.4), up(0.7, v1, 0.4), up(0.7, v1, 0.3), up(0.7, bv, 0.3)]);
       }
+      fill('#D9D9D9', [up(0.7, 1.85, 0.4), up(0.7, 3.95, 0.4), up(0.76, 3.95, 0.4), up(0.76, 1.85, 0.4)]);   // the top of the barrier
     } else if (s === 'long' || s === 'triple') {
       stadium();
       quad(S.track, -0.4, 0.4, 0, 1.6);

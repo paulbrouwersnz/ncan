@@ -928,7 +928,7 @@ Photo card. A picked photo stays on the device (it's only uploaded inside the
 finished card, if a public link is made). **Event**: the Photo card's layout over a
 scene of the event drawn on the card (`sceneFor()` picks it from the event name):
 sprints under 400m, a lane in perspective to the finish line; 400m and longer and
-track walks, the whole track from overhead; hurdles; steeplechase, the water jump seen from the infield, barrier then water;
+track walks, the whole track from overhead; hurdles; steeplechase, the water jump seen from the infield, runners coming from the right over the barrier into the deep end;
 long and triple jump (three take-off lines), the runway to the sand pit; high jump,
 the mat, stands and bar; pole vault, the pit with its white centre, front pads and the V
 down to the box, tall standards and the bar high above; shot, discus, hammer and javelin, the
