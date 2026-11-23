@@ -140,3 +140,24 @@ test('Photo card crop keeps the focus point in view', () => {
   assert.ok(Math.abs(tall.sw - 562.5) < 0.01);
   assert.ok(Math.abs(tall.sx - (2000 - 562.5) * 0.25) < 0.01);
 });
+
+test('Photo card zoom and dragging the photo', () => {
+  // zoomed 2x: half the slice, still placed by the focus point; zoom kept within 1 to 4
+  const z2 = PB.cover(2000, 1000, 540, 540, '50% 50%', 2);
+  assert.deepEqual([z2.sw, z2.sh, z2.sx, z2.sy].map(Math.round), [500, 500, 750, 250]);
+  assert.equal(Math.round(PB.cover(2000, 1000, 540, 540, '50% 50%', 0.2).sw), 1000);
+  assert.equal(Math.round(PB.cover(2000, 1000, 540, 540, '50% 50%', 9).sw), 250);
+  assert.deepEqual(PB.parseFocus('30% 140%'), { x: 30, y: 100 });
+  assert.deepEqual(PB.parseFocus(null), { x: 50, y: 50 });
+  // dragging right shows more of the left: the focus moves left, by the right amount
+  const start = { x: 50, y: 50, zoom: 1 };
+  const right = PB.move(start, 54, 0, 2000, 1000, 540, 540);   // 54 card px = 100 photo px of 1000 spare
+  assert.ok(Math.abs(right.x - 40) < 1e-9);
+  assert.equal(right.y, 50);   // no spare height at zoom 1: up and down do nothing
+  assert.equal(PB.move(start, 0, 300, 2000, 1000, 540, 540).y, 50);
+  // it stops at the photo's edge
+  assert.equal(PB.move(start, 5000, 0, 2000, 1000, 540, 540).x, 0);
+  assert.equal(PB.move(start, -5000, 0, 2000, 1000, 540, 540).x, 100);
+  // zoomed in, it can move up and down too
+  assert.ok(PB.move({ x: 50, y: 50, zoom: 2 }, 0, -54, 2000, 1000, 540, 540).y > 50);
+});

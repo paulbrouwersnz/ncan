@@ -233,13 +233,31 @@
     return { w: W, h: H, items: items, photo: true };
   }
 
-  /* Where a photo goes to cover a w x h box, keeping the focus point ("30% 40%") in
-     view: the source rectangle to draw from. */
-  function cover(iw, ih, w, h, focus) {
+  var ZOOM_MAX = 4;
+  function clamp(v, lo, hi) { return Math.min(hi, Math.max(lo, v)); }
+  // "30% 40%" as { x: 30, y: 40 }; anything else is the middle
+  function parseFocus(focus) {
     var m = /(-?[\d.]+)%\s+(-?[\d.]+)%/.exec(focus || '') || [0, 50, 50];
-    var fx = Math.min(100, Math.max(0, +m[1])) / 100, fy = Math.min(100, Math.max(0, +m[2])) / 100;
-    var scale = Math.max(w / iw, h / ih), sw = w / scale, sh = h / scale;
-    return { sx: (iw - sw) * fx, sy: (ih - sh) * fy, sw: sw, sh: sh };
+    return { x: clamp(+m[1], 0, 100), y: clamp(+m[2], 0, 100) };
+  }
+
+  /* Where a photo goes to cover a w x h box, keeping the focus point ("30% 40%") in
+     view, zoomed in by zoom (1 = just covering, up to ZOOM_MAX): the source rectangle
+     to draw from. */
+  function cover(iw, ih, w, h, focus, zoom) {
+    var f = parseFocus(focus), z = clamp(+zoom || 1, 1, ZOOM_MAX);
+    var scale = Math.max(w / iw, h / ih) * z, sw = w / scale, sh = h / scale;
+    return { sx: (iw - sw) * f.x / 100, sy: (ih - sh) * f.y / 100, sw: sw, sh: sh };
+  }
+
+  /* Dragging the photo by dx, dy card pixels: the new position { x, y, zoom }. The photo
+     follows the finger, and stops at its edges (the card is always covered). */
+  function move(pos, dx, dy, iw, ih, w, h) {
+    var z = clamp(+pos.zoom || 1, 1, ZOOM_MAX), scale = Math.max(w / iw, h / ih) * z;
+    var spareX = iw - w / scale, spareY = ih - h / scale;
+    var x = spareX > 0.5 ? clamp(pos.x - dx / scale / spareX * 100, 0, 100) : pos.x;
+    var y = spareY > 0.5 ? clamp(pos.y - dy / scale / spareY * 100, 0, 100) : pos.y;
+    return { x: x, y: y, zoom: z };
   }
 
   // anything that would overlap: text boxes (roughly) that cross, for the tests
@@ -296,7 +314,11 @@
           if (got[1]) { c.drawImage(got[1], i.x, i.y, i.w, i.h); }
         } else if (i.kind === 'photo') {
           var ph = got[2];
-          if (ph) { var r = cover(ph.naturalWidth, ph.naturalHeight, i.w, i.h, opts.focus); c.drawImage(ph, r.sx, r.sy, r.sw, r.sh, i.x, i.y, i.w, i.h); }
+          if (ph) {
+            var r = cover(ph.naturalWidth, ph.naturalHeight, i.w, i.h, opts.focus, opts.zoom);
+            c.drawImage(ph, r.sx, r.sy, r.sw, r.sh, i.x, i.y, i.w, i.h);
+            canvas.photo = { iw: ph.naturalWidth, ih: ph.naturalHeight, w: i.w, h: i.h };   // for dragging it
+          }
         } else if (i.kind === 'shade') {
           var g = c.createLinearGradient(0, i.y, 0, i.y + i.h);
           g.addColorStop(0, 'rgba(6,30,23,' + i.from + ')');
@@ -322,5 +344,5 @@
 
   return { SIZES: SIZES, COLOURS: COLOURS, day: day, placeWord: placeWord, improvement: improvement,
            cardName: cardName, surnameByDefault: surnameByDefault, seasonWords: seasonWords, facts: facts,
-           caption: caption, fileName: fileName, headlineFor: headlineFor, cover: cover, STYLES: ['podium', 'photo'], layout: layout, overlaps: overlaps, render: render };
+           caption: caption, fileName: fileName, headlineFor: headlineFor, cover: cover, parseFocus: parseFocus, move: move, ZOOM_MAX: ZOOM_MAX, STYLES: ['podium', 'photo'], layout: layout, overlaps: overlaps, render: render };
 }));
