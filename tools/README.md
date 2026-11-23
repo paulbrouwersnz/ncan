@@ -879,6 +879,31 @@ the page and on athlete pages, never collected; `assets/js/meeting-links.js`) an
 remove meetings. Adding, renaming, a type change or removing starts a collect
 (5–10 minutes), and the form stays locked until it ends.
 
+**Event charts** (`assets/js/athlete.js`, with the season maths in
+`assets/js/athlete-seasons.js`): every chart shades winter (1 April to 30
+September) light grey and leaves summer white, with a dashed line and the
+season's name at each 1 April and a faint "Winter"/"Summer" inside each band
+(charts covering 60 days or less get none). "Show seasons" turns the bands off.
+Each season's best always has a light green surround (`--chart-sb`), per weight
+for throws. A Timeline / By season switch draws every season on one April to
+March axis, one coloured line per season. "Hide empty months" (off by default,
+with a ? tip) squashes out months with no result in any season, each run shown as
+a // break; page charts hide only months empty for every event shown, so they
+still line up. All three choices are remembered on the device.
+
+The maximise button opens an **enlarged chart** (`#/<athlete>/chart/<event>`,
+so Back closes it): more labels, range chips (All, This season, Last season,
+Last 12 months, Pick dates), a details panel for the picked result (click, tap
+or ← →), and the key underneath, where hovering or clicking an entry lights its
+marks. Closing it leaves the page's settings as they were. **Download** saves a
+PNG made in the browser (`assets/js/chart-image.js`, nothing uploaded), in the
+chosen Shape (Auto, landscape 3:2, portrait 4:5, square 1:1), with the title,
+key and the club's share image in the footer. **Share** (GameDay contacts and
+admins, unless sharing is paused) previews the same image, asks for consent and
+a name (full, or first name only), then uploads it for a public link
+`https://api.ncan.nz/s/<id>`. A share is never changed: share a new one and
+remove the old.
+
 Charts shared publicly (Share in an enlarged chart) are listed by
 `assets/js/shared-charts.js`: **Shared charts** on the athlete page, for the
 people who may share for that athlete (`GET /v1/athletes/<address>/shares`;
@@ -891,7 +916,7 @@ made and its views (people once a day, link previews apart), with Copy link,
 Open and Remove. A share is never changed; Remove stops its link at once and
 can't be undone. A new share made on the page appears in the list straight away
 (the `ncan:shared` event from `athlete.js`). The admin landing card counts
-shares made in the last 7 days.
+the live shares (removed ones aren't counted).
 
 **Locking a form while it works** (`assets/js/form-lock.js`):
 `FormLock.lock(box, true)` disables the controls in `box`, marks it `is-locked`
