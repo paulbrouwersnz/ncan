@@ -1232,7 +1232,7 @@
   /* A PB card: drawn here from the result, shown, then saved (share sheet or download).
      The athlete's GameDay contacts and admins can also make a public link of it, through
      the same share API as charts (view=pb-card). */
-  var card = { r: null, kind: 'pb', shape: 'square', surname: false, canvas: null, seq: 0, busy: false, from: null, url: '' };
+  var card = { r: null, kind: 'pb', style: 'podium', photo: null, picked: null, shape: 'square', surname: false, canvas: null, seq: 0, busy: false, from: null, url: '' };
 
   function cardFacts() {
     var r = card.r, prev = pbBefore(r);
@@ -1241,10 +1241,49 @@
       pbsThisSeason: pbsInSeason(r) });
   }
 
+  /* The Photo card's photo: one picked on this device for this card, else the athlete's
+     header photo (fetched with the sign-in, as a local copy the canvas can read). With
+     no header photo, picking one is the only way to a Photo card. Nothing picked here
+     leaves the device unless a public link is made of the finished card. */
+  var headerPhoto = { slug: null, url: null, focus: null, loading: null };
+  function cardPhoto() {
+    if (card.picked) { return card.picked; }
+    return headerPhoto.url ? { url: headerPhoto.url, focus: headerPhoto.focus } : null;
+  }
+  function loadHeaderPhoto() {
+    var a = NCAN.athlete, p = a && a.photo;
+    if (!p || !p.url) { return Promise.resolve(null); }
+    if (headerPhoto.slug === a.slug && (headerPhoto.url || headerPhoto.loading)) { return headerPhoto.loading || Promise.resolve(headerPhoto.url); }
+    headerPhoto.slug = a.slug; headerPhoto.focus = p.focus || null;
+    headerPhoto.loading = fetch(p.url, { credentials: 'include' })
+      .then(function (r) { if (!r.ok) { throw new Error(r.status); } return r.blob(); })
+      .then(function (b) { headerPhoto.url = URL.createObjectURL(b); return headerPhoto.url; })
+      .catch(function () { return null; })
+      .then(function (u) { headerPhoto.loading = null; return u; });
+    return headerPhoto.loading;
+  }
+  function cardPhotoWords() {
+    var has = !!(NCAN.athlete && NCAN.athlete.photo && NCAN.athlete.photo.url);
+    var box = $('ath-card-photo');
+    box.hidden = card.style !== 'photo';
+    $('ath-card-use-header').hidden = !(card.picked && has);
+    $('ath-card-pick-words').textContent = card.picked || has ? 'Use a different photo' : 'Choose a photo';
+    $('ath-card-photo-said').textContent = card.picked ? 'Using the photo you chose. It stays on this device.'
+      : has ? (headerPhoto.url ? 'Using the header photo.' : 'Loading the header photo…')
+      : 'There’s no header photo yet: choose a photo for the card. It stays on this device.';
+  }
+  function cardPhotoSetUp() {
+    if (card.picked) { URL.revokeObjectURL(card.picked.url); card.picked = null; }
+    $('ath-card-file').value = '';
+    cardPhotoWords();
+    loadHeaderPhoto().then(function () { cardPhotoWords(); if (card.style === 'photo' && $('ath-card').open) { cardDraw(); } });
+  }
+
   function cardOpen(r, from, kind) {
     var d = $('ath-card');
     if (!d || !d.showModal || !window.NCANPbCard) { return; }
     card.r = r; card.from = from; card.url = ''; card.kind = kind || 'pb';
+    cardPhotoSetUp();
     $('ath-card-title').textContent = { newpb: 'Share this personal best', pb: 'Share this personal best',
       sb: 'Share this season best' }[card.kind] || 'Share this result';
     card.surname = window.NCANPbCard.surnameByDefault(r);
@@ -1269,8 +1308,10 @@
     box.classList.add('is-busy');
     said.textContent = 'Making the card…';
     cardButtons();
+    var ph = cardPhoto();
     PB.render(f, card.shape, { display: root.getPropertyValue('--font-display') || 'sans-serif',
-                               sans: root.getPropertyValue('--font-sans') || 'sans-serif' }).then(function (canvas) {
+                               sans: root.getPropertyValue('--font-sans') || 'sans-serif' },
+              { style: card.style, photo: ph && ph.url, focus: ph && ph.focus }).then(function (canvas) {
       if (n !== card.seq) { return; }
       card.canvas = canvas;
       img.src = canvas.toDataURL('image/png');
@@ -1359,6 +1400,22 @@
       card.seq++;
       card.canvas = null;
       if (card.from && document.contains(card.from)) { card.from.focus(); }
+    });
+    Array.prototype.forEach.call(d.querySelectorAll('#ath-card-styles input'), function (i) {
+      i.addEventListener('change', function () { if (i.checked) { card.style = i.value; cardPhotoWords(); cardDraw(); } });
+    });
+    $('ath-card-file').addEventListener('change', function () {
+      var file = this.files && this.files[0];
+      if (!file) { return; }
+      if (!/^image\//.test(file.type)) { $('ath-card-photo-said').textContent = 'That isn’t a photo: choose a JPEG, PNG or WebP.'; return; }
+      if (card.picked) { URL.revokeObjectURL(card.picked.url); }
+      card.picked = { url: URL.createObjectURL(file), focus: null };
+      cardPhotoWords(); cardDraw();
+    });
+    $('ath-card-use-header').addEventListener('click', function () {
+      if (card.picked) { URL.revokeObjectURL(card.picked.url); card.picked = null; }
+      $('ath-card-file').value = '';
+      cardPhotoWords(); cardDraw();
     });
     Array.prototype.forEach.call(d.querySelectorAll('#ath-card-shapes input'), function (i) {
       i.addEventListener('change', function () { if (i.checked) { card.shape = i.value; cardDraw(); } });

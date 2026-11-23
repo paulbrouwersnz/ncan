@@ -273,6 +273,11 @@
           <div class="ath-share__box ath-card__box" id="ath-card-box"><img id="ath-card-preview" alt="" hidden></div>
           <div class="ath-share__form" id="ath-card-form">
             <div class="ath-card__options">
+              <fieldset class="ath-share__names" id="ath-card-styles">
+                <legend>Style</legend>
+                <label><input type="radio" name="ath-card-style" value="podium" checked> Club colours</label>
+                <label><input type="radio" name="ath-card-style" value="photo"> Photo</label>
+              </fieldset>
               <fieldset class="ath-share__names" id="ath-card-shapes">
                 <legend>Shape</legend>
                 <label><input type="radio" name="ath-card-shape" value="square" checked> Square</label>
@@ -282,6 +287,15 @@
                 <input type="checkbox" id="ath-card-surname">
                 <label for="ath-card-surname">Show surname</label>
               </p>
+            </div>
+            <!-- the photo for a Photo card: the header photo, or one picked here (stays on this device) -->
+            <div class="ath-card__photo" id="ath-card-photo" hidden>
+              <p class="ath-card__photo-said" id="ath-card-photo-said"></p>
+              <label class="btn btn--ghost btn--sm ath-card__pick">
+                <input type="file" id="ath-card-file" accept="image/*" class="visually-hidden">
+                <span id="ath-card-pick-words">Choose a photo</span>
+              </label>
+              <button type="button" class="btn btn--ghost btn--sm" id="ath-card-use-header" hidden>Use the header photo</button>
             </div>
             <label class="ath-share__label" for="ath-card-caption">Suggested caption</label>
             <div class="ath-share__link">

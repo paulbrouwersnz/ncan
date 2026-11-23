@@ -1493,6 +1493,12 @@ table.schedule.champs-table { min-width: 0; }
 .ath-pb-share:hover, .ath-pb-share:focus-visible { color: var(--heading); border-color: var(--line); background: var(--surface, #fff); }
 .ath-pb-share svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 .ath-nowrap { white-space: nowrap; }
+/* the Photo card's photo choice */
+.ath-card__photo { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; margin: 0 0 .75rem; }
+.ath-card__photo[hidden] { display: none; }
+.ath-card__photo-said { flex: 1 1 100%; margin: 0; font-size: .9rem; color: var(--text-soft); }
+.ath-card__pick { position: relative; cursor: pointer; }
+.ath-card__pick:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
 /* a mark with its share icon pushed to the right edge */
 .ath-markline, .ath-pb__mark, .ath-zoom__mark { display: flex; align-items: center; gap: .4rem; }
 .ath-markline .ath-pb-share, .ath-pb__mark .ath-pb-share, .ath-zoom__mark .ath-pb-share { margin-left: auto; vertical-align: 0; }

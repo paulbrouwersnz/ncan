@@ -134,7 +134,8 @@
   /* The Podium card as shapes and words, in points (the canvas is drawn at 2x):
      { w, h, items: [{ kind: 'rect'|'text'|'logo', ... }] }. Text items have x, y (baseline),
      size, weight, font ('display' or 'sans'), colour, align, max (the widest it may be). */
-  function layout(f, shape) {
+  function layout(f, shape, style) {
+    if (style === 'photo') { return photoLayout(f, shape); }
     var S = SIZES[shape] || SIZES.square, W = S.w, H = S.h, pad = 40, story = shape === 'story';
     var items = [];
     var t = function (words, x, y, size, o) {
@@ -185,6 +186,62 @@
     return { w: W, h: H, items: items };
   }
 
+  /* The Photo hero card: the photo fills the card (cropped to cover it, keeping the focus
+     point in view), a dark wash at the top for the headline and name and a deeper one at
+     the bottom for the event, mark and meeting. Text is white and gold, as on Podium. */
+  function photoLayout(f, shape) {
+    var S = SIZES[shape] || SIZES.square, W = S.w, H = S.h, pad = 40, story = shape === 'story';
+    var items = [];
+    var t = function (words, x, y, size, o) {
+      if (!words) { return; }
+      o = o || {};
+      items.push({ kind: 'text', words: words, x: x, y: y, size: size, weight: o.weight || 400,
+                   font: o.font || 'sans', colour: o.colour || COLOURS.text, align: o.align || 'left',
+                   max: o.max || W - 2 * pad, spacing: o.spacing || 0, shadow: true });
+    };
+    items.push({ kind: 'rect', x: 0, y: 0, w: W, h: H, colour: COLOURS.bg });
+    items.push({ kind: 'photo', x: 0, y: 0, w: W, h: H });
+    var P = story
+      ? { top: 260, bottom: 560, head: 84, headSize: 22, name: 140, nameSize: 44, group: 174,
+          event: 500, eventSize: 30, mark: 620, markSize: 120, rib: 648, ribH: 50, ribSize: 26, lines: 748, step: 34, size: 22 }
+      : { top: 170, bottom: 330, head: 66, headSize: 18, name: 102, nameSize: 32, group: 126,
+          event: 300, eventSize: 22, mark: 376, markSize: 80, rib: 0, ribH: 0, ribSize: 18, lines: 410, step: 22, size: 15 };
+    items.push({ kind: 'shade', x: 0, y: 0, w: W, h: P.top, from: 0.7, to: 0 });
+    items.push({ kind: 'shade', x: 0, y: H - P.bottom, w: W, h: P.bottom, from: 0, to: 0.88 });
+    t(f.headline || 'PERSONAL BEST', pad, P.head, P.headSize, { weight: 800, font: 'display', colour: COLOURS.gold, spacing: 2 });
+    t(f.name, pad, P.name, P.nameSize, { weight: 800, font: 'display' });
+    t(f.group, pad, P.group, P.headSize - 3, { colour: COLOURS.text });
+
+    t(f.event, pad, P.event, P.eventSize, { weight: 700, font: 'display' });
+    t(f.mark, pad, P.mark, P.markSize, { weight: 800, font: 'display', colour: COLOURS.gold, max: W - 2 * pad - (story ? 0 : 130) });
+    if (f.better) {
+      // the ribbon: under the mark on a story, beside it on a square
+      var rw = story ? 230 : 120, rh = story ? P.ribH : 32;
+      var rx = story ? pad : W - pad - rw, ry = story ? P.rib : P.mark - rh + 4;
+      items.push({ kind: 'rect', x: rx, y: ry, w: rw, h: rh, colour: COLOURS.gold, round: rh / 2 });
+      t('PB ' + f.better, rx + rw / 2, ry + rh * 0.7, P.ribSize, { weight: 800, font: 'display', colour: COLOURS.ink, align: 'center', max: rw - 16 });
+    }
+    var y = story ? P.lines + (f.better ? 0 : -60) : P.lines;
+    var line = function (words, o) { if (words) { t(words, pad, y, P.size, o); y += P.step; } };
+    line([f.place, f.wind, f.was ? 'previous best ' + f.was : ''].filter(Boolean).join(' · '), { weight: 600 });
+    line([f.meeting, f.date].filter(Boolean).join(' · '), { weight: 600 });
+    if (story) { line(f.season, { colour: COLOURS.goldSoft, weight: 600 }); }
+
+    var lh = story ? 60 : 40;
+    items.push({ kind: 'logo', x: pad, y: H - pad - lh + (story ? 0 : 12), h: lh, w: lh * 888 / 508 });
+    t('ncan.nz', W - pad, H - pad - lh * 0.3 + (story ? 0 : 12), 15, { weight: 600, align: 'right', max: 120 });
+    return { w: W, h: H, items: items, photo: true };
+  }
+
+  /* Where a photo goes to cover a w x h box, keeping the focus point ("30% 40%") in
+     view: the source rectangle to draw from. */
+  function cover(iw, ih, w, h, focus) {
+    var m = /(-?[\d.]+)%\s+(-?[\d.]+)%/.exec(focus || '') || [0, 50, 50];
+    var fx = Math.min(100, Math.max(0, +m[1])) / 100, fy = Math.min(100, Math.max(0, +m[2])) / 100;
+    var scale = Math.max(w / iw, h / ih), sw = w / scale, sh = h / scale;
+    return { sx: (iw - sw) * fx, sy: (ih - sh) * fy, sw: sw, sh: sh };
+  }
+
   // anything that would overlap: text boxes (roughly) that cross, for the tests
   function overlaps(L, measure) {
     var boxes = L.items.filter(function (i) { return i.kind === 'text'; }).map(function (i) {
@@ -204,8 +261,10 @@
 
   /* Browser only: the card as a canvas. fonts { display, sans } are CSS font-family
      lists; waits for them so the first card isn't drawn in a fallback font. */
-  function render(f, shape, fonts) {
-    var L = layout(f, shape), scale = 2;
+  function render(f, shape, fonts, opts) {
+    opts = opts || {};
+    var style = opts.style === 'photo' && opts.photo ? 'photo' : 'podium';
+    var L = layout(f, shape, style), scale = 2;
     var family = function (i) { return i.font === 'display' ? fonts.display : fonts.sans; };
     var css = function (i, size) { return i.weight + ' ' + size + 'px ' + family(i); };
     var wait = document.fonts && document.fonts.load ? Promise.all(L.items.filter(function (i) { return i.kind === 'text'; })
@@ -216,7 +275,13 @@
       img.onerror = function () { ok(null); };
       img.src = '/assets/img/logo-dark.svg';
     });
-    return Promise.all([wait, logo]).then(function (got) {
+    var photo = style !== 'photo' ? Promise.resolve(null) : new Promise(function (ok) {
+      var img = new Image();
+      img.onload = function () { ok(img); };
+      img.onerror = function () { ok(null); };
+      img.src = opts.photo;
+    });
+    return Promise.all([wait, logo, photo]).then(function (got) {
       var canvas = document.createElement('canvas');
       canvas.width = L.w * scale; canvas.height = L.h * scale;
       var c = canvas.getContext('2d');
@@ -229,6 +294,14 @@
           else { c.fillRect(i.x, i.y, i.w, i.h); }
         } else if (i.kind === 'logo') {
           if (got[1]) { c.drawImage(got[1], i.x, i.y, i.w, i.h); }
+        } else if (i.kind === 'photo') {
+          var ph = got[2];
+          if (ph) { var r = cover(ph.naturalWidth, ph.naturalHeight, i.w, i.h, opts.focus); c.drawImage(ph, r.sx, r.sy, r.sw, r.sh, i.x, i.y, i.w, i.h); }
+        } else if (i.kind === 'shade') {
+          var g = c.createLinearGradient(0, i.y, 0, i.y + i.h);
+          g.addColorStop(0, 'rgba(6,30,23,' + i.from + ')');
+          g.addColorStop(1, 'rgba(6,30,23,' + i.to + ')');
+          c.fillStyle = g; c.fillRect(i.x, i.y, i.w, i.h);
         } else {
           // too wide: smaller, down to two-thirds, then squeezed
           var size = i.size;
@@ -236,7 +309,10 @@
           if ('letterSpacing' in c) { c.letterSpacing = i.spacing + 'px'; }
           while (c.measureText(i.words).width > i.max && size > i.size * 0.67) { size -= 1; c.font = css(i, size); }
           c.fillStyle = i.colour; c.textAlign = i.align;
+          // over a photo, a soft shadow keeps words readable on light patches
+          if (i.shadow) { c.shadowColor = 'rgba(0,0,0,.55)'; c.shadowBlur = 8; c.shadowOffsetY = 1; }
           c.fillText(i.words, i.x, i.y, i.max);
+          c.shadowColor = 'transparent'; c.shadowBlur = 0; c.shadowOffsetY = 0;
           if ('letterSpacing' in c) { c.letterSpacing = '0px'; }
         }
       });
@@ -246,5 +322,5 @@
 
   return { SIZES: SIZES, COLOURS: COLOURS, day: day, placeWord: placeWord, improvement: improvement,
            cardName: cardName, surnameByDefault: surnameByDefault, seasonWords: seasonWords, facts: facts,
-           caption: caption, fileName: fileName, headlineFor: headlineFor, layout: layout, overlaps: overlaps, render: render };
+           caption: caption, fileName: fileName, headlineFor: headlineFor, cover: cover, STYLES: ['podium', 'photo'], layout: layout, overlaps: overlaps, render: render };
 }));
