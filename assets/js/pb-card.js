@@ -577,14 +577,6 @@
       c.fillStyle = COLOURS.gold; c.fillRect(bx, by, bw, Math.max(2, bh * 0.1)); c.fillRect(bx, by + bh * 0.9, bw, Math.max(2, bh * 0.1));
       c.fillStyle = '#FFFFFF'; c.textAlign = 'center'; c.font = '800 ' + Math.round(bh * 0.55) + 'px sans-serif';
       c.fillText('FINISH', bx + bw / 2, by + bh * 0.7, bw - 8);
-      // the kilometre marker
-      var km = (/(\d+(?:\.\d+)?)\s*km/i.exec(i.event || '') || [])[1], base = P(1.8, 1.4), u = unit(1.4);
-      line('#DDDDDD', Math.max(2, u * 0.04), [base, [base[0], base[1] - u * 0.6]]);
-      var sw = u * 0.5, sh = u * 0.28, sx = base[0] - sw / 2, sy = base[1] - u * 0.6 - sh;
-      c.fillStyle = '#FFFFFF'; c.fillRect(sx, sy, sw, sh);
-      c.fillStyle = '#0B3B2E'; c.fillRect(sx + 3, sy + 3, sw - 6, sh - 6);
-      c.fillStyle = '#FFFFFF'; c.textAlign = 'center'; c.font = '800 ' + Math.round(sh * 0.5) + 'px sans-serif';
-      c.fillText(km ? km + ' km' : 'km', base[0], sy + sh * 0.68, sw - 8);
     } else {
       // the whole track from overhead: 400m and longer
       field();
