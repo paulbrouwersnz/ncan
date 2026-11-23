@@ -130,7 +130,6 @@
       : { head: 70, headSize: 18, name: 106, nameSize: 32, group: 130, band: [148, 172], event: 182, eventSize: 24,
           mark: 264, markSize: 86, rib: [278, 180, 36, 20], lines: 348, step: 22, sizes: [15, 16, 17, 15, 15] };
     items.push({ kind: 'rect', x: 0, y: P.band[0], w: W, h: P.band[1], colour: COLOURS.bg2 });
-    items.push({ kind: 'rect', x: pad, y: pad - 4, w: 56, h: 6, colour: COLOURS.gold });
     t(f.headline || 'PERSONAL BEST', pad, P.head, P.headSize, { weight: 800, font: 'display', colour: COLOURS.gold, spacing: 2 });
     t(f.name, pad, P.name, P.nameSize, { weight: 800, font: 'display' });
     t(f.group, pad, P.group, P.headSize - 3, { colour: COLOURS.soft });
