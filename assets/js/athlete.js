@@ -1543,7 +1543,8 @@
       if (blob.size > IMG.SHARE_MAX) { throw tooBig('card', blob.size, hint); }
       return NCAN.sendFile('/athletes/' + encodeURIComponent(NCAN.athlete.slug) + '/shares?' +
         IMG.shareQuery({ event: eventLabel(r).slice(0, 60), from: r.date, to: r.date, view: 'pb-card',
-                         name: card.surname ? 'full' : 'first', kind: card.kind || 'pb' }), blob);
+                         name: card.surname ? 'full' : 'first', kind: card.kind || 'pb',
+                         source: r.source || '' }), blob);
     }).then(function (res) {
       if (res.status === 201 && res.body && res.body.share && res.body.share.url) {
         var s = res.body.share;
