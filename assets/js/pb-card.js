@@ -466,10 +466,12 @@
       c.fillStyle = GRASS; c.fillRect(0, hy, W, H - hy);
       quad('#8C8F93', -2.6, 2.6, 0, 80);
       quad('#B9BBBE', -2.6, -2.45, 0, 80); quad('#B9BBBE', 2.45, 2.6, 0, 80);
-      for (var cv = 1.4; cv < 12; cv += 1.1) {
-        var cb = P(0, cv), ch = unit(cv) * 0.4;
-        fill('#F26B1D', [[cb[0] - ch * 0.32, cb[1]], [cb[0] + ch * 0.32, cb[1]], [cb[0], cb[1] - ch]]);
-        c.fillStyle = '#FFFFFF'; c.fillRect(cb[0] - ch * 0.17, cb[1] - ch * 0.58, ch * 0.34, ch * 0.13);
+      // far to near, so nearer cones stand in front; the first sits clear of the words
+      for (var cv = 13.6; cv >= 2.4; cv -= 2.8) {
+        var cb = P(0, cv), ch = unit(cv) * 0.8;
+        fill('#F26B1D', [[cb[0] - ch * 0.18, cb[1]], [cb[0] + ch * 0.18, cb[1]], [cb[0] + ch * 0.03, cb[1] - ch], [cb[0] - ch * 0.03, cb[1] - ch]]);
+        c.fillStyle = '#FFFFFF'; c.fillRect(cb[0] - ch * 0.1, cb[1] - ch * 0.6, ch * 0.2, ch * 0.1);
+        c.fillRect(cb[0] - ch * 0.07, cb[1] - ch * 0.82, ch * 0.14, ch * 0.08);
       }
       var tb = P(0, 12.6), tu = unit(12.6);
       line('#EEEEEE', Math.max(2, tu * 0.07), [tb, [tb[0], tb[1] - tu * 1.5]]);
