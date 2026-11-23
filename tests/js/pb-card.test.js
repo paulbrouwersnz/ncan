@@ -169,7 +169,7 @@ test('Event card: each event gets its scene', () => {
     '2000m Steeplechase': 'steeple', 'Long Jump': 'long', 'Triple jump': 'triple', 'High Jump': 'high',
     'Pole vault': 'pole', 'Shot Put (3kg)': 'shot', 'Discus (750g)': 'discus', 'Hammer (4kg)': 'hammer',
     'Javelin (500g)': 'javelin', 'Vortex': 'javelin', 'Cross country 3 km': 'xc', 'Cross country relay 2 km': 'xc',
-    'Road 5 km': 'road', 'Road relay': 'road', 'Road 10 km Walk': 'roadwalk', '10km Race Walk': 'roadwalk', '': 'oval'
+    'Road 5 km': 'road', 'Road relay': 'road', 'Road 10 km Walk': 'road', '10km Race Walk': 'road', 'Trail run 8 km': 'trail', 'Mountain run': 'trail', '': 'oval'
   };
   for (const [event, scene] of Object.entries(want)) { assert.equal(PB.sceneFor(event), scene, event); }
   assert.ok(PB.sceneHasTrack('sprint') && PB.sceneHasTrack('javelin') && PB.sceneHasTrack('oval'));

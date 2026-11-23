@@ -249,7 +249,8 @@
     if (/steeple/.test(e)) { return 'steeple'; }
     if (/hurdle/.test(e)) { return 'hurdles'; }
     if (/cross ?country|\bxc\b/.test(e)) { return 'xc'; }
-    if (/walk/.test(e)) { return /road|km\b|\d{5}m|marathon/.test(e) ? 'roadwalk' : 'oval'; }
+    if (/trail|mountain|hill|off.?road/.test(e)) { return 'trail'; }
+    if (/walk/.test(e)) { return /road|km\b|\d{5}m|marathon/.test(e) ? 'road' : 'oval'; }
     if (/road|marathon|\d\s*km\b|fun run/.test(e)) { return 'road'; }
     if (/triple/.test(e)) { return 'triple'; }
     if (/long jump/.test(e)) { return 'long'; }
@@ -263,7 +264,7 @@
     return m && +m[1] < 400 ? 'sprint' : 'oval';
   }
   // whether the track colour shows in a scene (not on grass hills, roads or throwing circles)
-  function sceneHasTrack(scene) { return ['xc', 'road', 'roadwalk', 'shot', 'discus', 'hammer'].indexOf(scene) < 0; }
+  function sceneHasTrack(scene) { return ['xc', 'trail', 'road', 'shot', 'discus', 'hammer'].indexOf(scene) < 0; }
 
   function drawScene(c, i) {
     var W = i.w, H = i.h, S = SURFACES[i.surface] || SURFACES.blue, s = i.scene, LINE = S.line;
@@ -312,6 +313,38 @@
       quad(LINE, -2, 2, 3.2, 3.4);
       if (s === 'hurdles') {
         [12, 8, 5, 3.2].forEach(function (v) { for (var l = -4; l < 4; l++) { hurdle(l * 0.5, l * 0.5 + 0.5, v); } });
+      }
+    } else if (s === 'steeple') {
+      // the water jump from the infield, seen at an angle: its lane runs off to the right in front of the
+      // main track, the striped barrier stands across it and the water lies after it, deepest at the barrier
+      // closer than the other scenes, with a higher horizon, so the jump fills the space above the words
+      var h2 = H * 0.25, g2 = H * 0.58;
+      var Q = function (u, v) { var z = 1 + v * 0.6; return [W / 2 + u * W * 0.5 / z, h2 + (g2 - h2) / z]; };
+      var u2 = function (v) { return W * 0.5 / (1 + v * 0.6); };
+      var sk = c.createLinearGradient(0, 0, 0, h2); sk.addColorStop(0, '#0C2F3C'); sk.addColorStop(1, '#4D8C9A');
+      c.fillStyle = sk; c.fillRect(0, 0, W, h2 + 1);
+      c.fillStyle = '#123A33'; c.fillRect(0, h2 - H * 0.05, W, H * 0.05);
+      for (var k2 = 0; k2 < 9; k2++) { c.fillStyle = 'rgba(255,255,255,.18)'; c.fillRect(W * (k2 + 0.3) / 9, h2 - H * 0.04, W / 30, H * 0.01); }
+      c.fillStyle = GRASS; c.fillRect(0, h2, W, H - h2);
+      // ground along the lane (a, runners go this way) and across it (b, away from the infield)
+      var gv = function (a, b) { return 0.35 + a * 0.22 + b * 0.75; };
+      var G = function (a, b) { return Q(-0.75 + a * 0.7 + b * 0.42, gv(a, b)); };
+      var gq = function (col, a0, a1, b0, b1) { fill(col, [G(a0, b0), G(a1, b0), G(a1, b1), G(a0, b1)]); };
+      var Gup = function (a, b, h) { var p = G(a, b); return [p[0], p[1] - u2(gv(a, b)) * h]; };
+      gq(S.track, -12, 30, 2.1, 7);                                          // the main track
+      for (var t = 0; t <= 6; t++) { var tb = 2.1 + t * 0.8; gq(LINE, -12, 30, tb, tb + 0.03); }
+      gq(S.track, -12, 30, 0, 1.5);                                          // the water jump lane
+      gq(LINE, -12, 30, -0.04, 0); gq(LINE, -12, 30, 1.5, 1.54);
+      gq('#3E9BD1', 0.1, 3.2, 0, 1.5);
+      gq('#2C7FB8', 0.1, 1.3, 0, 1.5);
+      gq('rgba(255,255,255,.8)', 3.2, 3.26, 0, 1.5);                        // where the pit ends
+      [[0.6, 0.3], [1.6, 0.9], [2.3, 0.4], [1.0, 1.2], [2.7, 1.1]].forEach(function (r) { gq('rgba(255,255,255,.35)', r[0], r[0] + 0.35, r[1], r[1] + 0.04); });
+      // the barrier: legs, then the striped beam across the lane, top and face
+      [0.1, 0.75, 1.4].forEach(function (b) { line('#2A2A2A', Math.max(2, u2(gv(0, b)) * 0.04), [G(0, b), Gup(0, b, 0.3)]); });
+      fill('#D9D9D9', [Gup(-0.1, -0.1, 0.4), Gup(-0.1, 1.6, 0.4), Gup(0.05, 1.6, 0.4), Gup(0.05, -0.1, 0.4)]);
+      for (var k = 0; k < 6; k++) {
+        var b0 = -0.1 + k * 1.7 / 6, b1 = b0 + 1.7 / 6;
+        fill(k % 2 ? '#1A1A1A' : '#FFFFFF', [Gup(-0.1, b0, 0.4), Gup(-0.1, b1, 0.4), Gup(-0.1, b1, 0.29), Gup(-0.1, b0, 0.29)]);
       }
     } else if (s === 'long' || s === 'triple') {
       stadium();
@@ -415,16 +448,34 @@
         line('#2A2A2A', 2, [[x, y], [x, y - h]]);
         fill(k % 2 ? '#FFC629' : '#E0393E', [[x, y - h], [x + h * 0.6, y - h * 0.8], [x, y - h * 0.6]]);
       });
-    } else if (s === 'road' || s === 'roadwalk') {
+    } else if (s === 'trail') {
+      // a dirt trail winding up through bush-covered hills to a ridge, ranges behind
+      sky('#3F7FA6', '#DDEBEA');
+      var ridge = function (col, pts) { c.fillStyle = col; c.beginPath(); c.moveTo(0, H); pts.forEach(function (p) { c.lineTo(W * p[0], H * p[1]); }); c.lineTo(W, H); c.closePath(); c.fill(); };
+      ridge('#8FA9B8', [[0, 0.3], [0.14, 0.2], [0.3, 0.27], [0.5, 0.14], [0.66, 0.24], [0.84, 0.17], [1, 0.26]]);
+      fill('#F2F5F6', [[W * 0.43, H * 0.17], [W * 0.5, H * 0.14], [W * 0.56, H * 0.17], [W * 0.5, H * 0.165]]);   // snow on the top
+      ridge('#5E8A5C', [[0, 0.36], [0.2, 0.3], [0.42, 0.35], [0.62, 0.28], [0.8, 0.33], [1, 0.3]]);
+      ridge('#46784A', [[0, 0.47], [0.25, 0.4], [0.5, 0.45], [0.75, 0.38], [1, 0.44]]);
+      ridge('#356A3B', [[0, 0.6], [0.3, 0.55], [0.55, 0.6], [0.8, 0.53], [1, 0.57]]);
+      ridge('#2B5A31', [[0, 0.78], [0.35, 0.72], [0.7, 0.77], [1, 0.7]]);
+      // the trail: wide at the front, narrowing as it zigzags up to the ridge
+      var trail = [[0.5, 1, 0.16], [0.62, 0.86, 0.11], [0.36, 0.74, 0.07], [0.6, 0.62, 0.045], [0.42, 0.53, 0.03], [0.6, 0.44, 0.02], [0.75, 0.38, 0.012]];
+      var left = trail.map(function (p) { return [W * (p[0] - p[2]), H * p[1]]; }), right = trail.map(function (p) { return [W * (p[0] + p[2]), H * p[1]]; });
+      fill('#B08A5A', left.concat(right.reverse()));
+      line('rgba(90,60,30,.35)', 2, trail.map(function (p) { return [W * p[0], H * p[1]]; }));
+      // bush and trees beside it
+      [[0.12, 0.84, 1], [0.86, 0.8, 0.9], [0.2, 0.66, 0.6], [0.82, 0.6, 0.55], [0.3, 0.5, 0.4], [0.88, 0.47, 0.35]].forEach(function (t) {
+        var x = W * t[0], y = H * t[1], h = H * 0.12 * t[2];
+        c.fillStyle = '#5A3A22'; c.fillRect(x - h * 0.05, y - h * 0.25, h * 0.1, h * 0.25);
+        fill('#1F4A27', [[x, y - h], [x + h * 0.3, y - h * 0.2], [x - h * 0.3, y - h * 0.2]]);
+      });
+    } else if (s === 'road') {
       sky('#4F8FB0', '#D6E8EA');
       fill('#6FA9C0', [[0, hy], [W * 0.2, hy - H * 0.05], [W * 0.45, hy - H * 0.02], [W * 0.7, hy - H * 0.07], [W, hy - H * 0.02], [W, hy]]);
       c.fillStyle = GRASS; c.fillRect(0, hy, W, H - hy);
       quad('#4A4F55', -1.25, 1.25, 0, 80);
       quad('#FFFFFF', -1.17, -1.13, 0, 80); quad('#FFFFFF', 1.13, 1.17, 0, 80);
       for (var v = 0; v < 30; v += 1.2) { quad('#FFFFFF', -0.03, 0.03, v, v + 0.55); }
-      if (s === 'roadwalk') {
-        fill('#FFFFFF', [P(0.45, 0.4), P(0.65, 0.4), P(0.65, 1.3), P(0.8, 1.3), P(0.55, 2.1), P(0.3, 1.3), P(0.45, 1.3)]);
-      }
       // the kilometre marker
       var km = (/(\d+(?:\.\d+)?)\s*km/i.exec(i.event || '') || [])[1], base = P(1.8, 1.4), u = unit(1.4);
       line('#DDDDDD', Math.max(2, u * 0.04), [base, [base[0], base[1] - u * 0.6]]);
@@ -451,28 +502,6 @@
       for (var n = 0; n <= 8; n++) { oval(inner + (R - inner) * n / 8); c.stroke(); }
       if (vert) { line(LINE, 4, [[cx + inner, cy + a * 0.6], [cx + R, cy + a * 0.6]]); }
       else { line(LINE, 4, [[cx + a * 0.6, cy + inner], [cx + a * 0.6, cy + R]]); }
-      if (s === 'steeple') {
-        // the water jump: its own lane, leaving the inside of a bend and coming back, with the pit at the far point
-        var bx = vert ? cx : cx + a, by = vert ? cy - a : cy, ap = vert ? -Math.PI / 2 : 0;
-        var r0 = inner * 0.58, r1 = inner * 0.82, rm = (r0 + r1) / 2, bw = r1 - r0, sp = 0.95;
-        var at = function (r, t) { return [bx + Math.cos(t) * r, by + Math.sin(t) * r]; };
-        var band = function (col, wd, t0, t1, r) { c.strokeStyle = col; c.lineWidth = wd; c.beginPath(); c.arc(bx, by, r, t0, t1); c.stroke(); };
-        c.lineCap = 'round';
-        [-1, 1].forEach(function (d) {   // where the lane leaves and rejoins the track
-          var e = ap + d * sp;
-          line(S.track, bw, [at(rm, e), at(inner + 4, e + d * 0.35)]);
-        });
-        c.lineCap = 'butt';
-        band(S.track, bw, ap - sp, ap + sp, rm);
-        band(LINE, 1.5, ap - sp, ap + sp, r0);
-        band(LINE, 1.5, ap - sp - 0.12, ap + sp + 0.12, r1);
-        // runners go anticlockwise, so on screen the angle falls: the barrier, then the water, deepest right after it
-        band('#3E9BD1', bw, ap - 0.3, ap + 0.06, rm);
-        band('#2C7FB8', bw * 0.6, ap - 0.1, ap + 0.06, rm);
-        var b0 = at(r0 - 3, ap + 0.09), b1 = at(r1 + 3, ap + 0.09), bt = Math.max(5, bw * 0.16);
-        line('#FFFFFF', bt, [b0, b1]);
-        c.setLineDash([bt, bt]); line('#1A1A1A', bt, [b0, b1]); c.setLineDash([]);
-      }
     }
     c.restore();
   }

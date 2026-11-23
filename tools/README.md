@@ -928,12 +928,12 @@ Photo card. A picked photo stays on the device (it's only uploaded inside the
 finished card, if a public link is made). **Event**: the Photo card's layout over a
 scene of the event drawn on the card (`sceneFor()` picks it from the event name):
 sprints under 400m, a lane in perspective to the finish line; 400m and longer and
-track walks, the whole track from overhead; hurdles; steeplechase, the whole track with the water jump in its own lane inside a bend;
+track walks, the whole track from overhead; hurdles; steeplechase, the water jump seen from the infield, barrier then water;
 long and triple jump (three take-off lines), the runway to the sand pit; high jump,
 the mat, stands and bar; pole vault, the pit with its white centre, front pads and the V
 down to the box, tall standards and the bar high above; shot, discus, hammer and javelin, the
-implement in its sector; cross country, grass hills with flags; road, a road with a
-kilometre marker; road walks, the road with a walker's arrow. **Track** picks Blue (Ngā
+implement in its sector; cross country, grass hills with flags; trail and mountain runs, a dirt trail winding
+up through bush-covered hills; road and road walks, a road with a kilometre marker. **Track** picks Blue (Ngā
 Puna Wai, the default), Red or Grass, shown only when the scene has a track. Cross
 country, road and relay results (the out-of-stadia table) have a share icon by their
 time too: a "Result" or place card that opens as an Event card, with the race name and
