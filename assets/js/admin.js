@@ -1310,6 +1310,13 @@
       badge.setAttribute('aria-label', n + ' to look at');
       badge.hidden = false;
     }, function () { /* the list still works without the count */ });
+    NCAN.get('/admin/shares').then(function (r) {
+      var n = r.made_this_week || 0, badge = $('admin-count-shares');
+      if (!badge || !n) { return; }
+      badge.textContent = String(n);
+      badge.setAttribute('aria-label', n + ' shared in the last 7 days');
+      badge.hidden = false;
+    }, function () { /* the card still works without the count */ });
   }
 
   // The tools were once sections of /admin/ itself: old links (/admin/#corrections) go to their pages.
@@ -1354,6 +1361,7 @@
       if (has('addresses')) { setUpAddresses(); }
       if (has('blocks')) { setUpBlocks(); }
       if (window.AdminPhotos) { AdminPhotos.start(); }
+      if (window.NCANSharedCharts && has('shares-admin')) { NCANSharedCharts.startAdmin(); }
     }, function (err) { $('admin-status').textContent = err.message || 'Sorry, this page could not be loaded.'; });
   }, function () { $('admin-status').textContent = 'The club’s results service could not be reached.'; });
 }());

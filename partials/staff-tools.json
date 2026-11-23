@@ -25,6 +25,8 @@
      "blurb": "Stop an email address signing in anywhere on the site."},
     {"title": "Header photos", "href": "/admin/header-photos/", "lowest": "admin", "group": "Sign-in and the website",
      "blurb": "The photos at the top of pages: pools, which pages use them, and athletes’ own photos."},
+    {"title": "Shared charts", "href": "/admin/shared-charts/", "lowest": "admin", "group": "Sign-in and the website", "count": "shares",
+     "blurb": "Charts shared publicly from athlete pages: their views, removing one, and pausing sharing."},
     {"title": "Club committee", "href": "/committee/", "lowest": "committee", "group": "Committee tools",
      "blurb": "The committee page: who’s on it, documents and links, and the annual general meetings."},
     {"title": "Training plans", "href": "/junior-athletics/#training", "lowest": "coach", "group": "Coaches’ tools",

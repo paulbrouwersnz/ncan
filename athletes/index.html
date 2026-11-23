@@ -174,6 +174,22 @@
       </div>
     </section>
 
+    <!-- Your shared charts: shown signed in, when any of the athletes this person manages
+         has a chart shared publicly (assets/js/shared-charts.js) -->
+    <section class="section" id="my-shares" aria-labelledby="my-shares-heading" hidden>
+      <div class="wrap">
+        <div class="section-head section-head--wide">
+          <p class="eyebrow">Shared publicly</p>
+          <h2 id="my-shares-heading">Your shared charts</h2>
+          <p class="lede">
+            Charts shared with a public link for the athletes you manage, newest first, with how often
+            each has been opened. Removing a chart stops its link working straight away.
+          </p>
+        </div>
+        <div id="my-shares-out"></div>
+      </div>
+    </section>
+
     <section class="section section--tint" aria-labelledby="optout-heading">
       <div class="wrap">
         <div class="section-head section-head--wide">
@@ -335,6 +351,7 @@
 
   <script src="/assets/js/ncan-account.js"></script>
   <script src="/assets/js/athletes.js"></script>
+  <script src="/assets/js/shared-charts.js"></script>
 
 </body>
 
