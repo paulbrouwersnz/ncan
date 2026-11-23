@@ -250,7 +250,9 @@
     if (/hurdle/.test(e)) { return 'hurdles'; }
     if (/cross ?country|\bxc\b/.test(e)) { return 'xc'; }
     if (/trail|mountain|hill|off.?road/.test(e)) { return 'trail'; }
-    if (/walk/.test(e)) { return /road|km\b|\d{5}m|marathon/.test(e) ? 'road' : 'oval'; }
+    // race walks: on the track at athletics meetings (any "...m" walk, even 10,000m); out of stadia on a
+    // road circuit of 1 to 2 km, which an out-of-stadia result names in km
+    if (/walk/.test(e)) { return /road|\d\s*km\b/.test(e) ? 'walk' : 'oval'; }
     if (/road|marathon|\d\s*km\b|fun run/.test(e)) { return 'road'; }
     if (/triple/.test(e)) { return 'triple'; }
     if (/long jump/.test(e)) { return 'long'; }
@@ -264,7 +266,7 @@
     return m && +m[1] < 400 ? 'sprint' : 'oval';
   }
   // whether the track colour shows in a scene (not on grass hills, roads or throwing circles)
-  function sceneHasTrack(scene) { return ['xc', 'trail', 'road', 'shot', 'discus', 'hammer'].indexOf(scene) < 0; }
+  function sceneHasTrack(scene) { return ['xc', 'trail', 'road', 'walk', 'shot', 'discus', 'hammer'].indexOf(scene) < 0; }
 
   function drawScene(c, i) {
     var W = i.w, H = i.h, S = SURFACES[i.surface] || SURFACES.blue, s = i.scene, LINE = S.line;
@@ -456,6 +458,22 @@
         c.fillStyle = '#5A3A22'; c.fillRect(x - h * 0.05, y - h * 0.25, h * 0.1, h * 0.25);
         fill('#1F4A27', [[x, y - h], [x + h * 0.3, y - h * 0.2], [x - h * 0.3, y - h * 0.2]]);
       });
+    } else if (s === 'walk') {
+      // a road walk: a wide, flat path round a short circuit. Cones down the middle split the way out from
+      // the way back and end at the turn post
+      sky('#4F8FB0', '#D6E8EA');
+      fill('#7FB3C4', [[0, hy], [0, hy - H * 0.012], [W * 0.4, hy - H * 0.018], [W, hy - H * 0.01], [W, hy]]);
+      c.fillStyle = GRASS; c.fillRect(0, hy, W, H - hy);
+      quad('#8C8F93', -2.6, 2.6, 0, 80);
+      quad('#B9BBBE', -2.6, -2.45, 0, 80); quad('#B9BBBE', 2.45, 2.6, 0, 80);
+      for (var cv = 1.4; cv < 12; cv += 1.1) {
+        var cb = P(0, cv), ch = unit(cv) * 0.4;
+        fill('#F26B1D', [[cb[0] - ch * 0.32, cb[1]], [cb[0] + ch * 0.32, cb[1]], [cb[0], cb[1] - ch]]);
+        c.fillStyle = '#FFFFFF'; c.fillRect(cb[0] - ch * 0.17, cb[1] - ch * 0.58, ch * 0.34, ch * 0.13);
+      }
+      var tb = P(0, 12.6), tu = unit(12.6);
+      line('#EEEEEE', Math.max(2, tu * 0.07), [tb, [tb[0], tb[1] - tu * 1.5]]);
+      fill('#F2C230', [[tb[0], tb[1] - tu * 1.5], [tb[0] + tu * 0.8, tb[1] - tu * 1.28], [tb[0], tb[1] - tu * 1.05]]);
     } else if (s === 'road') {
       sky('#4F8FB0', '#D6E8EA');
       fill('#6FA9C0', [[0, hy], [W * 0.2, hy - H * 0.05], [W * 0.45, hy - H * 0.02], [W * 0.7, hy - H * 0.07], [W, hy - H * 0.02], [W, hy]]);

@@ -169,11 +169,11 @@ test('Event card: each event gets its scene', () => {
     '2000m Steeplechase': 'steeple', 'Long Jump': 'long', 'Triple jump': 'triple', 'High Jump': 'high',
     'Pole vault': 'pole', 'Shot Put (3kg)': 'shot', 'Discus (750g)': 'discus', 'Hammer (4kg)': 'hammer',
     'Javelin (500g)': 'javelin', 'Vortex': 'javelin', 'Cross country 3 km': 'xc', 'Cross country relay 2 km': 'xc',
-    'Road 5 km': 'road', 'Road relay': 'road', 'Road 10 km Walk': 'road', '10km Race Walk': 'road', 'Trail run 8 km': 'trail', 'Mountain run': 'trail', '': 'oval'
+    'Road 5 km': 'road', 'Road relay': 'road', 'Road 10 km Walk': 'walk', '10km Race Walk': 'walk', '10,000m Race Walk': 'oval', '3000m Walk': 'oval', 'Trail run 8 km': 'trail', 'Mountain run': 'trail', '': 'oval'
   };
   for (const [event, scene] of Object.entries(want)) { assert.equal(PB.sceneFor(event), scene, event); }
   assert.ok(PB.sceneHasTrack('sprint') && PB.sceneHasTrack('javelin') && PB.sceneHasTrack('oval'));
-  assert.ok(!PB.sceneHasTrack('xc') && !PB.sceneHasTrack('road') && !PB.sceneHasTrack('shot'));
+  assert.ok(!PB.sceneHasTrack('xc') && !PB.sceneHasTrack('road') && !PB.sceneHasTrack('walk') && !PB.sceneHasTrack('shot'));
   assert.deepEqual(PB.SURFACES, ['blue', 'red', 'grass']);
 });
 
