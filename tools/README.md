@@ -933,7 +933,7 @@ long and triple jump (three take-off lines), the runway to the sand pit; high ju
 the mat, stands and bar; pole vault, the pit with its white centre, front pads and the V
 down to the box, tall standards and the bar high above; shot, discus, hammer and javelin, the
 implement in its sector; cross country, grass hills with flags; trail and mountain runs, a dirt trail winding
-up through bush-covered hills; road and road walks, a road with a kilometre marker. **Track** picks Blue (Ngā
+up through bush-covered hills; road runs, a road with a kilometre marker; road walks, a wide flat path round a circuit, cones down the middle to a turn post. **Track** picks Blue (Ngā
 Puna Wai, the default), Red or Grass, shown only when the scene has a track. Cross
 country, road and relay results (the out-of-stadia table) have a share icon by their
 time too: a "Result" or place card that opens as an Event card, with the race name and
