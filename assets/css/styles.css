@@ -1486,12 +1486,17 @@ table.schedule.champs-table { min-width: 0; }
 .ath-card__public { display: flex; flex-direction: column; gap: .5rem; padding-top: .75rem; border-top: 1px solid var(--line); }
 .ath-card__public[hidden] { display: none; }
 .ath-card__public > p { margin: 0; }
-.ath-pb-share { display: inline-flex; align-items: center; gap: .25rem; margin-left: .35rem; padding: .1rem .5rem;
-  border: 1px solid var(--line); border-radius: 999px; background: var(--surface, #fff); color: var(--heading);
-  font: inherit; font-size: .78rem; font-weight: 600; line-height: 1.5; cursor: pointer; vertical-align: .1em; }
-.ath-pb-share:hover, .ath-pb-share:focus-visible { border-color: var(--accent); }
-.ath-pb-share svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
-.ath-zoom__card { margin: .5rem 0 0; }
+/* the share-card icon beside a mark's link: icon only, its name in aria-label and title */
+.ath-pb-share { display: inline-flex; align-items: center; justify-content: center; width: 1.6em; height: 1.6em;
+  margin-left: .2rem; padding: 0; border: 1px solid transparent; border-radius: 6px; background: none;
+  color: var(--muted, currentColor); font-size: 1rem; line-height: 1; cursor: pointer; vertical-align: -.35em; }
+.ath-pb-share:hover, .ath-pb-share:focus-visible { color: var(--heading); border-color: var(--line); background: var(--surface, #fff); }
+.ath-pb-share svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.ath-nowrap { white-space: nowrap; }
+/* a mark with its share icon pushed to the right edge */
+.ath-markline, .ath-pb__mark, .ath-zoom__mark { display: flex; align-items: center; gap: .4rem; }
+.ath-markline .ath-pb-share, .ath-pb__mark .ath-pb-share, .ath-zoom__mark .ath-pb-share { margin-left: auto; vertical-align: 0; }
+.ath-pb__mark .ath-pb-share, .ath-zoom__mark .ath-pb-share { font-size: .95rem; vertical-align: .1em; }
 .btn[disabled] { opacity: .55; cursor: not-allowed; transform: none; box-shadow: none; }
 @media (max-width: 480px) {
   .ath-share__link { flex-direction: column; }

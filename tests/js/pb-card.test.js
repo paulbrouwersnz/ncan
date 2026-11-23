@@ -54,6 +54,30 @@ test('caption and file name', () => {
     'zoe-ngata-shot-put-3kg-pb.png');
 });
 
+test('headline fits the result: season best, podium place or just the result', () => {
+  const prev = run({ value: 14.42, mark: '14.42' });
+  const sb = PB.facts({ kind: 'sb', name: 'Sam', result: run({ place: 2 }), prev, pbsThisSeason: 2 });
+  assert.equal(sb.headline, 'SEASON BEST');
+  assert.equal(sb.better, '');          // no ribbon or "was" line: it isn't a PB
+  assert.equal(sb.was, '');
+  assert.equal(sb.season, '');
+  assert.equal(sb.place, '2nd');
+  assert.equal(PB.caption(sb), 'Season best for Sam! 100m in 14.10 at Interclub 5 👏 #NCANathletics');
+  assert.equal(PB.fileName(sb), 'sam-100m-season-best.png');
+  const podium = PB.facts({ kind: 'result', name: 'Sam', result: run({ place: 1 }) });
+  assert.equal(podium.headline, '1ST PLACE');
+  assert.equal(podium.place, '');        // said once, in the headline
+  assert.equal(PB.caption(podium), '1st place for Sam! 100m in 14.10 at Interclub 5 👏 #NCANathletics');
+  const plain = PB.facts({ kind: 'result', name: 'Sam', result: run({ place: 6 }) });
+  assert.equal(plain.headline, 'RESULT');
+  assert.equal(PB.caption(plain), 'Sam: 100m in 14.10 at Interclub 5 👏 #NCANathletics');
+  assert.equal(PB.fileName(plain), 'sam-100m-result.png');
+  // a relay place is the team's, so a relay result is just a result
+  assert.equal(PB.facts({ kind: 'result', name: 'Sam', result: run({ place: 1, relay: {} }) }).headline, 'RESULT');
+  // asked for a new PB with nothing before it: a PB
+  assert.equal(PB.facts({ kind: 'newpb', name: 'Sam', result: run() }).headline, 'PERSONAL BEST');
+});
+
 test('layout: square and story sizes, mark in gold, nothing overlapping', () => {
   const full = PB.facts({ name: 'Sam Brown', surname: true, result: run({ place: 1, wind: 1.8 }),
     prev: run({ value: 14.42, mark: '14.42' }), group: 'U16 women', pbsThisSeason: 3, event: '100m Hurdles (76cm)' });

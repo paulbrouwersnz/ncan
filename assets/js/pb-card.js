@@ -75,29 +75,50 @@
   /* Everything the card says, from the result and the PB before it.
      a: { name, surname (bool), result, prev, mark (as the page writes it), event (with any
      weight), group ("Grade 10"), pbsThisSeason (count up to and including this one) } */
+  /* What kind of card: 'newpb' (better than the PB before it), 'pb' (the PB), 'sb' (the
+     season's best) or 'result' (anything else). Left out, a card is a PB card. */
+  function kindOf(a) {
+    var k = a.kind || (a.prev ? 'newpb' : 'pb');
+    return k === 'newpb' && !a.prev ? 'pb' : k;
+  }
+  function headlineFor(kind, place) {
+    if (kind === 'newpb') { return 'NEW PERSONAL BEST'; }
+    if (kind === 'pb') { return 'PERSONAL BEST'; }
+    if (kind === 'sb') { return 'SEASON BEST'; }
+    return place ? place.toUpperCase() + ' PLACE' : 'RESULT';
+  }
   function facts(a) {
-    var r = a.result || {};
+    var r = a.result || {}, kind = kindOf(a), place = r.relay ? '' : placeWord(r.place);
+    var newpb = kind === 'newpb';
     return {
-      headline: a.prev ? 'NEW PERSONAL BEST' : 'PERSONAL BEST',
+      kind: kind,
+      headline: headlineFor(kind, place),
       name: cardName(a.name, a.surname),
       event: a.event || r.event || '',
       mark: a.mark || r.mark || '',
       wind: !r.field && typeof r.wind === 'number' ? (r.wind > 0 ? '+' : '') + r.wind.toFixed(1) + ' m/s' : '',
-      better: improvement(r, a.prev),
-      was: a.prev ? (a.prevMark || a.prev.mark || '') : '',
+      better: newpb ? improvement(r, a.prev) : '',
+      was: newpb ? (a.prevMark || a.prev.mark || '') : '',
       meeting: r.meeting || '',
       date: day(r.date),
       iso: r.date || '',
-      place: r.relay ? '' : placeWord(r.place),
+      // a podium place already in the headline isn't said twice
+      place: kind === 'result' ? '' : place,
       group: a.group || '',
-      season: seasonWords(a.pbsThisSeason || 0)
+      season: newpb ? seasonWords(a.pbsThisSeason || 0) : ''
     };
   }
 
   // "New PB for Sam! 100m in 14.10 at Interclub 5 👏 #NCANathletics"
   function caption(f) {
-    return 'New PB for ' + (f.name || 'our athlete') + '! ' + f.event + ' in ' + f.mark +
-      (f.meeting ? ' at ' + f.meeting : '') + ' 👏 #NCANathletics';
+    var who = f.name || 'our athlete', at = (f.meeting ? ' at ' + f.meeting : '') + ' 👏 #NCANathletics';
+    if (f.kind === 'sb') { return 'Season best for ' + who + '! ' + f.event + ' in ' + f.mark + at; }
+    if (f.kind === 'result') {
+      var m = /^(\S+) PLACE$/.exec(f.headline || '');
+      return (m ? m[1].charAt(0) + m[1].slice(1).toLowerCase() + ' place for ' + who + '! ' + f.event + ' in ' + f.mark
+                : who + ': ' + f.event + ' in ' + f.mark) + at;
+    }
+    return 'New PB for ' + who + '! ' + f.event + ' in ' + f.mark + at;
   }
 
   // "sam-100m-pb.png"
@@ -106,7 +127,8 @@
       return String(t || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
         .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
     };
-    return [s(f.name), s(f.event), 'pb'].filter(Boolean).join('-') + '.png';
+    var end = { sb: 'season-best', result: 'result' }[f.kind] || 'pb';
+    return [s(f.name), s(f.event), end].filter(Boolean).join('-') + '.png';
   }
 
   /* The Podium card as shapes and words, in points (the canvas is drawn at 2x):
@@ -224,5 +246,5 @@
 
   return { SIZES: SIZES, COLOURS: COLOURS, day: day, placeWord: placeWord, improvement: improvement,
            cardName: cardName, surnameByDefault: surnameByDefault, seasonWords: seasonWords, facts: facts,
-           caption: caption, fileName: fileName, layout: layout, overlaps: overlaps, render: render };
+           caption: caption, fileName: fileName, headlineFor: headlineFor, layout: layout, overlaps: overlaps, render: render };
 }));
