@@ -186,13 +186,13 @@
   }
   function eventLabel(r) { return r.event + (isThrow(r) && weightOf(r) ? ' (' + weightOf(r) + ')' : ''); }
   // the share icon that sits beside a mark's link
-  function cardButton(r, kind) {
+  function cardButton(r, kind, oos) {
     var b = text('button', 'ath-pb-share');
     b.type = 'button';
     b.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 15V3M7 8l5-5 5 5M5 13v7h14v-7"/></svg>';
     b.title = 'Share card';
-    b.setAttribute('aria-label', 'Make a share card of ' + eventLabel(r) + ' ' + markText(r) + ', ' + longDate(r.date));
-    b.addEventListener('click', function () { cardOpen(r, b, kind || 'result'); });
+    b.setAttribute('aria-label', 'Make a share card of ' + (oos ? oos.event + ' ' + r.mark : eventLabel(r) + ' ' + markText(r)) + ', ' + longDate(r.date));
+    b.addEventListener('click', function () { cardOpen(r, b, kind || 'result', oos); });
     return b;
   }
 
@@ -1289,11 +1289,17 @@
   /* A PB card: drawn here from the result, shown, then saved (share sheet or download).
      The athlete's GameDay contacts and admins can also make a public link of it, through
      the same share API as charts (view=pb-card). */
-  var card = { r: null, kind: 'pb', style: 'podium', photo: null, picked: null, pos: { x: 50, y: 50, zoom: 1 },
+  var card = { r: null, kind: 'pb', style: 'podium', surface: 'blue', oos: null, photo: null, picked: null, pos: { x: 50, y: 50, zoom: 1 },
                drawing: false, again: false, shape: 'square', surname: false, canvas: null, seq: 0, busy: false, from: null, url: '' };
 
   function cardFacts() {
-    var r = card.r, prev = pbBefore(r);
+    var r = card.r;
+    // cross country, road and relay legs: no PBs (courses differ), their own race name and grade
+    if (card.oos) {
+      return window.NCANPbCard.facts({ kind: 'result', name: NCAN.athlete && NCAN.athlete.name, surname: card.surname, result: r,
+        mark: r.mark, event: card.oos.event, group: r.oos_grade || '' });
+    }
+    var prev = pbBefore(r);
     return window.NCANPbCard.facts({ kind: card.kind, name: NCAN.athlete && NCAN.athlete.name, surname: card.surname, result: r, prev: prev,
       mark: markText(r), prevMark: prev ? markText(prev) : '', event: eventLabel(r), group: groupOf(r),
       pbsThisSeason: pbsInSeason(r) });
@@ -1355,10 +1361,20 @@
     });
   }
 
-  function cardOpen(r, from, kind) {
+  // the Track choice shows for the Event card, when its scene has a track
+  function cardSurfaceWords() {
+    var PB = window.NCANPbCard, f = card.r && cardFacts();
+    $('ath-card-surface-row').hidden = !(card.style === 'event' && f && PB.sceneHasTrack(PB.sceneFor(f.event)));
+  }
+  /* oos: { event } for a cross country, road or relay result, which opens as an Event
+     card (hills, a road) rather than in club colours. */
+  function cardOpen(r, from, kind, oos) {
     var d = $('ath-card');
     if (!d || !d.showModal || !window.NCANPbCard) { return; }
-    card.r = r; card.from = from; card.url = ''; card.kind = kind || 'pb';
+    card.r = r; card.from = from; card.url = ''; card.kind = kind || 'pb'; card.oos = oos || null;
+    if (oos) { card.style = 'event'; }
+    $('ath-card-style').value = card.style;
+    cardSurfaceWords();
     cardPhotoSetUp();
     $('ath-card-title').textContent = { newpb: 'Share this personal best', pb: 'Share this personal best',
       sb: 'Share this season best' }[card.kind] || 'Share this result';
@@ -1393,7 +1409,7 @@
     var ph = cardPhoto();
     PB.render(f, card.shape, { display: root.getPropertyValue('--font-display') || 'sans-serif',
                                sans: root.getPropertyValue('--font-sans') || 'sans-serif' },
-              { style: card.style, photo: ph && ph.url, focus: card.pos.x + '% ' + card.pos.y + '%', zoom: card.pos.zoom }).then(function (canvas) {
+              { style: card.style, surface: card.surface, photo: ph && ph.url, focus: card.pos.x + '% ' + card.pos.y + '%', zoom: card.pos.zoom }).then(function (canvas) {
       if (n !== card.seq) { return; }
       card.canvas = canvas;
       img.src = canvas.toDataURL('image/png');
@@ -1515,7 +1531,7 @@
     go.classList.add('is-busy');
     cardButtons();
     sayShare(said, 'Making the public link…');
-    cardBlob(card.canvas, card.style === 'photo' ? 'image/jpeg' : 'image/png').then(function (blob) {
+    cardBlob(card.canvas, card.style !== 'podium' ? 'image/jpeg' : 'image/png').then(function (blob) {
       if (!blob) { throw new Error('Sorry, the card could not be made.'); }
       size = blob.size;
       if (blob.size > IMG.SHARE_MAX) { throw tooBig('card', blob.size, hint); }
@@ -1566,7 +1582,8 @@
       card.canvas = null;
       if (card.from && document.contains(card.from)) { card.from.focus(); }
     });
-    $('ath-card-style').addEventListener('change', function () { card.style = this.value; cardPhotoWords(); cardDraw(); });
+    $('ath-card-style').addEventListener('change', function () { card.style = this.value; cardPhotoWords(); cardSurfaceWords(); cardDraw(); });
+    $('ath-card-surface').addEventListener('change', function () { card.surface = this.value; cardDraw(); });
     $('ath-card-file').addEventListener('change', function () {
       var file = this.files && this.files[0];
       if (!file) { return; }
@@ -1904,6 +1921,8 @@
   function inKm(name) {
     return name.replace(/(\d+)m\b/g, function (_, m) { return String(+(m / 1000).toFixed(3)) + ' km'; });
   }
+  // the share icon for a cross country, road or relay result: an Event card of the race
+  function oosCardButton(r, event) { return cardButton(r, 'result', { event: event }); }
   function renderOffTrack(list) {
     var body = $('offtrack-body');
     body.textContent = '';
@@ -1938,7 +1957,13 @@
           if (c[0] === 'Time') {
             var a = text('a', 'records-source', r.mark || '–');
             a.href = r.source; a.target = '_blank'; a.rel = 'noopener'; a.title = 'Official result';
-            td.appendChild(a);
+            if (window.NCANPbCard && r.mark) {
+              // the time and its share icon never split across lines
+              var keep = text('span', 'ath-nowrap');
+              keep.appendChild(a);
+              keep.appendChild(oosCardButton(r, leg ? r.oos + ' relay' + (/\d+m$/.test(r.event) ? ' ' + inKm(r.event.match(/(\d+m)$/)[1]) : '') : r.oos + ' ' + race));
+              td.appendChild(keep);
+            } else { td.appendChild(a); }
             if (leg && leg.team_mark) { td.appendChild(text('span', 'ath-combined', 'Team ' + leg.team_mark)); }
           }
           tr.appendChild(td);
