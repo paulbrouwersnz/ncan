@@ -49,8 +49,8 @@
   /* The finisher's medal in the top right, when the sharer shows the place: gold, silver
      or bronze for 1st to 3rd, copper for any other place, with the place on it ("4th").
      [face, rim, words] */
-  var METALS = { gold: ['#F6CF4A', '#B8860B', '#4A3500'], silver: ['#E3E7EB', '#8E99A4', '#2E3740'],
-                 bronze: ['#C99A5B', '#7E5A2B', '#3A2810'], copper: ['#E08A5C', '#94472A', '#3D1A0C'] };
+  var METALS = { gold: ['#F2C230', '#D9A514', '#3D2C00'], silver: ['#C9D0D6', '#A9B3BC', '#26303A'],
+                 bronze: ['#C58A4B', '#A86F34', '#2E1C08'], copper: ['#C86B3C', '#A9542A', '#FFFFFF'] };
   function medalFor(place) {
     if (!(place >= 1)) { return null; }
     return { words: ordinal(place), metal: ['gold', 'silver', 'bronze'][place - 1] || 'copper' };
@@ -582,37 +582,29 @@
     return out;
   }
 
-  /* A finisher's medal: two ribbon straps in the club's yellow (a thin green stripe down
-     each) from the top edge of the card down to a round disc of the metal, a darker rim
-     and the place on it. */
+  /* A finisher's medal, flat: two straps in the club's yellow from the top edge of the
+     card down to a plain disc of the metal, a thin darker ring inside its edge, and the
+     place on it. No shading or shadows. */
   function drawMedal(c, i, family) {
     var M = METALS[i.metal] || METALS.copper, r = i.r, cx = i.cx, cy = i.cy, top = cy - r * 0.6;
     c.save();
-    c.shadowColor = 'rgba(0,0,0,.45)'; c.shadowBlur = 10; c.shadowOffsetY = 2;
     // the straps: a V meeting just above the disc
-    [[-1, '#F2B705'], [1, COLOURS.gold]].forEach(function (s) {
-      var x0 = cx + s[0] * r * 0.95, x1 = cx + s[0] * r * 0.18;
-      c.fillStyle = s[1];
-      c.beginPath(); c.moveTo(x0 - r * 0.32, 0); c.lineTo(x0 + r * 0.32, 0);
-      c.lineTo(x1 + r * 0.3, top); c.lineTo(x1 - r * 0.3, top); c.closePath(); c.fill();
-      c.shadowColor = 'transparent';
-      c.strokeStyle = COLOURS.bg2; c.lineWidth = Math.max(2, r * 0.07);
-      c.beginPath(); c.moveTo(x0, 0); c.lineTo(x1, top); c.stroke();
+    c.fillStyle = COLOURS.gold;
+    [-1, 1].forEach(function (s) {
+      var x0 = cx + s * r * 0.9, x1 = cx + s * r * 0.2;
+      c.beginPath(); c.moveTo(x0 - r * 0.3, 0); c.lineTo(x0 + r * 0.3, 0);
+      c.lineTo(x1 + r * 0.28, top); c.lineTo(x1 - r * 0.28, top); c.closePath(); c.fill();
     });
-    // the disc: lit from the top left
-    c.shadowColor = 'rgba(0,0,0,.45)'; c.shadowBlur = 10; c.shadowOffsetY = 2;
-    var g = c.createRadialGradient(cx - r * 0.35, cy - r * 0.4, r * 0.1, cx, cy, r);
-    g.addColorStop(0, '#FFFFFF'); g.addColorStop(0.18, M[0]); g.addColorStop(1, M[1]);
-    c.fillStyle = g;
+    // the disc and its ring
+    c.fillStyle = M[0];
     c.beginPath(); c.arc(cx, cy, r, 0, Math.PI * 2); c.fill();
-    c.shadowColor = 'transparent';
     c.strokeStyle = M[1]; c.lineWidth = Math.max(2, r * 0.1);
-    c.beginPath(); c.arc(cx, cy, r * 0.8, 0, Math.PI * 2); c.stroke();
-    // the place
-    var size = Math.round(r * 0.72);
+    c.beginPath(); c.arc(cx, cy, r * 0.78, 0, Math.PI * 2); c.stroke();
+    // the place, sized to sit well inside the ring
+    var size = Math.round(r * 0.58);
     c.fillStyle = M[2]; c.textAlign = 'center'; c.textBaseline = 'middle';
     c.font = '800 ' + size + 'px ' + family;
-    while (c.measureText(i.words).width > r * 1.3 && size > 8) { size -= 1; c.font = '800 ' + size + 'px ' + family; }
+    while (c.measureText(i.words).width > r * 1.2 && size > 8) { size -= 1; c.font = '800 ' + size + 'px ' + family; }
     c.fillText(i.words, cx, cy + size * 0.06);
     c.restore();
   }
