@@ -161,3 +161,37 @@ test('Photo card zoom and dragging the photo', () => {
   // zoomed in, it can move up and down too
   assert.ok(PB.move({ x: 50, y: 50, zoom: 2 }, 0, -54, 2000, 1000, 540, 540).y > 50);
 });
+
+test('Event card: each event gets its scene', () => {
+  const want = {
+    '100m': 'sprint', '60m': 'sprint', '200m': 'sprint', '4x100m Relay': 'sprint', '400m': 'oval', '1500m': 'oval',
+    '10,000m': 'oval', '1 Mile': 'oval', '1500m Race Walk': 'oval', '100m Hurdles (76cm)': 'hurdles',
+    '2000m Steeplechase': 'steeple', 'Long Jump': 'long', 'Triple jump': 'triple', 'High Jump': 'high',
+    'Pole vault': 'pole', 'Shot Put (3kg)': 'shot', 'Discus (750g)': 'discus', 'Hammer (4kg)': 'hammer',
+    'Javelin (500g)': 'javelin', 'Vortex': 'javelin', 'Cross country 3 km': 'xc', 'Cross country relay 2 km': 'xc',
+    'Road 5 km': 'road', 'Road relay': 'road', 'Road 10 km Walk': 'walk', '10km Race Walk': 'walk', '10,000m Race Walk': 'oval', '3000m Walk': 'oval', 'Trail run 8 km': 'trail', 'Mountain run': 'trail', '': 'oval'
+  };
+  for (const [event, scene] of Object.entries(want)) { assert.equal(PB.sceneFor(event), scene, event); }
+  assert.ok(PB.sceneHasTrack('sprint') && PB.sceneHasTrack('javelin') && PB.sceneHasTrack('oval'));
+  assert.ok(!PB.sceneHasTrack('xc') && !PB.sceneHasTrack('road') && !PB.sceneHasTrack('walk') && !PB.sceneHasTrack('shot'));
+  assert.deepEqual(PB.SURFACES, ['blue', 'red', 'grass']);
+});
+
+test('Event card: the scene fills the card under the washes, nothing overlapping', () => {
+  const full = PB.facts({ name: 'Sam Brown', surname: true, result: run({ place: 1, wind: 1.8 }),
+    prev: run({ value: 14.42, mark: '14.42' }), group: 'U16 women', pbsThisSeason: 3, event: '100m Hurdles (76cm)' });
+  for (const shape of ['square', 'story']) {
+    const L = PB.layout(full, shape, 'event', 'red');
+    const scene = L.items.find((i) => i.kind === 'scene');
+    assert.deepEqual([scene.x, scene.y, scene.w, scene.h], [0, 0, L.w, L.h]);
+    assert.equal(scene.scene, 'hurdles');
+    assert.equal(scene.surface, 'red');
+    assert.equal(L.scene, 'hurdles');
+    assert.ok(!L.items.some((i) => i.kind === 'photo'));
+    const order = L.items.map((i) => i.kind);
+    assert.ok(order.indexOf('scene') < order.lastIndexOf('shade') && order.lastIndexOf('shade') < order.indexOf('text'));
+    assert.deepEqual(PB.overlaps(L), [], shape);
+  }
+  // an unknown track colour is the blue track
+  assert.equal(PB.layout(full, 'square', 'event', 'pink').items.find((i) => i.kind === 'scene').surface, 'blue');
+});

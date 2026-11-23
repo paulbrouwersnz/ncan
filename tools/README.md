@@ -274,7 +274,7 @@ Each `tests/js/<name>.test.js` tests the helpers in `assets/js/<name>.js` (or
 | `meeting-links.test.js` | a meeting's other links on the results sources and athlete pages |
 | `calendar-edit.test.js` | the calendar editor: form to event and back, its checks, the words for dates and repeats |
 | `athlete-seasons.test.js` | seasons on the athlete charts (1 April to 31 March, winter and summer bands, "so far", season bests per weight), the By season view (each date's day in its season, 29 February included, and each season's colour), Hide empty months (only months with no result in any season, each run of them a break on the axis) and the enlarged chart's date ranges |
-| `pb-card.test.js` | Share cards (`assets/js/pb-card.js`): the headline for a new PB, PB, season best, podium place or result, with its caption and file name; the Photo card filling the card with its washes, the crop keeping the focus point in view, zooming in and dragging the photo (stopping at its edges); the improvement wording (−0.32s, +18cm, +1.05m), the place only for 1st–3rd, first name only by default for children, the season count, the caption and file name, and the square and story layouts: the mark in gold, the ribbon only with an improvement, every word inside the card and nothing overlapping |
+| `pb-card.test.js` | Share cards (`assets/js/pb-card.js`): the headline for a new PB, PB, season best, podium place or result, with its caption and file name; the Photo card filling the card with its washes, the Event card's scene for each event (and its track colour), the crop keeping the focus point in view, zooming in and dragging the photo (stopping at its edges); the improvement wording (−0.32s, +18cm, +1.05m), the place only for 1st–3rd, first name only by default for children, the season count, the caption and file name, and the square and story layouts: the mark in gold, the ribbon only with an improvement, every word inside the card and nothing overlapping |
 | `chart-image.test.js` | the enlarged chart saved as an image (Download, `assets/js/chart-image.js`): the file name (athlete and event, accents dropped), the dates line, the key wrapping into rows, reading a key swatch's ring from its CSS, the image shapes (Auto, landscape 3:2, portrait 4:5, square 1:1) and the layout leaving the chart room in each; for Share, the name on a shared image (full, or first name only) and the details sent with it |
 | `shared-charts.test.js` | the shared charts lists (`assets/js/shared-charts.js`): what each share shows (event, dates, view), its views and link previews, who shared it ("you" or someone else for families, the email for admins), the removed wording ("Removed by the club" for families, with who and why for admins) and the admin page's Show and Find; the share usage badges (today and live against the limits, which is full) |
 
@@ -925,7 +925,20 @@ goes back to the photo's focus point. The position is kept when the shape change
 check it again), and reset when the photo changes. With a header photo it's used by default and **Use a
 different photo** picks another; without one, picking a photo is the only way to a
 Photo card. A picked photo stays on the device (it's only uploaded inside the
-finished card, if a public link is made). Square (1080 × 1080) or Story (1080 × 1920). **Download** (the share sheet on phones) keeps it on the
+finished card, if a public link is made). **Event**: the Photo card's layout over a
+scene of the event drawn on the card (`sceneFor()` picks it from the event name):
+sprints under 400m, a lane in perspective to the finish line; 400m and longer and
+track walks, the whole track from overhead; hurdles; steeplechase, the water jump seen from the infield, runners coming from the right over the barrier into the deep end;
+long and triple jump (three take-off lines), the runway to the sand pit; high jump,
+the mat, stands and bar; pole vault, the pit with its white centre, front pads and the V
+down to the box, tall standards and the bar high above; shot, discus, hammer and javelin, the
+implement in its sector; cross country, grass hills with flags; trail and mountain runs, a dirt trail winding
+up through bush-covered hills; road runs, a road with a kilometre marker; road walks, a wide flat path round a circuit, cones down the middle to a turn post. **Track** picks Blue (Ngā
+Puna Wai, the default), Red or Grass, shown only when the scene has a track. Cross
+country, road and relay results (the out-of-stadia table) have a share icon by their
+time too: a "Result" or place card that opens as an Event card, with the race name and
+out-of-stadia grade and no PB wording. Photo and Event cards upload as JPEG, Club
+colours as PNG. Square (1080 × 1080) or Story (1080 × 1920). **Download** (the share sheet on phones) keeps it on the
 device; a suggested caption can be copied. The athlete's GameDay contacts and
 admins can also **Create public link**: the same share API with `view=pb-card` and
 the result's date as `from` and `to`, listed under Shared charts as a "PB card" whatever its headline.
