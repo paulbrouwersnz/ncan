@@ -12,6 +12,20 @@ const share = (over) => Object.assign({
   views: 48, recent_views: 12, previews: 6, removed: null
 }, over);
 
+test('share usage: today and live against the limits', () => {
+  assert.equal(S.usage(null), null);
+  const u = S.usage({ today: 1, per_day: 20, live: 15, live_max: 100 });
+  assert.deepEqual(u.badges.map((b) => [b.label, b.used, b.max, b.full]), [['Today', 1, 20, false], ['Live', 15, 100, false]]);
+  assert.equal(u.full, false);
+  assert.match(u.said, /1 of 20 today.*15 of 100 live/);
+  const day = S.usage({ today: 20, per_day: 20, live: 15, live_max: 100 });
+  assert.equal(day.full, true);
+  assert.match(day.said, /tomorrow/);
+  const live = S.usage({ today: 3, per_day: 200, live: 1000, live_max: 1000 });   // an administrator, at the most
+  assert.equal(live.full, true);
+  assert.match(live.said, /Remove one/);
+});
+
 test('dates read as day month year, and months as month year', () => {
   assert.equal(S.day('2026-11-23 19:05'), '23 Nov 2026');
   assert.equal(S.day('2026-01-02'), '2 Jan 2026');
