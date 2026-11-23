@@ -1126,7 +1126,7 @@
     $('ath-share-ok').checked = false;
     $('ath-share-form').hidden = false;
     $('ath-share-done').hidden = true;
-    $('ath-share-said').textContent = '';
+    sayShare($('ath-share-said'), '');
     d.showModal();
     $('ath-share-title').focus();
     shareDraw();
@@ -1140,7 +1140,7 @@
     share.canvas = null;
     img.hidden = true;
     box.classList.add('is-busy');
-    said.textContent = 'Making the image…';
+    sayShare(said, 'Making the image…');
     shareButtons();
     zoomImage(who).then(function (canvas) {
       if (n !== share.seq) { return; }
@@ -1149,9 +1149,9 @@
       img.alt = 'The image that will be shared: ' + who + ', ' + IMG.subtitle(zoomFacts().event, zoomFacts().range,
         zoomFacts().from, zoomFacts().to) + '.';
       img.hidden = false;
-      said.textContent = '';
+      sayShare(said, '');
     }).catch(function () {
-      if (n === share.seq) { said.textContent = 'Sorry, the image could not be made.'; }
+      if (n === share.seq) { sayShare(said, 'Sorry, the image could not be made.'); }
     }).then(function () {
       if (n === share.seq) { box.classList.remove('is-busy'); shareButtons(); }
     });
@@ -1166,19 +1166,38 @@
     $('ath-share-ok').disabled = share.busy;
   }
 
-  function blobOf(canvas) {
-    return new Promise(function (ok) { canvas.toBlob(ok, 'image/png'); });
+  // a PNG, or a JPEG (type 'image/jpeg') for a card with a photo behind it: far smaller
+  function blobOf(canvas, type) {
+    return new Promise(function (ok) {
+      if (type === 'image/jpeg') { canvas.toBlob(ok, 'image/jpeg', 0.92); } else { canvas.toBlob(ok, 'image/png'); }
+    });
+  }
+
+  // a share's message: a warning (in its warning box) or a plain note
+  function sayShare(el, text, warn) {
+    el.textContent = text;
+    el.classList.toggle('is-warn', !!warn);
+    el.setAttribute('role', warn ? 'alert' : 'status');
+  }
+
+  // an image over the API's limit: says how big it is, and the limit, in MB
+  function tooBig(what, size, hint) {
+    var IMG = window.NCANChartImage;
+    var e = new Error('Too big to share: this ' + what + ' is ' + (size ? IMG.mb(size) : 'over the limit') +
+                      ', and the most a shared image can be is ' + IMG.mb(IMG.SHARE_MAX) + '. ' + hint);
+    e.warn = true;
+    return e;
   }
 
   function shareCreate() {
     var go = $('ath-share-go'), said = $('ath-share-said');
     if (go.disabled) { return; }
     var IMG = window.NCANChartImage, f = zoomFacts(), style = share.style;
-    var too = new Error('That chart makes too big an image to share. Try fewer dates.');
+    var hint = 'Try fewer dates.', size = 0;
     share.busy = true;
     go.classList.add('is-busy');
     shareButtons();
-    said.textContent = 'Making the public link…';
+    sayShare(said, 'Making the public link…');
     blobOf(share.canvas).then(function (blob) {
       // a very busy chart: made again a little smaller, to fit the API's limit
       if (blob && blob.size > IMG.SHARE_MAX) {
@@ -1187,7 +1206,8 @@
       return blob;
     }).then(function (blob) {
       if (!blob) { throw new Error('Sorry, the image could not be made.'); }
-      if (blob.size > IMG.SHARE_MAX) { throw too; }
+      size = blob.size;
+      if (blob.size > IMG.SHARE_MAX) { throw tooBig('chart', blob.size, hint); }
       return NCAN.sendFile('/athletes/' + encodeURIComponent(NCAN.athlete.slug) + '/shares?' +
         IMG.shareQuery({ event: f.event, from: f.from, to: f.to, view: f.view, name: style }), blob);
     }).then(function (r) {
@@ -1195,15 +1215,15 @@
         if (r.body.usage) { NCAN.athlete.share_usage = r.body.usage; usageShow(); }
         shareDone(r.body.share); return;
       }
-      if (r.status === 413) { throw too; }
-      said.textContent = (r.body && r.body.error) || 'Sorry, the chart could not be shared (' + r.status + ').';
+      if (r.status === 413) { throw tooBig('chart', size, hint); }
+      sayShare(said, (r.body && r.body.error) || 'Sorry, the chart could not be shared (' + r.status + ').');
       // refused (sharing paused, or no longer theirs to share): no Share until the page reloads
       if (r.status === 403) {
         NCAN.athlete.can_share = false;
         $('ath-zoom-share').hidden = true;
       }
     }).catch(function (e) {
-      said.textContent = (e && e.message) || 'Sorry, the chart could not be shared.';
+      sayShare(said, (e && e.message) || 'Sorry, the chart could not be shared.', e && e.warn);
     }).then(function () {
       share.busy = false;
       go.classList.remove('is-busy');
@@ -1219,7 +1239,7 @@
     link.value = s.url;
     $('ath-share-open').href = s.url;
     $('ath-share-send').hidden = !navigator.share;
-    $('ath-share-said').textContent = 'Your public link is ready.';
+    sayShare($('ath-share-said'), 'Your public link is ready.');
     document.dispatchEvent(new CustomEvent('ncan:shared', { detail: s }));   // the Shared charts list (shared-charts.js)
     link.focus();
     link.select();
@@ -1348,7 +1368,7 @@
     $('ath-card-form').hidden = false;
     $('ath-card-done').hidden = true;
     $('ath-card-public').hidden = !shareCan();
-    $('ath-card-said').textContent = '';
+    sayShare($('ath-card-said'), '');
     d.showModal();
     $('ath-card-title').focus();
     cardDraw();
@@ -1366,7 +1386,7 @@
       card.canvas = null;
       img.hidden = true;
       box.classList.add('is-busy');
-      said.textContent = 'Making the card…';
+      sayShare(said, 'Making the card…');
       cardButtons();
     }
     card.drawing = true; card.again = false;
@@ -1380,9 +1400,9 @@
       img.alt = 'The card: ' + f.headline.toLowerCase() + ' for ' + f.name + ', ' + f.event + ' ' + f.mark +
         (f.better ? ' (' + f.better + ')' : '') + ', ' + f.meeting + ', ' + f.date + '.';
       img.hidden = false;
-      said.textContent = '';
+      sayShare(said, '');
     }).catch(function () {
-      if (n === card.seq) { said.textContent = 'Sorry, the card could not be made.'; }
+      if (n === card.seq) { sayShare(said, 'Sorry, the card could not be made.'); }
     }).then(function () {
       card.drawing = false;
       if (n === card.seq) { box.classList.remove('is-busy'); cardButtons(); }
@@ -1449,8 +1469,8 @@
     var said = $('ath-card-said');
     if (!card.canvas) { return; }
     window.NCANChartImage.save(card.canvas, window.NCANPbCard.fileName(cardFacts())).then(function (how) {
-      said.textContent = how === 'saved' ? 'Card saved.' : how === 'shared' ? 'Card shared.' : '';
-    }).catch(function () { said.textContent = 'Sorry, the card could not be saved.'; });
+      sayShare(said, how === 'saved' ? 'Card saved.' : how === 'shared' ? 'Card shared.' : '');
+    }).catch(function () { sayShare(said, 'Sorry, the card could not be saved.'); });
   }
 
   // copies the words, and says so on the button; resolves true when they were copied
@@ -1464,14 +1484,14 @@
     return Promise.resolve(false);
   }
 
-  // the card as a PNG within the API's limit: a photo card can be too big as drawn, so
-  // it is made smaller until it fits (never under the API's 400 px a side)
-  function cardBlob(canvas) {
+  // the card within the API's limit: a JPEG with a photo behind it, else a PNG. One
+  // still too big is made smaller until it fits (never under the API's 400 px a side)
+  function cardBlob(canvas, type) {
     var MAX = window.NCANChartImage.SHARE_MAX;
     var fit = function (src, scale) {
-      return blobOf(src).then(function (blob) {
+      return blobOf(src, type).then(function (blob) {
         if (!blob || blob.size <= MAX) { return blob; }
-        // a PNG's size goes roughly with its area
+        // an image's size goes roughly with its area
         var k = scale * Math.min(0.9, Math.sqrt(MAX / blob.size) * 0.95);
         var w = Math.round(canvas.width * k), h = Math.round(canvas.height * k);
         if (Math.min(w, h) < 400) { return blob; }
@@ -1490,14 +1510,15 @@
     var go = $('ath-card-go'), said = $('ath-card-said');
     if (go.disabled) { return; }
     var IMG = window.NCANChartImage, r = card.r;
-    var too = new Error('That card makes too big an image to share. Try another photo or shape.');
+    var hint = 'Try another photo or shape.', size = 0;
     card.busy = true;
     go.classList.add('is-busy');
     cardButtons();
-    said.textContent = 'Making the public link…';
-    cardBlob(card.canvas).then(function (blob) {
+    sayShare(said, 'Making the public link…');
+    cardBlob(card.canvas, card.style === 'photo' ? 'image/jpeg' : 'image/png').then(function (blob) {
       if (!blob) { throw new Error('Sorry, the card could not be made.'); }
-      if (blob.size > IMG.SHARE_MAX) { throw too; }
+      size = blob.size;
+      if (blob.size > IMG.SHARE_MAX) { throw tooBig('card', blob.size, hint); }
       return NCAN.sendFile('/athletes/' + encodeURIComponent(NCAN.athlete.slug) + '/shares?' +
         IMG.shareQuery({ event: eventLabel(r).slice(0, 60), from: r.date, to: r.date, view: 'pb-card',
                          name: card.surname ? 'full' : 'first' }), blob);
@@ -1510,22 +1531,22 @@
         $('ath-card-done').hidden = false;
         $('ath-card-link').value = s.url;
         $('ath-card-open').href = s.url;
-        said.textContent = 'Your public link is ready.';
+        sayShare(said, 'Your public link is ready.');
         document.dispatchEvent(new CustomEvent('ncan:shared', { detail: s }));   // the Shared charts list
         var link = $('ath-card-link');
         link.focus(); link.select();
         if (link.scrollIntoView) { link.scrollIntoView({ block: 'nearest' }); }
         // copied straight away (where the browser lets it), so it's ready to paste
         copyText($('ath-card-link-copy'), s.url, 'Copy link').then(function (ok) {
-          if (ok && card.url === s.url) { said.textContent = 'Your public link is ready, and copied.'; }
+          if (ok && card.url === s.url) { sayShare(said, 'Your public link is ready, and copied.'); }
         });
         return;
       }
-      if (res.status === 413) { throw too; }
-      said.textContent = (res.body && res.body.error) || 'Sorry, the card could not be shared (' + res.status + ').';
+      if (res.status === 413) { throw tooBig('card', size, hint); }
+      sayShare(said, (res.body && res.body.error) || 'Sorry, the card could not be shared (' + res.status + ').');
       if (res.status === 403) { NCAN.athlete.can_share = false; $('ath-card-public').hidden = true; }
     }).catch(function (e) {
-      said.textContent = (e && e.message) || 'Sorry, the card could not be shared.';
+      sayShare(said, (e && e.message) || 'Sorry, the card could not be shared.', e && e.warn);
     }).then(function () {
       card.busy = false;
       go.classList.remove('is-busy');
