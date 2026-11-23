@@ -305,19 +305,13 @@
       for (var k = 1; k < 4; k += 2) { c.fillRect(a[0] + (b[0] - a[0]) * k / 4, a[1] - h - t, (b[0] - a[0]) / 4, t); }
     };
 
-    if (s === 'sprint' || s === 'hurdles' || s === 'steeple') {
+    if (s === 'sprint' || s === 'hurdles') {
       stadium();
       quad(S.track, -2.3, 2.3, 0, 60);
       for (var k = -4; k <= 4; k++) { quad(LINE, k * 0.5 - 0.02, k * 0.5 + 0.02, 0, 60); }
-      if (s === 'sprint' || s === 'hurdles') { quad(LINE, -2, 2, 3.2, 3.4); }
+      quad(LINE, -2, 2, 3.2, 3.4);
       if (s === 'hurdles') {
         [12, 8, 5, 3.2].forEach(function (v) { for (var l = -4; l < 4; l++) { hurdle(l * 0.5, l * 0.5 + 0.5, v); } });
-      }
-      if (s === 'steeple') {
-        quad('#3E9BD1', -2, 2, 2.22, 4.2);
-        for (var w = 2.5; w < 4.2; w += 0.4) { quad('rgba(255,255,255,.35)', -1.8, 1.8, w, w + 0.05); }
-        hurdle(-2, 2, 9, 0.45);
-        hurdle(-2, 2, 2.2, 0.45);
       }
     } else if (s === 'long' || s === 'triple') {
       stadium();
@@ -331,14 +325,35 @@
         var p = P(d[0], d[1]); c.fillStyle = 'rgba(150,120,70,.5)';
         c.beginPath(); c.ellipse(p[0], p[1], unit(d[1]) * 0.08, unit(d[1]) * 0.03, 0, 0, Math.PI * 2); c.fill();
       });
-    } else if (s === 'high' || s === 'pole') {
+    } else if (s === 'pole') {
+      // the pit from the runway: a deep mat with a white centre, two front pads either side of the V that
+      // slopes down to the box, tall standards at the back and the bar high above
+      stadium();
+      var X = function (f) { return W * f; }, Y = function (f) { return H * f; };
+      fill(S.track, [[X(0.485), Y(0.565)], [X(0.515), Y(0.565)], [X(0.62), H], [X(0.38), H]]);          // the runway
+      line(LINE, 2, [[X(0.485), Y(0.565)], [X(0.38), H]]); line(LINE, 2, [[X(0.515), Y(0.565)], [X(0.62), H]]);
+      [0.2, 0.8].forEach(function (f) { line('#8E959C', 5, [[X(f), Y(0.4)], [X(f), Y(0.13)]]); });       // the standards
+      fill('#2F6FC0', [[X(0.16), Y(0.34)], [X(0.84), Y(0.34)], [X(0.92), Y(0.46)], [X(0.08), Y(0.46)]]);  // the pit's top
+      c.fillStyle = '#1B4E94'; c.fillRect(X(0.08), Y(0.46), X(0.84), Y(0.035));
+      fill('#EDEFF2', [[X(0.37), Y(0.355)], [X(0.63), Y(0.355)], [X(0.65), Y(0.425)], [X(0.35), Y(0.425)]]);  // the white centre
+      [[0.14, 0.43, 0.41, 0.08], [0.57, 0.86, 0.92, 0.59]].forEach(function (p) {                     // the front pads
+        fill('#3A80D2', [[X(p[0]), Y(0.445)], [X(p[1]), Y(0.445)], [X(p[2]), Y(0.52)], [X(p[3]), Y(0.52)]]);
+        c.fillStyle = '#1E5AA6'; c.fillRect(X(Math.min(p[2], p[3])), Y(0.52), X(Math.abs(p[2] - p[3])), Y(0.03));
+      });
+      fill('#D9DDE2', [[X(0.43), Y(0.445)], [X(0.57), Y(0.445)], [X(0.515), Y(0.535)], [X(0.485), Y(0.535)]]);  // the V
+      fill('#3C3C3C', [[X(0.483), Y(0.535)], [X(0.517), Y(0.535)], [X(0.515), Y(0.565)], [X(0.485), Y(0.565)]]);  // the box
+      [[0.2, 0.235], [0.8, 0.765]].forEach(function (p) {                                             // the yellow arms
+        line('#F2D33A', 4, [[X(p[1]), Y(0.13)], [X(p[1]), Y(0.2)]]);
+        line('#F2D33A', 3, [[X(p[0]), Y(0.165)], [X(p[1]), Y(0.165)]]); line('#F2D33A', 3, [[X(p[0]), Y(0.2)], [X(p[1]), Y(0.2)]]);
+      });
+      line('#F2D33A', 4, [[X(0.235), Y(0.13)], [X(0.765), Y(0.13)]]);                                   // the bar
+    } else if (s === 'high') {
       stadium();
       quad(S.track, -3, 3, 0, 4);
-      var top = s === 'pole' ? H * 0.24 : H * 0.31, mx0 = W * 0.2, mx1 = W * 0.8, my = H * 0.42, mh = H * 0.09;
+      var top = H * 0.31, mx0 = W * 0.2, mx1 = W * 0.8, my = H * 0.42, mh = H * 0.09;
       fill('#2F5FA8', [[mx0 + W * 0.04, my - mh * 0.45], [mx1 - W * 0.04, my - mh * 0.45], [mx1, my], [mx0, my]]);   // the mat's top
       c.fillStyle = '#1B3F7A'; c.fillRect(mx0, my, mx1 - mx0, mh);
       c.fillStyle = 'rgba(255,255,255,.7)'; c.fillRect(mx0, my + mh * 0.15, mx1 - mx0, 2);
-      if (s === 'pole') { fill('#333333', [[W * 0.46, my + mh + 6], [W * 0.54, my + mh + 6], [W * 0.52, my + mh + 22], [W * 0.48, my + mh + 22]]); }
       [W * 0.17, W * 0.83].forEach(function (x) {
         line('#D8D8D8', 4, [[x, my + mh * 0.6], [x, top - H * 0.04]]);
         c.fillStyle = '#333333'; c.fillRect(x - 14, my + mh * 0.6, 28, 5);
@@ -436,6 +451,28 @@
       for (var n = 0; n <= 8; n++) { oval(inner + (R - inner) * n / 8); c.stroke(); }
       if (vert) { line(LINE, 4, [[cx + inner, cy + a * 0.6], [cx + R, cy + a * 0.6]]); }
       else { line(LINE, 4, [[cx + a * 0.6, cy + inner], [cx + a * 0.6, cy + R]]); }
+      if (s === 'steeple') {
+        // the water jump: its own lane, leaving the inside of a bend and coming back, with the pit at the far point
+        var bx = vert ? cx : cx + a, by = vert ? cy - a : cy, ap = vert ? -Math.PI / 2 : 0;
+        var r0 = inner * 0.58, r1 = inner * 0.82, rm = (r0 + r1) / 2, bw = r1 - r0, sp = 0.95;
+        var at = function (r, t) { return [bx + Math.cos(t) * r, by + Math.sin(t) * r]; };
+        var band = function (col, wd, t0, t1, r) { c.strokeStyle = col; c.lineWidth = wd; c.beginPath(); c.arc(bx, by, r, t0, t1); c.stroke(); };
+        c.lineCap = 'round';
+        [-1, 1].forEach(function (d) {   // where the lane leaves and rejoins the track
+          var e = ap + d * sp;
+          line(S.track, bw, [at(rm, e), at(inner + 4, e + d * 0.35)]);
+        });
+        c.lineCap = 'butt';
+        band(S.track, bw, ap - sp, ap + sp, rm);
+        band(LINE, 1.5, ap - sp, ap + sp, r0);
+        band(LINE, 1.5, ap - sp - 0.12, ap + sp + 0.12, r1);
+        // runners go anticlockwise, so on screen the angle falls: the barrier, then the water, deepest right after it
+        band('#3E9BD1', bw, ap - 0.3, ap + 0.06, rm);
+        band('#2C7FB8', bw * 0.6, ap - 0.1, ap + 0.06, rm);
+        var b0 = at(r0 - 3, ap + 0.09), b1 = at(r1 + 3, ap + 0.09), bt = Math.max(5, bw * 0.16);
+        line('#FFFFFF', bt, [b0, b1]);
+        c.setLineDash([bt, bt]); line('#1A1A1A', bt, [b0, b1]); c.setLineDash([]);
+      }
     }
     c.restore();
   }
