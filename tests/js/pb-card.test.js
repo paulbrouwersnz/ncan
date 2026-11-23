@@ -195,3 +195,32 @@ test('Event card: the scene fills the card under the washes, nothing overlapping
   // an unknown track colour is the blue track
   assert.equal(PB.layout(full, 'square', 'event', 'pink').items.find((i) => i.kind === 'scene').surface, 'blue');
 });
+
+test('Show place puts any place on a medal: gold, silver, bronze, then copper', () => {
+  assert.deepEqual(PB.medalFor(1), { words: '1st', metal: 'gold' });
+  assert.deepEqual(PB.medalFor(2), { words: '2nd', metal: 'silver' });
+  assert.deepEqual(PB.medalFor(3), { words: '3rd', metal: 'bronze' });
+  assert.deepEqual(PB.medalFor(4), { words: '4th', metal: 'copper' });
+  assert.deepEqual(PB.medalFor(12), { words: '12th', metal: 'copper' });
+  assert.equal(PB.medalFor(0), null);
+  const r = { event: '800m', mark: '2:10.00', date: '2026-11-21', meeting: 'Interclub 5', place: 5 };
+  // off: no medal, and 5th isn't in the words
+  let f = PB.facts({ kind: 'result', name: 'Sam Brown', result: r });
+  assert.equal(f.medal, null);
+  assert.equal(f.headline, 'RESULT');
+  // on: the medal says it, and the caption too
+  f = PB.facts({ kind: 'result', name: 'Sam Brown', result: r, showPlace: true });
+  assert.deepEqual(f.medal, { words: '5th', metal: 'copper' });
+  assert.match(PB.caption(f), /^5th place for Sam!/);
+  // a podium place on the medal isn't said again in the headline or the lines
+  f = PB.facts({ kind: 'result', name: 'Sam Brown', result: Object.assign({}, r, { place: 1 }), showPlace: true });
+  assert.equal(f.headline, 'RESULT');
+  assert.equal(f.place, '');
+  const L = PB.layout(f, 'square', 'podium');
+  const m = L.items.find(i => i.kind === 'medal');
+  assert.equal(m.metal, 'gold');
+  assert.ok(m.cx + m.r <= L.w - 30);
+  // a relay's place is the team's: no medal
+  f = PB.facts({ kind: 'result', name: 'Sam', result: Object.assign({}, r, { relay: { team_mark: '50.1' } }), showPlace: true });
+  assert.equal(f.medal, null);
+});

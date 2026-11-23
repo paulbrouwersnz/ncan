@@ -1513,6 +1513,7 @@ table.schedule.champs-table { min-width: 0; }
 .ath-card__pick:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
 /* the card's Style: a dropdown, as more styles will come */
 .ath-card__style { display: flex; flex-direction: column; gap: .25rem; margin: 0; }
+.ath-card__style[hidden] { display: none; }   /* Track: only for an Event card with a track */
 .ath-card__style label { font-weight: 600; font-size: .9rem; }
 .ath-card__style select { font: inherit; padding: .35rem .5rem; border: 1px solid var(--line); border-radius: 8px;
   background: var(--surface); color: var(--text); min-width: 10rem; }

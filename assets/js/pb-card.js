@@ -17,7 +17,8 @@
 
   Privacy: no date of birth, no link to the private page; for children (a result
   with a grade, ages 7-14) the surname is off unless the sharer turns it on; the
-  place only shows when it's 1st, 2nd or 3rd.
+  place is in the words only when it's 1st, 2nd or 3rd, and any other place only on
+  the medal, when the sharer chooses Show place.
 */
 (function (root, factory) {
   var api = factory();
@@ -44,6 +45,21 @@
   }
   // only a podium place is worth a card: a card never says "6th of 8"
   function placeWord(place) { return place >= 1 && place <= 3 ? ordinal(place) : ''; }
+
+  /* The finisher's medal in the top right, when the sharer shows the place: gold, silver
+     or bronze for 1st to 3rd, copper for any other place, with the place on it ("4th").
+     [face, rim, words] */
+  var METALS = { gold: ['#F6CF4A', '#B8860B', '#4A3500'], silver: ['#E3E7EB', '#8E99A4', '#2E3740'],
+                 bronze: ['#C99A5B', '#7E5A2B', '#3A2810'], copper: ['#E08A5C', '#94472A', '#3D1A0C'] };
+  function medalFor(place) {
+    if (!(place >= 1)) { return null; }
+    return { words: ordinal(place), metal: ['gold', 'silver', 'bronze'][place - 1] || 'copper' };
+  }
+  // the medal's item (centre cx, cy; radius r), hanging from a ribbon at the top edge
+  function medalItem(m, W, pad, story) {
+    var r = story ? 46 : 36;
+    return { kind: 'medal', cx: W - pad - r, cy: story ? 112 : 86, r: r, words: m.words, metal: m.metal };
+  }
 
   /* How much better than the PB before it: "−0.32s" for a time, "+18cm" or "+1.05m" for
      a distance or height. '' when there was no earlier PB (a first mark isn't a PB). */
@@ -90,8 +106,12 @@
   function facts(a) {
     var r = a.result || {}, kind = kindOf(a), place = r.relay ? '' : placeWord(r.place);
     var newpb = kind === 'newpb';
+    // showPlace: the place on a medal in the corner, any place (a relay's isn't one person's)
+    var medal = a.showPlace && !r.relay ? medalFor(r.place) : null;
+    if (medal) { place = ''; }     // said on the medal, so not in the words too
     return {
       kind: kind,
+      medal: medal,
       headline: headlineFor(kind, place),
       name: cardName(a.name, a.surname),
       event: a.event || r.event || '',
@@ -115,7 +135,8 @@
     if (f.kind === 'sb') { return 'Season best for ' + who + '! ' + f.event + ' in ' + f.mark + at; }
     if (f.kind === 'result') {
       var m = /^(\S+) PLACE$/.exec(f.headline || '');
-      return (m ? m[1].charAt(0) + m[1].slice(1).toLowerCase() + ' place for ' + who + '! ' + f.event + ' in ' + f.mark
+      var pl = f.medal ? f.medal.words : m ? m[1].toLowerCase() : '';
+      return (pl ? pl + ' place for ' + who + '! ' + f.event + ' in ' + f.mark
                 : who + ': ' + f.event + ' in ' + f.mark) + at;
     }
     return 'New PB for ' + who + '! ' + f.event + ' in ' + f.mark + at;
@@ -156,9 +177,11 @@
       : { head: 70, headSize: 18, name: 106, nameSize: 32, group: 130, band: [148, 172], event: 182, eventSize: 24,
           mark: 264, markSize: 86, rib: [278, 180, 36, 20], lines: 348, step: 22, sizes: [15, 16, 17, 15, 15] };
     items.push({ kind: 'rect', x: 0, y: P.band[0], w: W, h: P.band[1], colour: COLOURS.bg2 });
-    t(f.headline || 'PERSONAL BEST', pad, P.head, P.headSize, { weight: 800, font: 'display', colour: COLOURS.gold, spacing: 2 });
-    t(f.name, pad, P.name, P.nameSize, { weight: 800, font: 'display' });
-    t(f.group, pad, P.group, P.headSize - 3, { colour: COLOURS.soft });
+    var md = f.medal ? medalItem(f.medal, W, pad, story) : null, narrow = W - 2 * pad - (md ? 2 * md.r + 16 : 0);
+    t(f.headline || 'PERSONAL BEST', pad, P.head, P.headSize, { weight: 800, font: 'display', colour: COLOURS.gold, spacing: 2, max: narrow });
+    t(f.name, pad, P.name, P.nameSize, { weight: 800, font: 'display', max: narrow });
+    t(f.group, pad, P.group, P.headSize - 3, { colour: COLOURS.soft, max: narrow });
+    if (md) { items.push(md); }
 
     t(f.event, W / 2, P.event, P.eventSize, { weight: 700, font: 'display', align: 'center' });
     t(f.mark, W / 2, P.mark, P.markSize, { weight: 800, font: 'display', colour: COLOURS.gold, align: 'center' });
@@ -213,9 +236,11 @@
           event: 300, eventSize: 22, mark: 376, markSize: 80, rib: 0, ribH: 0, ribSize: 18, lines: 410, step: 22, size: 15 };
     items.push({ kind: 'shade', x: 0, y: 0, w: W, h: P.top, from: 0.7, to: 0 });
     items.push({ kind: 'shade', x: 0, y: H - P.bottom, w: W, h: P.bottom, from: 0, to: 0.88 });
-    t(f.headline || 'PERSONAL BEST', pad, P.head, P.headSize, { weight: 800, font: 'display', colour: COLOURS.gold, spacing: 2 });
-    t(f.name, pad, P.name, P.nameSize, { weight: 800, font: 'display' });
-    t(f.group, pad, P.group, P.headSize - 3, { colour: COLOURS.text });
+    var md = f.medal ? medalItem(f.medal, W, pad, story) : null, narrow = W - 2 * pad - (md ? 2 * md.r + 16 : 0);
+    t(f.headline || 'PERSONAL BEST', pad, P.head, P.headSize, { weight: 800, font: 'display', colour: COLOURS.gold, spacing: 2, max: narrow });
+    t(f.name, pad, P.name, P.nameSize, { weight: 800, font: 'display', max: narrow });
+    t(f.group, pad, P.group, P.headSize - 3, { colour: COLOURS.text, max: narrow });
+    if (md) { items.push(md); }
 
     t(f.event, pad, P.event, P.eventSize, { weight: 700, font: 'display' });
     t(f.mark, pad, P.mark, P.markSize, { weight: 800, font: 'display', colour: COLOURS.gold, max: W - 2 * pad - (story ? 0 : 130) });
@@ -557,6 +582,41 @@
     return out;
   }
 
+  /* A finisher's medal: two ribbon straps in the club's yellow (a thin green stripe down
+     each) from the top edge of the card down to a round disc of the metal, a darker rim
+     and the place on it. */
+  function drawMedal(c, i, family) {
+    var M = METALS[i.metal] || METALS.copper, r = i.r, cx = i.cx, cy = i.cy, top = cy - r * 0.6;
+    c.save();
+    c.shadowColor = 'rgba(0,0,0,.45)'; c.shadowBlur = 10; c.shadowOffsetY = 2;
+    // the straps: a V meeting just above the disc
+    [[-1, '#F2B705'], [1, COLOURS.gold]].forEach(function (s) {
+      var x0 = cx + s[0] * r * 0.95, x1 = cx + s[0] * r * 0.18;
+      c.fillStyle = s[1];
+      c.beginPath(); c.moveTo(x0 - r * 0.32, 0); c.lineTo(x0 + r * 0.32, 0);
+      c.lineTo(x1 + r * 0.3, top); c.lineTo(x1 - r * 0.3, top); c.closePath(); c.fill();
+      c.shadowColor = 'transparent';
+      c.strokeStyle = COLOURS.bg2; c.lineWidth = Math.max(2, r * 0.07);
+      c.beginPath(); c.moveTo(x0, 0); c.lineTo(x1, top); c.stroke();
+    });
+    // the disc: lit from the top left
+    c.shadowColor = 'rgba(0,0,0,.45)'; c.shadowBlur = 10; c.shadowOffsetY = 2;
+    var g = c.createRadialGradient(cx - r * 0.35, cy - r * 0.4, r * 0.1, cx, cy, r);
+    g.addColorStop(0, '#FFFFFF'); g.addColorStop(0.18, M[0]); g.addColorStop(1, M[1]);
+    c.fillStyle = g;
+    c.beginPath(); c.arc(cx, cy, r, 0, Math.PI * 2); c.fill();
+    c.shadowColor = 'transparent';
+    c.strokeStyle = M[1]; c.lineWidth = Math.max(2, r * 0.1);
+    c.beginPath(); c.arc(cx, cy, r * 0.8, 0, Math.PI * 2); c.stroke();
+    // the place
+    var size = Math.round(r * 0.72);
+    c.fillStyle = M[2]; c.textAlign = 'center'; c.textBaseline = 'middle';
+    c.font = '800 ' + size + 'px ' + family;
+    while (c.measureText(i.words).width > r * 1.3 && size > 8) { size -= 1; c.font = '800 ' + size + 'px ' + family; }
+    c.fillText(i.words, cx, cy + size * 0.06);
+    c.restore();
+  }
+
   /* Browser only: the card as a canvas. fonts { display, sans } are CSS font-family
      lists; waits for them so the first card isn't drawn in a fallback font. */
   function render(f, shape, fonts, opts) {
@@ -601,6 +661,8 @@
           }
         } else if (i.kind === 'scene') {
           drawScene(c, i);
+        } else if (i.kind === 'medal') {
+          drawMedal(c, i, i.font || fonts.display);
         } else if (i.kind === 'shade') {
           var g = c.createLinearGradient(0, i.y, 0, i.y + i.h);
           g.addColorStop(0, 'rgba(6,30,23,' + i.from + ')');
@@ -624,7 +686,7 @@
     });
   }
 
-  return { SIZES: SIZES, COLOURS: COLOURS, day: day, placeWord: placeWord, improvement: improvement,
+  return { SIZES: SIZES, COLOURS: COLOURS, day: day, placeWord: placeWord, medalFor: medalFor, improvement: improvement,
            cardName: cardName, surnameByDefault: surnameByDefault, seasonWords: seasonWords, facts: facts,
            caption: caption, fileName: fileName, headlineFor: headlineFor, cover: cover, parseFocus: parseFocus, move: move, ZOOM_MAX: ZOOM_MAX, STYLES: ['podium', 'photo', 'event'],
            SURFACES: Object.keys(SURFACES), sceneFor: sceneFor, sceneHasTrack: sceneHasTrack, layout: layout, overlaps: overlaps, render: render };
