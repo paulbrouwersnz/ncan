@@ -1297,10 +1297,11 @@
     // cross country, road and relay legs: no PBs (courses differ), their own race name and grade
     if (card.oos) {
       return window.NCANPbCard.facts({ kind: 'result', name: NCAN.athlete && NCAN.athlete.name, surname: card.surname, result: r,
+        showPlace: card.place,
         mark: r.mark, event: card.oos.event, group: r.oos_grade || '' });
     }
     var prev = pbBefore(r);
-    return window.NCANPbCard.facts({ kind: card.kind, name: NCAN.athlete && NCAN.athlete.name, surname: card.surname, result: r, prev: prev,
+    return window.NCANPbCard.facts({ kind: card.kind, name: NCAN.athlete && NCAN.athlete.name, surname: card.surname, showPlace: card.place, result: r, prev: prev,
       mark: markText(r), prevMark: prev ? markText(prev) : '', event: eventLabel(r), group: groupOf(r),
       pbsThisSeason: pbsInSeason(r) });
   }
@@ -1380,6 +1381,11 @@
       sb: 'Share this season best' }[card.kind] || 'Share this result';
     card.surname = window.NCANPbCard.surnameByDefault(r);
     $('ath-card-surname').checked = card.surname;
+    // the place on a medal: offered for any place (a relay's is the team's), on at first for 1st to 3rd
+    var placed = r.place >= 1;
+    card.place = placed && r.place <= 3;
+    $('ath-card-place-row').hidden = !placed;
+    $('ath-card-place').checked = card.place;
     $('ath-card-ok').checked = false;
     $('ath-card-form').hidden = false;
     $('ath-card-done').hidden = true;
@@ -1537,7 +1543,7 @@
       if (blob.size > IMG.SHARE_MAX) { throw tooBig('card', blob.size, hint); }
       return NCAN.sendFile('/athletes/' + encodeURIComponent(NCAN.athlete.slug) + '/shares?' +
         IMG.shareQuery({ event: eventLabel(r).slice(0, 60), from: r.date, to: r.date, view: 'pb-card',
-                         name: card.surname ? 'full' : 'first' }), blob);
+                         name: card.surname ? 'full' : 'first', kind: card.kind || 'pb' }), blob);
     }).then(function (res) {
       if (res.status === 201 && res.body && res.body.share && res.body.share.url) {
         var s = res.body.share;
@@ -1601,6 +1607,7 @@
       i.addEventListener('change', function () { if (i.checked) { card.shape = i.value; cardDraw(); } });
     });
     $('ath-card-surname').addEventListener('change', function () { card.surname = this.checked; cardDraw(); });
+    $('ath-card-place').addEventListener('change', function () { card.place = this.checked; cardDraw(); });
     $('ath-card-ok').addEventListener('change', cardButtons);
     $('ath-card-save').addEventListener('click', cardSave);
     cardAdjustSetUp();

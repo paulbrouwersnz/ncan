@@ -39,6 +39,10 @@ test('what was shared: the event, the dates and the view', () => {
   assert.equal(S.what(share({ from: '2026-11-01', to: '2026-11-21' })), '100m · Nov 2026 · By season');
   assert.equal(S.what(share({ from: '2026-11-21', to: '2026-11-21' })), '100m · 21 Nov 2026 · By season');
   assert.equal(S.what(share({ from: '2026-11-21', to: '2026-11-21', view: 'pb-card' })), '100m · 21 Nov 2026 · PB card');
+  // only a personal best is a PB card
+  assert.equal(S.what(share({ from: '2026-11-21', to: '2026-11-21', view: 'pb-card', kind: 'newpb' })), '100m · 21 Nov 2026 · PB card');
+  assert.equal(S.what(share({ from: '2026-11-21', to: '2026-11-21', view: 'pb-card', kind: 'result' })), '100m · 21 Nov 2026 · Result card');
+  assert.equal(S.what(share({ from: '2026-11-21', to: '2026-11-21', view: 'pb-card', kind: 'sb' })), '100m · 21 Nov 2026 · Season’s best card');
 });
 
 test('views count people once a day, with link previews apart', () => {
