@@ -1232,7 +1232,8 @@
   /* A PB card: drawn here from the result, shown, then saved (share sheet or download).
      The athlete's GameDay contacts and admins can also make a public link of it, through
      the same share API as charts (view=pb-card). */
-  var card = { r: null, kind: 'pb', style: 'podium', photo: null, picked: null, shape: 'square', surname: false, canvas: null, seq: 0, busy: false, from: null, url: '' };
+  var card = { r: null, kind: 'pb', style: 'podium', photo: null, picked: null, pos: { x: 50, y: 50, zoom: 1 },
+               drawing: false, again: false, shape: 'square', surname: false, canvas: null, seq: 0, busy: false, from: null, url: '' };
 
   function cardFacts() {
     var r = card.r, prev = pbBefore(r);
@@ -1262,10 +1263,23 @@
       .then(function (u) { headerPhoto.loading = null; return u; });
     return headerPhoto.loading;
   }
+  /* Where the photo sits on the card: starts at the photo's own focus point, not zoomed.
+     Kept when the shape changes (it stays within the photo's edges); reset when the
+     photo does. */
+  function cardPosReset() {
+    var ph = cardPhoto(), f = window.NCANPbCard.parseFocus(ph && ph.focus);
+    card.pos = { x: f.x, y: f.y, zoom: 1 };
+    $('ath-card-zoom').value = 100;
+  }
   function cardPhotoWords() {
     var has = !!(NCAN.athlete && NCAN.athlete.photo && NCAN.athlete.photo.url);
-    var box = $('ath-card-photo');
+    var box = $('ath-card-photo'), on = card.style === 'photo' && !!cardPhoto();
     box.hidden = card.style !== 'photo';
+    $('ath-card-adjust').hidden = !on;
+    var view = $('ath-card-box');
+    view.classList.toggle('is-adjustable', on);
+    if (on) { view.tabIndex = 0; view.setAttribute('aria-describedby', 'ath-card-adjust-hint'); }
+    else { view.removeAttribute('tabindex'); view.removeAttribute('aria-describedby'); }
     $('ath-card-use-header').hidden = !(card.picked && has);
     $('ath-card-pick-words').textContent = card.picked || has ? 'Use a different photo' : 'Choose a photo';
     $('ath-card-photo-said').textContent = card.picked ? 'Using the photo you chose. It stays on this device.'
@@ -1275,8 +1289,13 @@
   function cardPhotoSetUp() {
     if (card.picked) { URL.revokeObjectURL(card.picked.url); card.picked = null; }
     $('ath-card-file').value = '';
+    cardPosReset();
     cardPhotoWords();
-    loadHeaderPhoto().then(function () { cardPhotoWords(); if (card.style === 'photo' && $('ath-card').open) { cardDraw(); } });
+    loadHeaderPhoto().then(function () {
+      if (!card.picked) { cardPosReset(); }
+      cardPhotoWords();
+      if (card.style === 'photo' && $('ath-card').open) { cardDraw(); }
+    });
   }
 
   function cardOpen(r, from, kind) {
@@ -1298,20 +1317,26 @@
     cardDraw();
   }
 
-  function cardDraw() {
+  /* quiet: placing the photo; the old card stays on screen while the new one is drawn,
+     and a burst of moves draws once at a time (the latest position wins). */
+  function cardDraw(quiet) {
+    if (quiet && card.drawing) { card.again = true; return; }
     var PB = window.NCANPbCard, n = ++card.seq, f = cardFacts();
     var img = $('ath-card-preview'), box = $('ath-card-box'), said = $('ath-card-said');
     var root = window.getComputedStyle(document.documentElement);
     $('ath-card-caption').value = PB.caption(f);
-    card.canvas = null;
-    img.hidden = true;
-    box.classList.add('is-busy');
-    said.textContent = 'Making the card…';
-    cardButtons();
+    if (!quiet) {
+      card.canvas = null;
+      img.hidden = true;
+      box.classList.add('is-busy');
+      said.textContent = 'Making the card…';
+      cardButtons();
+    }
+    card.drawing = true; card.again = false;
     var ph = cardPhoto();
     PB.render(f, card.shape, { display: root.getPropertyValue('--font-display') || 'sans-serif',
                                sans: root.getPropertyValue('--font-sans') || 'sans-serif' },
-              { style: card.style, photo: ph && ph.url, focus: ph && ph.focus }).then(function (canvas) {
+              { style: card.style, photo: ph && ph.url, focus: card.pos.x + '% ' + card.pos.y + '%', zoom: card.pos.zoom }).then(function (canvas) {
       if (n !== card.seq) { return; }
       card.canvas = canvas;
       img.src = canvas.toDataURL('image/png');
@@ -1322,8 +1347,54 @@
     }).catch(function () {
       if (n === card.seq) { said.textContent = 'Sorry, the card could not be made.'; }
     }).then(function () {
+      card.drawing = false;
       if (n === card.seq) { box.classList.remove('is-busy'); cardButtons(); }
+      if (card.again && $('ath-card').open) { cardDraw(true); }
     });
+  }
+
+  // move or zoom the Photo card's photo, then redraw
+  function cardNudge(dx, dy, zoom) {
+    var c = card.canvas, p = c && c.photo;
+    if (!p || card.style !== 'photo') { return; }
+    if (zoom) { card.pos = { x: card.pos.x, y: card.pos.y, zoom: Math.min(window.NCANPbCard.ZOOM_MAX, Math.max(1, zoom)) }; }
+    if (dx || dy) { card.pos = window.NCANPbCard.move(card.pos, dx, dy, p.iw, p.ih, p.w, p.h); }
+    $('ath-card-zoom').value = Math.round(card.pos.zoom * 100);
+    cardDraw(true);
+  }
+  function cardAdjustSetUp() {
+    var box = $('ath-card-box'), img = $('ath-card-preview'), drag = null;
+    img.draggable = false;
+    img.addEventListener('pointerdown', function (e) {
+      if (!box.classList.contains('is-adjustable') || !card.canvas || !card.canvas.photo) { return; }
+      e.preventDefault();
+      // card pixels per screen pixel: the card is drawn at its layout size, shown smaller
+      drag = { id: e.pointerId, x: e.clientX, y: e.clientY, k: card.canvas.photo.w / (img.clientWidth || 1) };
+      img.setPointerCapture(e.pointerId);
+      box.classList.add('is-dragging');
+    });
+    img.addEventListener('pointermove', function (e) {
+      if (!drag || e.pointerId !== drag.id) { return; }
+      var dx = (e.clientX - drag.x) * drag.k, dy = (e.clientY - drag.y) * drag.k;
+      drag.x = e.clientX; drag.y = e.clientY;
+      if (dx || dy) { cardNudge(dx, dy); }
+    });
+    var end = function (e) {
+      if (!drag || e.pointerId !== drag.id) { return; }
+      drag = null; box.classList.remove('is-dragging');
+    };
+    img.addEventListener('pointerup', end);
+    img.addEventListener('pointercancel', end);
+    box.addEventListener('keydown', function (e) {
+      if (!box.classList.contains('is-adjustable')) { return; }
+      var step = e.shiftKey ? 60 : 15, k = e.key;
+      var moves = { ArrowLeft: [-step, 0], ArrowRight: [step, 0], ArrowUp: [0, -step], ArrowDown: [0, step] };
+      if (moves[k]) { e.preventDefault(); cardNudge(moves[k][0], moves[k][1]); }
+      else if (k === '+' || k === '=') { e.preventDefault(); cardNudge(0, 0, card.pos.zoom + 0.1); }
+      else if (k === '-' || k === '_') { e.preventDefault(); cardNudge(0, 0, card.pos.zoom - 0.1); }
+    });
+    $('ath-card-zoom').addEventListener('input', function () { cardNudge(0, 0, (+this.value || 100) / 100); });
+    $('ath-card-reset').addEventListener('click', function () { cardPosReset(); cardDraw(true); });
   }
 
   function cardButtons() {
@@ -1401,21 +1472,19 @@
       card.canvas = null;
       if (card.from && document.contains(card.from)) { card.from.focus(); }
     });
-    Array.prototype.forEach.call(d.querySelectorAll('#ath-card-styles input'), function (i) {
-      i.addEventListener('change', function () { if (i.checked) { card.style = i.value; cardPhotoWords(); cardDraw(); } });
-    });
+    $('ath-card-style').addEventListener('change', function () { card.style = this.value; cardPhotoWords(); cardDraw(); });
     $('ath-card-file').addEventListener('change', function () {
       var file = this.files && this.files[0];
       if (!file) { return; }
       if (!/^image\//.test(file.type)) { $('ath-card-photo-said').textContent = 'That isn’t a photo: choose a JPEG, PNG or WebP.'; return; }
       if (card.picked) { URL.revokeObjectURL(card.picked.url); }
       card.picked = { url: URL.createObjectURL(file), focus: null };
-      cardPhotoWords(); cardDraw();
+      cardPosReset(); cardPhotoWords(); cardDraw();
     });
     $('ath-card-use-header').addEventListener('click', function () {
       if (card.picked) { URL.revokeObjectURL(card.picked.url); card.picked = null; }
       $('ath-card-file').value = '';
-      cardPhotoWords(); cardDraw();
+      cardPosReset(); cardPhotoWords(); cardDraw();
     });
     Array.prototype.forEach.call(d.querySelectorAll('#ath-card-shapes input'), function (i) {
       i.addEventListener('change', function () { if (i.checked) { card.shape = i.value; cardDraw(); } });
@@ -1423,6 +1492,7 @@
     $('ath-card-surname').addEventListener('change', function () { card.surname = this.checked; cardDraw(); });
     $('ath-card-ok').addEventListener('change', cardButtons);
     $('ath-card-save').addEventListener('click', cardSave);
+    cardAdjustSetUp();
     $('ath-card-go').addEventListener('click', cardCreate);
     $('ath-card-copy').addEventListener('click', function () { copyText(this, $('ath-card-caption').value, 'Copy caption'); });
     $('ath-card-link-copy').addEventListener('click', function () { copyText(this, card.url, 'Copy link'); });
