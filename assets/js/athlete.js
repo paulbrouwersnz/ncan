@@ -1482,7 +1482,7 @@
     save.textContent = phone && navigator.canShare ? 'Share…' : 'Download';
     save.disabled = card.busy || !card.canvas;
     $('ath-card-go').disabled = card.busy || !card.canvas || !$('ath-card-ok').checked || !shareCan() || usageFull();
-    Array.prototype.forEach.call(document.querySelectorAll('#ath-card-shapes input, #ath-card-surname, #ath-card-ok'), function (i) {
+    Array.prototype.forEach.call(document.querySelectorAll('#ath-card-shape, #ath-card-surname, #ath-card-ok'), function (i) {
       i.disabled = card.busy;
     });
   }
@@ -1578,7 +1578,8 @@
 
   function cardSetUp() {
     var d = $('ath-card');
-    if (!d || !window.NCANPbCard) { return; }
+    if (!d || !window.NCANPbCard || card.ready) { return; }
+    card.ready = true;   // once: reached from either way a page is drawn
     Array.prototype.forEach.call(d.querySelectorAll('[data-card-close]'), function (c) {
       c.addEventListener('click', function () { d.close(); });
     });
@@ -1603,9 +1604,7 @@
       $('ath-card-file').value = '';
       cardPosReset(); cardPhotoWords(); cardDraw();
     });
-    Array.prototype.forEach.call(d.querySelectorAll('#ath-card-shapes input'), function (i) {
-      i.addEventListener('change', function () { if (i.checked) { card.shape = i.value; cardDraw(); } });
-    });
+    $('ath-card-shape').addEventListener('change', function () { card.shape = this.value; cardDraw(); });
     $('ath-card-surname').addEventListener('change', function () { card.surname = this.checked; cardDraw(); });
     $('ath-card-place').addEventListener('change', function () { card.place = this.checked; cardDraw(); });
     $('ath-card-ok').addEventListener('change', cardButtons);
@@ -2430,6 +2429,8 @@
             'results yet. Results appear here a few days after a meeting publishes them.';
         ['track', 'summary', 'progress', 'all-results'].forEach(function (x) { $(x).hidden = true; });
         jump('#track', false);
+        // cross country and road results still have share cards: the card dialog's controls
+        cardSetUp();
         if (offTrack.length) {
           athlete.everything = [];
           renderSources();
