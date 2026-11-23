@@ -71,7 +71,10 @@
   }
   // the share's details as the query the API takes; confirm=1 is the consent tick
   function shareQuery(f) {
-    return ['event', 'from', 'to', 'view', 'name'].map(function (k) {
+    // kind (a card's: 'pb', 'newpb', 'sb' or 'result') only when given
+    return ['event', 'from', 'to', 'view', 'name', 'kind'].filter(function (k) {
+      return k !== 'kind' || f.kind;
+    }).map(function (k) {
       return k + '=' + encodeURIComponent(f[k] || '');
     }).join('&') + '&confirm=1';
   }

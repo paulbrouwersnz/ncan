@@ -300,6 +300,11 @@
                 <input type="checkbox" id="ath-card-surname">
                 <label for="ath-card-surname">Show surname</label>
               </p>
+              <!-- the place on a medal in the card's corner: only for a result with a place -->
+              <p class="ath-check ath-card__surname" id="ath-card-place-row" hidden>
+                <input type="checkbox" id="ath-card-place">
+                <label for="ath-card-place">Show place</label>
+              </p>
             </div>
             <!-- the photo for a Photo card: the header photo, or one picked here (stays on this device) -->
             <div class="ath-card__photo" id="ath-card-photo" hidden>
@@ -333,7 +338,7 @@
                 <input type="checkbox" id="ath-card-ok">
                 <label for="ath-card-ok">I’m allowed to share this athlete’s results publicly.</label>
               </p>
-              <p class="ath-share__note">Anyone with the link will see this card. It never changes, and you can remove it under Shared charts.</p>
+              <p class="ath-share__note">Anyone with the link will see this card. It never changes, and you can remove it under Shared cards and charts.</p>
               <p class="share-usage" data-share-usage hidden></p>
               <div class="ath-share__actions">
                 <button type="button" class="btn btn--ghost btn--sm" id="ath-card-go" disabled>Create public link</button>
@@ -649,11 +654,12 @@
       <div class="wrap">
         <div class="section-head section-head--wide">
           <p class="eyebrow">Shared publicly</p>
-          <h2 id="shares-heading">Shared charts</h2>
+          <h2 id="shares-heading">Shared cards and charts</h2>
           <p class="lede">
-            Charts from this page that have been shared with a public link, newest first, with how
-            often each has been opened. A shared chart is never changed: to show something different,
-            share a new one and remove the old. Removing a chart stops its link working straight away.
+            Charts, result cards and personal best cards from this page that have been shared with a
+            public link, newest first, with how often each has been opened. Once shared, a card or chart
+            never changes: to show something different, share a new one and remove the old. Removing one
+            stops its link working straight away.
           </p>
         </div>
         <p class="share-usage" data-share-usage hidden></p>

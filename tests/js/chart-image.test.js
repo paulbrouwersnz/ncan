@@ -34,6 +34,8 @@ test('a shared image shows the full name, or the first name only', () => {
 test('a share is sent with its details, and the consent tick', () => {
   assert.equal(I.shareQuery({ event: '100m Hurdles - 76.2cm', from: '2024-10-05', to: '2026-11-21', view: 'by-season', name: 'first' }),
     'event=100m%20Hurdles%20-%2076.2cm&from=2024-10-05&to=2026-11-21&view=by-season&name=first&confirm=1');
+  assert.equal(I.shareQuery({ event: '100m', from: '2026-11-21', to: '2026-11-21', view: 'pb-card', name: 'first', kind: 'result' }),
+    'event=100m&from=2026-11-21&to=2026-11-21&view=pb-card&name=first&kind=result&confirm=1');
   assert.equal(I.SHARE_MAX, 4 * 1024 * 1024);
 });
 

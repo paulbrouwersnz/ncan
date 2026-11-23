@@ -43,7 +43,10 @@
   }
   function plural(n, one, many) { return n + ' ' + (n === 1 ? one : many); }
 
-  // "100m · Oct 2024 to Nov 2026 · By season"; a PB card: "100m · 21 Nov 2026 · PB card"
+  // what a card is: only a personal best is a "PB card" (a card from before the API
+  // said what it was of is called one, as it was)
+  var CARDS = { pb: 'PB card', newpb: 'PB card', sb: 'Season’s best card', result: 'Result card' };
+  // "100m · Oct 2024 to Nov 2026 · By season"; a card: "100m · 21 Nov 2026 · PB card"
   function what(s) {
     var out = [s.event || 'Chart'];
     if (s.from && s.to) {
@@ -51,7 +54,7 @@
         : month(s.from) === month(s.to) ? month(s.from)
         : month(s.from) + ' to ' + month(s.to));
     }
-    out.push(s.view === 'pb-card' ? 'PB card' : s.view === 'by-season' ? 'By season' : 'Timeline');
+    out.push(s.view === 'pb-card' ? CARDS[s.kind] || 'PB card' : s.view === 'by-season' ? 'By season' : 'Timeline');
     return out.join(' · ');
   }
 
@@ -107,7 +110,7 @@
     var said = 'You\u2019ve shared ' + today.used + ' of ' + today.max + ' today. This athlete has ' +
       live.used + ' of ' + live.max + ' live shares.';
     if (today.full) { said += ' You can share again tomorrow.'; }
-    else if (live.full) { said += ' Remove one under Shared charts to share another.'; }
+    else if (live.full) { said += ' Remove one under Shared cards and charts to share another.'; }
     return { badges: [today, live], said: said, full: today.full || live.full };
   }
 
@@ -147,7 +150,7 @@
       thumb.rel = 'noopener';
       var img = el('img');
       img.src = s.image;
-      img.alt = 'The shared chart: ' + (s.title || what(s));
+      img.alt = (s.view === 'pb-card' ? 'The shared card: ' : 'The shared chart: ') + (s.title || what(s));
       img.loading = 'lazy';
       img.width = 120;
       img.height = s.width && s.height ? Math.round(120 * s.height / s.width) : 80;
@@ -226,7 +229,7 @@
         });
       } else {
         rm.addEventListener('click', function () {
-          if (!window.confirm('Remove this shared chart? Its link stops working straight away, for everyone ' +
+          if (!window.confirm('Remove this shared ' + (s.view === 'pb-card' ? 'card' : 'chart') + '? Its link stops working straight away, for everyone ' +
                               'it was sent to. This can’t be undone: sharing again makes a new link.')) { return; }
           rm.disabled = true;
           opts.remove(s, said, '').then(null, function () { rm.disabled = false; });
@@ -282,11 +285,12 @@
         var note = [];
         if (r.paused) { note.push('Sharing is paused by the club for now. Links already shared keep working.'); }
         if (limits.live && live >= limits.live) {
-          note.push('This athlete has ' + live + ' shared charts, the most there can be: remove one to share another.');
+          note.push('This athlete has ' + live + ' shared cards and charts, the most there can be: remove one to share another.');
         }
         $('ath-shares-note').textContent = note.join(' ');
         list($('ath-shares-out'), r.shares || [], {
-          empty: 'Nothing shared yet. To share a chart, open it with the enlarge button and choose Share.',
+          empty: 'Nothing shared yet. To share a chart, open it with the enlarge button and choose Share; ' +
+                 'to share a result or personal best as a card, use the share button beside it.',
           remove: function (s, said, why) { return removeShare(s, said, why, load); }
         });
       }, function () { section.hidden = true; });   // not theirs to share (or signed out): nothing shown
