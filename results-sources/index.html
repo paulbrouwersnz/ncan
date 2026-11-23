@@ -147,7 +147,19 @@
                 <label for="add-type">Type</label>
                 <select id="add-type"></select>
               </p>
+              <p class="records-field records-field--grow">
+                <label for="add-location">Location <span class="src-optional">(optional)</span></label>
+                <input type="text" id="add-location" maxlength="80" autocomplete="off" placeholder="e.g. Ngā Puna Wai"
+                       aria-describedby="add-place-help">
+              </p>
+              <p class="records-field records-field--grow">
+                <label for="add-city">City and country <span class="src-optional">(optional)</span></label>
+                <input type="text" id="add-city" maxlength="80" autocomplete="off" placeholder="e.g. Christchurch, New Zealand"
+                       aria-describedby="add-place-help">
+              </p>
               <button type="submit" class="btn btn--accent" id="add-go">Add meeting</button>
+              <p class="src-xlinks__hint" id="add-place-help">Shown on share cards under the meeting name. A trailing
+                &ldquo;, New Zealand&rdquo; is left off the card.</p>
             </div>
             <div class="src-add__help" id="add-name-help">
               <p>Name it in the club&rsquo;s style, so the list reads consistently. The AthleticLIVE tab&rsquo;s
@@ -522,6 +534,7 @@
           var manage = text('div', 'src-manage');
           manage.appendChild(nameForm(m));
           manage.appendChild(typeForm(m));
+          manage.appendChild(placeForm(m));
           manage.appendChild(linksForm(m, showOther));
           manage.appendChild(removeControl(m));
           body.appendChild(manage);
@@ -683,7 +696,8 @@
           if (!checked) { $('add-status').textContent = 'Check the address first.'; return; }
           busy(true);
           $('add-status').textContent = 'Adding…';
-          NCAN.send('/sources', { url: checked.url, name: $('add-name').value, type: $('add-type').value }).then(function (r) {
+          NCAN.send('/sources', { url: checked.url, name: $('add-name').value, type: $('add-type').value,
+                                  location: $('add-location').value, city: $('add-city').value }).then(function (r) {
             if (r.status !== 201) { busy(false); $('add-status').textContent = r.body.error || 'Sorry, that didn’t work.'; return; }
             startCollecting();
             $('add-status').textContent = 'Added “' + r.body.meeting.name + '”. Its results are being collected now: this form unlocks when that’s done.';
@@ -769,6 +783,63 @@
         field.appendChild(label);
         field.appendChild(pick);
         [field, go, said].forEach(function (x) { form.appendChild(x); });
+        return form;
+      }
+
+      // where the meeting was, for share cards: never collected, so saving starts no
+      // collect and shows straight away. Both boxes empty clears it.
+      function placeForm(m) {
+        var form = text('form', 'src-type-form src-place-form');
+        var key = (m.link || '').replace(/\D+/g, '-');
+        var tidy = function (s) { return (s || '').replace(/\s+/g, ' ').trim(); };
+        var now = { location: m.location || '', city: m.city || '' };
+        var fields = [['location', 'Location', 'e.g. Ngā Puna Wai'],
+                      ['city', 'City and country', 'e.g. Christchurch, New Zealand']].map(function (f) {
+          var field = text('p', 'records-field');
+          var label = text('label', null, f[1]);
+          label.htmlFor = 'src-' + f[0] + '-' + key;
+          var box = text('input');
+          box.id = label.htmlFor;
+          box.type = 'text';
+          box.maxLength = 80;
+          box.autocomplete = 'off';
+          box.placeholder = f[2];
+          box.value = now[f[0]];
+          field.appendChild(label);
+          field.appendChild(box);
+          form.appendChild(field);
+          return box;
+        });
+        var go = text('button', 'btn btn--ghost', 'Save');
+        go.type = 'submit';
+        go.disabled = true;
+        var said = text('span', 'src-type-form__said lock-keep');
+        said.setAttribute('role', 'status');
+        if (!now.location && !now.city) { said.textContent = 'Shown on share cards under the meeting name'; }
+        function changed() {
+          return tidy(fields[0].value) !== now.location || tidy(fields[1].value) !== now.city;
+        }
+        fields.forEach(function (box) {
+          box.addEventListener('input', function () { go.disabled = !changed(); said.textContent = ''; });
+        });
+        form.addEventListener('submit', function (e) {
+          e.preventDefault();
+          if (!changed()) { return; }
+          lockMeeting(form, true);
+          said.textContent = 'Saving…';
+          NCAN.send('/sources/place', { url: m.link, location: tidy(fields[0].value), city: tidy(fields[1].value) })
+            .then(function (r) {
+              lockMeeting(form, false);
+              if (r.status !== 200) { said.textContent = r.body.error || 'Sorry, that didn’t work.'; return; }
+              now = { location: r.body.meeting.location || '', city: r.body.meeting.city || '' };
+              m.location = now.location; m.city = now.city;
+              fields[0].value = now.location; fields[1].value = now.city;
+              go.disabled = true;
+              said.textContent = 'Saved';
+            }, function (err) { lockMeeting(form, false); said.textContent = err.message; });
+        });
+        form.appendChild(go);
+        form.appendChild(said);
         return form;
       }
 

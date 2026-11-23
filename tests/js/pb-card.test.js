@@ -227,3 +227,25 @@ test('Show place puts any place on a medal: gold, silver, bronze, then copper', 
   f = PB.facts({ kind: 'result', name: 'Sam', result: Object.assign({}, r, { place: 2 }) });
   assert.equal(f.medal, null);
 });
+
+test('where the meeting was: under the meeting and date, New Zealand left off', () => {
+  assert.equal(PB.whereWords({ location: 'Ngā Puna Wai', city: 'Christchurch, New Zealand' }), 'Ngā Puna Wai · Christchurch');
+  assert.equal(PB.whereWords({ location: 'Olympic Park', city: 'Sydney, Australia' }), 'Olympic Park · Sydney, Australia');
+  assert.equal(PB.whereWords({ city: '  Timaru,  new zealand ' }), 'Timaru');
+  assert.equal(PB.whereWords({ location: 'Foster Park' }), 'Foster Park');
+  assert.equal(PB.whereWords(null), '');
+  assert.equal(PB.facts({ name: 'Sam', result: run() }).where, '');
+  // every style and shape: the line is there and nothing overlaps, with every other line too
+  const full = PB.facts({ name: 'Sam Brown', surname: true, result: run({ place: 1, wind: 1.8 }),
+    prev: run({ value: 14.42, mark: '14.42' }), group: 'U16 women', pbsThisSeason: 3, kind: 'newpb',
+    where: { location: 'Ngā Puna Wai', city: 'Christchurch, New Zealand' } });
+  for (const style of ['podium', 'photo', 'event']) {
+    for (const shape of ['square', 'story']) {
+      const L = PB.layout(full, shape, style, 'blue');
+      const line = L.items.find((i) => i.kind === 'text' && i.words === 'Ngā Puna Wai · Christchurch');
+      assert.ok(line, style + ' ' + shape);
+      assert.ok(line.y < L.h, style + ' ' + shape);
+      assert.deepEqual(PB.overlaps(L), [], style + ' ' + shape);
+    }
+  }
+});
