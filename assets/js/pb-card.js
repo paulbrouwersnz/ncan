@@ -464,16 +464,18 @@
       sky('#4F8FB0', '#D6E8EA');
       fill('#7FB3C4', [[0, hy], [0, hy - H * 0.012], [W * 0.4, hy - H * 0.018], [W, hy - H * 0.01], [W, hy]]);
       c.fillStyle = GRASS; c.fillRect(0, hy, W, H - hy);
-      quad('#8C8F93', -2.6, 2.6, 0, 80);
-      quad('#B9BBBE', -2.6, -2.45, 0, 80); quad('#B9BBBE', 2.45, 2.6, 0, 80);
+      // the camera stands left of the cone line, so the row runs off at an angle and every cone shows
+      var X = 1.4;
+      quad('#8C8F93', X - 2.6, X + 2.6, 0, 80);
+      quad('#B9BBBE', X - 2.6, X - 2.45, 0, 80); quad('#B9BBBE', X + 2.45, X + 2.6, 0, 80);
       // far to near, so nearer cones stand in front; the first sits clear of the words
       for (var cv = 13.6; cv >= 2.4; cv -= 2.8) {
-        var cb = P(0, cv), ch = unit(cv) * 0.8;
+        var cb = P(X, cv), ch = unit(cv) * 0.8;
         fill('#F26B1D', [[cb[0] - ch * 0.18, cb[1]], [cb[0] + ch * 0.18, cb[1]], [cb[0] + ch * 0.03, cb[1] - ch], [cb[0] - ch * 0.03, cb[1] - ch]]);
         c.fillStyle = '#FFFFFF'; c.fillRect(cb[0] - ch * 0.1, cb[1] - ch * 0.6, ch * 0.2, ch * 0.1);
         c.fillRect(cb[0] - ch * 0.07, cb[1] - ch * 0.82, ch * 0.14, ch * 0.08);
       }
-      var tb = P(0, 12.6), tu = unit(12.6);
+      var tb = P(X, 16.4), tu = unit(16.4);
       line('#EEEEEE', Math.max(2, tu * 0.07), [tb, [tb[0], tb[1] - tu * 1.5]]);
       fill('#F2C230', [[tb[0], tb[1] - tu * 1.5], [tb[0] + tu * 0.8, tb[1] - tu * 1.28], [tb[0], tb[1] - tu * 1.05]]);
     } else if (s === 'road') {
