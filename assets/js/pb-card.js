@@ -468,16 +468,14 @@
       var X = 1.4;
       quad('#8C8F93', X - 2.6, X + 2.6, 0, 80);
       quad('#B9BBBE', X - 2.6, X - 2.45, 0, 80); quad('#B9BBBE', X + 2.45, X + 2.6, 0, 80);
-      // far to near, so nearer cones stand in front; the first sits clear of the words
-      for (var cv = 13.6; cv >= 2.4; cv -= 2.8) {
+      // far to near, so nearer cones stand in front; the row runs on towards the horizon and the first
+      // sits clear of the words
+      for (var cv = 2.4 + 2.8 * 24; cv >= 2.4; cv -= 2.8) {
         var cb = P(X, cv), ch = unit(cv) * 0.8;
         fill('#F26B1D', [[cb[0] - ch * 0.18, cb[1]], [cb[0] + ch * 0.18, cb[1]], [cb[0] + ch * 0.03, cb[1] - ch], [cb[0] - ch * 0.03, cb[1] - ch]]);
         c.fillStyle = '#FFFFFF'; c.fillRect(cb[0] - ch * 0.1, cb[1] - ch * 0.6, ch * 0.2, ch * 0.1);
         c.fillRect(cb[0] - ch * 0.07, cb[1] - ch * 0.82, ch * 0.14, ch * 0.08);
       }
-      var tb = P(X, 16.4), tu = unit(16.4);
-      line('#EEEEEE', Math.max(2, tu * 0.07), [tb, [tb[0], tb[1] - tu * 1.5]]);
-      fill('#F2C230', [[tb[0], tb[1] - tu * 1.5], [tb[0] + tu * 0.8, tb[1] - tu * 1.28], [tb[0], tb[1] - tu * 1.05]]);
     } else if (s === 'road') {
       sky('#4F8FB0', '#D6E8EA');
       fill('#6FA9C0', [[0, hy], [W * 0.2, hy - H * 0.05], [W * 0.45, hy - H * 0.02], [W * 0.7, hy - H * 0.07], [W, hy - H * 0.02], [W, hy]]);
