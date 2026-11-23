@@ -1438,6 +1438,49 @@ table.schedule.champs-table { min-width: 0; }
   .ath-zoom__download-words { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 }
 .ath-zoom__close:hover { background: var(--surface-strong); }
+/* sharing the enlarged chart publicly: a smaller dialog over it (assets/js/athlete.js) */
+.ath-share {
+  width: calc(100vw - 32px); max-width: 640px; max-height: calc(100dvh - 32px);
+  padding: 0; border: 0; border-radius: var(--radius);
+  background: var(--surface); color: var(--text); box-shadow: var(--shadow-lg);
+}
+.ath-share[open] { display: flex; flex-direction: column; gap: .75rem; padding: 1rem 1.25rem 1.25rem; overflow: auto; }
+.ath-share::backdrop { background: rgba(6, 28, 22, .55); }
+.ath-share[open] > * { flex: none; }   /* scroll the dialog; never squash the preview */
+.ath-share__head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.ath-share__title { margin: 0; font-family: var(--font-display); font-size: 1.25rem; color: var(--heading); }
+.ath-share__title:focus { outline: none; }
+.ath-share__intro, .ath-share__note { margin: 0; font-size: .92rem; }
+.ath-share__note { color: var(--text-soft); }
+.ath-share__box {
+  position: relative; display: grid; place-items: center; min-height: 180px;
+  background: var(--surface-tint); border: 1px solid var(--line); border-radius: calc(var(--radius) / 2);
+}
+.ath-share__box img { display: block; width: 100%; height: auto; max-height: 48dvh; object-fit: contain; border-radius: inherit; }
+.ath-share__box img[hidden] { display: none; }
+.ath-share__form { display: flex; flex-direction: column; gap: .65rem; }
+.ath-share__form[hidden] { display: none; }
+.ath-share__names { margin: 0; padding: 0; border: 0; display: flex; flex-wrap: wrap; gap: .4rem 1.25rem; }
+.ath-share__names legend { padding: 0; margin-bottom: .35rem; font-weight: 600; color: var(--heading); }
+.ath-share__names label { display: inline-flex; align-items: center; gap: .4rem; min-height: 32px; cursor: pointer; }
+.ath-share__eg { color: var(--text-soft); font-size: .88rem; }
+.ath-share__eg:not(:empty)::before { content: '('; }
+.ath-share__eg:not(:empty)::after { content: ')'; }
+.ath-share__ok { margin: 0; }
+.ath-share__actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: .5rem; }
+.ath-share__label { font-weight: 600; color: var(--heading); }
+.ath-share__link { display: flex; gap: .5rem; }
+.ath-share__link input {
+  flex: 1; min-width: 0; min-height: 44px; padding: 0 .75rem; font: inherit; font-size: .92rem;
+  background: var(--surface); color: var(--text); border: 1px solid var(--line-strong); border-radius: 8px;
+}
+.ath-share__open { margin-right: auto; font-weight: 600; }
+.ath-share__said { margin: 0; min-height: 1.2em; font-size: .9rem; color: var(--text-soft); }
+.ath-share__said:empty { display: none; }
+.btn[disabled] { opacity: .55; cursor: not-allowed; transform: none; box-shadow: none; }
+@media (max-width: 480px) {
+  .ath-share__link { flex-direction: column; }
+}
 .ath-zoom__close:focus-visible, .ath-zoom__chip:focus-visible { outline: 2px solid var(--yellow-500); outline-offset: 2px; }
 .ath-zoom__ranges { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; }
 .ath-zoom__chip {

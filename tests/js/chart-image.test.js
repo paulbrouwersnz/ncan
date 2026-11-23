@@ -23,6 +23,20 @@ test('the dates line shows one date or a range, earliest first', () => {
   assert.equal(I.dateRange(''), '');
 });
 
+test('a shared image shows the full name, or the first name only', () => {
+  assert.equal(I.shownName('Sam Brown', 'full'), 'Sam Brown');
+  assert.equal(I.shownName('  Aroha   Te Whāiti ', 'full'), 'Aroha Te Whāiti');
+  assert.equal(I.shownName('Aroha Te Whāiti', 'first'), 'Aroha');
+  assert.equal(I.shownName('Sam', 'first'), 'Sam');
+  assert.equal(I.shownName('', 'full'), '');
+});
+
+test('a share is sent with its details, and the consent tick', () => {
+  assert.equal(I.shareQuery({ event: '100m Hurdles - 76.2cm', from: '2024-10-05', to: '2026-11-21', view: 'by-season', name: 'first' }),
+    'event=100m%20Hurdles%20-%2076.2cm&from=2024-10-05&to=2026-11-21&view=by-season&name=first&confirm=1');
+  assert.equal(I.SHARE_MAX, 1536 * 1024);
+});
+
 test('the subtitle names the range picked, but not All results', () => {
   assert.equal(I.subtitle('60m', 'All results', '2024-10-12', '2026-03-09'), '60m · 12 Oct 2024 – 9 Mar 2026');
   assert.equal(I.subtitle('60m', 'This season', '2026-10-12', '2026-11-20'), '60m · This season · 12 Oct 2026 – 20 Nov 2026');
