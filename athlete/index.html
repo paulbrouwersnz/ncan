@@ -219,196 +219,6 @@
           </span>
         </p>
         <div class="ath-charts" id="ath-charts"></div>
-
-        <!-- sharing the enlarged chart publicly: opened by its Share button (assets/js/athlete.js) -->
-        <dialog class="ath-share" id="ath-share" aria-labelledby="ath-share-title">
-          <div class="ath-share__head">
-            <h2 class="ath-share__title" id="ath-share-title" tabindex="-1">Share this chart publicly</h2>
-            <button type="button" class="ath-zoom__close" data-share-close aria-label="Close without sharing">
-              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg>
-            </button>
-          </div>
-          <p class="ath-share__intro">Anyone with the link will see this image. The athlete page itself stays private.</p>
-          <div class="ath-share__box" id="ath-share-box"><img id="ath-share-preview" alt="" hidden></div>
-          <div class="ath-share__form" id="ath-share-form">
-            <fieldset class="ath-share__names" id="ath-share-names">
-              <legend>Name on the image</legend>
-              <label><input type="radio" name="ath-share-name" value="full" id="ath-share-name-full" checked> Full name <span class="ath-share__eg" id="ath-share-eg-full"></span></label>
-              <label><input type="radio" name="ath-share-name" value="first" id="ath-share-name-first"> First name only <span class="ath-share__eg" id="ath-share-eg-first"></span></label>
-            </fieldset>
-            <p class="ath-check ath-share__ok">
-              <input type="checkbox" id="ath-share-ok">
-              <label for="ath-share-ok">I’m allowed to share this athlete’s results publicly.</label>
-            </p>
-            <p class="ath-share__note">A shared image never changes. To show something different, share a new chart.</p>
-            <p class="share-usage" data-share-usage hidden></p>
-            <div class="ath-share__actions">
-              <button type="button" class="btn btn--ghost btn--sm" data-share-close>Cancel</button>
-              <button type="button" class="btn btn--accent btn--sm" id="ath-share-go" disabled>Create public link</button>
-            </div>
-          </div>
-          <div class="ath-share__form" id="ath-share-done" hidden>
-            <label class="ath-share__label" for="ath-share-link">Public link</label>
-            <div class="ath-share__link">
-              <input type="text" id="ath-share-link" readonly>
-              <button type="button" class="btn btn--ghost btn--sm" id="ath-share-copy">Copy link</button>
-            </div>
-            <div class="ath-share__actions">
-              <a class="ath-share__open" id="ath-share-open" target="_blank" rel="noopener">Open the share page</a>
-              <button type="button" class="btn btn--ghost btn--sm" id="ath-share-send" hidden>Share…</button>
-              <button type="button" class="btn btn--accent btn--sm" data-share-close>Done</button>
-            </div>
-          </div>
-          <p class="ath-share__said" id="ath-share-said" aria-live="polite"></p>
-        </dialog>
-
-        <!-- a share card: opened by the share icon beside any measured mark (assets/js/athlete.js, pb-card.js) -->
-        <dialog class="ath-share ath-card" id="ath-card" aria-labelledby="ath-card-title">
-          <div class="ath-share__head">
-            <h2 class="ath-share__title" id="ath-card-title" tabindex="-1">Share this personal best</h2>
-            <button type="button" class="ath-zoom__close" data-card-close aria-label="Close">
-              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg>
-            </button>
-          </div>
-          <p class="ath-share__intro">Made on this device: nothing is posted until you share it.</p>
-          <div class="ath-share__box ath-card__box" id="ath-card-box"><img id="ath-card-preview" alt="" hidden></div>
-          <div class="ath-share__form" id="ath-card-form">
-            <div class="ath-card__options">
-              <!-- a dropdown, as more card styles will be added -->
-              <p class="ath-card__style">
-                <label for="ath-card-style">Style</label>
-                <select id="ath-card-style">
-                  <option value="podium" selected>Club colours</option>
-                  <option value="photo">Photo</option>
-                  <option value="event">Event</option>
-                </select>
-              </p>
-              <p class="ath-card__style" id="ath-card-surface-row" hidden>
-                <label for="ath-card-surface">Track</label>
-                <select id="ath-card-surface">
-                  <option value="blue" selected>Blue (Ngā Puna Wai)</option>
-                  <option value="red">Red</option>
-                  <option value="grass">Grass</option>
-                </select>
-              </p>
-              <fieldset class="ath-share__names" id="ath-card-shapes">
-                <legend>Shape</legend>
-                <label><input type="radio" name="ath-card-shape" value="square" checked> Square</label>
-                <label><input type="radio" name="ath-card-shape" value="story"> Story (tall)</label>
-              </fieldset>
-              <p class="ath-check ath-card__surname">
-                <input type="checkbox" id="ath-card-surname">
-                <label for="ath-card-surname">Show surname</label>
-              </p>
-              <!-- the place on a medal in the card's corner: only for a result with a place -->
-              <p class="ath-check ath-card__surname" id="ath-card-place-row" hidden>
-                <input type="checkbox" id="ath-card-place">
-                <label for="ath-card-place">Show place</label>
-              </p>
-            </div>
-            <!-- the photo for a Photo card: the header photo, or one picked here (stays on this device) -->
-            <div class="ath-card__photo" id="ath-card-photo" hidden>
-              <p class="ath-card__photo-said" id="ath-card-photo-said"></p>
-              <label class="btn btn--ghost btn--sm ath-card__pick">
-                <input type="file" id="ath-card-file" accept="image/*" class="visually-hidden">
-                <span id="ath-card-pick-words">Choose a photo</span>
-              </label>
-              <button type="button" class="btn btn--ghost btn--sm" id="ath-card-use-header" hidden>Use the header photo</button>
-              <!-- placing the photo: drag it on the card, arrow keys, or the zoom slider -->
-              <div class="ath-card__adjust" id="ath-card-adjust" hidden>
-                <label class="ath-card__zoom" for="ath-card-zoom">Zoom
-                  <input type="range" id="ath-card-zoom" min="100" max="400" step="5" value="100" aria-describedby="ath-card-adjust-hint">
-                </label>
-                <button type="button" class="btn btn--ghost btn--sm" id="ath-card-reset">Reset</button>
-                <p class="ath-card__photo-said" id="ath-card-adjust-hint">Drag the photo on the card to place it, and check it again after changing the shape. On a keyboard, select the card, then use the arrow keys, and + or − to zoom.</p>
-              </div>
-            </div>
-            <label class="ath-share__label" for="ath-card-caption">Suggested caption</label>
-            <div class="ath-share__link">
-              <input type="text" id="ath-card-caption" readonly>
-              <button type="button" class="btn btn--ghost btn--sm" id="ath-card-copy">Copy caption</button>
-            </div>
-            <div class="ath-share__actions">
-              <button type="button" class="btn btn--ghost btn--sm" data-card-close>Close</button>
-              <button type="button" class="btn btn--accent btn--sm" id="ath-card-save" disabled>Download</button>
-            </div>
-            <div class="ath-card__public" id="ath-card-public" hidden>
-              <p class="ath-share__label">Or make a public link</p>
-              <p class="ath-check ath-share__ok">
-                <input type="checkbox" id="ath-card-ok">
-                <label for="ath-card-ok">I’m allowed to share this athlete’s results publicly.</label>
-              </p>
-              <p class="ath-share__note">Anyone with the link will see this card. It never changes, and you can remove it under Shared cards and charts.</p>
-              <p class="share-usage" data-share-usage hidden></p>
-              <div class="ath-share__actions">
-                <button type="button" class="btn btn--ghost btn--sm" id="ath-card-go" disabled>Create public link</button>
-              </div>
-            </div>
-          </div>
-          <div class="ath-share__form" id="ath-card-done" hidden>
-            <label class="ath-share__label" for="ath-card-link">Public link</label>
-            <div class="ath-share__link">
-              <input type="text" id="ath-card-link" readonly>
-              <button type="button" class="btn btn--ghost btn--sm" id="ath-card-link-copy">Copy link</button>
-            </div>
-            <div class="ath-share__actions">
-              <a class="ath-share__open" id="ath-card-open" target="_blank" rel="noopener">Open the share page</a>
-              <button type="button" class="btn btn--accent btn--sm" data-card-close>Done</button>
-            </div>
-          </div>
-          <p class="ath-share__said" id="ath-card-said" aria-live="polite"></p>
-        </dialog>
-
-        <!-- one chart enlarged: opened by the button on each chart (assets/js/athlete.js) -->
-        <dialog class="ath-zoom" id="ath-zoom" aria-labelledby="ath-zoom-title">
-          <div class="ath-zoom__head">
-            <h2 class="ath-zoom__title" id="ath-zoom-title" tabindex="-1">Chart</h2>
-            <div class="ath-zoom__actions">
-              <label class="visually-hidden" for="ath-zoom-shape">Image shape</label>
-              <select class="ath-zoom__shape" id="ath-zoom-shape" title="Image shape">
-                <option value="auto">Auto</option>
-                <option value="landscape">Landscape 3:2</option>
-                <option value="portrait">Portrait 4:5</option>
-                <option value="square">Square 1:1</option>
-              </select>
-              <button type="button" class="ath-zoom__download ath-zoom__share" id="ath-zoom-share" hidden>
-                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 15V4M8 8l4-4 4 4M5 13v6h14v-6"/></svg>
-                <span class="ath-zoom__download-words">Share</span>
-              </button>
-              <button type="button" class="ath-zoom__download" id="ath-zoom-download" aria-describedby="ath-zoom-said">
-                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 4v11M7 10l5 5 5-5M5 19h14"/></svg>
-                <span class="ath-zoom__download-words">Download</span>
-              </button>
-              <button type="button" class="ath-zoom__close" id="ath-zoom-close" aria-label="Close the enlarged chart">
-                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg>
-              </button>
-            </div>
-            <span class="visually-hidden" id="ath-zoom-said" aria-live="polite"></span>
-          </div>
-          <div class="ath-zoom__ranges" id="ath-zoom-ranges" role="group" aria-label="Dates shown">
-            <button type="button" class="ath-zoom__chip" data-range="all" aria-pressed="true">All results</button>
-            <button type="button" class="ath-zoom__chip" data-range="this" aria-pressed="false">This season</button>
-            <button type="button" class="ath-zoom__chip" data-range="last" aria-pressed="false">Last season</button>
-            <button type="button" class="ath-zoom__chip" data-range="year" aria-pressed="false">Last 12 months</button>
-            <button type="button" class="ath-zoom__chip" data-range="pick" aria-pressed="false">Pick dates</button>
-            <span class="ath-zoom__pick" id="ath-zoom-pick" hidden>
-              <label>From <input type="date" id="ath-zoom-from"></label>
-              <label>To <input type="date" id="ath-zoom-to"></label>
-            </span>
-          </div>
-          <p class="ath-check ath-zoom__hide">
-            <input type="checkbox" id="ath-zoom-hidemonths" aria-describedby="ath-zoom-hidemonths-tip">
-            <label for="ath-zoom-hidemonths">Hide empty months</label>
-            <span class="help-tip">
-              <button type="button" class="help-tip__btn" aria-label="About hiding empty months" aria-expanded="false" aria-controls="ath-zoom-hidemonths-tip">?</button>
-              <span class="help-tip__text" id="ath-zoom-hidemonths-tip" role="tooltip">Hides a month only when no result falls in it in any season: for example, no July result ever. A // on the date axis marks where months were left out. The enlarged chart goes by its own event's results.</span>
-            </span>
-          </p>
-          <div class="ath-zoom__body">
-            <div class="ath-zoom__chart" id="ath-zoom-chart"></div>
-            <aside class="ath-zoom__details" id="ath-zoom-details" aria-live="polite" aria-label="Result details"></aside>
-          </div>
-        </dialog>
       </div>
     </div>
 
@@ -706,6 +516,198 @@
         <div id="manage-membership"></div>
       </div>
     </section>
+
+    <!-- The dialogs sit outside the sections, so they open even when a section is hidden
+         (an athlete with only cross country and road results has no Track & field). -->
+    <!-- sharing the enlarged chart publicly: opened by its Share button (assets/js/athlete.js) -->
+    <dialog class="ath-share" id="ath-share" aria-labelledby="ath-share-title">
+      <div class="ath-share__head">
+        <h2 class="ath-share__title" id="ath-share-title" tabindex="-1">Share this chart publicly</h2>
+        <button type="button" class="ath-zoom__close" data-share-close aria-label="Close without sharing">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+      <p class="ath-share__intro">Anyone with the link will see this image. The athlete page itself stays private.</p>
+      <div class="ath-share__box" id="ath-share-box"><img id="ath-share-preview" alt="" hidden></div>
+      <div class="ath-share__form" id="ath-share-form">
+        <fieldset class="ath-share__names" id="ath-share-names">
+          <legend>Name on the image</legend>
+          <label><input type="radio" name="ath-share-name" value="full" id="ath-share-name-full" checked> Full name <span class="ath-share__eg" id="ath-share-eg-full"></span></label>
+          <label><input type="radio" name="ath-share-name" value="first" id="ath-share-name-first"> First name only <span class="ath-share__eg" id="ath-share-eg-first"></span></label>
+        </fieldset>
+        <p class="ath-check ath-share__ok">
+          <input type="checkbox" id="ath-share-ok">
+          <label for="ath-share-ok">I’m allowed to share this athlete’s results publicly.</label>
+        </p>
+        <p class="ath-share__note">A shared image never changes. To show something different, share a new chart.</p>
+        <p class="share-usage" data-share-usage hidden></p>
+        <div class="ath-share__actions">
+          <button type="button" class="btn btn--ghost btn--sm" data-share-close>Cancel</button>
+          <button type="button" class="btn btn--accent btn--sm" id="ath-share-go" disabled>Create public link</button>
+        </div>
+      </div>
+      <div class="ath-share__form" id="ath-share-done" hidden>
+        <label class="ath-share__label" for="ath-share-link">Public link</label>
+        <div class="ath-share__link">
+          <input type="text" id="ath-share-link" readonly>
+          <button type="button" class="btn btn--ghost btn--sm" id="ath-share-copy">Copy link</button>
+        </div>
+        <div class="ath-share__actions">
+          <a class="ath-share__open" id="ath-share-open" target="_blank" rel="noopener">Open the share page</a>
+          <button type="button" class="btn btn--ghost btn--sm" id="ath-share-send" hidden>Share…</button>
+          <button type="button" class="btn btn--accent btn--sm" data-share-close>Done</button>
+        </div>
+      </div>
+      <p class="ath-share__said" id="ath-share-said" aria-live="polite"></p>
+    </dialog>
+
+    <!-- a share card: opened by the share icon beside any measured mark (assets/js/athlete.js, pb-card.js) -->
+    <dialog class="ath-share ath-card" id="ath-card" aria-labelledby="ath-card-title">
+      <div class="ath-share__head">
+        <h2 class="ath-share__title" id="ath-card-title" tabindex="-1">Share this personal best</h2>
+        <button type="button" class="ath-zoom__close" data-card-close aria-label="Close">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+      <p class="ath-share__intro">Made on this device: nothing is posted until you share it.</p>
+      <div class="ath-share__box ath-card__box" id="ath-card-box"><img id="ath-card-preview" alt="" hidden></div>
+      <div class="ath-share__form" id="ath-card-form">
+        <div class="ath-card__options">
+          <!-- a dropdown, as more card styles will be added -->
+          <p class="ath-card__style">
+            <label for="ath-card-style">Style</label>
+            <select id="ath-card-style">
+              <option value="podium" selected>Club colours</option>
+              <option value="photo">Photo</option>
+              <option value="event">Event</option>
+            </select>
+          </p>
+          <p class="ath-card__style" id="ath-card-surface-row" hidden>
+            <label for="ath-card-surface">Track</label>
+            <select id="ath-card-surface">
+              <option value="blue" selected>Blue (Ngā Puna Wai)</option>
+              <option value="red">Red</option>
+              <option value="grass">Grass</option>
+            </select>
+          </p>
+          <fieldset class="ath-share__names" id="ath-card-shapes">
+            <legend>Shape</legend>
+            <label><input type="radio" name="ath-card-shape" value="square" checked> Square</label>
+            <label><input type="radio" name="ath-card-shape" value="story"> Story (tall)</label>
+          </fieldset>
+          <p class="ath-check ath-card__surname">
+            <input type="checkbox" id="ath-card-surname">
+            <label for="ath-card-surname">Show surname</label>
+          </p>
+          <!-- the place on a medal in the card's corner: only for a result with a place -->
+          <p class="ath-check ath-card__surname" id="ath-card-place-row" hidden>
+            <input type="checkbox" id="ath-card-place">
+            <label for="ath-card-place">Show place</label>
+          </p>
+        </div>
+        <!-- the photo for a Photo card: the header photo, or one picked here (stays on this device) -->
+        <div class="ath-card__photo" id="ath-card-photo" hidden>
+          <p class="ath-card__photo-said" id="ath-card-photo-said"></p>
+          <label class="btn btn--ghost btn--sm ath-card__pick">
+            <input type="file" id="ath-card-file" accept="image/*" class="visually-hidden">
+            <span id="ath-card-pick-words">Choose a photo</span>
+          </label>
+          <button type="button" class="btn btn--ghost btn--sm" id="ath-card-use-header" hidden>Use the header photo</button>
+          <!-- placing the photo: drag it on the card, arrow keys, or the zoom slider -->
+          <div class="ath-card__adjust" id="ath-card-adjust" hidden>
+            <label class="ath-card__zoom" for="ath-card-zoom">Zoom
+              <input type="range" id="ath-card-zoom" min="100" max="400" step="5" value="100" aria-describedby="ath-card-adjust-hint">
+            </label>
+            <button type="button" class="btn btn--ghost btn--sm" id="ath-card-reset">Reset</button>
+            <p class="ath-card__photo-said" id="ath-card-adjust-hint">Drag the photo on the card to place it, and check it again after changing the shape. On a keyboard, select the card, then use the arrow keys, and + or − to zoom.</p>
+          </div>
+        </div>
+        <label class="ath-share__label" for="ath-card-caption">Suggested caption</label>
+        <div class="ath-share__link">
+          <input type="text" id="ath-card-caption" readonly>
+          <button type="button" class="btn btn--ghost btn--sm" id="ath-card-copy">Copy caption</button>
+        </div>
+        <div class="ath-share__actions">
+          <button type="button" class="btn btn--ghost btn--sm" data-card-close>Close</button>
+          <button type="button" class="btn btn--accent btn--sm" id="ath-card-save" disabled>Download</button>
+        </div>
+        <div class="ath-card__public" id="ath-card-public" hidden>
+          <p class="ath-share__label">Or make a public link</p>
+          <p class="ath-check ath-share__ok">
+            <input type="checkbox" id="ath-card-ok">
+            <label for="ath-card-ok">I’m allowed to share this athlete’s results publicly.</label>
+          </p>
+          <p class="ath-share__note">Anyone with the link will see this card. It never changes, and you can remove it under Shared cards and charts.</p>
+          <p class="share-usage" data-share-usage hidden></p>
+          <div class="ath-share__actions">
+            <button type="button" class="btn btn--ghost btn--sm" id="ath-card-go" disabled>Create public link</button>
+          </div>
+        </div>
+      </div>
+      <div class="ath-share__form" id="ath-card-done" hidden>
+        <label class="ath-share__label" for="ath-card-link">Public link</label>
+        <div class="ath-share__link">
+          <input type="text" id="ath-card-link" readonly>
+          <button type="button" class="btn btn--ghost btn--sm" id="ath-card-link-copy">Copy link</button>
+        </div>
+        <div class="ath-share__actions">
+          <a class="ath-share__open" id="ath-card-open" target="_blank" rel="noopener">Open the share page</a>
+          <button type="button" class="btn btn--accent btn--sm" data-card-close>Done</button>
+        </div>
+      </div>
+      <p class="ath-share__said" id="ath-card-said" aria-live="polite"></p>
+    </dialog>
+
+    <!-- one chart enlarged: opened by the button on each chart (assets/js/athlete.js) -->
+    <dialog class="ath-zoom" id="ath-zoom" aria-labelledby="ath-zoom-title">
+      <div class="ath-zoom__head">
+        <h2 class="ath-zoom__title" id="ath-zoom-title" tabindex="-1">Chart</h2>
+        <div class="ath-zoom__actions">
+          <label class="visually-hidden" for="ath-zoom-shape">Image shape</label>
+          <select class="ath-zoom__shape" id="ath-zoom-shape" title="Image shape">
+            <option value="auto">Auto</option>
+            <option value="landscape">Landscape 3:2</option>
+            <option value="portrait">Portrait 4:5</option>
+            <option value="square">Square 1:1</option>
+          </select>
+          <button type="button" class="ath-zoom__download ath-zoom__share" id="ath-zoom-share" hidden>
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 15V4M8 8l4-4 4 4M5 13v6h14v-6"/></svg>
+            <span class="ath-zoom__download-words">Share</span>
+          </button>
+          <button type="button" class="ath-zoom__download" id="ath-zoom-download" aria-describedby="ath-zoom-said">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 4v11M7 10l5 5 5-5M5 19h14"/></svg>
+            <span class="ath-zoom__download-words">Download</span>
+          </button>
+          <button type="button" class="ath-zoom__close" id="ath-zoom-close" aria-label="Close the enlarged chart">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg>
+          </button>
+        </div>
+        <span class="visually-hidden" id="ath-zoom-said" aria-live="polite"></span>
+      </div>
+      <div class="ath-zoom__ranges" id="ath-zoom-ranges" role="group" aria-label="Dates shown">
+        <button type="button" class="ath-zoom__chip" data-range="all" aria-pressed="true">All results</button>
+        <button type="button" class="ath-zoom__chip" data-range="this" aria-pressed="false">This season</button>
+        <button type="button" class="ath-zoom__chip" data-range="last" aria-pressed="false">Last season</button>
+        <button type="button" class="ath-zoom__chip" data-range="year" aria-pressed="false">Last 12 months</button>
+        <button type="button" class="ath-zoom__chip" data-range="pick" aria-pressed="false">Pick dates</button>
+        <span class="ath-zoom__pick" id="ath-zoom-pick" hidden>
+          <label>From <input type="date" id="ath-zoom-from"></label>
+          <label>To <input type="date" id="ath-zoom-to"></label>
+        </span>
+      </div>
+      <p class="ath-check ath-zoom__hide">
+        <input type="checkbox" id="ath-zoom-hidemonths" aria-describedby="ath-zoom-hidemonths-tip">
+        <label for="ath-zoom-hidemonths">Hide empty months</label>
+        <span class="help-tip">
+          <button type="button" class="help-tip__btn" aria-label="About hiding empty months" aria-expanded="false" aria-controls="ath-zoom-hidemonths-tip">?</button>
+          <span class="help-tip__text" id="ath-zoom-hidemonths-tip" role="tooltip">Hides a month only when no result falls in it in any season: for example, no July result ever. A // on the date axis marks where months were left out. The enlarged chart goes by its own event's results.</span>
+        </span>
+      </p>
+      <div class="ath-zoom__body">
+        <div class="ath-zoom__chart" id="ath-zoom-chart"></div>
+        <aside class="ath-zoom__details" id="ath-zoom-details" aria-live="polite" aria-label="Result details"></aside>
+      </div>
+    </dialog>
   </main>
 
   <!-- @partial:footer -->
