@@ -97,7 +97,21 @@
     });
   }
 
-  var helpers = { day: day, month: month, what: what, views: views, made: made, removed: removed, pick: pick };
+  /* How much of the share limits is used (the API's usage: {today, per_day, live,
+     live_max}): two badges, "Today 1 / 20" and "Live 15 / 100", a sentence for
+     screen readers, and whether either limit is reached. null without usage. */
+  function usage(u) {
+    if (!u || !u.per_day || !u.live_max) { return null; }
+    var today = { label: 'Today', used: u.today || 0, max: u.per_day }, live = { label: 'Live', used: u.live || 0, max: u.live_max };
+    today.full = today.used >= today.max; live.full = live.used >= live.max;
+    var said = 'You\u2019ve shared ' + today.used + ' of ' + today.max + ' today. This athlete has ' +
+      live.used + ' of ' + live.max + ' live shares.';
+    if (today.full) { said += ' You can share again tomorrow.'; }
+    else if (live.full) { said += ' Remove one under Shared charts to share another.'; }
+    return { badges: [today, live], said: said, full: today.full || live.full };
+  }
+
+  var helpers = { day: day, month: month, what: what, views: views, made: made, removed: removed, pick: pick, usage: usage };
   if (typeof document === 'undefined') { return helpers; }
 
   /* The page ------------------------------------------------------------------ */
@@ -259,6 +273,11 @@
       return NCAN.get('/athletes/' + encodeURIComponent(slug) + '/shares').then(function (r) {
         section.hidden = false;
         var live = (r.shares || []).filter(function (s) { return !s.removed; }).length;
+        // the usage badges (athlete.js draws them, beside Share too)
+        if (r.usage && window.NCAN && NCAN.athlete) {
+          NCAN.athlete.share_usage = r.usage;
+          document.dispatchEvent(new CustomEvent('ncan:share-usage', { detail: r.usage }));
+        }
         var limits = r.limits || {};
         var note = [];
         if (r.paused) { note.push('Sharing is paused by the club for now. Links already shared keep working.'); }
