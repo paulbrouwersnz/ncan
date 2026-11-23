@@ -1452,7 +1452,9 @@ table.schedule.champs-table { min-width: 0; }
   padding: 0; border: 0; border-radius: var(--radius);
   background: var(--surface); color: var(--text); box-shadow: var(--shadow-lg);
 }
-.ath-share[open] { display: flex; flex-direction: column; gap: .75rem; padding: 1rem 1.25rem 1.25rem; overflow: auto; }
+/* clip-path rounds the right-hand corners too: the dialog's scrollbar is otherwise drawn square over them */
+.ath-share[open] { display: flex; flex-direction: column; gap: .75rem; padding: 1rem 1.25rem 1.25rem; overflow: auto;
+                   clip-path: inset(0 round var(--radius)); }
 .ath-share::backdrop { background: rgba(6, 28, 22, .55); }
 .ath-share[open] > * { flex: none; }   /* scroll the dialog; never squash the preview */
 .ath-share__head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
