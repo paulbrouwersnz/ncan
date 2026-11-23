@@ -930,9 +930,9 @@ scene of the event drawn on the card (`sceneFor()` picks it from the event name)
 sprints under 400m, a lane in perspective to the finish line; 400m and longer and
 track walks, the whole track from overhead; hurdles; steeplechase, the water jump seen from the infield, runners coming from the right over the barrier into the deep end;
 long and triple jump (three take-off lines), the runway to the sand pit; high jump,
-the mat, stands and bar; pole vault, the pit with its white centre, front pads and the V
+the mat where the fan meets the grass, uprights just in front and the bar a little above its leading edge; pole vault, the pit with its white centre, front pads and the V
 down to the box, tall standards and the bar high above; shot, discus, hammer and javelin, the
-implement in its sector; cross country, grass hills with bright pink round-marker gates either side of the course line; trail and mountain runs, a dirt trail winding
+implement in its sector (a silver-rimmed orange discus, a hammer with a slack wire, a javelin stuck point first); cross country, grass hills with bright pink round-marker gates either side of the course line; trail and mountain runs, a dirt trail winding
 up through bush-covered hills; road runs, a road with a kilometre marker; road walks, a wide flat path round a circuit, cones down the middle to a turn post. **Track** picks Blue (Ngā
 Puna Wai, the default), Red or Grass, shown only when the scene has a track. Cross
 country, road and relay results (the out-of-stadia table) have a share icon by their

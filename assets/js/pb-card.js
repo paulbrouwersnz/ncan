@@ -395,19 +395,25 @@
       });
       line('#F2D33A', 4, [[X(0.235), Y(0.13)], [X(0.765), Y(0.13)]]);                                   // the bar
     } else if (s === 'high') {
+      // the mat sits where the surfaced fan meets the grass, the uprights just in front of it,
+      // the bar a little above the mat's leading edge
       stadium();
-      quad(S.track, -3, 3, 0, 4);
-      var top = H * 0.31, mx0 = W * 0.2, mx1 = W * 0.8, my = H * 0.42, mh = H * 0.09;
-      fill('#2F5FA8', [[mx0 + W * 0.04, my - mh * 0.45], [mx1 - W * 0.04, my - mh * 0.45], [mx1, my], [mx0, my]]);   // the mat's top
-      c.fillStyle = '#1B3F7A'; c.fillRect(mx0, my, mx1 - mx0, mh);
-      c.fillStyle = 'rgba(255,255,255,.7)'; c.fillRect(mx0, my + mh * 0.15, mx1 - mx0, 2);
-      [W * 0.17, W * 0.83].forEach(function (x) {
-        line('#D8D8D8', 4, [[x, my + mh * 0.6], [x, top - H * 0.04]]);
-        c.fillStyle = '#333333'; c.fillRect(x - 14, my + mh * 0.6, 28, 5);
+      var lift = function (u, v, h) { var p = P(u, v); return [p[0], p[1] - unit(v) * h]; };
+      var MF = 3, MB = 5.6, MU = 2, MH = 0.42;
+      quad(S.track, -8, 8, 0, MF + 0.5);                                        // the fan, ending under the mat
+      fill('#1B3F7A', [P(-MU, MF), P(MU, MF), lift(MU, MF, MH), lift(-MU, MF, MH)]);            // the mat's front
+      fill('#2F5FA8', [lift(-MU, MF, MH), lift(MU, MF, MH), lift(MU, MB, MH), lift(-MU, MB, MH)]);  // its top
+      line('rgba(255,255,255,.75)', 2, [lift(-MU, MF, MH * 0.7), lift(MU, MF, MH * 0.7)]);
+      var bar = MH + 0.14, ux = MU + 0.15, uv = MF - 0.12;
+      [-ux, ux].forEach(function (u) {
+        var foot = P(u, uv), w = unit(uv) * 0.16;
+        c.fillStyle = '#333333'; c.fillRect(foot[0] - w, foot[1] - 3, w * 2, 6);
+        line('#D8D8D8', Math.max(3, unit(uv) * 0.035), [foot, lift(u, uv, bar + 0.3)]);
       });
+      var b0 = lift(-ux, uv, bar), b1 = lift(ux, uv, bar), bt = Math.max(4, unit(uv) * 0.035);
       for (var b = 0; b < 8; b++) {
         c.fillStyle = b % 2 ? '#FFFFFF' : '#E0393E';
-        c.fillRect(W * 0.17 + (W * 0.66) * b / 8, top, W * 0.66 / 8 + 0.5, 5);
+        c.fillRect(b0[0] + (b1[0] - b0[0]) * b / 8, b0[1] - bt / 2, (b1[0] - b0[0]) / 8 + 0.5, bt);
       }
     } else if (s === 'shot' || s === 'discus' || s === 'hammer' || s === 'javelin') {
       field();
@@ -428,23 +434,49 @@
         }
       }
       var ix = W * 0.55, iy = H * 0.42;
-      c.fillStyle = 'rgba(0,0,0,.25)'; c.beginPath(); c.ellipse(ix + 6, iy + 10, W * 0.04, W * 0.015, 0, 0, Math.PI * 2); c.fill();
-      if (s === 'shot') { dot('#55585C', ix, iy, W * 0.032); dot('rgba(255,255,255,.45)', ix - W * 0.01, iy - W * 0.012, W * 0.009); }
+      var shadow = function (x, y, rx, ry) { c.fillStyle = 'rgba(0,0,0,.25)'; c.beginPath(); c.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2); c.fill(); };
+      if (s === 'shot') {
+        shadow(ix + 6, iy + 10, W * 0.04, W * 0.015);
+        dot('#55585C', ix, iy, W * 0.032); dot('rgba(255,255,255,.45)', ix - W * 0.01, iy - W * 0.012, W * 0.009);
+      }
       if (s === 'discus') {
-        c.fillStyle = '#2B2B2B'; c.beginPath(); c.ellipse(ix, iy, W * 0.05, W * 0.02, -0.3, 0, Math.PI * 2); c.fill();
-        c.fillStyle = '#C9C9C9'; c.beginPath(); c.ellipse(ix, iy, W * 0.018, W * 0.007, -0.3, 0, Math.PI * 2); c.fill();
+        // lying flat and tilted: a silver rim with its thickness showing, coloured side plates, a silver hub
+        var dr = W * 0.055, ds = 0.42, dt = W * 0.012, ell = function (col, x, y, rx, ry) { c.fillStyle = col; c.beginPath(); c.ellipse(x, y, rx, ry, -0.25, 0, Math.PI * 2); c.fill(); };
+        shadow(ix + 8, iy + dt + 8, dr * 1.05, dr * ds);
+        ell('#7E858C', ix, iy + dt, dr, dr * ds);                  // the rim's edge
+        ell('#D7DBDF', ix, iy, dr, dr * ds);                       // the rim
+        ell('#E2702A', ix, iy, dr * 0.8, dr * ds * 0.8);           // the side plate
+        ell('rgba(255,255,255,.28)', ix - dr * 0.18, iy - dr * ds * 0.25, dr * 0.45, dr * ds * 0.3);   // the shine
+        ell('#C2C7CC', ix, iy, dr * 0.3, dr * ds * 0.3);           // the hub
+        ell('#EEF0F2', ix - dr * 0.06, iy - dr * ds * 0.06, dr * 0.14, dr * ds * 0.14);
       }
       if (s === 'hammer') {
-        line('#DDDDDD', 1.5, [[ix, iy], [ix - W * 0.14, iy + H * 0.08]]);
-        line('#DDDDDD', 3, [[ix - W * 0.16, iy + H * 0.07], [ix - W * 0.13, iy + H * 0.1]]);
+        // the ball, a slack wire lying in a curve on the grass, and the triangular handle
+        var hb = [ix, iy], hh = [ix - W * 0.16, iy + W * 0.1], hc = [ix - W * 0.02, iy + W * 0.13];
+        var qb = function (t, k) { var u = 1 - t; return u * u * hb[k] + 2 * u * t * hc[k] + t * t * hh[k]; };
+        shadow(ix + 6, iy + 10, W * 0.036, W * 0.014);
+        c.strokeStyle = '#D6D6D6'; c.lineWidth = 2; c.beginPath(); c.moveTo(hb[0], hb[1]);
+        c.quadraticCurveTo(hc[0], hc[1], hh[0], hh[1]); c.stroke();
+        for (var t = 0.08; t < 0.96; t += 0.07) {                // links along the wire
+          var lx = qb(t, 0), ly = qb(t, 1), ang = Math.atan2(qb(t + 0.01, 1) - ly, qb(t + 0.01, 0) - lx);
+          c.save(); c.translate(lx, ly); c.rotate(ang); c.strokeStyle = '#EDEDED'; c.lineWidth = 1.5;
+          c.beginPath(); c.ellipse(0, 0, W * 0.009, W * 0.004, 0, 0, Math.PI * 2); c.stroke(); c.restore();
+        }
+        var ha = Math.atan2(hh[1] - hc[1], hh[0] - hc[0]), hl = W * 0.035;
+        c.strokeStyle = '#EDEDED'; c.lineWidth = 3; c.beginPath(); c.moveTo(hh[0], hh[1]);
+        c.lineTo(hh[0] + Math.cos(ha - 0.5) * hl, hh[1] + Math.sin(ha - 0.5) * hl);
+        c.lineTo(hh[0] + Math.cos(ha + 0.5) * hl, hh[1] + Math.sin(ha + 0.5) * hl); c.closePath(); c.stroke();
         dot('#55585C', ix, iy, W * 0.028); dot('rgba(255,255,255,.45)', ix - W * 0.008, iy - W * 0.01, W * 0.008);
       }
       if (s === 'javelin') {
-        var j0 = [W * 0.3, H * 0.52], j1 = [W * 0.72, H * 0.3];
-        var at = function (t) { return [j0[0] + (j1[0] - j0[0]) * t, j0[1] + (j1[1] - j0[1]) * t]; };
-        line('#F2F2F2', 4, [j0, j1]);
-        line('#1A1A1A', 4, [at(0.92), j1]);
-        line('#7A4A2A', 6, [at(0.45), at(0.55)]);
+        // stuck point first into the grass inside the sector, the tail up in the air towards the thrower
+        var jg = [W * 0.52, H * 0.44], jt = [W * 0.42, H * 0.2];
+        var at = function (t) { return [jg[0] + (jt[0] - jg[0]) * t, jg[1] + (jt[1] - jg[1]) * t]; };
+        line('rgba(0,0,0,.25)', 4, [jg, [jg[0] + W * 0.2, jg[1] + H * 0.05]]);   // its shadow on the grass
+        c.fillStyle = '#6B4A2A'; c.beginPath(); c.ellipse(jg[0], jg[1], W * 0.018, W * 0.006, 0, 0, Math.PI * 2); c.fill();   // the divot
+        line('#F2F2F2', 4, [at(0.04), jt]);
+        line('#1A1A1A', 4, [jg, at(0.1)]);                         // the metal head, half buried
+        line('#7A4A2A', 6, [at(0.45), at(0.57)]);                  // the grip
       }
     } else if (s === 'xc') {
       sky('#5E9CB8', '#CFE6E8');
