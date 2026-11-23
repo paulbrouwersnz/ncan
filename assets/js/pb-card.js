@@ -560,7 +560,23 @@
       c.fillStyle = GRASS; c.fillRect(0, hy, W, H - hy);
       quad('#4A4F55', -1.25, 1.25, 0, 80);
       quad('#FFFFFF', -1.17, -1.13, 0, 80); quad('#FFFFFF', 1.13, 1.17, 0, 80);
-      for (var v = 0; v < 30; v += 1.2) { quad('#FFFFFF', -0.03, 0.03, v, v + 0.55); }
+      for (var v = 0; v < 3.4; v += 1.2) { quad('#FFFFFF', -0.03, 0.03, v, v + 0.55); }
+      // the finish: a chequered line across the road under a gantry
+      var fv = 3.6, fd = 0.24;
+      quad('#FFFFFF', -1.25, 1.25, fv, fv + fd);
+      for (var q = 0; q < 20; q++) {
+        var qu = -1.25 + q * 0.125;
+        quad('#1A1A1A', qu, qu + 0.125, fv + (q % 2 ? 0 : fd / 2), fv + (q % 2 ? fd / 2 : fd));
+      }
+      var gl = P(-1.45, fv + fd / 2), gr = P(1.45, fv + fd / 2), gu = unit(fv + fd / 2);
+      var gh = gu * 1.5, bh = gu * 0.4, lw = Math.max(3, gu * 0.09);
+      c.fillStyle = '#E8E8E8';
+      c.fillRect(gl[0] - lw / 2, gl[1] - gh, lw, gh); c.fillRect(gr[0] - lw / 2, gr[1] - gh, lw, gh);
+      var bx = gl[0] - lw / 2, bw = gr[0] - gl[0] + lw, by = gl[1] - gh - bh * 0.15;
+      c.fillStyle = '#0B3B2E'; c.fillRect(bx, by, bw, bh);
+      c.fillStyle = COLOURS.gold; c.fillRect(bx, by, bw, Math.max(2, bh * 0.1)); c.fillRect(bx, by + bh * 0.9, bw, Math.max(2, bh * 0.1));
+      c.fillStyle = '#FFFFFF'; c.textAlign = 'center'; c.font = '800 ' + Math.round(bh * 0.55) + 'px sans-serif';
+      c.fillText('FINISH', bx + bw / 2, by + bh * 0.7, bw - 8);
       // the kilometre marker
       var km = (/(\d+(?:\.\d+)?)\s*km/i.exec(i.event || '') || [])[1], base = P(1.8, 1.4), u = unit(1.4);
       line('#DDDDDD', Math.max(2, u * 0.04), [base, [base[0], base[1] - u * 0.6]]);
