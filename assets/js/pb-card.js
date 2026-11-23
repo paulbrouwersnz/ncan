@@ -106,8 +106,8 @@
   function facts(a) {
     var r = a.result || {}, kind = kindOf(a), place = r.relay ? '' : placeWord(r.place);
     var newpb = kind === 'newpb';
-    // showPlace: the place on a medal in the corner, any place (a relay's isn't one person's)
-    var medal = a.showPlace && !r.relay ? medalFor(r.place) : null;
+    // showPlace: the place on a medal in the corner, any place (a relay's: the team's place)
+    var medal = a.showPlace ? medalFor(r.place) : null;
     if (medal) { place = ''; }     // said on the medal, so not in the words too
     return {
       kind: kind,

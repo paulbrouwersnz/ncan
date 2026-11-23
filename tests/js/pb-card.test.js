@@ -220,7 +220,10 @@ test('Show place puts any place on a medal: gold, silver, bronze, then copper', 
   const m = L.items.find(i => i.kind === 'medal');
   assert.equal(m.metal, 'gold');
   assert.ok(m.cx + m.r <= L.w - 30);
-  // a relay's place is the team's: no medal
-  f = PB.facts({ kind: 'result', name: 'Sam', result: Object.assign({}, r, { relay: { team_mark: '50.1' } }), showPlace: true });
+  // a relay's place is the team's, and goes on the medal too
+  f = PB.facts({ kind: 'result', name: 'Sam', result: Object.assign({}, r, { place: 2, relay: { team_mark: '50.1' } }), showPlace: true });
+  assert.deepEqual(f.medal, { words: '2nd', metal: 'silver' });
+  // and without Show place, no medal
+  f = PB.facts({ kind: 'result', name: 'Sam', result: Object.assign({}, r, { place: 2 }) });
   assert.equal(f.medal, null);
 });

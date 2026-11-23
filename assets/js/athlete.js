@@ -1381,8 +1381,8 @@
       sb: 'Share this season best' }[card.kind] || 'Share this result';
     card.surname = window.NCANPbCard.surnameByDefault(r);
     $('ath-card-surname').checked = card.surname;
-    // the place on a medal: offered for any individual place, on at first for 1st to 3rd
-    var placed = r.place >= 1 && !r.relay;
+    // the place on a medal: offered for any place (a relay's is the team's), on at first for 1st to 3rd
+    var placed = r.place >= 1;
     card.place = placed && r.place <= 3;
     $('ath-card-place-row').hidden = !placed;
     $('ath-card-place').checked = card.place;
