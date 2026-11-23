@@ -1292,18 +1292,25 @@
   var card = { r: null, kind: 'pb', style: 'podium', surface: 'blue', oos: null, photo: null, picked: null, pos: { x: 50, y: 50, zoom: 1 },
                drawing: false, again: false, shape: 'square', surname: false, canvas: null, seq: 0, busy: false, from: null, url: '' };
 
+  // where the result's meeting was ({location, city}), from the page's meeting_places
+  function cardWhere(r) {
+    var n = window.NCANMeetingLinks ? NCANMeetingLinks.meetNumber(r && r.source) : null;
+    var all = (NCAN.athlete && NCAN.athlete.meeting_places) || {};
+    return (n && all[String(n)]) || null;
+  }
+
   function cardFacts() {
     var r = card.r;
     // cross country, road and relay legs: no PBs (courses differ), their own race name and grade
     if (card.oos) {
       return window.NCANPbCard.facts({ kind: 'result', name: NCAN.athlete && NCAN.athlete.name, surname: card.surname, result: r,
-        showPlace: card.place,
+        showPlace: card.place, where: cardWhere(r),
         mark: r.mark, event: card.oos.event, group: r.oos_grade || '' });
     }
     var prev = pbBefore(r);
     return window.NCANPbCard.facts({ kind: card.kind, name: NCAN.athlete && NCAN.athlete.name, surname: card.surname, showPlace: card.place, result: r, prev: prev,
       mark: markText(r), prevMark: prev ? markText(prev) : '', event: eventLabel(r), group: groupOf(r),
-      pbsThisSeason: pbsInSeason(r) });
+      pbsThisSeason: pbsInSeason(r), where: cardWhere(r) });
   }
 
   /* The Photo card's photo: one picked on this device for this card, else the athlete's

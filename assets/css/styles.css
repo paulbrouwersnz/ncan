@@ -4140,6 +4140,11 @@ html:has(.plan-editor:not([hidden])) { scroll-padding-bottom: 5rem; }
 .src-type-form .records-field { flex: 0 1 15rem; }
 .src-name-form .records-field { flex: 1 1 22rem; }
 .src-name-form input { width: 100%; }
+/* where a meeting was (for share cards): two boxes side by side, full width on a phone */
+.src-place-form .records-field { flex: 1 1 15rem; min-width: 0; }
+.src-place-form input, .src-add__fields input[id^="add-"] { width: 100%; }
+.src-add__fields #add-place-help { flex: 1 1 100%; margin: 0; }
+.src-optional { font-weight: 400; color: var(--text-soft); }
 .src-type-form__said { flex-basis: 100%; font-size: .9rem; color: var(--text-soft); }
 .src-type-form__said:empty { display: none; }
 /* an administrator's "Other links" for a meeting: label, address and Remove on a line */

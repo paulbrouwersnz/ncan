@@ -103,6 +103,14 @@
     if (kind === 'sb') { return 'SEASON BEST'; }
     return place ? place.toUpperCase() + ' PLACE' : 'RESULT';
   }
+  // where the meeting was, as the card says it: "Ngā Puna Wai · Christchurch". A
+  // trailing ", New Zealand" is left off, so only overseas meetings name a country.
+  function whereWords(w) {
+    w = w || {};
+    var tidy = function (s) { return String(s || '').replace(/\s+/g, ' ').trim(); };
+    var city = tidy(w.city).replace(/,\s*new zealand$/i, '');
+    return [tidy(w.location), city].filter(Boolean).join(' · ');
+  }
   function facts(a) {
     var r = a.result || {}, kind = kindOf(a), place = r.relay ? '' : placeWord(r.place);
     var newpb = kind === 'newpb';
@@ -120,6 +128,7 @@
       better: newpb ? improvement(r, a.prev) : '',
       was: newpb ? (a.prevMark || a.prev.mark || '') : '',
       meeting: r.meeting || '',
+      where: whereWords(a.where),
       date: day(r.date),
       iso: r.date || '',
       // a podium place already in the headline isn't said twice
@@ -173,9 +182,9 @@
     // where things go: [square, story]
     var P = story
       ? { head: 84, headSize: 22, name: 140, nameSize: 44, group: 174, band: [260, 340], event: 330, eventSize: 32,
-          mark: 470, markSize: 130, rib: [500, 230, 54, 28], lines: 664, step: 36, sizes: [20, 22, 24, 20, 20] }
+          mark: 470, markSize: 130, rib: [500, 230, 54, 28], lines: 664, step: 36, sizes: [20, 22, 24, 20, 18, 20] }
       : { head: 70, headSize: 18, name: 106, nameSize: 32, group: 130, band: [148, 172], event: 182, eventSize: 24,
-          mark: 264, markSize: 86, rib: [278, 180, 36, 20], lines: 348, step: 22, sizes: [15, 16, 17, 15, 15] };
+          mark: 264, markSize: 86, rib: [278, 180, 36, 20], lines: 348, step: 22, sizes: [15, 16, 17, 15, 14, 15] };
     items.push({ kind: 'rect', x: 0, y: P.band[0], w: W, h: P.band[1], colour: COLOURS.bg2 });
     var md = f.medal ? medalItem(f.medal, W, pad, story) : null, narrow = W - 2 * pad - (md ? 2 * md.r + 16 : 0);
     t(f.headline || 'PERSONAL BEST', pad, P.head, P.headSize, { weight: 800, font: 'display', colour: COLOURS.gold, spacing: 2, max: narrow });
@@ -192,15 +201,18 @@
       t('PB ' + f.better, W / 2, ry + rh * 0.7, P.rib[3], { weight: 800, font: 'display', colour: COLOURS.ink, align: 'center' });
     }
 
-    var y = P.lines, n = 0;
+    // six lines at most: closer together on a square when all six are there, clear of the crest
+    var y = P.lines, n = 0, step = P.step;
+    if (!story && [f.was, f.place || f.wind, f.meeting, f.date, f.where, f.season].filter(Boolean).length > 5) { step = 19; }
     var line = function (words, o) {
       var size = P.sizes[n++];
-      if (words) { t(words, W / 2, y, size, o); y += P.step; }
+      if (words) { t(words, W / 2, y, size, o); y += step; }
     };
     line(f.was ? 'Previous best ' + f.was : '', { colour: COLOURS.soft, align: 'center' });
     line([f.place, f.wind].filter(Boolean).join(' · '), { weight: 600, align: 'center' });
     line(f.meeting, { weight: 600, align: 'center' });
     line(f.date, { colour: COLOURS.soft, align: 'center' });
+    line(f.where, { colour: COLOURS.soft, align: 'center' });
     line(f.season, { colour: COLOURS.goldSoft, weight: 600, align: 'center' });
 
     // the club's crest and name, and ncan.nz
@@ -255,6 +267,7 @@
     var line = function (words, o) { if (words) { t(words, pad, y, P.size, o); y += P.step; } };
     line([f.place, f.wind, f.was ? 'previous best ' + f.was : ''].filter(Boolean).join(' · '), { weight: 600 });
     line([f.meeting, f.date].filter(Boolean).join(' · '), { weight: 600 });
+    line(f.where, { weight: 400 });
     if (story) { line(f.season, { colour: COLOURS.goldSoft, weight: 600 }); }
 
     var lh = story ? 60 : 40;
@@ -740,7 +753,7 @@
   }
 
   return { SIZES: SIZES, COLOURS: COLOURS, day: day, placeWord: placeWord, medalFor: medalFor, improvement: improvement,
-           cardName: cardName, surnameByDefault: surnameByDefault, seasonWords: seasonWords, facts: facts,
+           cardName: cardName, surnameByDefault: surnameByDefault, seasonWords: seasonWords, facts: facts, whereWords: whereWords,
            caption: caption, fileName: fileName, headlineFor: headlineFor, cover: cover, parseFocus: parseFocus, move: move, ZOOM_MAX: ZOOM_MAX, STYLES: ['podium', 'photo', 'event'],
            SURFACES: Object.keys(SURFACES), sceneFor: sceneFor, sceneHasTrack: sceneHasTrack, layout: layout, overlaps: overlaps, render: render };
 }));
