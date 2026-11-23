@@ -34,7 +34,13 @@ test('a shared image shows the full name, or the first name only', () => {
 test('a share is sent with its details, and the consent tick', () => {
   assert.equal(I.shareQuery({ event: '100m Hurdles - 76.2cm', from: '2024-10-05', to: '2026-11-21', view: 'by-season', name: 'first' }),
     'event=100m%20Hurdles%20-%2076.2cm&from=2024-10-05&to=2026-11-21&view=by-season&name=first&confirm=1');
-  assert.equal(I.SHARE_MAX, 1536 * 1024);
+  assert.equal(I.SHARE_MAX, 4 * 1024 * 1024);
+});
+
+test('an image too big to share says its size in MB', () => {
+  assert.equal(I.mb(I.SHARE_MAX), '4 MB');
+  assert.equal(I.mb(5.2 * 1048576), '5.2 MB');
+  assert.equal(I.mb(I.SHARE_MAX + 1), '4.1 MB');   // just over: never shown as the limit itself
 });
 
 test('the subtitle names the range picked, but not All results', () => {

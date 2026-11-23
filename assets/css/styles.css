@@ -1478,6 +1478,11 @@ table.schedule.champs-table { min-width: 0; }
 .ath-share__open { margin-right: auto; font-weight: 600; }
 .ath-share__said { margin: 0; min-height: 1.2em; font-size: .9rem; color: var(--text-soft); }
 .ath-share__said:empty { display: none; }
+/* an image too big to share: a warning box that can't be missed */
+.ath-share__said.is-warn {
+  padding: .6rem .8rem; font-weight: 600; color: var(--warn);
+  background: var(--surface-warm); border-left: 4px solid var(--warn); border-radius: 0 8px 8px 0;
+}
 /* PB cards: the preview is the card itself, so no frame; Share card buttons beside a PB */
 .ath-card__box { background: transparent; border: 0; }
 .ath-card__box img { max-height: 44dvh; width: auto; max-width: 100%; margin: 0 auto; border-radius: 10px; }
