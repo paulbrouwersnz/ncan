@@ -154,18 +154,40 @@
   // wind-legal mark better than every earlier one in that event (and, for a throw,
   // at that weight; a first mark doesn't count). Worked out once over all results,
   // whatever is filtered.
-  var newPb = [];
+  var newPb = [], newPbPrev = [];   // and the best each one beat, for PB cards
   function findNewPbs(all) {
     var bestSoFar = {};
     all.filter(function (r) { return typeof r.value === 'number' && !windy(r); })
       .sort(function (a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; })
       .forEach(function (r) {
         var k = pbKey(r), b = bestSoFar[k];
-        if (b && isBetter(r, b)) { newPb.push(r); }
+        if (b && isBetter(r, b)) { newPb.push(r); newPbPrev.push(b); }
         if (!b || isBetter(r, b)) { bestSoFar[k] = r; }
       });
   }
   function isNewPb(r) { return newPb.indexOf(r) !== -1; }
+
+  /* PB cards (assets/js/pb-card.js): a card can be made of a personal best, either the
+     current one or one that was a new PB when it happened. */
+  function cardable(r, pbs) {
+    return !!(window.NCANPbCard && r && typeof r.value === 'number' && !windy(r) &&
+              (isNewPb(r) || (pbs && pbs[pbKey(r)] === r)));
+  }
+  function pbBefore(r) { var i = newPb.indexOf(r); return i === -1 ? null : newPbPrev[i]; }
+  // how many new PBs in this event (and weight) this season, up to and including this one
+  function pbsInSeason(r) {
+    return newPb.filter(function (p) { return pbKey(p) === pbKey(r) && p.season === r.season && p.date <= r.date; }).length;
+  }
+  function eventLabel(r) { return r.event + (isThrow(r) && weightOf(r) ? ' (' + weightOf(r) + ')' : ''); }
+  function cardButton(r) {
+    var b = text('button', 'ath-pb-share');
+    b.type = 'button';
+    b.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 15V3M7 8l5-5 5 5M5 13v7h14v-7"/></svg>';
+    b.appendChild(document.createTextNode('Share card'));
+    b.setAttribute('aria-label', 'Make a share card of ' + eventLabel(r) + ' ' + markText(r) + ', ' + longDate(r.date));
+    b.addEventListener('click', function () { cardOpen(r, b); });
+    return b;
+  }
 
   // seconds as 12.34 or 1:02.34; metres as 4.56m
   function formatValue(v, field, axis) {
@@ -1195,6 +1217,146 @@
     });
   }
 
+  /* A PB card: drawn here from the result, shown, then saved (share sheet or download).
+     The athlete's GameDay contacts and admins can also make a public link of it, through
+     the same share API as charts (view=pb-card). */
+  var card = { r: null, shape: 'square', surname: false, canvas: null, seq: 0, busy: false, from: null, url: '' };
+
+  function cardFacts() {
+    var r = card.r, prev = pbBefore(r);
+    return window.NCANPbCard.facts({ name: NCAN.athlete && NCAN.athlete.name, surname: card.surname, result: r, prev: prev,
+      mark: markText(r), prevMark: prev ? markText(prev) : '', event: eventLabel(r), group: groupOf(r),
+      pbsThisSeason: pbsInSeason(r) });
+  }
+
+  function cardOpen(r, from) {
+    var d = $('ath-card');
+    if (!d || !d.showModal || !window.NCANPbCard) { return; }
+    card.r = r; card.from = from; card.url = '';
+    card.surname = window.NCANPbCard.surnameByDefault(r);
+    $('ath-card-surname').checked = card.surname;
+    $('ath-card-ok').checked = false;
+    $('ath-card-form').hidden = false;
+    $('ath-card-done').hidden = true;
+    $('ath-card-public').hidden = !shareCan();
+    $('ath-card-said').textContent = '';
+    d.showModal();
+    $('ath-card-title').focus();
+    cardDraw();
+  }
+
+  function cardDraw() {
+    var PB = window.NCANPbCard, n = ++card.seq, f = cardFacts();
+    var img = $('ath-card-preview'), box = $('ath-card-box'), said = $('ath-card-said');
+    var root = window.getComputedStyle(document.documentElement);
+    $('ath-card-caption').value = PB.caption(f);
+    card.canvas = null;
+    img.hidden = true;
+    box.classList.add('is-busy');
+    said.textContent = 'Making the card…';
+    cardButtons();
+    PB.render(f, card.shape, { display: root.getPropertyValue('--font-display') || 'sans-serif',
+                               sans: root.getPropertyValue('--font-sans') || 'sans-serif' }).then(function (canvas) {
+      if (n !== card.seq) { return; }
+      card.canvas = canvas;
+      img.src = canvas.toDataURL('image/png');
+      img.alt = 'The card: ' + f.headline.toLowerCase() + ' for ' + f.name + ', ' + f.event + ' ' + f.mark +
+        (f.better ? ' (' + f.better + ')' : '') + ', ' + f.meeting + ', ' + f.date + '.';
+      img.hidden = false;
+      said.textContent = '';
+    }).catch(function () {
+      if (n === card.seq) { said.textContent = 'Sorry, the card could not be made.'; }
+    }).then(function () {
+      if (n === card.seq) { box.classList.remove('is-busy'); cardButtons(); }
+    });
+  }
+
+  function cardButtons() {
+    var phone = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+    var save = $('ath-card-save');
+    save.textContent = phone && navigator.canShare ? 'Share…' : 'Download';
+    save.disabled = card.busy || !card.canvas;
+    $('ath-card-go').disabled = card.busy || !card.canvas || !$('ath-card-ok').checked || !shareCan();
+    Array.prototype.forEach.call(document.querySelectorAll('#ath-card-shapes input, #ath-card-surname, #ath-card-ok'), function (i) {
+      i.disabled = card.busy;
+    });
+  }
+
+  function cardSave() {
+    var said = $('ath-card-said');
+    if (!card.canvas) { return; }
+    window.NCANChartImage.save(card.canvas, window.NCANPbCard.fileName(cardFacts())).then(function (how) {
+      said.textContent = how === 'saved' ? 'Card saved.' : how === 'shared' ? 'Card shared.' : '';
+    }).catch(function () { said.textContent = 'Sorry, the card could not be saved.'; });
+  }
+
+  function copyText(button, value, words) {
+    var said = function (w) { button.textContent = w; setTimeout(function () { button.textContent = words; }, 2500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(value).then(function () { said('Copied'); }, function () { said('Press Ctrl+C to copy'); });
+    } else { said('Press Ctrl+C to copy'); }
+  }
+
+  function cardCreate() {
+    var go = $('ath-card-go'), said = $('ath-card-said');
+    if (go.disabled) { return; }
+    var IMG = window.NCANChartImage, r = card.r;
+    card.busy = true;
+    go.classList.add('is-busy');
+    cardButtons();
+    said.textContent = 'Making the public link…';
+    blobOf(card.canvas).then(function (blob) {
+      if (!blob) { throw new Error('Sorry, the card could not be made.'); }
+      return NCAN.sendFile('/athletes/' + encodeURIComponent(NCAN.athlete.slug) + '/shares?' +
+        IMG.shareQuery({ event: eventLabel(r).slice(0, 60), from: r.date, to: r.date, view: 'pb-card',
+                         name: card.surname ? 'full' : 'first' }), blob);
+    }).then(function (res) {
+      if (res.status === 201 && res.body && res.body.share && res.body.share.url) {
+        var s = res.body.share;
+        card.url = s.url;
+        $('ath-card-form').hidden = true;
+        $('ath-card-done').hidden = false;
+        $('ath-card-link').value = s.url;
+        $('ath-card-open').href = s.url;
+        said.textContent = 'Your public link is ready.';
+        document.dispatchEvent(new CustomEvent('ncan:shared', { detail: s }));   // the Shared charts list
+        $('ath-card-link').focus(); $('ath-card-link').select();
+        return;
+      }
+      said.textContent = (res.body && res.body.error) || 'Sorry, the card could not be shared (' + res.status + ').';
+      if (res.status === 403) { NCAN.athlete.can_share = false; $('ath-card-public').hidden = true; }
+    }).catch(function (e) {
+      said.textContent = (e && e.message) || 'Sorry, the card could not be shared.';
+    }).then(function () {
+      card.busy = false;
+      go.classList.remove('is-busy');
+      cardButtons();
+    });
+  }
+
+  function cardSetUp() {
+    var d = $('ath-card');
+    if (!d || !window.NCANPbCard) { return; }
+    Array.prototype.forEach.call(d.querySelectorAll('[data-card-close]'), function (c) {
+      c.addEventListener('click', function () { d.close(); });
+    });
+    d.addEventListener('close', function () {
+      if (d.open) { return; }   // a late close event after it was opened again
+      card.seq++;
+      card.canvas = null;
+      if (card.from && document.contains(card.from)) { card.from.focus(); }
+    });
+    Array.prototype.forEach.call(d.querySelectorAll('#ath-card-shapes input'), function (i) {
+      i.addEventListener('change', function () { if (i.checked) { card.shape = i.value; cardDraw(); } });
+    });
+    $('ath-card-surname').addEventListener('change', function () { card.surname = this.checked; cardDraw(); });
+    $('ath-card-ok').addEventListener('change', cardButtons);
+    $('ath-card-save').addEventListener('click', cardSave);
+    $('ath-card-go').addEventListener('click', cardCreate);
+    $('ath-card-copy').addEventListener('click', function () { copyText(this, $('ath-card-caption').value, 'Copy caption'); });
+    $('ath-card-link-copy').addEventListener('click', function () { copyText(this, card.url, 'Copy link'); });
+  }
+
   // the result picked: mark, date, meeting, wind, grade or weight, PB or season best
   function zoomDetails(p) {
     var out = $('ath-zoom-details');
@@ -1209,6 +1371,7 @@
     else if (isNewPb(p)) { tags.appendChild(text('span', 'champs-tag ath-badge ath-badge--newpb', 'New personal best at the time')); }
     if (CHART.sbOf[pbKey(p) + '|' + p.season] === p) { tags.appendChild(text('span', 'champs-tag ath-badge', 'Season best')); }
     if (tags.children.length) { out.appendChild(tags); }
+    if (cardable(p, CHART.pbOf)) { var cp = text('p', 'ath-zoom__card'); cp.appendChild(cardButton(p)); out.appendChild(cp); }
     var dl = text('dl', 'ath-zoom__facts');
     var add = function (k, v) { if (v) { dl.appendChild(text('dt', null, k)); dl.appendChild(text('dd', null, v)); } };
     add('Date', longDate(p.date) + (p.season ? ' (' + p.season + ' season)' : ''));
@@ -1477,6 +1640,7 @@
           if (pbs[pbKey(r)] === r) { td.appendChild(text('span', 'champs-tag champs-tag--next ath-badge', 'Personal best')); }
           else if (isNewPb(r)) { td.appendChild(text('span', 'champs-tag champs-tag--next ath-badge ath-badge--newpb', 'New personal best')); }
           else if (sbs[pbKey(r) + '|' + r.season] === r) { td.appendChild(text('span', 'champs-tag ath-badge', 'Season best')); }
+          if (cardable(r, pbs)) { td.appendChild(cardButton(r)); }
           if (qualified(r)) { td.appendChild(text('span', 'champs-tag ath-badge', 'Qualified')); }
         }
         // every wind reading is a tag; one over +2.0 m/s is outlined, like the
@@ -2010,6 +2174,7 @@
       renderSources();
       setUp();
       zoomSetUp();
+      cardSetUp();
       render();
       // a section in the address: there once the page is drawn; a chart: opened
       if (here.chart) {

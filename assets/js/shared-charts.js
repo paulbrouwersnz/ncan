@@ -43,7 +43,7 @@
   }
   function plural(n, one, many) { return n + ' ' + (n === 1 ? one : many); }
 
-  // "100m · Oct 2024 to Nov 2026 · By season"
+  // "100m · Oct 2024 to Nov 2026 · By season"; a PB card: "100m · 21 Nov 2026 · PB card"
   function what(s) {
     var out = [s.event || 'Chart'];
     if (s.from && s.to) {
@@ -51,7 +51,7 @@
         : month(s.from) === month(s.to) ? month(s.from)
         : month(s.from) + ' to ' + month(s.to));
     }
-    out.push(s.view === 'by-season' ? 'By season' : 'Timeline');
+    out.push(s.view === 'pb-card' ? 'PB card' : s.view === 'by-season' ? 'By season' : 'Timeline');
     return out.join(' · ');
   }
 

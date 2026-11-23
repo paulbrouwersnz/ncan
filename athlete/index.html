@@ -261,6 +261,63 @@
           <p class="ath-share__said" id="ath-share-said" aria-live="polite"></p>
         </dialog>
 
+        <!-- a PB card: opened by Share card beside a personal best (assets/js/athlete.js, pb-card.js) -->
+        <dialog class="ath-share ath-card" id="ath-card" aria-labelledby="ath-card-title">
+          <div class="ath-share__head">
+            <h2 class="ath-share__title" id="ath-card-title" tabindex="-1">Share this personal best</h2>
+            <button type="button" class="ath-zoom__close" data-card-close aria-label="Close">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg>
+            </button>
+          </div>
+          <p class="ath-share__intro">Made on this device: nothing is posted until you share it.</p>
+          <div class="ath-share__box ath-card__box" id="ath-card-box"><img id="ath-card-preview" alt="" hidden></div>
+          <div class="ath-share__form" id="ath-card-form">
+            <div class="ath-card__options">
+              <fieldset class="ath-share__names" id="ath-card-shapes">
+                <legend>Shape</legend>
+                <label><input type="radio" name="ath-card-shape" value="square" checked> Square</label>
+                <label><input type="radio" name="ath-card-shape" value="story"> Story (tall)</label>
+              </fieldset>
+              <p class="ath-check ath-card__surname">
+                <input type="checkbox" id="ath-card-surname">
+                <label for="ath-card-surname">Show surname</label>
+              </p>
+            </div>
+            <label class="ath-share__label" for="ath-card-caption">Suggested caption</label>
+            <div class="ath-share__link">
+              <input type="text" id="ath-card-caption" readonly>
+              <button type="button" class="btn btn--ghost btn--sm" id="ath-card-copy">Copy caption</button>
+            </div>
+            <div class="ath-share__actions">
+              <button type="button" class="btn btn--ghost btn--sm" data-card-close>Close</button>
+              <button type="button" class="btn btn--accent btn--sm" id="ath-card-save" disabled>Download</button>
+            </div>
+            <div class="ath-card__public" id="ath-card-public" hidden>
+              <p class="ath-share__label">Or make a public link</p>
+              <p class="ath-check ath-share__ok">
+                <input type="checkbox" id="ath-card-ok">
+                <label for="ath-card-ok">I’m allowed to share this athlete’s results publicly.</label>
+              </p>
+              <p class="ath-share__note">Anyone with the link will see this card. It never changes, and you can remove it under Shared charts.</p>
+              <div class="ath-share__actions">
+                <button type="button" class="btn btn--ghost btn--sm" id="ath-card-go" disabled>Create public link</button>
+              </div>
+            </div>
+          </div>
+          <div class="ath-share__form" id="ath-card-done" hidden>
+            <label class="ath-share__label" for="ath-card-link">Public link</label>
+            <div class="ath-share__link">
+              <input type="text" id="ath-card-link" readonly>
+              <button type="button" class="btn btn--ghost btn--sm" id="ath-card-link-copy">Copy link</button>
+            </div>
+            <div class="ath-share__actions">
+              <a class="ath-share__open" id="ath-card-open" target="_blank" rel="noopener">Open the share page</a>
+              <button type="button" class="btn btn--accent btn--sm" data-card-close>Done</button>
+            </div>
+          </div>
+          <p class="ath-share__said" id="ath-card-said" aria-live="polite"></p>
+        </dialog>
+
         <!-- one chart enlarged: opened by the button on each chart (assets/js/athlete.js) -->
         <dialog class="ath-zoom" id="ath-zoom" aria-labelledby="ath-zoom-title">
           <div class="ath-zoom__head">
@@ -757,6 +814,7 @@
   <script src="/assets/js/meeting-links.js"></script>
   <script src="/assets/js/athlete-seasons.js"></script>
   <script src="/assets/js/chart-image.js"></script>
+  <script src="/assets/js/pb-card.js"></script>
   <script src="/assets/js/shared-charts.js"></script>
   <script src="/assets/js/athlete.js"></script>
 

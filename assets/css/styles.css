@@ -1478,6 +1478,20 @@ table.schedule.champs-table { min-width: 0; }
 .ath-share__open { margin-right: auto; font-weight: 600; }
 .ath-share__said { margin: 0; min-height: 1.2em; font-size: .9rem; color: var(--text-soft); }
 .ath-share__said:empty { display: none; }
+/* PB cards: the preview is the card itself, so no frame; Share card buttons beside a PB */
+.ath-card__box { background: transparent; border: 0; }
+.ath-card__box img { max-height: 44dvh; width: auto; max-width: 100%; margin: 0 auto; border-radius: 10px; }
+.ath-card__options { display: flex; flex-wrap: wrap; align-items: flex-end; gap: .5rem 1.5rem; }
+.ath-card__surname { margin: 0; }
+.ath-card__public { display: flex; flex-direction: column; gap: .5rem; padding-top: .75rem; border-top: 1px solid var(--line); }
+.ath-card__public[hidden] { display: none; }
+.ath-card__public > p { margin: 0; }
+.ath-pb-share { display: inline-flex; align-items: center; gap: .25rem; margin-left: .35rem; padding: .1rem .5rem;
+  border: 1px solid var(--line); border-radius: 999px; background: var(--surface, #fff); color: var(--heading);
+  font: inherit; font-size: .78rem; font-weight: 600; line-height: 1.5; cursor: pointer; vertical-align: .1em; }
+.ath-pb-share:hover, .ath-pb-share:focus-visible { border-color: var(--accent); }
+.ath-pb-share svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.ath-zoom__card { margin: .5rem 0 0; }
 .btn[disabled] { opacity: .55; cursor: not-allowed; transform: none; box-shadow: none; }
 @media (max-width: 480px) {
   .ath-share__link { flex-direction: column; }
