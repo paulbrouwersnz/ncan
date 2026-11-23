@@ -1074,6 +1074,38 @@
   var share = { canvas: null, style: 'full', busy: false, seq: 0, url: '' };
 
   // only the athlete's GameDay contacts and admins, and not while the club has paused sharing
+  /* The share usage badges ([data-share-usage]: in the Share dialog, the PB card's
+     public link, and Shared charts): today's shares and live shares against the limits. */
+  function usageNow() {
+    var S = window.NCANSharedCharts;
+    return S && S.usage && NCAN.athlete ? S.usage(NCAN.athlete.share_usage) : null;
+  }
+  function usageShow() {
+    var u = usageNow();
+    Array.prototype.forEach.call(document.querySelectorAll('[data-share-usage]'), function (p) {
+      p.textContent = '';
+      p.hidden = !u;
+      if (!u) { return; }
+      p.setAttribute('aria-label', u.said);
+      p.title = u.said;
+      u.badges.forEach(function (b) {
+        var s = document.createElement('span');
+        s.className = 'share-usage__badge' + (b.full ? ' is-full' : '');
+        s.setAttribute('aria-hidden', 'true');
+        s.appendChild(document.createTextNode(b.label + ' '));
+        var n = document.createElement('b');
+        n.textContent = b.used + ' / ' + b.max;
+        s.appendChild(n);
+        p.appendChild(s);
+      });
+    });
+    if ($('ath-share-go')) { shareButtons(); }
+    if ($('ath-card-go')) { cardButtons(); }
+  }
+  function usageFull() { var u = usageNow(); return !!(u && u.full); }
+  document.addEventListener('ncan:athlete', usageShow);
+  document.addEventListener('ncan:share-usage', usageShow);
+
   function shareCan() {
     return !!(window.NCANChartImage && window.NCAN && NCAN.sendFile && NCAN.athlete && NCAN.athlete.can_share);
   }
@@ -1127,7 +1159,7 @@
 
   function shareButtons() {
     var go = $('ath-share-go');
-    go.disabled = share.busy || !share.canvas || !$('ath-share-ok').checked || !shareCan();
+    go.disabled = share.busy || !share.canvas || !$('ath-share-ok').checked || !shareCan() || usageFull();
     Array.prototype.forEach.call(document.querySelectorAll('#ath-share-names input'), function (r) {
       r.disabled = share.busy;
     });
@@ -1179,7 +1211,10 @@
       return NCAN.sendFile('/athletes/' + encodeURIComponent(NCAN.athlete.slug) + '/shares?' +
         IMG.shareQuery({ event: f.event, from: f.from, to: f.to, view: f.view, name: style }), blob);
     }).then(function (r) {
-      if (r.status === 201 && r.body && r.body.share && r.body.share.url) { shareDone(r.body.share); return; }
+      if (r.status === 201 && r.body && r.body.share && r.body.share.url) {
+        if (r.body.usage) { NCAN.athlete.share_usage = r.body.usage; usageShow(); }
+        shareDone(r.body.share); return;
+      }
       if (r.status === 413) { throw tooBig('chart', size, hint); }
       sayShare(said, (r.body && r.body.error) || 'Sorry, the chart could not be shared (' + r.status + ').');
       // refused (sharing paused, or no longer theirs to share): no Share until the page reloads
@@ -1424,7 +1459,7 @@
     var save = $('ath-card-save');
     save.textContent = phone && navigator.canShare ? 'Share…' : 'Download';
     save.disabled = card.busy || !card.canvas;
-    $('ath-card-go').disabled = card.busy || !card.canvas || !$('ath-card-ok').checked || !shareCan();
+    $('ath-card-go').disabled = card.busy || !card.canvas || !$('ath-card-ok').checked || !shareCan() || usageFull();
     Array.prototype.forEach.call(document.querySelectorAll('#ath-card-shapes input, #ath-card-surname, #ath-card-ok'), function (i) {
       i.disabled = card.busy;
     });
@@ -1490,6 +1525,7 @@
     }).then(function (res) {
       if (res.status === 201 && res.body && res.body.share && res.body.share.url) {
         var s = res.body.share;
+        if (res.body.usage) { NCAN.athlete.share_usage = res.body.usage; usageShow(); }
         card.url = s.url;
         $('ath-card-form').hidden = true;
         $('ath-card-done').hidden = false;
@@ -2273,7 +2309,7 @@
       // the header photo (athlete-photo.js): the athlete's own, and who may change it
       NCAN.athlete = { slug: current, name: json.name, photo: json.photo || null,
         can_change_photo: !!json.can_change_photo, can_remove_photo: !!json.can_remove_photo,
-        can_share: !!json.can_share };
+        can_share: !!json.can_share, share_usage: json.share_usage || null };
       document.dispatchEvent(new CustomEvent('ncan:athlete', { detail: NCAN.athlete }));
       // cross country, road and relay legs have a section of their own: the
       // track sections (PBs, charts, filters, the results table) never see them

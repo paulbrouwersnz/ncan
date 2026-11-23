@@ -790,6 +790,13 @@ ul { margin: 0; padding: 0; list-style: none; }
   border-radius: 999px; font-size: .8rem; font-weight: 700; line-height: 1.5; text-align: center;
   vertical-align: .15em; background: var(--yellow-400); color: var(--green-900, #0b3b2e); }
 .admin-count[hidden] { display: none; }
+/* share usage: "Today 1 / 20" and "Live 15 / 100" beside Share and on Shared charts */
+.share-usage { display: flex; flex-wrap: wrap; gap: .4rem; margin: 0 0 .75rem; }
+.share-usage[hidden] { display: none; }
+.share-usage__badge { display: inline-flex; align-items: baseline; gap: .35rem; padding: .15rem .6rem;
+  border-radius: 999px; background: var(--green-100); color: var(--green-900, #0b3b2e); font-size: .85rem; line-height: 1.5; }
+.share-usage__badge b { font-weight: 700; font-variant-numeric: tabular-nums; }
+.share-usage__badge.is-full { background: var(--yellow-400); color: var(--green-900, #0b3b2e); }
 .news-card__date {
   font-family: var(--font-display);
   font-size: .78rem;
