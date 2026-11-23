@@ -274,7 +274,7 @@ Each `tests/js/<name>.test.js` tests the helpers in `assets/js/<name>.js` (or
 | `meeting-links.test.js` | a meeting's other links on the results sources and athlete pages |
 | `calendar-edit.test.js` | the calendar editor: form to event and back, its checks, the words for dates and repeats |
 | `athlete-seasons.test.js` | seasons on the athlete charts (1 April to 31 March, winter and summer bands, "so far", season bests per weight), the By season view (each date's day in its season, 29 February included, and each season's colour), Hide empty months (only months with no result in any season, each run of them a break on the axis) and the enlarged chart's date ranges |
-| `pb-card.test.js` | PB share cards (`assets/js/pb-card.js`): the improvement wording (−0.32s, +18cm, +1.05m), the place only for 1st–3rd, first name only by default for children, the season count, the caption and file name, and the square and story layouts: the mark in gold, the ribbon only with an improvement, every word inside the card and nothing overlapping |
+| `pb-card.test.js` | Share cards (`assets/js/pb-card.js`): the headline for a new PB, PB, season best, podium place or result, with its caption and file name; the Photo card filling the card with its washes and the crop keeping the focus point in view; the improvement wording (−0.32s, +18cm, +1.05m), the place only for 1st–3rd, first name only by default for children, the season count, the caption and file name, and the square and story layouts: the mark in gold, the ribbon only with an improvement, every word inside the card and nothing overlapping |
 | `chart-image.test.js` | the enlarged chart saved as an image (Download, `assets/js/chart-image.js`): the file name (athlete and event, accents dropped), the dates line, the key wrapping into rows, reading a key swatch's ring from its CSS, the image shapes (Auto, landscape 3:2, portrait 4:5, square 1:1) and the layout leaving the chart room in each; for Share, the name on a shared image (full, or first name only) and the details sent with it |
 | `shared-charts.test.js` | the shared charts lists (`assets/js/shared-charts.js`): what each share shows (event, dates, view), its views and link previews, who shared it ("you" or someone else for families, the email for admins), the removed wording ("Removed by the club" for families, with who and why for admins) and the admin page's Show and Find |
 
@@ -905,18 +905,26 @@ a name (full, or first name only), then uploads it for a public link
 `https://api.ncan.nz/s/<id>`. A share is never changed: share a new one and
 remove the old.
 
-**PB share cards** (`assets/js/pb-card.js`): a **Share card** button beside every
-personal best in the results table (the current PB, or one that was a new PB when
-it happened; wind-legal only) and in the enlarged chart's details panel. Anyone who
-can see the page can make one. It draws the club's green-and-gold Podium card in the
-browser: "New personal best", the name (first name only by default for a result with
-a grade, ages 7–14; Show surname turns it on), the event (and weight), the mark in
-gold, a "PB −0.32s" ribbon from the PB it beat, the previous best, the place only
-when 1st–3rd, wind, meeting, date and "3rd PB this season". Square (1080 × 1080) or
-Story (1080 × 1920). **Download** (the share sheet on phones) keeps it on the
+**Share cards** (`assets/js/pb-card.js`): a share icon to the right of every
+measured mark: each line of the results table, the PB boxes (and their best
+wind-legal mark) and the enlarged chart's details panel. Anyone who can see the page
+can make one. The headline says what the result was: "New personal best" (better
+than the PB before it), "Personal best", "Season best", "1st place" to "3rd place",
+or "Result"; a wind-assisted mark is never a PB card. The caption ("New PB for…",
+"Season best for…", "1st place for…", "Sam: 100m in…") and file name (`-pb`,
+`-season-best`, `-result`) follow. The card shows the name (first name only by
+default for a result with a grade, ages 7–14; Show surname turns it on), the event
+(and weight), the mark in gold, and for a new PB a "PB −0.32s" ribbon, the previous
+best and "3rd PB this season"; the place only when 1st–3rd, wind, meeting and date.
+Two styles: **Club colours** (the green-and-gold Podium card) or **Photo**: the
+athlete's header photo fills the card, cropped around its focus point, with dark
+washes behind the words. With a header photo it's used by default and **Use a
+different photo** picks another; without one, picking a photo is the only way to a
+Photo card. A picked photo stays on the device (it's only uploaded inside the
+finished card, if a public link is made). Square (1080 × 1080) or Story (1080 × 1920). **Download** (the share sheet on phones) keeps it on the
 device; a suggested caption can be copied. The athlete's GameDay contacts and
 admins can also **Create public link**: the same share API with `view=pb-card` and
-the result's date as `from` and `to`, listed under Shared charts as a "PB card".
+the result's date as `from` and `to`, listed under Shared charts as a "PB card" whatever its headline.
 The card is laid out as plain shapes and words (`layout()`, tested without a
 browser) and drawn on a canvas, since an image made from SVG can't use the site's
 fonts.

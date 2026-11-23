@@ -167,11 +167,17 @@
   }
   function isNewPb(r) { return newPb.indexOf(r) !== -1; }
 
-  /* PB cards (assets/js/pb-card.js): a card can be made of a personal best, either the
-     current one or one that was a new PB when it happened. */
-  function cardable(r, pbs) {
-    return !!(window.NCANPbCard && r && typeof r.value === 'number' && !windy(r) &&
-              (isNewPb(r) || (pbs && pbs[pbKey(r)] === r)));
+  /* Share cards (assets/js/pb-card.js): any measured result can be made into a card. Its
+     headline says what it was: a new PB, the PB, the season's best, or just the result
+     (with the place when it was 1st to 3rd). A wind-assisted mark is never a PB card. */
+  function cardable(r) { return !!(window.NCANPbCard && r && typeof r.value === 'number'); }
+  function cardKind(r, pbs, sbs) {
+    if (!windy(r)) {
+      if (isNewPb(r) && pbBefore(r)) { return 'newpb'; }
+      if (isNewPb(r) || (pbs && pbs[pbKey(r)] === r)) { return 'pb'; }
+      if (sbs && sbs[pbKey(r) + '|' + r.season] === r) { return 'sb'; }
+    }
+    return 'result';
   }
   function pbBefore(r) { var i = newPb.indexOf(r); return i === -1 ? null : newPbPrev[i]; }
   // how many new PBs in this event (and weight) this season, up to and including this one
@@ -179,13 +185,14 @@
     return newPb.filter(function (p) { return pbKey(p) === pbKey(r) && p.season === r.season && p.date <= r.date; }).length;
   }
   function eventLabel(r) { return r.event + (isThrow(r) && weightOf(r) ? ' (' + weightOf(r) + ')' : ''); }
-  function cardButton(r) {
+  // the share icon that sits beside a mark's link
+  function cardButton(r, kind) {
     var b = text('button', 'ath-pb-share');
     b.type = 'button';
     b.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 15V3M7 8l5-5 5 5M5 13v7h14v-7"/></svg>';
-    b.appendChild(document.createTextNode('Share card'));
+    b.title = 'Share card';
     b.setAttribute('aria-label', 'Make a share card of ' + eventLabel(r) + ' ' + markText(r) + ', ' + longDate(r.date));
-    b.addEventListener('click', function () { cardOpen(r, b); });
+    b.addEventListener('click', function () { cardOpen(r, b, kind || 'result'); });
     return b;
   }
 
@@ -392,6 +399,7 @@
         a.href = pb.source; a.target = '_blank'; a.rel = 'noopener';
         a.title = 'Official result';
         mark.appendChild(a);
+        if (cardable(pb)) { var only = {}; only[pbKey(pb)] = pb; mark.appendChild(cardButton(pb, cardKind(pb, only))); }
         li.appendChild(mark);
         li.appendChild(text('p', 'ath-pb__meta', longDate(pb.date) + (groupOf(pb) ? ' · ' + groupOf(pb) : '')));
         // a weight filled in from the grade, not published by the meeting: say so
@@ -410,7 +418,11 @@
             lp.appendChild(document.createTextNode('Best wind-legal: '));
             var la = text('a', 'records-source', markText(legal));
             la.href = legal.source; la.target = '_blank'; la.rel = 'noopener'; la.title = 'Official result';
-            lp.appendChild(la);
+            // the mark and its share icon never split across lines
+            var lk = text('span', 'ath-nowrap');
+            lk.appendChild(la);
+            if (cardable(legal)) { var lo = {}; lo[pbKey(legal)] = legal; lk.appendChild(cardButton(legal, cardKind(legal, lo))); }
+            lp.appendChild(lk);
             lp.appendChild(document.createTextNode(' · ' + longDate(legal.date)));
           } else {
             lp.textContent = 'No wind-legal mark yet';
@@ -1220,19 +1232,60 @@
   /* A PB card: drawn here from the result, shown, then saved (share sheet or download).
      The athlete's GameDay contacts and admins can also make a public link of it, through
      the same share API as charts (view=pb-card). */
-  var card = { r: null, shape: 'square', surname: false, canvas: null, seq: 0, busy: false, from: null, url: '' };
+  var card = { r: null, kind: 'pb', style: 'podium', photo: null, picked: null, shape: 'square', surname: false, canvas: null, seq: 0, busy: false, from: null, url: '' };
 
   function cardFacts() {
     var r = card.r, prev = pbBefore(r);
-    return window.NCANPbCard.facts({ name: NCAN.athlete && NCAN.athlete.name, surname: card.surname, result: r, prev: prev,
+    return window.NCANPbCard.facts({ kind: card.kind, name: NCAN.athlete && NCAN.athlete.name, surname: card.surname, result: r, prev: prev,
       mark: markText(r), prevMark: prev ? markText(prev) : '', event: eventLabel(r), group: groupOf(r),
       pbsThisSeason: pbsInSeason(r) });
   }
 
-  function cardOpen(r, from) {
+  /* The Photo card's photo: one picked on this device for this card, else the athlete's
+     header photo (fetched with the sign-in, as a local copy the canvas can read). With
+     no header photo, picking one is the only way to a Photo card. Nothing picked here
+     leaves the device unless a public link is made of the finished card. */
+  var headerPhoto = { slug: null, url: null, focus: null, loading: null };
+  function cardPhoto() {
+    if (card.picked) { return card.picked; }
+    return headerPhoto.url ? { url: headerPhoto.url, focus: headerPhoto.focus } : null;
+  }
+  function loadHeaderPhoto() {
+    var a = NCAN.athlete, p = a && a.photo;
+    if (!p || !p.url) { return Promise.resolve(null); }
+    if (headerPhoto.slug === a.slug && (headerPhoto.url || headerPhoto.loading)) { return headerPhoto.loading || Promise.resolve(headerPhoto.url); }
+    headerPhoto.slug = a.slug; headerPhoto.focus = p.focus || null;
+    headerPhoto.loading = fetch(p.url, { credentials: 'include' })
+      .then(function (r) { if (!r.ok) { throw new Error(r.status); } return r.blob(); })
+      .then(function (b) { headerPhoto.url = URL.createObjectURL(b); return headerPhoto.url; })
+      .catch(function () { return null; })
+      .then(function (u) { headerPhoto.loading = null; return u; });
+    return headerPhoto.loading;
+  }
+  function cardPhotoWords() {
+    var has = !!(NCAN.athlete && NCAN.athlete.photo && NCAN.athlete.photo.url);
+    var box = $('ath-card-photo');
+    box.hidden = card.style !== 'photo';
+    $('ath-card-use-header').hidden = !(card.picked && has);
+    $('ath-card-pick-words').textContent = card.picked || has ? 'Use a different photo' : 'Choose a photo';
+    $('ath-card-photo-said').textContent = card.picked ? 'Using the photo you chose. It stays on this device.'
+      : has ? (headerPhoto.url ? 'Using the header photo.' : 'Loading the header photo…')
+      : 'There’s no header photo yet: choose a photo for the card. It stays on this device.';
+  }
+  function cardPhotoSetUp() {
+    if (card.picked) { URL.revokeObjectURL(card.picked.url); card.picked = null; }
+    $('ath-card-file').value = '';
+    cardPhotoWords();
+    loadHeaderPhoto().then(function () { cardPhotoWords(); if (card.style === 'photo' && $('ath-card').open) { cardDraw(); } });
+  }
+
+  function cardOpen(r, from, kind) {
     var d = $('ath-card');
     if (!d || !d.showModal || !window.NCANPbCard) { return; }
-    card.r = r; card.from = from; card.url = '';
+    card.r = r; card.from = from; card.url = ''; card.kind = kind || 'pb';
+    cardPhotoSetUp();
+    $('ath-card-title').textContent = { newpb: 'Share this personal best', pb: 'Share this personal best',
+      sb: 'Share this season best' }[card.kind] || 'Share this result';
     card.surname = window.NCANPbCard.surnameByDefault(r);
     $('ath-card-surname').checked = card.surname;
     $('ath-card-ok').checked = false;
@@ -1255,8 +1308,10 @@
     box.classList.add('is-busy');
     said.textContent = 'Making the card…';
     cardButtons();
+    var ph = cardPhoto();
     PB.render(f, card.shape, { display: root.getPropertyValue('--font-display') || 'sans-serif',
-                               sans: root.getPropertyValue('--font-sans') || 'sans-serif' }).then(function (canvas) {
+                               sans: root.getPropertyValue('--font-sans') || 'sans-serif' },
+              { style: card.style, photo: ph && ph.url, focus: ph && ph.focus }).then(function (canvas) {
       if (n !== card.seq) { return; }
       card.canvas = canvas;
       img.src = canvas.toDataURL('image/png');
@@ -1346,6 +1401,22 @@
       card.canvas = null;
       if (card.from && document.contains(card.from)) { card.from.focus(); }
     });
+    Array.prototype.forEach.call(d.querySelectorAll('#ath-card-styles input'), function (i) {
+      i.addEventListener('change', function () { if (i.checked) { card.style = i.value; cardPhotoWords(); cardDraw(); } });
+    });
+    $('ath-card-file').addEventListener('change', function () {
+      var file = this.files && this.files[0];
+      if (!file) { return; }
+      if (!/^image\//.test(file.type)) { $('ath-card-photo-said').textContent = 'That isn’t a photo: choose a JPEG, PNG or WebP.'; return; }
+      if (card.picked) { URL.revokeObjectURL(card.picked.url); }
+      card.picked = { url: URL.createObjectURL(file), focus: null };
+      cardPhotoWords(); cardDraw();
+    });
+    $('ath-card-use-header').addEventListener('click', function () {
+      if (card.picked) { URL.revokeObjectURL(card.picked.url); card.picked = null; }
+      $('ath-card-file').value = '';
+      cardPhotoWords(); cardDraw();
+    });
     Array.prototype.forEach.call(d.querySelectorAll('#ath-card-shapes input'), function (i) {
       i.addEventListener('change', function () { if (i.checked) { card.shape = i.value; cardDraw(); } });
     });
@@ -1365,13 +1436,14 @@
       out.appendChild(text('p', 'ath-zoom__prompt', 'Select a result to see its details, or use the ← and → keys.'));
       return;
     }
-    out.appendChild(text('p', 'ath-zoom__mark', markText(p) + (windy(p) ? ' (wind-assisted)' : '')));
+    var zm = text('p', 'ath-zoom__mark', markText(p) + (windy(p) ? ' (wind-assisted)' : ''));
+    if (cardable(p)) { zm.appendChild(cardButton(p, cardKind(p, CHART.pbOf, CHART.sbOf))); }
+    out.appendChild(zm);
     var tags = text('p', 'ath-zoom__tags');
     if (p === CHART.pbOf[pbKey(p)]) { tags.appendChild(text('span', 'champs-tag ath-badge', 'Personal best')); }
     else if (isNewPb(p)) { tags.appendChild(text('span', 'champs-tag ath-badge ath-badge--newpb', 'New personal best at the time')); }
     if (CHART.sbOf[pbKey(p) + '|' + p.season] === p) { tags.appendChild(text('span', 'champs-tag ath-badge', 'Season best')); }
     if (tags.children.length) { out.appendChild(tags); }
-    if (cardable(p, CHART.pbOf)) { var cp = text('p', 'ath-zoom__card'); cp.appendChild(cardButton(p)); out.appendChild(cp); }
     var dl = text('dl', 'ath-zoom__facts');
     var add = function (k, v) { if (v) { dl.appendChild(text('dt', null, k)); dl.appendChild(text('dd', null, v)); } };
     add('Date', longDate(p.date) + (p.season ? ' (' + p.season + ' season)' : ''));
@@ -1636,11 +1708,14 @@
         if (c[0] === 'Mark') {
           var a = text('a', 'records-source', markText(r));
           a.href = r.source; a.target = '_blank'; a.rel = 'noopener'; a.title = 'Official result';
-          td.appendChild(a);
+          // the mark on the left, its share icon on the right
+          var ml = text('div', 'ath-markline');
+          ml.appendChild(a);
+          if (cardable(r)) { ml.appendChild(cardButton(r, cardKind(r, pbs, sbs))); }
+          td.appendChild(ml);
           if (pbs[pbKey(r)] === r) { td.appendChild(text('span', 'champs-tag champs-tag--next ath-badge', 'Personal best')); }
           else if (isNewPb(r)) { td.appendChild(text('span', 'champs-tag champs-tag--next ath-badge ath-badge--newpb', 'New personal best')); }
           else if (sbs[pbKey(r) + '|' + r.season] === r) { td.appendChild(text('span', 'champs-tag ath-badge', 'Season best')); }
-          if (cardable(r, pbs)) { td.appendChild(cardButton(r)); }
           if (qualified(r)) { td.appendChild(text('span', 'champs-tag ath-badge', 'Qualified')); }
         }
         // every wind reading is a tag; one over +2.0 m/s is outlined, like the
