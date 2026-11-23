@@ -454,13 +454,35 @@
         c.lineTo(W, H); c.closePath(); c.fill();
       };
       hill('#7DB860', H * 0.38, H * 0.08); hill('#5FA04A', H * 0.5, H * 0.1); hill('#3F8536', H * 0.66, H * 0.12);
+      // the course line, two curves
+      var segs = [[[0.1, 1], [0.2, 0.7], [0.85, 0.72], [0.7, 0.52]], [[0.7, 0.52], [0.6, 0.42], [0.3, 0.46], [0.35, 0.38]]];
       c.strokeStyle = 'rgba(255,255,255,.9)'; c.lineWidth = 4; c.setLineDash([10, 8]);
-      c.beginPath(); c.moveTo(W * 0.1, H); c.bezierCurveTo(W * 0.2, H * 0.7, W * 0.85, H * 0.72, W * 0.7, H * 0.52);
-      c.bezierCurveTo(W * 0.6, H * 0.42, W * 0.3, H * 0.46, W * 0.35, H * 0.38); c.stroke(); c.setLineDash([]);
-      [[0.2, 0.86, 1], [0.62, 0.66, 0.8], [0.66, 0.5, 0.6], [0.38, 0.43, 0.5]].forEach(function (f, k) {
-        var x = W * f[0], y = H * f[1], h = H * 0.07 * f[2];
-        line('#2A2A2A', 2, [[x, y], [x, y - h]]);
-        fill(k % 2 ? '#FFC629' : '#E0393E', [[x, y - h], [x + h * 0.6, y - h * 0.8], [x, y - h * 0.6]]);
+      c.beginPath(); c.moveTo(W * 0.1, H);
+      segs.forEach(function (g) { c.bezierCurveTo(W * g[1][0], H * g[1][1], W * g[2][0], H * g[2][1], W * g[3][0], H * g[3][1]); });
+      c.stroke(); c.setLineDash([]);
+      // gates: two bright pink round markers either side of the line, about 5 m apart, smaller further off
+      var bez = function (g, t, k) {
+        var u = 1 - t;
+        return u * u * u * g[0][k] + 3 * u * u * t * g[1][k] + 3 * u * t * t * g[2][k] + t * t * t * g[3][k];
+      };
+      var tan = function (g, t, k) {
+        var u = 1 - t;
+        return 3 * u * u * (g[1][k] - g[0][k]) + 6 * u * t * (g[2][k] - g[1][k]) + 3 * t * t * (g[3][k] - g[2][k]);
+      };
+      // (clear of the words and the logo)
+      [[0, H > W * 1.2 ? 0.35 : 0.64, 0.85], [1, 0.3, 0.6], [1, 0.85, 0.42]].forEach(function (q) {
+        var g = segs[q[0]], t = q[1], s = q[2], FLAT = 0.35;
+        // square to the course on the ground (the ground is squashed by FLAT on screen)
+        var dx = W * tan(g, t, 0), dy = H * tan(g, t, 1) / FLAT;
+        var len = Math.sqrt(dx * dx + dy * dy) || 1, nx = -dy / len, ny = dx / len * FLAT;
+        var x = W * bez(g, t, 0), y = H * bez(g, t, 1);
+        var half = Math.min(W, H) * 0.075 * s, r = Math.min(W, H) * 0.024 * s, post = r * 2.4;
+        [-1, 1].forEach(function (side) {
+          var px = x + side * half * nx, py = y + side * half * ny;
+          line('#2A2A2A', Math.max(1.5, r * 0.18), [[px, py], [px, py - post]]);
+          c.fillStyle = '#FF2E93'; c.beginPath(); c.arc(px, py - post, r, 0, Math.PI * 2); c.fill();
+          c.strokeStyle = '#FFFFFF'; c.lineWidth = Math.max(1.5, r * 0.15); c.stroke();
+        });
       });
     } else if (s === 'trail') {
       // a dirt trail winding up through bush-covered hills to a ridge, ranges behind
@@ -476,7 +498,6 @@
       var trail = [[0.5, 1, 0.16], [0.62, 0.86, 0.11], [0.36, 0.74, 0.07], [0.6, 0.62, 0.045], [0.42, 0.53, 0.03], [0.6, 0.44, 0.02], [0.75, 0.38, 0.012]];
       var left = trail.map(function (p) { return [W * (p[0] - p[2]), H * p[1]]; }), right = trail.map(function (p) { return [W * (p[0] + p[2]), H * p[1]]; });
       fill('#B08A5A', left.concat(right.reverse()));
-      line('rgba(90,60,30,.35)', 2, trail.map(function (p) { return [W * p[0], H * p[1]]; }));
       // bush and trees beside it
       [[0.12, 0.84, 1], [0.86, 0.8, 0.9], [0.2, 0.66, 0.6], [0.82, 0.6, 0.55], [0.3, 0.5, 0.4], [0.88, 0.47, 0.35]].forEach(function (t) {
         var x = W * t[0], y = H * t[1], h = H * 0.12 * t[2];
