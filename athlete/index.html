@@ -220,6 +220,47 @@
         </p>
         <div class="ath-charts" id="ath-charts"></div>
 
+        <!-- sharing the enlarged chart publicly: opened by its Share button (assets/js/athlete.js) -->
+        <dialog class="ath-share" id="ath-share" aria-labelledby="ath-share-title">
+          <div class="ath-share__head">
+            <h2 class="ath-share__title" id="ath-share-title" tabindex="-1">Share this chart publicly</h2>
+            <button type="button" class="ath-zoom__close" data-share-close aria-label="Close without sharing">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg>
+            </button>
+          </div>
+          <p class="ath-share__intro">Anyone with the link will see this image. The athlete page itself stays private.</p>
+          <div class="ath-share__box" id="ath-share-box"><img id="ath-share-preview" alt="" hidden></div>
+          <div class="ath-share__form" id="ath-share-form">
+            <fieldset class="ath-share__names" id="ath-share-names">
+              <legend>Name on the image</legend>
+              <label><input type="radio" name="ath-share-name" value="full" id="ath-share-name-full" checked> Full name <span class="ath-share__eg" id="ath-share-eg-full"></span></label>
+              <label><input type="radio" name="ath-share-name" value="first" id="ath-share-name-first"> First name only <span class="ath-share__eg" id="ath-share-eg-first"></span></label>
+            </fieldset>
+            <p class="ath-check ath-share__ok">
+              <input type="checkbox" id="ath-share-ok">
+              <label for="ath-share-ok">I’m allowed to share this athlete’s results publicly.</label>
+            </p>
+            <p class="ath-share__note">A shared image never changes. To show something different, share a new chart.</p>
+            <div class="ath-share__actions">
+              <button type="button" class="btn btn--ghost btn--sm" data-share-close>Cancel</button>
+              <button type="button" class="btn btn--accent btn--sm" id="ath-share-go" disabled>Create public link</button>
+            </div>
+          </div>
+          <div class="ath-share__form" id="ath-share-done" hidden>
+            <label class="ath-share__label" for="ath-share-link">Public link</label>
+            <div class="ath-share__link">
+              <input type="text" id="ath-share-link" readonly>
+              <button type="button" class="btn btn--ghost btn--sm" id="ath-share-copy">Copy link</button>
+            </div>
+            <div class="ath-share__actions">
+              <a class="ath-share__open" id="ath-share-open" target="_blank" rel="noopener">Open the share page</a>
+              <button type="button" class="btn btn--ghost btn--sm" id="ath-share-send" hidden>Share…</button>
+              <button type="button" class="btn btn--accent btn--sm" data-share-close>Done</button>
+            </div>
+          </div>
+          <p class="ath-share__said" id="ath-share-said" aria-live="polite"></p>
+        </dialog>
+
         <!-- one chart enlarged: opened by the button on each chart (assets/js/athlete.js) -->
         <dialog class="ath-zoom" id="ath-zoom" aria-labelledby="ath-zoom-title">
           <div class="ath-zoom__head">
@@ -232,6 +273,10 @@
                 <option value="portrait">Portrait 4:5</option>
                 <option value="square">Square 1:1</option>
               </select>
+              <button type="button" class="ath-zoom__download ath-zoom__share" id="ath-zoom-share" hidden>
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 15V4M8 8l4-4 4 4M5 13v6h14v-6"/></svg>
+                <span class="ath-zoom__download-words">Share</span>
+              </button>
               <button type="button" class="ath-zoom__download" id="ath-zoom-download" aria-describedby="ath-zoom-said">
                 <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 4v11M7 10l5 5 5-5M5 19h14"/></svg>
                 <span class="ath-zoom__download-words">Download</span>

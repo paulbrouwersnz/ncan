@@ -62,6 +62,21 @@
     return parts.filter(Boolean).join(' · ');
   }
 
+  /* Sharing (POST /v1/athletes/<address>/shares). The name on a shared image, as the API
+     words it in the share page's title: 'full' ("Sam Brown") or 'first' ("Sam"). */
+  function shownName(name, style) {
+    var parts = String(name || '').split(/\s+/).filter(Boolean);
+    if (!parts.length) { return ''; }
+    return style === 'full' ? parts.join(' ') : parts[0];
+  }
+  // the share's details as the query the API takes; confirm=1 is the consent tick
+  function shareQuery(f) {
+    return ['event', 'from', 'to', 'view', 'name'].map(function (k) {
+      return k + '=' + encodeURIComponent(f[k] || '');
+    }).join('&') + '&confirm=1';
+  }
+  var SHARE_MAX = 1536 * 1024;   // the API's limit on a shared image (1.5 MB)
+
   // key entries of these widths, laid out in rows no wider than max
   function keyRows(widths, max, gap) {
     gap = gap == null ? 20 : gap;
@@ -210,10 +225,11 @@
   /* opts: shape ('landscape', 'portrait' or 'square'); draw(w, h), which puts the chart's SVG at
      that size on the page (so it's styled) and returns it; done(), called after;
      title, the athlete; subtitle; key, a list of { swatch: element, words: text };
-     colours { bg, heading, text, soft }; dark; fonts { display, sans }.
+     colours { bg, heading, text, soft }; dark; fonts { display, sans }; scale (default 2:
+     pixels per point, so it's sharp on phones).
      Resolves with a canvas. */
   function render(opts) {
-    var S = 2, col = opts.colours, font = opts.fonts;
+    var S = opts.scale || 2, col = opts.colours, font = opts.fonts;
     var measure = document.createElement('canvas').getContext('2d');
     measure.font = '14px ' + font.sans;
     var widths = (opts.key || []).map(function (k) { return 24 + measure.measureText(k.words).width; });
@@ -292,5 +308,6 @@
 
   return { slug: slug, fileName: fileName, day: day, dateRange: dateRange, subtitle: subtitle,
            keyRows: keyRows, shadow: shadow, shapeFor: shapeFor, pick: pick, layout: layout, SIZES: SIZES,
-           PROPS: PROPS, render: render, save: save };
+           PROPS: PROPS, render: render, save: save,
+           shownName: shownName, shareQuery: shareQuery, SHARE_MAX: SHARE_MAX };
 }));

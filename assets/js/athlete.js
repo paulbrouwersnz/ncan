@@ -832,6 +832,8 @@
     zoom.slug = slug; zoom.group = g; zoom.kind = 'all';
     $('ath-zoom-from').value = ''; $('ath-zoom-to').value = '';
     $('ath-zoom-title').textContent = g.name;
+    var sb = $('ath-zoom-share');
+    if (sb) { sb.hidden = !shareCan(); }
     zoomChips();
     if (!dlg.open) { dlg.showModal(); }
     zoomDraw();
@@ -941,6 +943,38 @@
       said.textContent = 'There are no marks in these dates to save.';
       return;
     }
+    var who = (window.NCAN && NCAN.athlete && NCAN.athlete.name) || '';
+    var name = window.NCANChartImage.fileName(who, zoom.group.name);
+    b.disabled = true;
+    b.classList.add('is-busy');
+    if (sel) { sel.disabled = true; }
+    said.textContent = 'Making the image…';
+    zoomImage(who).then(function (canvas) { return window.NCANChartImage.save(canvas, name); }).then(function (how) {
+      said.textContent = how === 'shared' ? 'Chart shared.' : how === 'cancelled' ? '' : 'Chart saved as ' + name + '.';
+    }).catch(function () {
+      said.textContent = 'Sorry, the chart could not be saved as an image.';
+      var words = b.querySelector('.ath-zoom__download-words');
+      if (words) { words.textContent = 'Couldn’t save'; setTimeout(function () { words.textContent = 'Download'; }, 3000); }
+    }).then(function () {
+      b.disabled = false;
+      b.classList.remove('is-busy');
+      if (sel) { sel.disabled = false; }
+    });
+  }
+
+  // what the enlarged chart shows: its event, first and last dates, range and view
+  function zoomFacts() {
+    var dlg = $('ath-zoom');
+    var pts = (zoom.card && zoom.card.ncanPoints) || [];
+    var dates = pts.map(function (p) { return p.date; }).sort();
+    var chip = dlg.querySelector('#ath-zoom-ranges [aria-pressed="true"]');
+    return { event: zoom.group.name, from: dates[0] || '', to: dates[dates.length - 1] || '',
+             range: chip ? chip.textContent.trim() : '',
+             view: zoom.card && zoom.card.classList.contains('ath-chart--seasons') ? 'by-season' : 'timeline' };
+  }
+
+  // the enlarged chart as an image (a canvas), with this name above it
+  function zoomImage(title, scale) {
     var IMG = window.NCANChartImage;
     var dlg = $('ath-zoom'), cs = window.getComputedStyle(dlg);
     var css = function (sel, prop, dflt) {
@@ -957,11 +991,7 @@
       var sw = li.querySelector('.ath-key__mark');
       if (sw && !li.classList.contains('is-none')) { key.push({ swatch: sw, words: li.dataset.words || li.textContent.trim() }); }
     });
-    var pts = zoom.card.ncanPoints || [];
-    var dates = pts.map(function (p) { return p.date; }).sort();
-    var chip = dlg.querySelector('#ath-zoom-ranges [aria-pressed="true"]');
-    var who = (window.NCAN && NCAN.athlete && NCAN.athlete.name) || '';
-    var name = IMG.fileName(who, zoom.group.name);
+    var f = zoomFacts();
     // the chart drawn again at the size the image's shape leaves for it, out of sight on the
     // page so the stylesheet reaches it, with the same result selected and key entry lit
     var holder = null;
@@ -989,31 +1019,178 @@
       var m = String(cs.backgroundColor).match(/\d+(\.\d+)?/g);
       return m ? (+m[0] * 299 + +m[1] * 587 + +m[2] * 114) / 1000 < 128 : false;
     }());
-    b.disabled = true;
-    b.classList.add('is-busy');
-    if (sel) { sel.disabled = true; }
-    said.textContent = 'Making the image…';
-    IMG.render({
+    return IMG.render({
+      scale: scale,
       shape: IMG.pick(shapeChoice(), window.innerWidth, window.innerHeight),
       draw: draw,
       done: done,
       dark: dark,
-      title: who,
-      subtitle: IMG.subtitle(zoom.group.name, chip ? chip.textContent.trim() : '', dates[0], dates[dates.length - 1]),
+      title: title,
+      subtitle: IMG.subtitle(f.event, f.range, f.from, f.to),
       key: key,
       colours: { bg: cs.backgroundColor, heading: css('.ath-zoom__title', 'color', cs.color),
                  text: cs.color, soft: css('.ath-zoom__prompt', 'color', cs.color) },
       fonts: { display: css('.ath-zoom__title', 'fontFamily', cs.fontFamily), sans: cs.fontFamily }
-    }).then(function (canvas) { return IMG.save(canvas, name); }).then(function (how) {
-      said.textContent = how === 'shared' ? 'Chart shared.' : how === 'cancelled' ? '' : 'Chart saved as ' + name + '.';
+    });
+  }
+
+  /* Sharing the enlarged chart publicly (POST /v1/athletes/<address>/shares). The image is
+     made here with the name as chosen and shown before anything leaves the device; then it's
+     uploaded and the API gives back a public link. A share is never changed afterwards. */
+  var share = { canvas: null, style: 'full', busy: false, seq: 0, url: '' };
+
+  // only the athlete's GameDay contacts and admins, and not while the club has paused sharing
+  function shareCan() {
+    return !!(window.NCANChartImage && window.NCAN && NCAN.sendFile && NCAN.athlete && NCAN.athlete.can_share);
+  }
+
+  function shareOpen() {
+    var d = $('ath-share');
+    if (!d || !d.showModal || !shareCan()) { return; }
+    if (!zoom.card || !zoom.card.querySelector('svg.ath-chart__svg')) {
+      $('ath-zoom-said').textContent = 'There are no marks in these dates to share.';
+      return;
+    }
+    var IMG = window.NCANChartImage, who = NCAN.athlete.name || '';
+    share.style = 'full';
+    share.url = '';
+    $('ath-share-name-full').checked = true;
+    $('ath-share-eg-full').textContent = IMG.shownName(who, 'full');
+    $('ath-share-eg-first').textContent = IMG.shownName(who, 'first');
+    $('ath-share-ok').checked = false;
+    $('ath-share-form').hidden = false;
+    $('ath-share-done').hidden = true;
+    $('ath-share-said').textContent = '';
+    d.showModal();
+    $('ath-share-title').focus();
+    shareDraw();
+  }
+
+  // the preview, made again whenever the name changes
+  function shareDraw() {
+    var IMG = window.NCANChartImage, n = ++share.seq;
+    var img = $('ath-share-preview'), box = $('ath-share-box'), said = $('ath-share-said');
+    var who = IMG.shownName(NCAN.athlete.name, share.style);
+    share.canvas = null;
+    img.hidden = true;
+    box.classList.add('is-busy');
+    said.textContent = 'Making the image…';
+    shareButtons();
+    zoomImage(who).then(function (canvas) {
+      if (n !== share.seq) { return; }
+      share.canvas = canvas;
+      img.src = canvas.toDataURL('image/png');
+      img.alt = 'The image that will be shared: ' + who + ', ' + IMG.subtitle(zoomFacts().event, zoomFacts().range,
+        zoomFacts().from, zoomFacts().to) + '.';
+      img.hidden = false;
+      said.textContent = '';
     }).catch(function () {
-      said.textContent = 'Sorry, the chart could not be saved as an image.';
-      var words = b.querySelector('.ath-zoom__download-words');
-      if (words) { words.textContent = 'Couldn’t save'; setTimeout(function () { words.textContent = 'Download'; }, 3000); }
+      if (n === share.seq) { said.textContent = 'Sorry, the image could not be made.'; }
     }).then(function () {
-      b.disabled = false;
-      b.classList.remove('is-busy');
-      if (sel) { sel.disabled = false; }
+      if (n === share.seq) { box.classList.remove('is-busy'); shareButtons(); }
+    });
+  }
+
+  function shareButtons() {
+    var go = $('ath-share-go');
+    go.disabled = share.busy || !share.canvas || !$('ath-share-ok').checked || !shareCan();
+    Array.prototype.forEach.call(document.querySelectorAll('#ath-share-names input'), function (r) {
+      r.disabled = share.busy;
+    });
+    $('ath-share-ok').disabled = share.busy;
+  }
+
+  function blobOf(canvas) {
+    return new Promise(function (ok) { canvas.toBlob(ok, 'image/png'); });
+  }
+
+  function shareCreate() {
+    var go = $('ath-share-go'), said = $('ath-share-said');
+    if (go.disabled) { return; }
+    var IMG = window.NCANChartImage, f = zoomFacts(), style = share.style;
+    var too = new Error('That chart makes too big an image to share. Try fewer dates.');
+    share.busy = true;
+    go.classList.add('is-busy');
+    shareButtons();
+    said.textContent = 'Making the public link…';
+    blobOf(share.canvas).then(function (blob) {
+      // a very busy chart: made again a little smaller, to fit the API's limit
+      if (blob && blob.size > IMG.SHARE_MAX) {
+        return zoomImage(IMG.shownName(NCAN.athlete.name, style), 1.25).then(blobOf);
+      }
+      return blob;
+    }).then(function (blob) {
+      if (!blob) { throw new Error('Sorry, the image could not be made.'); }
+      if (blob.size > IMG.SHARE_MAX) { throw too; }
+      return NCAN.sendFile('/athletes/' + encodeURIComponent(NCAN.athlete.slug) + '/shares?' +
+        IMG.shareQuery({ event: f.event, from: f.from, to: f.to, view: f.view, name: style }), blob);
+    }).then(function (r) {
+      if (r.status === 201 && r.body && r.body.share && r.body.share.url) { shareDone(r.body.share); return; }
+      if (r.status === 413) { throw too; }
+      said.textContent = (r.body && r.body.error) || 'Sorry, the chart could not be shared (' + r.status + ').';
+      // refused (sharing paused, or no longer theirs to share): no Share until the page reloads
+      if (r.status === 403) {
+        NCAN.athlete.can_share = false;
+        $('ath-zoom-share').hidden = true;
+      }
+    }).catch(function (e) {
+      said.textContent = (e && e.message) || 'Sorry, the chart could not be shared.';
+    }).then(function () {
+      share.busy = false;
+      go.classList.remove('is-busy');
+      shareButtons();
+    });
+  }
+
+  function shareDone(s) {
+    share.url = s.url;
+    $('ath-share-form').hidden = true;
+    $('ath-share-done').hidden = false;
+    var link = $('ath-share-link');
+    link.value = s.url;
+    $('ath-share-open').href = s.url;
+    $('ath-share-send').hidden = !navigator.share;
+    $('ath-share-said').textContent = 'Your public link is ready.';
+    link.focus();
+    link.select();
+  }
+
+  function shareCopy() {
+    var b = $('ath-share-copy'), link = $('ath-share-link');
+    var said = function (w) {
+      b.textContent = w;
+      setTimeout(function () { b.textContent = 'Copy link'; }, 2500);
+    };
+    var old = function () {
+      link.focus(); link.select();
+      try { said(document.execCommand('copy') ? 'Copied' : 'Press Ctrl+C to copy'); } catch (e) { said('Press Ctrl+C to copy'); }
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(share.url).then(function () { said('Copied'); }, old);
+    } else { old(); }
+  }
+
+  function shareSetUp() {
+    var d = $('ath-share'), b = $('ath-zoom-share');
+    if (!d || !b) { return; }
+    b.addEventListener('click', shareOpen);
+    Array.prototype.forEach.call(d.querySelectorAll('[data-share-close]'), function (c) {
+      c.addEventListener('click', function () { d.close(); });
+    });
+    // closing (a button or Esc): anything still being made is dropped, and back to Share
+    d.addEventListener('close', function () {
+      share.seq++;
+      share.canvas = null;
+      if (!share.busy) { (b.hidden ? $('ath-zoom-close') : b).focus(); }
+    });
+    Array.prototype.forEach.call(d.querySelectorAll('#ath-share-names input'), function (r) {
+      r.addEventListener('change', function () { if (r.checked) { share.style = r.value; shareDraw(); } });
+    });
+    $('ath-share-ok').addEventListener('change', shareButtons);
+    $('ath-share-go').addEventListener('click', shareCreate);
+    $('ath-share-copy').addEventListener('click', shareCopy);
+    $('ath-share-send').addEventListener('click', function () {
+      navigator.share({ title: 'Chart from North Canterbury Athletic Club', url: share.url }).catch(function () { /* closed */ });
     });
   }
 
@@ -1083,6 +1260,7 @@
     $('ath-zoom-close').addEventListener('click', function () { zoomClose(); });
     var dl = $('ath-zoom-download'), shapeSel = $('ath-zoom-shape');
     if (dl) { if (window.NCANChartImage) { dl.addEventListener('click', zoomDownload); } else { dl.hidden = true; } }
+    shareSetUp();
     if (shapeSel) {
       if (!window.NCANChartImage) { shapeSel.hidden = true; }
       shapeSel.value = storedShape();
@@ -1726,7 +1904,8 @@
       athlete = json;
       // the header photo (athlete-photo.js): the athlete's own, and who may change it
       NCAN.athlete = { slug: current, name: json.name, photo: json.photo || null,
-        can_change_photo: !!json.can_change_photo, can_remove_photo: !!json.can_remove_photo };
+        can_change_photo: !!json.can_change_photo, can_remove_photo: !!json.can_remove_photo,
+        can_share: !!json.can_share };
       document.dispatchEvent(new CustomEvent('ncan:athlete', { detail: NCAN.athlete }));
       // cross country, road and relay legs have a section of their own: the
       // track sections (PBs, charts, filters, the results table) never see them
