@@ -274,11 +274,14 @@
           <div class="ath-share__box ath-card__box" id="ath-card-box"><img id="ath-card-preview" alt="" hidden></div>
           <div class="ath-share__form" id="ath-card-form">
             <div class="ath-card__options">
-              <fieldset class="ath-share__names" id="ath-card-styles">
-                <legend>Style</legend>
-                <label><input type="radio" name="ath-card-style" value="podium" checked> Club colours</label>
-                <label><input type="radio" name="ath-card-style" value="photo"> Photo</label>
-              </fieldset>
+              <!-- a dropdown, as more card styles will be added -->
+              <p class="ath-card__style">
+                <label for="ath-card-style">Style</label>
+                <select id="ath-card-style">
+                  <option value="podium" selected>Club colours</option>
+                  <option value="photo">Photo</option>
+                </select>
+              </p>
               <fieldset class="ath-share__names" id="ath-card-shapes">
                 <legend>Shape</legend>
                 <label><input type="radio" name="ath-card-shape" value="square" checked> Square</label>
@@ -297,6 +300,14 @@
                 <span id="ath-card-pick-words">Choose a photo</span>
               </label>
               <button type="button" class="btn btn--ghost btn--sm" id="ath-card-use-header" hidden>Use the header photo</button>
+              <!-- placing the photo: drag it on the card, arrow keys, or the zoom slider -->
+              <div class="ath-card__adjust" id="ath-card-adjust" hidden>
+                <label class="ath-card__zoom" for="ath-card-zoom">Zoom
+                  <input type="range" id="ath-card-zoom" min="100" max="400" step="5" value="100" aria-describedby="ath-card-adjust-hint">
+                </label>
+                <button type="button" class="btn btn--ghost btn--sm" id="ath-card-reset">Reset</button>
+                <p class="ath-card__photo-said" id="ath-card-adjust-hint">Drag the photo on the card to place it, and check it again after changing the shape. On a keyboard, select the card, then use the arrow keys, and + or − to zoom.</p>
+              </div>
             </div>
             <label class="ath-share__label" for="ath-card-caption">Suggested caption</label>
             <div class="ath-share__link">

@@ -1506,6 +1506,19 @@ table.schedule.champs-table { min-width: 0; }
 .ath-card__photo-said { flex: 1 1 100%; margin: 0; font-size: .9rem; color: var(--text-soft); }
 .ath-card__pick { position: relative; cursor: pointer; }
 .ath-card__pick:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
+/* the card's Style: a dropdown, as more styles will come */
+.ath-card__style { display: flex; flex-direction: column; gap: .25rem; margin: 0; }
+.ath-card__style label { font-weight: 600; font-size: .9rem; }
+.ath-card__style select { font: inherit; padding: .35rem .5rem; border: 1px solid var(--line); border-radius: 8px;
+  background: var(--surface); color: var(--text); min-width: 10rem; }
+/* the Photo card's photo is placed by dragging it on the preview */
+.ath-card__adjust { flex: 1 1 100%; display: flex; flex-wrap: wrap; align-items: center; gap: .5rem 1rem; }
+.ath-card__adjust[hidden] { display: none; }
+.ath-card__zoom { display: flex; align-items: center; gap: .5rem; font-weight: 600; font-size: .9rem; }
+.ath-card__zoom input { width: min(14rem, 50vw); accent-color: var(--accent); }
+.ath-card__box.is-adjustable img { cursor: grab; touch-action: none; -webkit-user-drag: none; user-select: none; }
+.ath-card__box.is-adjustable.is-dragging img { cursor: grabbing; }
+.ath-card__box.is-adjustable:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 12px; }
 /* a mark with its share icon pushed to the right edge */
 .ath-markline, .ath-pb__mark, .ath-zoom__mark { display: flex; align-items: center; gap: .4rem; }
 .ath-markline .ath-pb-share, .ath-pb__mark .ath-pb-share, .ath-zoom__mark .ath-pb-share { margin-left: auto; vertical-align: 0; }
