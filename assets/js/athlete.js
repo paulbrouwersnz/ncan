@@ -1289,7 +1289,7 @@
   /* A PB card: drawn here from the result, shown, then saved (share sheet or download).
      The athlete's GameDay contacts and admins can also make a public link of it, through
      the same share API as charts (view=pb-card). */
-  var card = { r: null, kind: 'pb', style: 'podium', surface: 'blue', oos: null, photo: null, picked: null, pos: { x: 50, y: 50, zoom: 1 },
+  var card = { r: null, kind: 'pb', style: 'podium', pbTitle: true, thens: [], then: 0, spans: [], span: 0, surface: 'blue', oos: null, photo: null, picked: null, pos: { x: 50, y: 50, zoom: 1 },
                drawing: false, again: false, shape: 'square', surname: false, where: false, canvas: null, seq: 0, busy: false, from: null, url: '' };
 
   // where the result's meeting was ({location, city}), from the page's meeting_places
@@ -1329,10 +1329,81 @@
         showPlace: card.place, where: card.where ? cardWhere(r) : null,
         mark: r.mark, event: card.oos.event, group: r.oos_grade || '' });
     }
-    var prev = pbBefore(r);
+    var prev = pbBefore(r), then = card.thens[card.then], span = card.spans[card.span];
     return window.NCANPbCard.facts({ kind: card.kind, name: NCAN.athlete && NCAN.athlete.name, surname: card.surname, showPlace: card.place, result: r, prev: prev,
       mark: markText(r), prevMark: prev ? markText(prev) : '', event: eventLabel(r), group: groupOf(r),
-      pbsThisSeason: pbsInSeason(r), where: card.where ? cardWhere(r) : null });
+      pbsThisSeason: pbsInSeason(r), where: card.where ? cardWhere(r) : null, pbTitle: card.pbTitle,
+      then: then ? { value: then.r.value, mark: markText(then.r), date: then.r.date, label: then.label } : null,
+      progress: span ? { points: span.points.map(function (q) { return { value: q.value, date: q.date, mark: markText(q) }; }), span: span.span } : null });
+  }
+
+  // earlier marks in the same event (and weight) that count towards a PB: measured, wind-legal, before r
+  function marksBefore(r) {
+    var k = pbKey(r);
+    return ((NCAN.athlete && NCAN.athlete.everything) || []).filter(function (q) {
+      return q !== r && typeof q.value === 'number' && !windy(q) && pbKey(q) === k && q.date <= r.date;
+    }).sort(function (a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; });
+  }
+  /* Then and now: what a new PB can be set against, each once: the PB it beat (first, the
+     default), the first recorded mark, the best of each earlier season (newest first), and
+     every earlier PB in the progression. [{ r, label (for the card), words (for the list) }] */
+  function thenChoices(r) {
+    if (card.kind !== 'newpb' || !pbBefore(r)) { return []; }
+    var before = marksBefore(r), out = [], seen = [];
+    var add = function (q, label) {
+      if (!q || !isBetter(r, q) || seen.indexOf(q) >= 0) { return; }
+      seen.push(q);
+      out.push({ r: q, label: label, words: label + ': ' + markText(q) + ', ' + longDate(q.date) });
+    };
+    add(pbBefore(r), 'Previous best');
+    add(before[0], 'First mark');
+    var seasons = {};
+    before.forEach(function (q) {
+      if (!q.season || q.season === r.season) { return; }
+      var b = seasons[q.season];
+      if (!b || isBetter(q, b)) { seasons[q.season] = q; }
+    });
+    Object.keys(seasons).sort().reverse().forEach(function (s) { add(seasons[s], 'Best in ' + s); });
+    newPb.filter(function (q) { return before.indexOf(q) >= 0; }).reverse().forEach(function (q) { add(q, 'Earlier best'); });
+    return out;
+  }
+  /* Progress line: where the line starts - this season, since an earlier season, or all
+     seasons; it always ends at this mark. Only spans with two marks at least, and none
+     that adds no marks to the one before it. [{ span (for the card), words (for the list), points }] */
+  function progressChoices(r) {
+    var out = [], last = -1;
+    if (windy(r)) { return out; }
+    var before = marksBefore(r), seasons = [];
+    before.forEach(function (q) { if (q.season && seasons.indexOf(q.season) < 0) { seasons.push(q.season); } });
+    seasons = seasons.filter(function (s) { return !r.season || s < r.season; }).sort().reverse();
+    var push = function (pts, span, words) {
+      if (pts.length < 2 || pts.length === last) { return; }
+      last = pts.length;
+      out.push({ span: span, words: words, points: pts });
+    };
+    if (r.season) { push(before.filter(function (q) { return q.season === r.season; }).concat([r]), r.season + ' season', 'This season (' + r.season + ')'); }
+    seasons.forEach(function (s, i) {
+      var pts = before.filter(function (q) { return q.season >= s; }).concat([r]);
+      if (i === seasons.length - 1) { push(pts, 'All seasons', 'All seasons (since ' + s + ')'); }
+      else { push(pts, 'Since ' + s, 'Since ' + s); }
+    });
+    if (!r.season) { push(before.concat([r]), 'All seasons', 'All seasons'); }
+    return out;
+  }
+  // a list's options from [{ words }], the first chosen
+  function cardChoices(sel, list) {
+    sel.textContent = '';
+    list.forEach(function (c, i) {
+      var o = document.createElement('option');
+      o.value = String(i); o.textContent = c.words;
+      sel.appendChild(o);
+    });
+    sel.value = '0';
+  }
+  // the Compare with and Seasons lists show with their own styles
+  function cardStyleRows() {
+    $('ath-card-then-row').hidden = card.style !== 'thennow';
+    $('ath-card-span-row').hidden = card.style !== 'progress';
   }
 
   /* The Photo card's photo: one picked on this device for this card, else the athlete's
@@ -1403,7 +1474,21 @@
     if (!d || !d.showModal || !window.NCANPbCard) { return; }
     card.r = r; card.from = from; card.url = ''; card.kind = kind || 'pb'; card.oos = oos || null;
     if (oos) { card.style = 'event'; }
-    $('ath-card-style').value = card.style;
+    // Then and now: a new PB, against an earlier mark; Progress line: two marks at least
+    card.thens = oos ? [] : thenChoices(r); card.then = 0;
+    card.spans = oos ? [] : progressChoices(r); card.span = 0;
+    cardChoices($('ath-card-then'), card.thens);
+    cardChoices($('ath-card-span'), card.spans);
+    var styleSel = $('ath-card-style'), tn = styleSel.querySelector('option[value="thennow"]'), pl = styleSel.querySelector('option[value="progress"]');
+    tn.hidden = tn.disabled = !card.thens.length;
+    pl.hidden = pl.disabled = !card.spans.length;
+    if ((card.style === 'thennow' && !card.thens.length) || (card.style === 'progress' && !card.spans.length)) { card.style = 'podium'; }
+    styleSel.value = card.style;
+    cardStyleRows();
+    // "Personal best" at the top of a PB card: on, unless the sharer turns it off
+    card.pbTitle = true;
+    $('ath-card-pbtitle').checked = true;
+    $('ath-card-pbtitle-row').hidden = !(card.kind === 'pb' || card.kind === 'newpb');
     cardSurfaceWords();
     cardPhotoSetUp();
     $('ath-card-title').textContent = { newpb: 'Share this personal best', pb: 'Share this personal best',
@@ -1455,7 +1540,9 @@
       if (n !== card.seq) { return; }
       card.canvas = canvas;
       img.src = canvas.toDataURL('image/png');
-      img.alt = 'The card: ' + f.headline.toLowerCase() + ' for ' + f.name + ', ' + f.event + ' ' + f.mark +
+      img.alt = 'The card: ' + (f.headline ? f.headline.toLowerCase() + ' for ' : '') + f.name + ', ' + f.event + ' ' + f.mark +
+        (card.style === 'thennow' && f.then ? ', up from ' + f.then.mark + ' (' + f.then.label.toLowerCase() + ', ' + f.then.date + ')' : '') +
+        (card.style === 'progress' && f.progress ? ', with a line of ' + f.progress.points.length + ' marks (' + f.progress.span.toLowerCase() + ')' : '') +
         (f.better ? ' (' + f.better + ')' : '') + ', ' + f.meeting + ', ' + f.date + '.';
       img.hidden = false;
       sayShare(said, '');
@@ -1573,7 +1660,7 @@
     go.classList.add('is-busy');
     cardButtons();
     sayShare(said, 'Making the public link…');
-    cardBlob(card.canvas, card.style !== 'podium' ? 'image/jpeg' : 'image/png').then(function (blob) {
+    cardBlob(card.canvas, card.style === 'photo' || card.style === 'event' ? 'image/jpeg' : 'image/png').then(function (blob) {
       if (!blob) { throw new Error('Sorry, the card could not be made.'); }
       size = blob.size;
       if (blob.size > IMG.SHARE_MAX) { throw tooBig('card', blob.size, hint); }
@@ -1626,7 +1713,10 @@
       card.canvas = null;
       if (card.from && document.contains(card.from)) { card.from.focus(); }
     });
-    $('ath-card-style').addEventListener('change', function () { card.style = this.value; cardPhotoWords(); cardSurfaceWords(); cardDraw(); });
+    $('ath-card-style').addEventListener('change', function () { card.style = this.value; cardStyleRows(); cardPhotoWords(); cardSurfaceWords(); cardDraw(); });
+    $('ath-card-then').addEventListener('change', function () { card.then = +this.value || 0; cardDraw(); });
+    $('ath-card-span').addEventListener('change', function () { card.span = +this.value || 0; cardDraw(); });
+    $('ath-card-pbtitle').addEventListener('change', function () { card.pbTitle = this.checked; cardDraw(); });
     $('ath-card-surface').addEventListener('change', function () { card.surface = this.value; cardDraw(); });
     $('ath-card-file').addEventListener('change', function () {
       var file = this.files && this.files[0];
