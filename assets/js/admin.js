@@ -2,7 +2,8 @@
   admin.js - the club admin pages: /admin/ (the staff tools, for coaches, the
   committee and administrators, each seeing the groups their role reaches) and,
   for club administrators only, each admin tool's own page (/admin/review/, /admin/members-list/, /admin/membership/,
-  /admin/merges/, /admin/corrections/, /admin/addresses/, /admin/blocked/; header photos,
+  /admin/merges/, /admin/corrections/, /admin/addresses/, /admin/blocked/; track colours,
+  /admin/track-colours/, are admin-tracks.js; header photos,
   /admin/header-photos/, are admin-photos.js). Old /admin/#section links go to the tool's page.
 
   Everything comes from the club's API (see assets/js/ncan-account.js), which
@@ -1360,6 +1361,7 @@
       if (has('corrections')) { setUpCorrections(); setUpOptOut(); }
       if (has('addresses')) { setUpAddresses(); }
       if (has('blocks')) { setUpBlocks(); }
+      if (window.AdminTracks && has('tracks')) { AdminTracks.start(); }
       if (window.AdminPhotos) { AdminPhotos.start(); }
       if (window.NCANSharedCharts && has('shares-admin')) { NCANSharedCharts.startAdmin(); }
     }, function (err) { $('admin-status').textContent = err.message || 'Sorry, this page could not be loaded.'; });

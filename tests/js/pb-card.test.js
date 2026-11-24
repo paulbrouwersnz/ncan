@@ -249,3 +249,14 @@ test('where the meeting was: under the meeting and date, New Zealand left off', 
     }
   }
 });
+
+test('the club’s own track colours replace the built-in ones, keeping blue', () => {
+  const fresh = require('../../assets/js/pb-card.js');
+  fresh.setTracks([{ id: 'red', name: 'Red', hex: '#B4472F' }, { id: 'sky', name: 'Sky', hex: '#4AA3DF' },
+                   { id: 'bad', name: 'Bad', hex: 'blue' }]);
+  assert.deepEqual(fresh.SURFACES, ['red', 'sky', 'blue']);
+  const L = fresh.layout({ name: 'Amy', event: '100m', mark: '13.2' }, 'square', 'event', 'sky');
+  assert.equal(L.items.filter((i) => i.kind === 'scene')[0].surface, 'sky');
+  fresh.setTracks([]);                                            // nothing sent: kept as it was
+  assert.deepEqual(fresh.SURFACES, ['red', 'sky', 'blue']);
+});
