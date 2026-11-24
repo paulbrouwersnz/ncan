@@ -951,7 +951,7 @@ Charts and PB cards shared publicly are listed by
 people who may share for that athlete (`GET /v1/athletes/<address>/shares`;
 the API refuses everyone else, so nothing shows), **Your shared charts** on
 `/athletes/` when there are any (`GET /v1/me/shares`), and the admin tool page
-`/admin/shared-charts/` (`GET /v1/admin/shares`) with every share, Show (live,
+`/admin/shared/` (`GET /v1/admin/shares`) with every share, Show (live,
 removed, all), Find, Remove with a required reason, and Pause sharing. Each
 share shows its thumbnail, event, dates and view, the name it shows, when it was
 made and its views (people once a day, link previews apart), with Copy link,
