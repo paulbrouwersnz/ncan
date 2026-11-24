@@ -874,6 +874,24 @@
         var r = opts.cover(ph.width, ph.height, WIN.w, WIN.h, opts.focus, opts.zoom);
         c.drawImage(ph, r.sx, r.sy, r.sw, r.sh, WIN.x, WIN.y, WIN.w, WIN.h);
         s.canvas.photo = { iw: ph.width, ih: ph.height, w: WIN.w, h: WIN.h };
+      } else if (opts.placeholder) {
+        // no photo yet: the club's crest where it will go, to show what the side looks like
+        var glow = c.createRadialGradient(W / 2, H * 0.42, 40, W / 2, H * 0.42, WIN.h * 0.62);
+        glow.addColorStop(0, C.green2); glow.addColorStop(1, C.ink);
+        c.fillStyle = glow; c.fillRect(WIN.x, WIN.y, WIN.w, WIN.h);
+        c.save(); c.globalAlpha = 0.06; c.strokeStyle = '#FFFFFF'; c.lineWidth = 2;
+        for (var d = -H; d < W; d += 26) { c.beginPath(); c.moveTo(d, WIN.y); c.lineTo(d + WIN.h, WIN.y + WIN.h); c.stroke(); }
+        c.restore();
+        var lw = 600, lh = lw * 508 / 888;
+        c.drawImage(opts.placeholder, (W - lw) / 2, H * 0.42 - lh / 2 - 40, lw, lh);
+        c.save();
+        c.setLineDash([18, 14]); c.lineWidth = 3; c.strokeStyle = 'rgba(255,255,255,.35)';
+        rounded(c, WIN.x + 40, WIN.y + 230, WIN.w - 80, 600, 24); c.stroke();
+        c.restore();
+        c.font = '900 40px ' + D; c.fillStyle = C.goldSoft; c.textAlign = 'center';
+        if (c.letterSpacing !== undefined) { c.letterSpacing = '6px'; }
+        c.fillText('YOUR PHOTO HERE', W / 2, H * 0.42 + lh / 2 + 40);
+        if (c.letterSpacing !== undefined) { c.letterSpacing = '0px'; }
       }
       // a refractor's sheen over the photo too, gently
       if (fin.holo > 0.3) { holo(c, WIN.x, WIN.y, WIN.w, WIN.h, fin.holo * 0.22, seed + 1); }
@@ -1413,7 +1431,7 @@
     el('sc-nophoto').hidden = !on;
     el('sc-pick-words').textContent = on ? 'Use a different photo' : 'Add a photo';
     el('sc-photo-said').textContent = !on
-      ? 'No photo: the card is the stats side alone. Add one for a photo side; it stays on this device.'
+      ? 'No photo yet: the club crest shows where it will go. Without one, only the stats side is saved or shared. A photo you add stays on this device.'
       : ui.picked ? 'Using the photo you chose: drag it on the card to move it into place. It stays on this device unless you make a public link.'
       : 'Using the header photo.';
     el('sc-looks-field').hidden = !on;
@@ -1434,12 +1452,13 @@
     };
     next();
   }
-  // with a photo, a card with two sides to turn; without one, the stats side alone
+  /* Always a card with two sides to turn: with no photo, the photo side shows the
+     club's crest where the photo will go, as a preview. It isn't saved or shared:
+     without a photo, the card saved and linked is the stats side alone. */
   function sides() {
-    var two = !!(photoChoice() && ui.source);
-    el('sc-stage').classList.toggle('is-single', !two);
-    el('sc-flip').hidden = !two;
-    flip(!two);
+    el('sc-stage').classList.remove('is-single');
+    el('sc-flip').hidden = false;
+    flip(false);
     stale(); publicShow(); linkButton();
   }
   function flip(toBack) {
@@ -1448,7 +1467,7 @@
     el('sc-flip-words').textContent = toBack ? 'Turn to the photo side' : 'Turn to the stats side';
     el('sc-front').setAttribute('aria-hidden', toBack ? 'true' : 'false');
     el('sc-back').setAttribute('aria-hidden', toBack ? 'false' : 'true');
-    el('sc-card').classList.toggle('is-placeable', !toBack && !!ui.source);
+    el('sc-card').classList.toggle('is-placeable', !toBack && !!(photoChoice() && ui.source));
   }
   function lookOf() {
     if (!ui.looks[ui.look]) { ui.looks[ui.look] = filtered(ui.source, ui.look); }
@@ -1548,8 +1567,22 @@
     }).catch(function () { say('Sorry, the card could not be made.'); });
   }
   // quiet: placing the photo; one drawing at a time, and the latest position wins
+  function drawPlaceholder() {
+    var f = ui.f;
+    ui.front = null;
+    (ui.crest || (ui.crest = loadImage('/assets/img/logo-dark.svg'))).then(function (crest) {
+      if (f !== ui.f || !ui.d.open || photoChoice()) { return; }
+      return front(f, { photo: null, placeholder: crest, finish: ui.finish, fonts: fontsOf(), logo: ui.logo }).then(function (cv) {
+        if (f !== ui.f || !ui.d.open || photoChoice()) { return; }
+        var img = el('sc-front');
+        img.src = cv.toDataURL('image/png');
+        img.alt = 'A preview of the photo side, with the club crest where a photo will go.';
+      });
+    }).catch(function () {});
+  }
   function drawFront(quiet) {
-    if (!photoChoice() || !ui.source) { return; }
+    if (!photoChoice()) { drawPlaceholder(); return; }
+    if (!ui.source) { return; }
     stale();
     if (ui.busy) { ui.again = true; return; }
     if (!quiet) { say(lookName(ui.look) + ': working on the photo…'); ui.front = null; buttons(); }
