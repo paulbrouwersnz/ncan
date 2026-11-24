@@ -66,7 +66,7 @@ test('signatureChoices: race kinds count all their races, most races first, then
   const xc = list[1];
   assert.ok(xc.race);
   assert.deepStrictEqual(xc.points.map(p => p.value), [2, 5]);
-  assert.deepStrictEqual(xc.points.map(p => p.pb), [true, false]);
+  assert.deepStrictEqual(xc.points.map(p => p.medal), [2, 0]);
 });
 
 test('facts: a cross country runner gets a race kind as signature', () => {
@@ -168,4 +168,27 @@ test('funFact: every fact fits the box, and no results is a first edition', () =
   const none = SC.facts({ name: 'New Kid', season: '2025/26', events: [], races: [] }).fact;
   assert.strictEqual(none.icon, 'star');
   assert.strictEqual(none.choices, 1);
+});
+
+test('highlights count relay team podiums, as the podiums number does', () => {
+  const r = (place, team) => ({ kind: team ? 'Relay' : 'Road', race: 'Road 5 km', place, of: 9, date: '2025-08-01', team: !!team });
+  const f = SC.facts({ name: 'Dale', events: [], races: [r(2), r(3, true), r(2, true), r(6)] });
+  assert.strictEqual(f.tile.value, 3);
+  assert.ok(f.highlights.some(h => h === '1 top-three finish, and 2 more with relay teams.'), f.highlights.join(' | '));
+});
+
+test('funFact: cross country, road and relay runners get time, pace, field and relay facts', () => {
+  const r = (kind, race, mark, place, of, team) => ({ kind: team ? 'Relay' : kind, race, mark, place, of, date: '2025-06-01', team: !!team });
+  const races = [r('Cross country', 'Cross country 4 km', '16:20', 10, 11), r('Cross country', 'Cross country 8 km', '36:12.74', 55, 60),
+    r('Cross country', 'Cross country 6.9 km', '30:57.0', 6, 7), r('Road', 'Road 5 km', '20:00', 2, 3),
+    r('Cross country', 'Trail relay, leg 4 (5 km)', '21:37', 2, 10, true), r('Road', 'Road relay, leg 2 (5.2 km)', '21:38.51', 3, 4, true)];
+  const seen = new Set();
+  for (let i = 0; i < 300; i++) { seen.add(SC.facts({ name: 'Dale', season: '2025/26', events: [], races, factTurn: i }).fact.words); }
+  const all = [...seen].join('\n');
+  assert.match(all, /racing off the track this season/);
+  assert.match(all, /Fastest pace of the season: 4:00 per km, in the Road 5 km\. At that pace, a 10 km takes 40 min\./);
+  assert.match(all, /The biggest field: 60 at the Cross country 8 km/);
+  assert.match(all, /Carried the baton 10\.2 km for the team this season, over 2 legs\./);
+  assert.match(all, /Longest race of the season: the Cross country 8 km, done in 36:12\.74\./);
+  for (const w of seen) { assert.ok(w.length <= 170, w); }
 });

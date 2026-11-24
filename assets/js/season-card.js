@@ -29,6 +29,8 @@
   var W = 750, H = 1050, SCALE = 2;    // a 5:7 card, drawn at 1500 x 2100
   var C = { ink: '#062A20', green: '#0B3B2E', green2: '#0F4C39', leaf: '#1E7A4F', gold: '#FFC629',
             goldSoft: '#FFD75E', cream: '#FFF6DA', paper: '#F6ECD2', soft: '#B8D4C8', red: '#C8102E' };
+  // 1st, 2nd and 3rd places: gold, silver and bronze
+  var MEDALS = { 1: '#FFC629', 2: '#C9D1D9', 3: '#D9965B' };
   var MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   var MINUS = '−';
 
@@ -155,7 +157,7 @@
         event: k[1], race: true, kind: k[0], starts: list.length,
         wins: placed.filter(function (r) { return r.place === 1; }).length,
         podiums: placed.filter(function (r) { return r.place <= 3; }).length,
-        points: placed.map(function (r) { return { value: r.place, date: r.date, pb: r.place <= 3 }; })
+        points: placed.map(function (r) { return { value: r.place, date: r.date, medal: r.place <= 3 ? r.place : 0 }; })
       });
     });
     return out;
@@ -216,10 +218,14 @@
     if (totals.newPbs) {
       out.push('Set ' + plural(totals.newPbs, 'personal best') + (pbEvents > 1 ? ' in ' + pbEvents + ' events' : '') + '.');
     }
+    // relay teams' top-three places count too, as the podiums number does
+    var team = races.filter(function (r) { return r.team && r.place >= 1 && r.place <= 3; }).length;
+    var teamText = team ? (totals.podiums ? ', and ' + team + ' more with relay teams' : ' with relay teams') : '';
     if (totals.wins) {
-      out.push(plural(totals.wins, 'win') + (totals.podiums > totals.wins ? ' and ' + plural(totals.podiums, 'top-three finish', 'top-three finishes') : '') + '.');
-    } else if (totals.podiums) {
-      out.push(plural(totals.podiums, 'top-three finish', 'top-three finishes') + '.');
+      out.push(plural(totals.wins, 'win') + (totals.podiums > totals.wins ? ' and ' + plural(totals.podiums, 'top-three finish', 'top-three finishes') : '') + teamText + '.');
+    } else if (totals.podiums || team) {
+      out.push(totals.podiums ? plural(totals.podiums, 'top-three finish', 'top-three finishes') + teamText + '.'
+        : plural(team, 'top-three finish', 'top-three finishes') + teamText + '.');
     }
     var bestRace = races.filter(function (r) { return r.place >= 1 && !r.team; })
       .sort(function (x, y) { return x.place - y.place; })[0];
@@ -427,6 +433,53 @@
       add('relay', 'Ran ' + plural(batons, 'relay leg') + ' this season' + (teamPods ? ', with ' + plural(teamPods, 'team podium') : '') + ': teamwork makes the dream work.');
     }
 
+    // cross country, road and relays: time, pace, strides, fields and climbs
+    var secs = function (mark) {
+      var p = String(mark || '').split(':'), v = 0;
+      if (p.length < 2 || p.length > 3) { return 0; }
+      for (var i = 0; i < p.length; i++) { if (!/^\d+(\.\d+)?$/.test(p[i])) { return 0; } v = v * 60 + +p[i]; }
+      return v;
+    };
+    var perKm = function (s, m) { var v = Math.round(s / (m / 1000)); return Math.floor(v / 60) + ':' + (v % 60 < 10 ? '0' : '') + v % 60; };
+    var timed = races.map(function (r) { return { r: r, m: metresOf(r.race), s: secs(r.mark) }; })
+      .filter(function (t) { return t.m >= 1000 && t.s > 0 && t.s / (t.m / 1000) >= 120 && t.s / (t.m / 1000) <= 900; });
+    var kindFor = function (r) { return r.team ? 'relay' : offKind; };
+    if (timed.length >= 3) {
+      var onClock = timed.reduce(function (t, x) { return t + x.s; }, 0);
+      var like = onClock >= 7200 ? 'longer than most movies.' : onClock >= 4800 ? 'longer than a whole game of rugby.' :
+        onClock >= 3600 ? 'longer than a game of netball.' : onClock >= 1800 ? 'longer than a TV episode.' : 'quicker than cooking a roast.';
+      add(offKind, 'Spent ' + span(onClock) + ' racing off the track this season: ' + like);
+      var fast = timed.slice().sort(function (x, y) { return x.s / x.m - y.s / y.m; })[0];
+      add(kindFor(fast.r), 'Fastest pace of the season: ' + perKm(fast.s, fast.m) + ' per km, in the ' + fast.r.race + '. At that pace, a 10 km takes ' +
+        span(fast.s / fast.m * 10000) + '.');
+    }
+    if (off >= 3000) {
+      add(offKind, 'Raced ' + km(off) + ' off the track: about ' + (Math.round(off / 1.2 / 100) * 100).toLocaleString('en-NZ') + ' running strides.');
+    }
+    if (off >= 8849) {
+      add(offKind, 'Raced ' + km(off) + ' off the track this season: ' +
+        (off >= 17698 ? oneDp(off / 8849) + ' times' : 'further than') + ' the height of Mt Everest (8.8 km).');
+    }
+    if (off >= 22000) {
+      add(offKind, 'Raced ' + km(off) + ' off the track: ' + (off >= 44000 ? oneDp(off / 22000) + ' times' : 'further than') + ' the width of Cook Strait (22 km).');
+    }
+    var fields = solo.filter(function (r) { return r.of >= 2; });
+    var rivals = fields.reduce(function (t, r) { return t + r.of - 1; }, 0);
+    if (fields.length >= 3 && rivals >= 20) {
+      var biggestField = fields.slice().sort(function (x, y) { return y.of - x.of; })[0];
+      add(offKind, 'Lined up against ' + rivals + ' runners across ' + plural(fields.length, 'race') + '. The biggest field: ' +
+        biggestField.of + ' at the ' + biggestField.race + '.');
+    }
+    var longest = races.filter(function (r) { return !r.team && metresOf(r.race) >= 3000 && r.mark; })
+      .sort(function (x, y) { return metresOf(y.race) - metresOf(x.race); })[0];
+    if (longest) { add(offKind, 'Longest race of the season: the ' + longest.race + ', done in ' + longest.mark + '.'); }
+    var relayM = legs.reduce(function (t, r) { return t + metresOf(r.race); }, 0);
+    if (legs.length && relayM >= 2000) {
+      add('relay', 'Carried the baton ' + km(relayM) + ' for the team this season' + (legs.length > 1 ? ', over ' + plural(legs.length, 'leg') : '') + '.');
+    }
+    var finishes = solo.length + legs.filter(function (r) { return r.place >= 1; }).length;
+    if (finishes >= 6) { add(offKind, 'Crossed ' + finishes + ' finish lines off the track this season' + (offKind === 'xc' ? ': mud, hills and all.' : '.')); }
+
     // any athlete: how many different events, and the busiest month
     if (events.length >= 5) { add('any', 'Tried ' + events.length + ' different events this season: a true all-rounder.'); }
     var months = {};
@@ -450,7 +503,8 @@
     var t = f.totals, bits = [];
     if (t.newPbs) { bits.push(plural(t.newPbs, 'PB')); }
     if (t.wins) { bits.push(plural(t.wins, 'win')); }
-    if (t.podiums) { bits.push(t.podiums + ' top-three'); }
+    var top3 = f.tile.kind === 'podiums' ? f.tile.value : t.podiums;
+    if (top3) { bits.push(top3 + ' top-three'); }
     if (!bits.length) { bits.push(plural(t.starts, 'start')); }
     return f.name + '’s ' + f.season + ' season card' + (f.rookie ? ' (rookie card!)' : '') + ': ' + bits.join(', ') +
       '. North Canterbury Athletic Club #NCAN';
@@ -972,9 +1026,10 @@
     c.beginPath(); pts.forEach(function (p, i) { var q = at(p, i); if (i) { c.lineTo(q[0], q[1]); } else { c.moveTo(q[0], q[1]); } }); c.stroke();
     pts.forEach(function (p, i) {
       var q = at(p, i);
-      c.beginPath(); c.arc(q[0], q[1], p.pb ? 6 : 3.5, 0, Math.PI * 2);
-      c.fillStyle = p.pb ? C.gold : '#FFFFFF'; c.fill();
-      if (p.pb) { c.lineWidth = 2; c.strokeStyle = C.ink; c.stroke(); }
+      var big = p.pb || p.medal;
+      c.beginPath(); c.arc(q[0], q[1], big ? 6 : 3.5, 0, Math.PI * 2);
+      c.fillStyle = p.medal ? MEDALS[p.medal] : p.pb ? C.gold : '#FFFFFF'; c.fill();
+      if (big) { c.lineWidth = 2; c.strokeStyle = C.ink; c.stroke(); }
     });
   }
 
@@ -1037,7 +1092,7 @@
       boxes.forEach(function (x, i) {
         var bx = X0 + i * (bw + gap);
         c.fillStyle = C.cream; rounded(c, bx, by, bw, bh, 12); c.fill();
-        c.fillStyle = i === 3 && x[0] ? C.gold : metal(c, fin, bx, by, bw, 7); rounded(c, bx, by, bw, 7, 3); c.fill();
+        c.fillStyle = metal(c, fin, bx, by, bw, 7); rounded(c, bx, by, bw, 7, 3); c.fill();
         text(x[0], bx + bw / 2, by + 50, { size: 38, weight: 900, display: true });
         text(x[1], bx + bw / 2, by + 68, { size: 11, weight: 800, colour: C.leaf, spacing: 2, max: bw - 10 });
       });
@@ -1091,11 +1146,14 @@
         var rc = [X0 + 14, X0 + 92, X0 + 486, X0 + 610];
         f.races.slice(0, raceRows).forEach(function (r, i) {
           c.fillStyle = i % 2 ? C.paper : C.cream; c.fillRect(X0, y, IW, RROW);
-          var yy = y + 21, podium = r.place >= 1 && r.place <= 3 && !r.team;
+          var yy = y + 21, podium = r.place >= 1 && r.place <= 3;
           text(day(r.date), rc[0], yy, { size: 14, weight: 700, colour: C.leaf, align: 'left', max: 72 });
           text(r.race, rc[1], yy, { size: 15, align: 'left', max: 380 });
-          text(r.mark || '–', rc[2], yy, { weight: 700, max: 100 });
-          if (podium) { c.fillStyle = C.gold; rounded(c, rc[3] - 52, y + 4, 104, RROW - 8, 6); c.fill(); }
+          // times line up on the decimal point: the whole seconds end at one line, any tenths or hundredths after it
+          var mk = String(r.mark || '–'), dot = mk.search(/\.\d+$/);
+          text(dot < 0 ? mk : mk.slice(0, dot), rc[2] + 14, yy, { weight: 700, align: 'right', max: 90 });
+          if (dot >= 0) { text(mk.slice(dot), rc[2] + 14, yy, { weight: 700, align: 'left', max: 40 }); }
+          if (podium) { c.fillStyle = MEDALS[r.place]; rounded(c, rc[3] - 58, y + 4, 116, RROW - 8, 6); c.fill(); }
           text(r.place ? ordinal(r.place) + (r.of ? ' of ' + r.of : '') + (r.team ? ' (team)' : '') : '–', rc[3], yy, { size: 14, weight: 700, max: 100 });
           y += RROW;
         });
@@ -1149,8 +1207,10 @@
       c.restore();
       if (sig) { sparkline(c, sig.points, !sig.race && sig.field, lx, fy0 + 11, X1 - 96 - lx, 24); }
       text('ncan.nz', X1 - 14, fy0 + 28, { size: 13, weight: 800, colour: '#FFFFFF', align: 'right' });
-      text('From results published by meetings' + (f.upTo ? ', to ' + f.upTo : '') + '. ★ a new personal best that season.' +
-        (sig && sig.race ? ' Gold dots: top-three finishes.' : ''),
+      // the key: PB stars only where there are track and field results to have them
+      text('From results published by meetings' + (f.upTo ? ', to ' + f.upTo : '') + '.' +
+        (f.events.length ? ' ★ a new personal best that season.' : '') +
+        (f.races.length ? ' Gold, silver and bronze: 1st, 2nd and 3rd places.' : ''),
         W / 2, H - 29, { size: 10.5, weight: 500, colour: 'rgba(255,255,255,.72)', max: W - 90 });
       c.restore();
       return s.canvas;
