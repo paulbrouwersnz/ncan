@@ -119,7 +119,8 @@
     if (!pts || pts.length < 2) { return null; }
     var e = String(r.event || '').toLowerCase();
     var note = !r.field ? 'Up is faster' : /high jump|pole/.test(e) ? 'Up is higher' : 'Up is further';
-    return { points: pts, field: !!r.field, span: p.span || '', note: note };
+    var hide = (p.hide || []).filter(function (m) { return m >= 1 && m <= 12; });
+    return { points: pts, field: !!r.field, span: p.span || '', note: note, hide: hide.length < 12 ? hide : [] };
   }
   function facts(a) {
     var r = a.result || {}, kind = kindOf(a), place = r.relay ? '' : placeWord(r.place);
@@ -332,7 +333,7 @@
     t(pr.span, W - pad, P.note, P.noteSize, { colour: COLOURS.soft, align: 'right', max: W / 2 - pad });
     var x0 = pad + 14, x1 = W - pad - 14, y0 = P.plot[0] + 14, h = P.plot[1] - 28;
     items.push({ kind: 'chart', x: pad, y: P.plot[0], w: W - 2 * pad, h: P.plot[1], story: story,
-                 points: chartPoints(pr.points, pr.field, x0, x1, y0, h) });
+                 points: chartPoints(pr.points, pr.field, x0, x1, y0, h, pr.hide) });
     var pts = pr.points;
     t([pts[0].mark, day(pts[0].date)].filter(Boolean).join(' · '), pad, P.dates, P.dateSize, { colour: COLOURS.soft, max: W / 2 - pad });
     t(day(pts[pts.length - 1].date), W - pad, P.dates, P.dateSize, { colour: COLOURS.soft, align: 'right', max: W / 2 - pad });
@@ -346,10 +347,13 @@
     return C.crest();
   }
   /* Where each mark sits in the plot (x from x0 to x1 by date, y within y0..y0+h, better
-     higher); evenly spaced when every mark is on the same day. */
-  function chartPoints(points, field, x0, x1, y0, h) {
+     higher); evenly spaced when every mark is on the same day. hide: the calendar months
+     (1-12) with no result for the event in any season, as the progress chart's Hide empty
+     months finds them: taken out of the date axis quietly, with no break drawn. */
+  function chartPoints(points, field, x0, x1, y0, h, hide) {
     var dn = function (iso) { var p = String(iso).split('-'); return Date.UTC(+p[0], +p[1] - 1, +p[2]) / 864e5; };
     var ds = points.map(function (p) { return dn(p.date); }), vs = points.map(function (p) { return p.value; });
+    if (hide && hide.length) { ds = shownDays(ds, hide); }
     var dMin = Math.min.apply(null, ds), dMax = Math.max.apply(null, ds);
     var vMin = Math.min.apply(null, vs), vMax = Math.max.apply(null, vs), n = points.length;
     return points.map(function (p, i) {
@@ -358,6 +362,23 @@
       if (!field) { fy = 1 - fy; }   // a faster time is higher
       return { x: Math.round((x0 + fx * (x1 - x0)) * 10) / 10, y: Math.round((y0 + (1 - fy) * h) * 10) / 10 };
     });
+  }
+  // day numbers (sorted, oldest first) as days counted from the first, leaving out
+  // the days of hidden months
+  function shownDays(ds, hide) {
+    var off = {};
+    hide.forEach(function (m) { off[m] = true; });
+    var start = Math.min.apply(null, ds);
+    var upTo = function (to) {
+      var d = new Date(start * 864e5), y = d.getUTCFullYear(), m = d.getUTCMonth(), n = 0;
+      for (;;) {
+        var a = Math.max(start, Date.UTC(y, m, 1) / 864e5), b = Math.min(to, Date.UTC(y, m + 1, 1) / 864e5);
+        if (a >= to) { return n; }
+        if (!off[m + 1]) { n += b - a; }
+        if (++m > 11) { m = 0; y++; }
+      }
+    };
+    return ds.map(upTo);
   }
 
   /* The Photo hero card: the photo fills the card (cropped to cover it, keeping the focus

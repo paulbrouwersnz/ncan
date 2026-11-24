@@ -1334,10 +1334,20 @@
       mark: markText(r), prevMark: prev ? markText(prev) : '', event: eventLabel(r), group: groupOf(r),
       pbsThisSeason: pbsInSeason(r), where: card.where ? cardWhere(r) : null, pbTitle: card.pbTitle,
       then: then ? { value: then.r.value, mark: markText(then.r), date: then.r.date, label: then.label } : null,
-      progress: span ? { points: span.points.map(function (q) { return { value: q.value, date: q.date, mark: markText(q) }; }), span: span.span } : null });
+      progress: span ? { points: span.points.map(function (q) { return { value: q.value, date: q.date, mark: markText(q) }; }), span: span.span,
+                         hide: emptyMonthsOf(r) } : null });
   }
 
   // earlier marks in the same event (and weight) that count towards a PB: measured, wind-legal, before r
+  // the Progress line card leaves out the months with no result for this event in any
+  // season, as the progress chart's Hide empty months does
+  function emptyMonthsOf(r) {
+    if (!SEASONS) { return []; }
+    var k = pbKey(r);
+    return SEASONS.emptyMonths(((athlete && athlete.everything) || []).filter(function (q) {
+      return typeof q.value === 'number' && pbKey(q) === k;
+    }).map(function (q) { return q.date; }));
+  }
   function marksBefore(r) {
     var k = pbKey(r);
     return ((athlete && athlete.everything) || []).filter(function (q) {
