@@ -7,7 +7,7 @@
      rainbow holo, club green or onyx), the club crest, the season badge, a
      Rookie Card badge in their first season, and their name on a slanted
      nameplate. The photo can be given a look: chrome, gold rush, pencil sketch,
-     vintage, noir, heat map, club duotone, film, soft glow or bold contrast.
+     vintage, noir, heat map, club duotone, film, soft glow, bold contrast or infrared.
    - the stats side: the season in numbers, as on the back of a baseball card:
      each event's starts, season best, personal best, wins and top-three
      places, with a totals row; cross country, road and relay races; a few
@@ -52,7 +52,7 @@
     { id: 'natural', name: 'Natural' }, { id: 'chrome', name: 'Chrome' }, { id: 'gold', name: 'Gold rush' },
     { id: 'sketch', name: 'Pencil sketch' }, { id: 'vintage', name: 'Vintage' }, { id: 'noir', name: 'Noir' },
     { id: 'thermal', name: 'Heat map' }, { id: 'duotone', name: 'Club duotone' }, { id: 'film', name: 'Film' },
-    { id: 'glow', name: 'Soft glow' }, { id: 'bold', name: 'Bold contrast' }
+    { id: 'glow', name: 'Soft glow' }, { id: 'bold', name: 'Bold contrast' }, { id: 'infrared', name: 'Infrared' }
   ];
   function lookName(id) { return (FILTERS.filter(function (x) { return x.id === id; })[0] || FILTERS[0]).name; }
 
@@ -446,8 +446,29 @@
         for (var k = 0; k < 3; k++) { var v = d[j + k] / 255; d[j + k] = clamp255(v * v * (3 - 2 * v) * 255); }   // an S curve
       }
       return vignette(adjust(img, { contrast: 1.12, saturation: 1.35, brightness: -4 }), 0.35);
+    },
+    // infrared film: leaves and grass glow white-pink, skies go deep and dark, skin turns pale and smooth
+    infrared: function (img) {
+      var d = img.data;
+      for (var i = 0; i < d.length; i += 4) {
+        var r = d[i], g = d[i + 1], b = d[i + 2];
+        var sky = Math.max(0, b - (r + g) / 2) / 255;                                          // blue that isn't leaf or skin
+        var ir = clamp255(0.3 * r + 1.3 * g - 0.6 * b + 0.4 * Math.max(0, g - r) - 420 * sky);  // what infrared film "sees"
+        d[i] = clamp255(ir * 1.05 + 14);
+        d[i + 1] = clamp255(ir * 0.82 + 6);
+        d[i + 2] = clamp255(ir * 0.9 + 30 * (1 - ir / 255) + 60 * sky);
+      }
+      return vignette(glowSoft(adjust(img, { contrast: 1.15, saturation: 0.9 })), 0.3);
     }
   };
+  // a light bloom over the brightest parts, the halo infrared film is known for
+  function glowSoft(img) {
+    var d = img.data, b = blur(img, px(img, 6), 2).data;
+    for (var i = 0; i < d.length; i += 4) {
+      for (var c = 0; c < 3; c++) { var s = b[i + c] / 255; d[i + c] = clamp255(d[i + c] + s * s * s * 35); }
+    }
+    return img;
+  }
   // the photo with a look: a new { data, width, height }, the one given left as it was
   function look(img, id) { return (LOOKS[id] || LOOKS.natural)(copy(img)); }
 
