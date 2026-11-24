@@ -28,7 +28,7 @@
     {"title": "Track colours", "href": "/admin/track-colours/", "lowest": "admin", "group": "Sign-in and the website",
      "blurb": "The track colours for Event share cards, and the colour each meeting location starts on."},
     {"title": "Shared cards and charts", "href": "/admin/shared/", "lowest": "admin", "group": "Sign-in and the website", "count": "shares",
-     "blurb": "Charts shared publicly from athlete pages: their views, removing one, and pausing sharing."},
+     "blurb": "Charts shared publicly from athlete pages: removing one, and pausing sharing."},
     {"title": "Club committee", "href": "/committee/", "lowest": "committee", "group": "Committee tools",
      "blurb": "The committee page: who’s on it, documents and links, and the annual general meetings."},
     {"title": "Training plans", "href": "/junior-athletics/#training", "lowest": "coach", "group": "Coaches’ tools",

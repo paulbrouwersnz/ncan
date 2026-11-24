@@ -58,15 +58,6 @@
     return out.join(' · ');
   }
 
-  // "48 views (12 in the last 7 days) · 6 previews"
-  function views(s) {
-    var n = s.views || 0, recent = s.recent_views || 0, p = s.previews || 0;
-    var out = n ? plural(n, 'view', 'views') + (recent ? ' (' + recent + ' in the last 7 days)' : '')
-                : 'No views yet';
-    if (p) { out += ' · ' + plural(p, 'link preview', 'link previews'); }
-    return out;
-  }
-
   // Families see "by you" or "by someone else"; admins (full) see the email.
   function made(s, full) {
     var by = s.mine ? ' by you' : full && s.by ? ' by ' + s.by : ' by someone else who manages this page';
@@ -114,7 +105,7 @@
     return { badges: [today, live], said: said, full: today.full || live.full };
   }
 
-  var helpers = { day: day, month: month, what: what, views: views, made: made, removed: removed, pick: pick, usage: usage };
+  var helpers = { day: day, month: month, what: what, made: made, removed: removed, pick: pick, usage: usage };
   if (typeof document === 'undefined') { return helpers; }
 
   /* The page ------------------------------------------------------------------ */
@@ -178,7 +169,6 @@
     if (s.removed) {
       body.appendChild(el('p', 'share-row__meta share-row__gone', removed(s, opts.full)));
     } else {
-      body.appendChild(el('p', 'share-row__meta', views(s)));
       if (opts.full && s.consent) { body.appendChild(el('p', 'share-row__meta', 'Permission confirmed ' + day(s.consent))); }
       var acts = el('p', 'share-row__acts');
       var copy = el('button', 'btn btn--ghost btn--small', 'Copy link');
