@@ -6,8 +6,8 @@
    - the photo side: the athlete's photo in a metallic frame (chrome, gold,
      rainbow holo, club green or onyx), the club crest, the season badge, a
      Rookie Card badge in their first season, and their name on a slanted
-     nameplate. The photo can be given a look: chrome, cartoon, comic book, pop
-     art, pencil sketch, vintage, noir, neon, heat map or 8-bit.
+     nameplate. The photo can be given a look: chrome, gold rush, pencil sketch,
+     vintage, noir or heat map.
    - the stats side: the season in numbers, as on the back of a baseball card:
      each event's starts, season best, personal best, wins and top-three
      places, with a totals row; cross country, road and relay races; a few
@@ -50,9 +50,8 @@
   // the photo's looks, in the order they're offered
   var FILTERS = [
     { id: 'natural', name: 'Natural' }, { id: 'chrome', name: 'Chrome' }, { id: 'gold', name: 'Gold rush' },
-    { id: 'cartoon', name: 'Cartoon' }, { id: 'comic', name: 'Comic book' }, { id: 'pop', name: 'Pop art' },
     { id: 'sketch', name: 'Pencil sketch' }, { id: 'vintage', name: 'Vintage' }, { id: 'noir', name: 'Noir' },
-    { id: 'neon', name: 'Neon' }, { id: 'thermal', name: 'Heat map' }, { id: 'pixel', name: '8-bit' }
+    { id: 'thermal', name: 'Heat map' }
   ];
   function lookName(id) { return (FILTERS.filter(function (x) { return x.id === id; })[0] || FILTERS[0]).name; }
 
@@ -154,13 +153,20 @@
       races: races.length,
       meetings: a.meetings || 0
     };
+    /* the fourth number: new PBs on a card with track and field, unless there are
+       none and there are podiums; podiums (relay teams' too) on a card of cross
+       country, road and relays alone, where a course isn't a PB */
+    var podiums = totals.podiums + races.filter(function (r) { return r.team && r.place >= 1 && r.place <= 3; }).length;
+    var tile = events.length && (totals.newPbs || !podiums)
+      ? { kind: 'pbs', value: totals.newPbs, label: totals.newPbs === 1 ? 'NEW PB' : 'NEW PBS' }
+      : { kind: 'podiums', value: podiums, label: podiums === 1 ? 'PODIUM' : 'PODIUMS' };
     // the signature event: the one chosen, or by default the first by starts
     var byStarts = signatureChoices(events);
     var sig = byStarts.filter(function (e) { return e.event === a.signature; })[0] || byStarts[0] || null;
     return {
       first: first, last: last, name: a.surname && last ? first + ' ' + last : first,
       season: a.season || '', cardNo: pad2(+a.cardNo || 1), rookie: !!a.rookie, grade: a.grade || '',
-      upTo: a.upTo || '', events: events, races: races, totals: totals, signature: sig,
+      upTo: a.upTo || '', events: events, races: races, totals: totals, tile: tile, signature: sig,
       position: sig ? groupOf(sig.event) : races.length ? groupOf(races[0].kind || races[0].race) : 'Athletics',
       highlights: highlights(a, events, races, totals),
       fact: funFact(events, races)
@@ -351,26 +357,9 @@
     }
     return img;
   }
-  function nearest(rgb, palette) {
-    var best = palette[0], bd = Infinity;
-    for (var p = 0; p < palette.length; p++) {
-      var q = palette[p], dr = rgb[0] - q[0], dg = rgb[1] - q[1], db = rgb[2] - q[2], dd = 0.3 * dr * dr + 0.59 * dg * dg + 0.11 * db * db;
-      if (dd < bd) { bd = dd; best = q; }
-    }
-    return best;
-  }
-  // a square's average colour, size x size pixels from (x0, y0)
-  function cellAverage(img, x0, y0, size) {
-    var w = img.width, h = img.height, d = img.data, t = [0, 0, 0], n = 0;
-    for (var y = y0; y < Math.min(h, y0 + size); y++) {
-      for (var x = x0; x < Math.min(w, x0 + size); x++) { var i = (y * w + x) * 4; t[0] += d[i]; t[1] += d[i + 1]; t[2] += d[i + 2]; n++; }
-    }
-    return n ? [t[0] / n, t[1] / n, t[2] / n] : [0, 0, 0];
-  }
   // sizes are given for a photo 1000 pixels across; this scales them
   function unit(img) { return Math.max(0.2, Math.max(img.width, img.height) / 1000); }
   function px(img, n) { return Math.max(1, Math.round(n * unit(img))); }
-  function inkOf(e, lo, span) { return Math.max(0, Math.min(1, (e - lo) / span)); }
 
   var LOOKS = {
     natural: function (img) { return adjust(img, { contrast: 1.06, saturation: 1.12 }); },
@@ -387,48 +376,6 @@
     },
     gold: function (img) {
       return gradientMap(adjust(img, { contrast: 1.15 }), ['#140C00', '#4A2E00', '#A8740E', '#F2C94C', '#FFF4C8']);
-    },
-    // flat colour, smoothed, with ink round the shapes
-    cartoon: function (img) {
-      var soft = adjust(blur(img, px(img, 2), 3), { saturation: 1.45, contrast: 1.12 });
-      var e = edges(blur(img, px(img, 1), 1)), d = soft.data, step = 255 / 5;
-      for (var i = 0, p = 0; i < d.length; i += 4, p++) {
-        var ink = inkOf(e[p], 22, 26);
-        for (var c = 0; c < 3; c++) { d[i + c] = (Math.round(d[i + c] / step) * step) * (1 - ink) + 18 * ink; }
-      }
-      return soft;
-    },
-    // bold printed dots on newsprint, with ink lines
-    comic: function (img) {
-      var cell = Math.max(4, px(img, 9)), w = img.width, h = img.height, out = new Uint8ClampedArray(img.data.length);
-      var paper = hex('#FFF5DC'), palette = ['#E63946', '#FFD23F', '#1D6FD8', '#F4A97F', '#2A9D5C', '#14110F', '#FFF5DC'].map(hex);
-      var e = edges(blur(img, px(img, 1), 2));
-      for (var cy = 0; cy < h; cy += cell) {
-        for (var cx = 0; cx < w; cx += cell) {
-          var avg = cellAverage(img, cx, cy, cell), l = (0.299 * avg[0] + 0.587 * avg[1] + 0.114 * avg[2]) / 255;
-          var col = nearest(avg.map(function (v) { return clamp255(l * 255 + (v - l * 255) * 1.8); }), palette);
-          var rad = cell * 0.75 * Math.sqrt(Math.max(0.08, 1 - l * 0.85)), mx = cx + cell / 2, my = cy + cell / 2;
-          for (var y = cy; y < Math.min(h, cy + cell); y++) {
-            for (var x = cx; x < Math.min(w, cx + cell); x++) {
-              var dist = Math.sqrt((x + 0.5 - mx) * (x + 0.5 - mx) + (y + 0.5 - my) * (y + 0.5 - my));
-              var a = Math.max(0, Math.min(1, rad - dist + 0.5)), i = (y * w + x) * 4, ink = inkOf(e[y * w + x], 26, 22);
-              for (var c = 0; c < 3; c++) { out[i + c] = (paper[c] * (1 - a) + col[c] * a) * (1 - ink) + 20 * ink; }
-              out[i + 3] = 255;
-            }
-          }
-        }
-      }
-      return { data: out, width: w, height: h };
-    },
-    // four flat inks, screen printed: deep green, hot pink, gold, cream
-    pop: function (img) {
-      var soft = adjust(blur(img, px(img, 1), 2), { contrast: 1.35 }), d = soft.data;
-      var inks = ['#062A20', '#E8327C', '#FFC629', '#FFF6DA'].map(hex);
-      for (var i = 0; i < d.length; i += 4) {
-        var l = lumAt(d, i), k = l < 70 ? 0 : l < 125 ? 1 : l < 185 ? 2 : 3;
-        d[i] = inks[k][0]; d[i + 1] = inks[k][1]; d[i + 2] = inks[k][2];
-      }
-      return soft;
     },
     // the grey photo dodged with its own blurred negative: pencil on paper
     sketch: function (img) {
@@ -459,45 +406,8 @@
       }
       return grain(vignette(img, 0.8), 14, 5);
     },
-    // glowing outlines in the dark, pink to cyan to lime
-    neon: function (img) {
-      var w = img.width, h = img.height, d = img.data, e = edges(blur(img, px(img, 1.5), 2));
-      var lines = { data: new Uint8ClampedArray(d.length), width: w, height: h };
-      var A = [[255, 46, 160], [40, 220, 255], [170, 255, 60]];
-      for (var y = 0; y < h; y++) {
-        for (var x = 0; x < w; x++) {
-          var p = y * w + x, i = p * 4, s = inkOf(e[p], 14, 40), t = (x / w + y / h) / 2, k = t < 0.5 ? 0 : 1, f = (t - k * 0.5) * 2;
-          for (var c = 0; c < 3; c++) { lines.data[i + c] = (A[k][c] + (A[k + 1][c] - A[k][c]) * f) * s; }
-          lines.data[i + 3] = 255;
-        }
-      }
-      var glow = blur(lines, Math.max(2, px(img, 4)), 2).data, line = lines.data;
-      for (var j = 0; j < d.length; j += 4) {
-        var l = lumAt(d, j) * 0.16;
-        for (var q = 0; q < 3; q++) { d[j + q] = clamp255(l * (q === 2 ? 1.4 : 0.8) + glow[j + q] * 1.9 + line[j + q]); }
-      }
-      return img;
-    },
     thermal: function (img) {
       return gradientMap(blur(img, px(img, 1), 1), ['#05001A', '#2A0A8C', '#9B0FA3', '#F0306A', '#FF8A00', '#FFE14D', '#FFFFF2']);
-    },
-    // chunky pixels in a 16-colour games palette
-    pixel: function (img) {
-      var w = img.width, h = img.height, size = Math.max(3, Math.round(Math.max(w, h) / 64)), d = img.data;
-      var palette = ['#000000', '#1D2B53', '#7E2553', '#008751', '#AB5236', '#5F574F', '#C2C3C7', '#FFF1E8',
-                     '#FF004D', '#FFA300', '#FFEC27', '#00E436', '#29ADFF', '#83769C', '#FF77A8', '#FFCCAA'].map(hex);
-      for (var cy = 0; cy < h; cy += size) {
-        for (var cx = 0; cx < w; cx += size) {
-          var col = nearest(cellAverage(img, cx, cy, size), palette);
-          for (var y = cy; y < Math.min(h, cy + size); y++) {
-            for (var x = cx; x < Math.min(w, cx + size); x++) {
-              var i = (y * w + x) * 4, k = (x === cx || y === cy) ? 0.88 : 1;
-              d[i] = col[0] * k; d[i + 1] = col[1] * k; d[i + 2] = col[2] * k;
-            }
-          }
-        }
-      }
-      return img;
     }
   };
   // the photo with a look: a new { data, width, height }, the one given left as it was
@@ -864,7 +774,7 @@
       // the season in four numbers
       var t = f.totals;
       var boxes = [[t.starts, t.starts === 1 ? 'START' : 'STARTS'], [t.meetings, t.meetings === 1 ? 'MEETING' : 'MEETINGS'],
-                   [t.wins, t.wins === 1 ? 'WIN' : 'WINS'], [t.newPbs, t.newPbs === 1 ? 'NEW PB' : 'NEW PBS']];
+                   [t.wins, t.wins === 1 ? 'WIN' : 'WINS'], [f.tile.value, f.tile.label]];
       var by = 192, bh = 78, gap = 10, bw = (IW - gap * 3) / 4;
       boxes.forEach(function (x, i) {
         var bx = X0 + i * (bw + gap);
@@ -1075,6 +985,9 @@
         navigator.clipboard.writeText(v).then(function () { said('Copied'); }, function () { said('Press Ctrl+C to copy'); });
       } else { said('Press Ctrl+C to copy'); }
     });
+    el('sc-ok').addEventListener('change', linkButton);
+    el('sc-go').addEventListener('click', makeLink);
+    el('sc-link-copy').addEventListener('click', function () { copy2(this, el('sc-link').value, 'Copy link'); });
     handSetUp();
     return ui;
   }
@@ -1172,7 +1085,8 @@
     el('sc-pick-words').textContent = on ? 'Use a different photo' : 'Add a photo';
     el('sc-photo-said').textContent = !on
       ? 'No photo: the card is the stats side alone. Add one for a photo side; it stays on this device.'
-      : ui.picked ? 'Using the photo you chose. It stays on this device.' : 'Using the header photo.';
+      : ui.picked ? 'Using the photo you chose: drag it on the card to move it into place. It stays on this device unless you make a public link.'
+      : 'Using the header photo.';
     el('sc-looks-field').hidden = !on;
     el('sc-adjust').hidden = !on;
     el('sc-save-front').hidden = !on;
@@ -1197,6 +1111,7 @@
     el('sc-stage').classList.toggle('is-single', !two);
     el('sc-flip').hidden = !two;
     flip(!two);
+    stale(); publicShow(); linkButton();
   }
   function flip(toBack) {
     ui.flipped = toBack;
@@ -1213,10 +1128,83 @@
   function buttons() {
     el('sc-save-front').disabled = !ui.front;
     el('sc-save-back').disabled = !ui.back;
+    linkButton();
   }
+
+  /* The public link: one image of the card as it is now, the photo side and the
+     stats side next to each other (each 1000 x 1400), or the stats side alone,
+     made into a page by the API where the card turns over. A JPEG with a photo,
+     else a PNG. A change to the card after a link is made asks for a new one. */
+  var SIDE = { w: 1000, h: 1400 };
+  function twoSided() { return !!(photoChoice() && ui.source); }
+  function ready2() { return !!ui.back && (!twoSided() || (!!ui.front && !ui.busy)); }
+  function linkButton() {
+    if (!ui) { return; }
+    el('sc-go').disabled = ui.sharing || !el('sc-ok').checked || !ready2();
+  }
+  function publicShow() {
+    var can = !!(ui.hooks.share && ui.hooks.canShare && ui.hooks.canShare());
+    el('sc-public').hidden = !can || !el('sc-done').hidden;
+    el('sc-public-note').textContent = twoSided()
+      ? 'Anyone with the link will see this card as it is now, both sides, with the photo. It never changes, and you can remove it under Shared cards and charts.'
+      : 'Anyone with the link will see this card as it is now. It never changes, and you can remove it under Shared cards and charts.';
+  }
+  // the card changed: a link made already is of the card as it was
+  function stale() {
+    if (!ui || el('sc-done').hidden) { return; }
+    el('sc-done').hidden = true;
+    el('sc-link').value = '';
+    publicShow();
+  }
+  function sheet() {
+    var two = twoSided();
+    var cv = document.createElement('canvas');
+    cv.width = SIDE.w * (two ? 2 : 1); cv.height = SIDE.h;
+    var c = cv.getContext('2d');
+    c.imageSmoothingEnabled = true; c.imageSmoothingQuality = 'high';
+    if (two) { c.drawImage(ui.front, 0, 0, SIDE.w, SIDE.h); }
+    c.drawImage(ui.back, two ? SIDE.w : 0, 0, SIDE.w, SIDE.h);
+    return { canvas: cv, sides: two ? 2 : 1, type: two ? 'image/jpeg' : 'image/png' };
+  }
+  function makeLink() {
+    if (el('sc-go').disabled || !ready2()) { return; }
+    var s = sheet(), f = ui.f, go = el('sc-go');
+    ui.sharing = true; go.classList.add('is-busy'); linkButton();
+    say('Making the public link…');
+    ui.hooks.share(s.canvas, { type: s.type, sides: s.sides, season: ui.input.season, surname: ui.surname,
+                               from: ui.input.firstDay, to: ui.input.lastDay }).then(function (share) {
+      if (f !== ui.f || !ui.d.open) { return; }
+      el('sc-public').hidden = true;
+      el('sc-done').hidden = false;
+      el('sc-link').value = share.url;
+      el('sc-open').href = share.url;
+      say('Your public link is ready.');
+      var link = el('sc-link');
+      link.focus(); link.select();
+      copy2(el('sc-link-copy'), share.url, 'Copy link').then(function (ok) {
+        if (ok && el('sc-link').value === share.url) { say('Your public link is ready, and copied.'); }
+      });
+    }).catch(function (e) {
+      say((e && e.message) || 'Sorry, the card could not be shared.');
+      if (e && e.refused) { el('sc-public').hidden = true; }
+    }).then(function () {
+      ui.sharing = false; go.classList.remove('is-busy'); linkButton();
+    });
+  }
+  function copy2(button, value, words) {
+    var said = function (w) { button.textContent = w; setTimeout(function () { button.textContent = words; }, 2500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(value).then(function () { said('Copied'); return true; },
+                                                       function () { said('Press Ctrl+C to copy'); return false; });
+    }
+    said('Press Ctrl+C to copy');
+    return Promise.resolve(false);
+  }
+
   function drawAll() { drawBack(); drawFront(); }
   function drawBack() {
     var f = ui.f;
+    stale();
     ui.back = null; buttons();
     back(f, { finish: ui.finish, fonts: fontsOf(), logo: ui.logoLight }).then(function (cv) {
       if (f !== ui.f || !ui.d.open) { return; }
@@ -1224,7 +1212,8 @@
       var img = el('sc-back');
       img.src = cv.toDataURL('image/png');
       img.alt = 'The stats side of ' + f.name + '’s ' + f.season + ' season card: ' + plural(f.totals.starts, 'start') + ', ' +
-        plural(f.totals.wins, 'win') + ', ' + plural(f.totals.newPbs, 'new personal best') + '. ' + f.highlights.join(' ');
+        plural(f.totals.wins, 'win') + ', ' + (f.tile.kind === 'pbs' ? plural(f.tile.value, 'new personal best')
+          : plural(f.tile.value, 'podium finish', 'podium finishes')) + '. ' + f.highlights.join(' ');
       buttons();
       if (!photoChoice()) { say(''); }
     }).catch(function () { say('Sorry, the card could not be made.'); });
@@ -1232,6 +1221,7 @@
   // quiet: placing the photo; one drawing at a time, and the latest position wins
   function drawFront(quiet) {
     if (!photoChoice() || !ui.source) { return; }
+    stale();
     if (ui.busy) { ui.again = true; return; }
     if (!quiet) { say(lookName(ui.look) + ': working on the photo…'); ui.front = null; buttons(); }
     ui.busy = true; ui.again = false;
@@ -1347,6 +1337,9 @@
     el('sc-file').value = '';
     ui.header = null; ui.usePhoto = true; ui.front = ui.back = null; ui.source = null;
     el('sc-front').removeAttribute('src'); el('sc-back').removeAttribute('src');
+    el('sc-ok').checked = false; ui.sharing = false;
+    el('sc-done').hidden = true; el('sc-link').value = '';
+    publicShow();
     buttons();
     say('Making the card…');
     ui.d.showModal();

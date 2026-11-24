@@ -1808,6 +1808,8 @@
       meetings: Object.keys(meetings).length, trackMeetings: count(track), oosMeetings: count(races), upTo: lastDay ? longDate(lastDay) : '',
       surnameByDefault: window.NCANPbCard ? window.NCANPbCard.surnameByDefault(latest) : false,
       today: isoOf(new Date()),
+      firstDay: track.concat(races).reduce(function (m, r) { return !m || r.date < m ? r.date : m; }, '') || lastDay,
+      lastDay: lastDay,
       events: events, races: raceList
     };
   }
@@ -1816,7 +1818,35 @@
     window.NCANSeasonCard.open(seasonCardInput(season), from, {
       headerPhoto: function () {
         return loadHeaderPhoto().then(function (url) { return url ? { url: url, focus: headerPhoto.focus } : null; });
+      },
+      // a public link (GET /s/<id> shows it as a card to turn over): for the people who manage the page
+      canShare: function () { return shareCan() && !usageFull(); },
+      share: seasonCardShare
+    });
+  }
+  /* The season card made public (POST .../shares, view=season-card): one image, the
+     photo side and the stats side next to each other (sides=2), or the stats side
+     alone. info: { type, sides, season, from, to, surname }. Resolves the share. */
+  function seasonCardShare(canvas, info) {
+    var IMG = window.NCANChartImage, size = 0, hint = 'Try another photo or look.';
+    return cardBlob(canvas, info.type).then(function (blob) {
+      if (!blob) { throw new Error('Sorry, the card could not be made.'); }
+      size = blob.size;
+      if (blob.size > IMG.SHARE_MAX) { throw tooBig('card', blob.size, hint); }
+      return NCAN.sendFile('/athletes/' + encodeURIComponent(NCAN.athlete.slug) + '/shares?' +
+        IMG.shareQuery({ event: info.season + ' season', from: info.from, to: info.to, view: 'season-card',
+                         name: info.surname ? 'full' : 'first' }) + '&sides=' + info.sides, blob);
+    }).then(function (res) {
+      if (res.status === 201 && res.body && res.body.share && res.body.share.url) {
+        if (res.body.usage) { NCAN.athlete.share_usage = res.body.usage; usageShow(); }
+        document.dispatchEvent(new CustomEvent('ncan:shared', { detail: res.body.share }));   // the Shared charts list
+        return res.body.share;
       }
+      if (res.status === 413) { throw tooBig('card', size, hint); }
+      if (res.status === 403) { NCAN.athlete.can_share = false; }
+      var e = new Error((res.body && res.body.error) || 'Sorry, the card could not be shared (' + res.status + ').');
+      e.refused = res.status === 403;
+      throw e;
     });
   }
 

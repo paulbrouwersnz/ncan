@@ -767,6 +767,30 @@
             <button type="button" class="btn btn--accent btn--sm" id="sc-save-back" disabled>Save stats side</button>
           </div>
           <p class="ath-share__note ath-share__yours">If you post this card on social media, that post is yours to look after: the club can’t edit or remove it.</p>
+          <!-- a public link: a page where the card turns over and tilts in the hand (the API's /s/<id>) -->
+          <div class="sc__public" id="sc-public" hidden>
+            <p class="ath-share__label">Or make a public link</p>
+            <p class="ath-share__note">A page with the card in the hand: anyone with the link can tilt it and turn it over.</p>
+            <p class="ath-check ath-share__ok">
+              <input type="checkbox" id="sc-ok">
+              <label for="sc-ok">I’m allowed to share this athlete’s results publicly.</label>
+            </p>
+            <p class="ath-share__note" id="sc-public-note">Anyone with the link will see this card as it is now, both sides. It never changes, and you can remove it under Shared cards and charts.</p>
+            <p class="share-usage" data-share-usage hidden></p>
+            <div class="ath-share__actions">
+              <button type="button" class="btn btn--ghost btn--sm" id="sc-go" disabled>Create public link</button>
+            </div>
+          </div>
+          <div class="sc__public" id="sc-done" hidden>
+            <label class="ath-share__label" for="sc-link">Public link</label>
+            <div class="ath-share__link">
+              <input type="text" id="sc-link" readonly>
+              <button type="button" class="btn btn--ghost btn--sm" id="sc-link-copy">Copy link</button>
+            </div>
+            <div class="ath-share__actions">
+              <a class="ath-share__open" id="sc-open" target="_blank" rel="noopener">Open the share page</a>
+            </div>
+          </div>
           <p class="ath-share__said" id="sc-said" aria-live="polite"></p>
         </div>
       </div>
