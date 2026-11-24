@@ -827,6 +827,34 @@
         if (!same) { USED.push({ location: place.location, city: place.city }); showUsed(); }
       }
 
+      // a meeting that no longer matches the filters fades and folds away, and the counts
+      // follow (the rest of the list, and what's open in it, stays as it is)
+      function fadeOut(block) {
+        if (!block) { return; }
+        var season = block.closest('.src-season');
+        var gone = function () {
+          if (!block.parentNode) { return; }
+          block.remove();
+          var ms = all.filter(function (x) { return matches(x, filters()); });
+          renderStats(ms);
+          $('src-status').textContent = 'Showing ' + ms.length + ' of ' + all.length + ' meetings.';
+          if (season) {
+            var left = season.querySelectorAll('.src-meeting').length;
+            if (!left) { season.remove(); return; }
+            var count = season.querySelector('.champs-day__count');
+            // only meetings with our athletes' results are left with No location yet on
+            var many = left + ' meeting' + (left === 1 ? '' : 's');
+            if (count) { count.textContent = many + ' · ' + left + ' with our athletes'; }
+          }
+        };
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { gone(); return; }
+        block.style.height = block.offsetHeight + 'px';
+        block.classList.add('is-leaving');
+        requestAnimationFrame(function () { requestAnimationFrame(function () { block.style.height = '0px'; }); });
+        block.addEventListener('transitionend', function (e) { if (e.propertyName === 'height') { gone(); } });
+        setTimeout(gone, 900);
+      }
+
       function placeForm(m) {
         var form = text('form', 'src-type-form src-place-form');
         var key = (m.from === 'AthleticLIVE' ? m.link || '' : 'hand-' + m.name).replace(/\W+/g, '-');
@@ -878,9 +906,22 @@
           var hit = USED.filter(function (p) { return p.location === v && p.city; });
           if (hit.length && !tidy(fields[1].value)) { fields[1].value = hit[0].city; go.disabled = !changed(); }
         });
+        // with "No location yet" on, Save & dismiss saves and lets the meeting fade out of
+        // the list (Save keeps it open, for its links)
+        var dismiss = null, leave = false;
+        if ($('src-noplace').checked) {
+          dismiss = text('button', 'btn btn--sm', 'Save & dismiss');
+          dismiss.type = 'submit';
+          dismiss.disabled = go.disabled;
+          dismiss.addEventListener('click', function () { leave = true; });
+          go.addEventListener('click', function () { leave = false; });
+          new MutationObserver(function () { dismiss.disabled = go.disabled; })
+            .observe(go, { attributes: true, attributeFilter: ['disabled'] });
+        }
         form.addEventListener('submit', function (e) {
           e.preventDefault();
           if (!changed()) { return; }
+          if (e.submitter === dismiss) { leave = true; } else if (e.submitter) { leave = false; }
           lockMeeting(form, true);
           said.textContent = 'Saving…';
           var body = placeTarget(m);
@@ -898,9 +939,11 @@
               go.disabled = true;
               form.classList.remove('is-suggested');
               said.textContent = now.location || now.city ? 'Saved' : 'Cleared';
+              if (leave && !matches(m, filters())) { fadeOut(form.closest('.src-meeting')); }
             }, function (err) { lockMeeting(form, false); said.textContent = err.message; });
         });
         form.appendChild(go);
+        if (dismiss) { form.appendChild(dismiss); }
         form.appendChild(said);
         return form;
       }
