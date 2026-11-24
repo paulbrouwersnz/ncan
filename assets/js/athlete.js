@@ -1340,7 +1340,7 @@
   // earlier marks in the same event (and weight) that count towards a PB: measured, wind-legal, before r
   function marksBefore(r) {
     var k = pbKey(r);
-    return ((NCAN.athlete && NCAN.athlete.everything) || []).filter(function (q) {
+    return ((athlete && athlete.everything) || []).filter(function (q) {
       return q !== r && typeof q.value === 'number' && !windy(q) && pbKey(q) === k && q.date <= r.date;
     }).sort(function (a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; });
   }
