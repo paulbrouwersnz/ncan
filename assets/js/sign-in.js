@@ -5,7 +5,7 @@
                                           the page's own # is written %23)
 
   Signed in already: straight on to `next`, or with no `next`, to the
-  person's own page (NCAN.home: staff /admin/, family /athletes/). The header's "My pages" link
+  person's own page (NCAN.home: staff /admin/, family /athletes/). The header's "My NCAN" link
   comes here for that.
 
   Not signed in: the sign-in form (NCAN.signIn). The emailed link brings the

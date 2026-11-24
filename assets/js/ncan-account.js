@@ -21,9 +21,9 @@
                               may_act}, or null (`role` is the role answered as:
                               an admin acting as a coach gets "coach"). Also
                               remembers on this device whether someone is signed
-                              in, so the header's Sign in / My pages link
+                              in, so the header's Sign in / My NCAN link
                               (account-link.js) only asks the API when it might
-                              be "My pages".
+                              be "My NCAN".
     signIn(el, intro, next, head) -> fills el with a sign-in form; the emailed link
                               comes back to `next` (by default, this page as it is).
     account(el, who)       -> fills el with "Signed in as ... Sign out".
