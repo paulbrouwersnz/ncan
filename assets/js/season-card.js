@@ -1505,14 +1505,20 @@
     el('sc-link').value = '';
     publicShow();
   }
+  // with two sides, a gap between them for the download (the API allows up to 40 px)
+  var GAP = 40;
   function sheet() {
     var two = twoSided();
     var cv = document.createElement('canvas');
-    cv.width = SIDE.w * (two ? 2 : 1); cv.height = SIDE.h;
+    cv.width = two ? SIDE.w * 2 + GAP : SIDE.w; cv.height = SIDE.h;
     var c = cv.getContext('2d');
     c.imageSmoothingEnabled = true; c.imageSmoothingQuality = 'high';
-    if (two) { c.drawImage(ui.front, 0, 0, SIDE.w, SIDE.h); }
-    c.drawImage(ui.back, two ? SIDE.w : 0, 0, SIDE.w, SIDE.h);
+    if (two) {
+      // white behind the gap and the rounded corners, which a JPEG can't leave clear
+      c.fillStyle = '#FFFFFF'; c.fillRect(0, 0, cv.width, cv.height);
+      c.drawImage(ui.front, 0, 0, SIDE.w, SIDE.h);
+    }
+    c.drawImage(ui.back, two ? SIDE.w + GAP : 0, 0, SIDE.w, SIDE.h);
     return { canvas: cv, sides: two ? 2 : 1, type: two ? 'image/jpeg' : 'image/png' };
   }
   function makeLink() {

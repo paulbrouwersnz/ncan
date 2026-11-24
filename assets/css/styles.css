@@ -1550,8 +1550,12 @@ table.schedule tbody.ath-season-group:first-of-type > tr.ath-season-band > th { 
 /* the season card dialog: the card on the left, turned and tilted in the hand; the choices on the right */
 .sc { max-width: 1040px; }
 .sc__body { display: grid; grid-template-columns: minmax(260px, 400px) 1fr; gap: 1.25rem 1.75rem; align-items: start; }
-@media (max-width: 760px) { .sc__body { grid-template-columns: 1fr; } }
 .sc__view { position: sticky; top: 0; display: flex; flex-direction: column; align-items: center; gap: .6rem; }
+/* on a phone the card scrolls away with the page, so it never sits over the controls */
+@media (max-width: 760px) {
+  .sc__body { grid-template-columns: 1fr; }
+  .sc__view { position: static; }
+}
 .sc__stage {
   --rx: 0deg; --ry: 0deg; --gx: 50%; --gy: 50%;
   width: 100%; max-width: min(400px, calc((100dvh - 230px) * 5 / 7)); min-width: 220px; perspective: 1400px; padding: 6px;
