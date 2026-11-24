@@ -1290,7 +1290,7 @@
      The athlete's GameDay contacts and admins can also make a public link of it, through
      the same share API as charts (view=pb-card). */
   var card = { r: null, kind: 'pb', style: 'podium', surface: 'blue', oos: null, photo: null, picked: null, pos: { x: 50, y: 50, zoom: 1 },
-               drawing: false, again: false, shape: 'square', surname: false, canvas: null, seq: 0, busy: false, from: null, url: '' };
+               drawing: false, again: false, shape: 'square', surname: false, where: false, canvas: null, seq: 0, busy: false, from: null, url: '' };
 
   // where the result's meeting was ({location, city}), from the page's meeting_places
   function cardWhere(r) {
@@ -1304,13 +1304,13 @@
     // cross country, road and relay legs: no PBs (courses differ), their own race name and grade
     if (card.oos) {
       return window.NCANPbCard.facts({ kind: 'result', name: NCAN.athlete && NCAN.athlete.name, surname: card.surname, result: r,
-        showPlace: card.place, where: cardWhere(r),
+        showPlace: card.place, where: card.where ? cardWhere(r) : null,
         mark: r.mark, event: card.oos.event, group: r.oos_grade || '' });
     }
     var prev = pbBefore(r);
     return window.NCANPbCard.facts({ kind: card.kind, name: NCAN.athlete && NCAN.athlete.name, surname: card.surname, showPlace: card.place, result: r, prev: prev,
       mark: markText(r), prevMark: prev ? markText(prev) : '', event: eventLabel(r), group: groupOf(r),
-      pbsThisSeason: pbsInSeason(r), where: cardWhere(r) });
+      pbsThisSeason: pbsInSeason(r), where: card.where ? cardWhere(r) : null });
   }
 
   /* The Photo card's photo: one picked on this device for this card, else the athlete's
@@ -1393,6 +1393,11 @@
     card.place = placed && r.place <= 3;
     $('ath-card-place-row').hidden = !placed;
     $('ath-card-place').checked = card.place;
+    // the meeting's location: offered (and on at first) only when the meeting has a place saved
+    var where = !!cardWhere(r);
+    card.where = where;
+    $('ath-card-where-row').hidden = !where;
+    $('ath-card-where').checked = where;
     $('ath-card-ok').checked = false;
     $('ath-card-form').hidden = false;
     $('ath-card-done').hidden = true;
@@ -1615,6 +1620,7 @@
     $('ath-card-shape').addEventListener('change', function () { card.shape = this.value; cardDraw(); });
     $('ath-card-surname').addEventListener('change', function () { card.surname = this.checked; cardDraw(); });
     $('ath-card-place').addEventListener('change', function () { card.place = this.checked; cardDraw(); });
+    $('ath-card-where').addEventListener('change', function () { card.where = this.checked; cardDraw(); });
     $('ath-card-ok').addEventListener('change', cardButtons);
     $('ath-card-save').addEventListener('click', cardSave);
     cardAdjustSetUp();
