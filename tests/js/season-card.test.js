@@ -98,3 +98,51 @@ test('the fourth number: new PBs with track and field, else podiums', () => {
   // both parts, no PBs: every podium counts
   assert.deepStrictEqual(tile({ events: [ev(0, 1)], races: [race(2, true)] }), ['podiums', 2, 'PODIUMS']);
 });
+
+// Did you know?: a fact that suits the athlete, the same until another is asked for
+const pts = vals => vals.map((v, i) => ({ value: v, date: '2026-0' + (1 + i % 3) + '-1' + (i % 10), pb: false }));
+const sprinter = { name: 'Lily Test', season: '2025/26', events: [
+  { event: '200m', field: false, starts: 6, sb: { mark: '26.10', value: 26.1 }, newPbs: 1, points: pts([27.4, 27.0, 26.6, 26.1, 26.3, 26.2]) },
+  { event: '100m', field: false, starts: 4, sb: { mark: '12.47', value: 12.47 }, newPbs: 2, points: pts([12.9, 12.7, 12.47, 12.6]) }], races: [] };
+const thrower = { name: 'Sam Shot', season: '2025/26', events: [
+  { event: 'Shot Put', field: true, starts: 5, sb: { mark: '11.20m', value: 11.2 }, newPbs: 3, points: pts([9.8, 10.4, 11.2, 10.9, 11.0]) }], races: [] };
+const roadie = { name: 'Dale W', season: '2026/27', events: [], races: [
+  { date: '2026-09-12', race: 'Road 10 km', kind: 'Road', place: 10, of: 10 },
+  { date: '2026-06-01', race: 'Cross country 8 km', kind: 'Cross country', place: 1, of: 12 },
+  { date: '2026-05-01', race: 'Road 8 km', kind: 'Road', place: 5, of: 30 }] };
+const allFacts = a => { const s = new Set(); for (let t = 0; t < 60; t++) { s.add(SC.facts(Object.assign({ factTurn: t }, a)).fact.words); } return [...s]; };
+
+test('funFact: the same card keeps the same fact', () => {
+  assert.strictEqual(SC.facts(sprinter).fact.words, SC.facts(sprinter).fact.words);
+});
+
+test('funFact: sprinters get sprint and signature event facts, not distance', () => {
+  const all = allFacts(sprinter);
+  assert.ok(all.length >= 3);
+  assert.ok(all.some(w => /km\/h over the 200m/.test(w)));
+  assert.ok(all.some(w => /200m \(26\.10\) would have finished about 10 m ahead of the first one \(27\.40\)/.test(w)));
+  assert.ok(all.every(w => !/marathon|rugby/.test(w)));
+  assert.strictEqual(SC.facts(sprinter).fact.icon, 'run');
+});
+
+test('funFact: throwers get throwing facts', () => {
+  const all = allFacts(thrower);
+  assert.ok(all.some(w => /further than a giraffe is tall/.test(w)));
+  assert.ok(all.some(w => /Set a new Shot Put PB 3 times/.test(w)));
+  assert.ok(all.every(w => !/km\/h|laps/.test(w)));
+  assert.strictEqual(SC.facts(thrower).fact.icon, 'throw');
+});
+
+test('funFact: cross country and road runners get race facts', () => {
+  const all = allFacts(roadie);
+  assert.ok(all.includes('Finished ahead of 36 runners across 3 races.'));
+  assert.ok(all.includes('Won the Cross country 8 km, ahead of 11 other runners.'));
+  assert.ok(all.includes('Raced 26 km in competition this season: that’s 65 laps of a track.'));
+});
+
+test('funFact: every fact fits the box, and no results is a first edition', () => {
+  [sprinter, thrower, roadie].forEach(a => allFacts(a).forEach(w => assert.ok(w.length <= 170, w)));
+  const none = SC.facts({ name: 'New Kid', season: '2025/26', events: [], races: [] }).fact;
+  assert.strictEqual(none.icon, 'star');
+  assert.strictEqual(none.choices, 1);
+});

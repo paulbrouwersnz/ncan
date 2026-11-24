@@ -11,7 +11,9 @@
    - the stats side: the season in numbers, as on the back of a baseball card:
      each event's starts, season best, personal best, wins and top-three
      places, with a totals row; cross country, road and relay races; a few
-     highlights; and a "Did you know?" fact.
+     highlights; and a "Did you know?" fact, picked at random from the ones that
+     suit the athlete (a sprinter's speed, a thrower's best against a tennis court,
+     the runners a cross country runner beat, their signature event's season).
    With no photo, there is only the stats side.
 
    Nothing leaves the device: the photo is read here, and the card is saved or
@@ -170,7 +172,7 @@
       upTo: a.upTo || '', events: events, races: races, totals: totals, tile: tile, signature: sig,
       position: sig ? groupOf(sig.event) : races.length ? groupOf(races[0].kind || races[0].race) : 'Athletics',
       highlights: highlights(a, events, races, totals),
-      fact: funFact(events, races)
+      fact: funFact(events, races, sig, seedOf(String(a.name || '') + '|' + (a.season || '') + '|' + (+a.factTurn || 0)))
     };
   }
 
@@ -214,37 +216,213 @@
     return out.slice(0, 3);
   }
 
-  /* "Did you know?": how far they ran, threw or jumped this season, in all, in
-     something a child can picture. { icon: 'run' | 'throw' | 'jump' | 'star', words } */
-  function funFact(events, races) {
-    var ran = 0, thrown = 0, jumped = 0, throws = 0;
-    events.forEach(function (e) {
-      var g = groupOf(e.event);
-      if (g === 'Throws') {
-        (e.points || []).forEach(function (p) { if (typeof p.value === 'number') { thrown += p.value; throws++; } });
-      } else if (g === 'Jumps') {
-        if (!/high|vault/i.test(e.event)) { (e.points || []).forEach(function (p) { if (typeof p.value === 'number') { jumped += p.value; } }); }
-      } else {
-        ran += metresOf(e.event) * (e.starts || 0);
+  /* "Did you know?": one fact about the season, in something a child can picture.
+     Every fact that fits the season is worked out, each tagged with the kind of
+     athlete it suits (sprint, hurdles, distance, walk, throw, jump, cross country,
+     road, relay), plus facts about the signature event. The card picks one at
+     random from the kinds that make up most of their starts (any kind with at
+     least half the starts of their busiest kind), and the signature event's.
+     The pick is seeded, so a card keeps its fact until "Another fact" is asked for.
+     { icon: 'run' | 'throw' | 'jump' | 'star', words, choices } */
+  var KIND = { Sprints: 'sprint', Hurdles: 'hurdles', 'Middle distance': 'distance', Distance: 'distance', Walks: 'walk',
+    Throws: 'throw', Jumps: 'jump', 'Cross country': 'xc', Road: 'road', Relays: 'relay' };
+  var ICON = { sprint: 'run', hurdles: 'run', distance: 'run', walk: 'run', xc: 'run', road: 'run', relay: 'run', throw: 'throw', jump: 'jump' };
+  // how many hurdles there are in a race, where every grade runs the same number
+  var HURDLES = { 60: 5, 80: 8, 100: 10, 110: 10, 400: 10 };
+  // things to measure a throw or a jump against: the biggest one beaten is named
+  var LONG_THINGS = [
+    [2.03, 'a king-size bed (about 2 m)'], [4.5, 'a family car (about 4.5 m)'], [5.5, 'a giraffe is tall (about 5.5 m)'],
+    [12, 'a city bus (about 12 m)'], [20.12, 'a cricket pitch (20.12 m)'], [23.77, 'a tennis court (23.77 m)'],
+    [30.5, 'a netball court (30.5 m)'], [50, 'an Olympic swimming pool (50 m)'], [100, 'a rugby field, try line to try line']
+  ];
+  var HIGH_THINGS = [
+    [0.9, 'a kitchen bench (about 90 cm)'], [1.07, 'a Shetland pony at the shoulder (up to 1.07 m)'], [2, 'a front door (about 2 m)'],
+    [3.05, 'a netball goal ring (3.05 m)'], [4.4, 'a double-decker bus (about 4.4 m)']
+  ];
+  function kindOf(name) { return KIND[groupOf(name)] || 'any'; }
+  function isHigh(event) { return /high|vault/i.test(event); }
+  function nums(e) { return (e.points || []).map(function (p) { return p.value; }).filter(function (v) { return typeof v === 'number' && v > 0; }); }
+  function km(m) { return (m / 1000).toFixed(m >= 100000 ? 0 : 1).replace(/\.0$/, '') + ' km'; }
+  function oneDp(n) { return (Math.round(n * 10) / 10).toFixed(1).replace(/\.0$/, ''); }
+  // seconds as a race time: 12.47, or 1:05.30
+  function clock(v) {
+    if (v < 60) { return v.toFixed(2); }
+    var m = Math.floor(v / 60), s = v - m * 60;
+    return m + ':' + (s < 10 ? '0' : '') + s.toFixed(2);
+  }
+  // seconds as a length of time: 48 seconds, 3 min 12 s, 1 h 4 min
+  function span(v) {
+    v = Math.round(v);
+    if (v < 60) { return plural(v, 'second'); }
+    if (v < 3600) { return Math.floor(v / 60) + ' min' + (v % 60 ? ' ' + v % 60 + ' s' : ''); }
+    return Math.floor(v / 3600) + ' h ' + Math.floor(v % 3600 / 60) + ' min';
+  }
+  function biggest(list, value) {
+    var hit = null;
+    list.forEach(function (t) { if (value > t[0]) { hit = t[1]; } });
+    return hit;
+  }
+  function random(seed) {
+    var t = seed >>> 0;
+    return function () {
+      t = (t + 0x6D2B79F5) >>> 0;
+      var r = Math.imul(t ^ (t >>> 15), 1 | t);
+      r = (r + Math.imul(r ^ (r >>> 7), 61 | r)) ^ r;
+      return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  // the facts about one event: how it went from first to best, how steady, how
+  // fast or how far; 'sig' facts name the event, as the signature event's
+  function eventFacts(e, add, kind) {
+    var v = nums(e), field = !!e.field, m = metresOf(e.event), ev = e.event;
+    if (!v.length) { return; }
+    var best = field ? Math.max.apply(null, v) : Math.min.apply(null, v), firstV = v[0];
+    var bestMark = e.sb && e.sb.mark ? e.sb.mark : field ? best.toFixed(2) + 'm' : clock(best);
+    // from the first of the season to the best
+    if (v.length >= 2 && best !== firstV) {
+      if (field) {
+        var g = gain(best, firstV, true);
+        if (g) { add(kind, 'The best ' + ev + ' of the season (' + bestMark + ') went ' + g.slice(1) + (isHigh(ev) ? ' higher' : ' further') + ' than the first one.'); }
+      } else if (m) {
+        var ahead = (firstV - best) * m / best;
+        if (ahead >= 1) {
+          add(kind, 'The season’s best ' + ev + ' (' + bestMark + ') would have finished about ' + Math.round(ahead) + ' m ahead of the first one (' + clock(firstV) + ').');
+        }
       }
-    });
-    races.forEach(function (r) { ran += metresOf(r.race); });
-    if (ran >= 400) {
-      var laps = ran / 400;
-      return { icon: 'run', words: 'Raced ' + (ran >= 1000 ? (ran / 1000).toFixed(1).replace(/\.0$/, '') + ' km' : ran + ' m') +
-        ' in competition this season: ' + (laps >= 2 ? 'that’s ' + Math.round(laps) + ' laps of a track.' : 'more than a lap of a track.') };
     }
+    // steady: most marks close to the best
+    if (v.length >= 4) {
+      var near = v.filter(function (x) { return field ? x >= best * 0.95 : x <= best * 1.03; }).length;
+      if (near >= 3 && near / v.length >= 0.6) {
+        add(kind, near + ' of ' + v.length + ' ' + ev + ' marks were within ' + (field ? '5%' : '3%') + ' of the season best (' + bestMark + '): rock steady all season.');
+      }
+    }
+    // a run of new bests
+    if ((e.newPbs || 0) >= 2) { add(kind, 'Set a new ' + ev + ' PB ' + e.newPbs + ' times this season: the bar kept moving.'); }
+    // the most raced
+    if ((e.starts || 0) >= 4) {
+      add(kind, 'Lined up for the ' + ev + ' ' + e.starts + ' times' + (m && !field ? ': ' + (m * e.starts >= 1000 ? km(m * e.starts) : m * e.starts + ' m') + ' of ' + ev + ' racing.' : ' this season.'));
+    }
+    // how fast, or how far
+    if (!field && m && m <= 400 && !/relay/i.test(ev)) {
+      var mps = m / best;
+      if (mps > 3 && mps < 12) {
+        add(kind, 'Averaged ' + oneDp(mps * 3.6) + ' km/h over the ' + ev + ' (' + bestMark + '): about ' + oneDp(mps / 4.5) + ' family-car lengths every second.');
+        add(kind, 'In the blink of an eye (about a third of a second), the best ' + ev + ' covered ' + oneDp(mps / 3) + ' m of track.');
+      }
+    }
+    if (field && !isHigh(ev)) {
+      var thing = biggest(LONG_THINGS, best);
+      if (thing) { add(kind, 'The best ' + ev + ' (' + bestMark + ') went further than ' + thing + '.'); }
+    }
+    if (field && isHigh(ev)) {
+      var up = biggest(HIGH_THINGS, best);
+      if (up) { add(kind, 'Cleared ' + bestMark + ' in the ' + ev + ': higher than ' + up + '.'); }
+    }
+    if (/walk/i.test(ev) && m) {
+      var kmh = m / best * 3.6;
+      if (kmh > 5.5 && kmh < 18) { add(kind, 'Race walked the ' + ev + ' at ' + oneDp(kmh) + ' km/h, with a foot always on the ground: ' + oneDp(kmh / 5) + ' times the pace of an everyday walk.'); }
+    }
+    var hurdles = /hurdle/i.test(ev) ? HURDLES[m] : 0;
+    if (hurdles && e.starts) { add(kind, 'Cleared ' + hurdles * e.starts + ' hurdles in ' + plural(e.starts, 'race') + ' of the ' + ev + ' this season.'); }
+  }
+
+  function funFact(events, races, sig, seed) {
+    var facts = [], weight = {};
+    var add = function (kind, words) { if (words && words.length <= 170) { facts.push({ kind: kind, words: words }); } };
+    events.forEach(function (e) { var k = kindOf(e.event); weight[k] = (weight[k] || 0) + (e.starts || 0); });
+    races.forEach(function (r) { var k = r.team ? 'relay' : kindOf(r.kind || r.race); weight[k] = (weight[k] || 0) + 1; });
+
+    // the signature event's own facts
+    if (sig) { eventFacts(sig, add, 'sig'); }
+    // the busiest event of each kind, for that kind
+    var seen = {};
+    signatureChoices(events).forEach(function (e) {
+      var k = kindOf(e.event);
+      if (seen[k] || e === sig) { seen[k] = true; return; }
+      seen[k] = true;
+      eventFacts(e, add, k);
+    });
+
+    // running on the track, in all
+    var clockTime = 0, runs = 0, ran = 0;
+    events.forEach(function (e) {
+      var k = kindOf(e.event);
+      if (e.field || k === 'throw' || k === 'jump') { return; }
+      ran += metresOf(e.event) * (e.starts || 0);
+      if (k !== 'relay') { nums(e).forEach(function (x) { clockTime += x; runs++; }); }
+    });
+    if (runs >= 3) {
+      var song = clockTime < 240 ? 'less time than most pop songs.' : clockTime < 900 ? 'less than a morning tea break.' :
+        clockTime < 2400 ? 'shorter than a half of rugby.' : 'longer than a half of rugby.';
+      var main = ['sprint', 'hurdles', 'distance', 'walk'].sort(function (x, y) { return (weight[y] || 0) - (weight[x] || 0); })[0];
+      add(main, 'All ' + runs + ' track races added up to just ' + span(clockTime) + ' on the clock: ' + song);
+    }
+    // the ground covered, on the track and off it
+    var off = 0, offKind = 'xc';
+    races.forEach(function (r) { off += metresOf(r.race); });
+    if (races.length) { offKind = (weight.road || 0) > (weight.xc || 0) ? 'road' : 'xc'; }
+    var all = ran + off, distKind = off > ran ? offKind : 'distance';
+    if (all >= 800) {
+      add(distKind, 'Raced ' + (all >= 1000 ? km(all) : all + ' m') + ' in competition this season: that’s ' + Math.round(all / 400) + ' laps of a track.');
+    }
+    if (all >= 10000) {
+      add(distKind, 'Raced ' + km(all) + ' in competition this season: ' +
+        (all >= 42195 ? 'further than a full marathon (42.2 km).' : all >= 21098 ? 'further than a half marathon (21.1 km).' : 'that’s ' + Math.round(all / 421.95) + '% of a marathon.'));
+    }
+
+    // throws and jumps, in all
+    var thrown = 0, throws = 0, jumped = 0, jumps = 0;
+    events.forEach(function (e) {
+      var k = kindOf(e.event);
+      if (k === 'throw') { nums(e).forEach(function (x) { thrown += x; throws++; }); }
+      if (k === 'jump' && !isHigh(e.event)) { nums(e).forEach(function (x) { jumped += x; jumps++; }); }
+    });
     if (thrown >= 10) {
-      var fields = thrown / 100;
-      return { icon: 'throw', words: 'Threw a combined ' + Math.round(thrown) + ' m in ' + plural(throws, 'throw') + ': ' +
-        (fields >= 1 ? 'about ' + (Math.round(fields * 10) / 10) + ' rugby fields, try line to try line.' : 'a long way to fetch them all back.') };
+      add('throw', 'Threw a combined ' + Math.round(thrown) + ' m in ' + plural(throws, 'throw') + ': ' +
+        (thrown >= 100 ? 'about ' + oneDp(thrown / 100) + ' rugby fields, try line to try line.' : 'a long way to fetch them all back.'));
     }
     if (jumped >= 5) {
-      return { icon: 'jump', words: 'Jumped a combined ' + jumped.toFixed(1) + ' m: longer than ' +
-        (jumped >= 12 ? plural(Math.floor(jumped / 12), 'city bus', 'city buses') + ' end to end.' : 'a family car.') };
+      add('jump', 'Jumped a combined ' + jumped.toFixed(1) + ' m in ' + plural(jumps, 'jump') + ': longer than ' +
+        (jumped >= 12 ? plural(Math.floor(jumped / 12), 'city bus', 'city buses') + ' end to end.' : 'a family car.'));
     }
-    if (ran > 0) { return { icon: 'run', words: 'Raced ' + ran + ' m in competition this season, flat out.' }; }
-    return { icon: 'star', words: 'Every collection starts somewhere. This card is a first edition.' };
+
+    // cross country and road: the runners beaten, and the best finish
+    var solo = races.filter(function (r) { return !r.team && r.place >= 1 && r.of >= r.place; });
+    var beaten = solo.reduce(function (t, r) { return t + r.of - r.place; }, 0);
+    if (beaten >= 5) { add(offKind, 'Finished ahead of ' + beaten + ' runners across ' + plural(solo.length, 'race') + '.'); }
+    var top = solo.filter(function (r) { return r.of >= 10; }).sort(function (x, y) { return x.place / x.of - y.place / y.of; })[0];
+    if (top && top.place === 1) {
+      add(offKind, 'Won the ' + top.race + ', ahead of ' + plural(top.of - 1, 'other runner') + '.');
+    } else if (top && top.place / top.of <= 0.5) {
+      add(offKind, 'Finished in the top ' + Math.max(1, Math.ceil(top.place / top.of * 100)) + '% of the field at the ' + top.race + ' (' + ordinal(top.place) + ' of ' + top.of + ').');
+    }
+    // relays
+    var legs = races.filter(function (r) { return r.team; });
+    var batons = legs.length + events.filter(function (e) { return /relay/i.test(e.event); }).reduce(function (t, e) { return t + (e.starts || 0); }, 0);
+    if (batons >= 2) {
+      var teamPods = legs.filter(function (r) { return r.place >= 1 && r.place <= 3; }).length;
+      add('relay', 'Ran ' + plural(batons, 'relay leg') + ' this season' + (teamPods ? ', with ' + plural(teamPods, 'team podium') : '') + ': teamwork makes the dream work.');
+    }
+
+    // any athlete: how many different events, and the busiest month
+    if (events.length >= 5) { add('any', 'Tried ' + events.length + ' different events this season: a true all-rounder.'); }
+    var months = {};
+    events.forEach(function (e) { (e.points || []).forEach(function (p) { if (p.date) { var k = p.date.slice(0, 7); months[k] = (months[k] || 0) + 1; } }); });
+    races.forEach(function (r) { if (r.date) { var k = r.date.slice(0, 7); months[k] = (months[k] || 0) + 1; } });
+    var busy = Object.keys(months).sort(function (x, y) { return months[y] - months[x] || (x < y ? -1 : 1); })[0];
+    if (busy && months[busy] >= 4) { add('any', 'The busiest month was ' + FULL_MONTHS[+busy.slice(5, 7) - 1] + ', with ' + months[busy] + ' starts.'); }
+
+    // the kinds that suit them: half the starts of their busiest kind, or more
+    var top1 = Math.max.apply(null, [0].concat(Object.keys(weight).map(function (k) { return weight[k]; })));
+    var suits = function (f) { return f.kind === 'sig' || (f.kind !== 'any' && top1 && (weight[f.kind] || 0) >= top1 / 2); };
+    var pool = facts.filter(suits);
+    if (pool.length < 2) { pool = pool.concat(facts.filter(function (f) { return !suits(f); })); }
+    if (!pool.length) { return { icon: 'star', words: 'Every collection starts somewhere. This card is a first edition.', choices: 1 }; }
+    var pick = pool[Math.floor(random(seed || 1)() * pool.length)];
+    var iconKind = pick.kind === 'sig' ? kindOf(sig.event) : pick.kind;
+    return { icon: ICON[iconKind] || 'star', words: pick.words, choices: pool.length };
   }
 
   function caption(f) {
@@ -1017,6 +1195,7 @@
       ui.part = e.target.value; refacts(); drawAll();
     });
     el('sc-signature').addEventListener('change', function () { ui.signature = this.value; refacts(); drawAll(); });
+    el('sc-fact').addEventListener('click', function () { anotherFact(); refacts(); drawAll(); });
     el('sc-file').addEventListener('change', function () {
       var file = this.files && this.files[0];
       if (!file) { return; }
@@ -1109,8 +1288,17 @@
   }
   function refacts() {
     fillSignature();
-    ui.f = facts(Object.assign({}, ui.input, partOf(ui.input, ui.part), { surname: ui.surname, signature: ui.signature }));
+    ui.f = facts(Object.assign({}, ui.input, partOf(ui.input, ui.part), { surname: ui.surname, signature: ui.signature, factTurn: ui.factTurn }));
     el('sc-caption').value = caption(ui.f);
+    el('sc-fact-field').hidden = ui.f.fact.choices < 2;
+  }
+  // another fact: turn the seed on until the words change (two seeds can pick the same one)
+  function anotherFact() {
+    var base = Object.assign({}, ui.input, partOf(ui.input, ui.part), { signature: ui.signature }), was = ui.f && ui.f.fact.words;
+    for (var i = 0; i < 12; i++) {
+      ui.factTurn = (ui.factTurn || 0) + 1;
+      if (facts(Object.assign({}, base, { factTurn: ui.factTurn })).fact.words !== was) { return; }
+    }
   }
   function photoChoice() { return ui.usePhoto ? (ui.picked || ui.header) : null; }
   function resetPos() {
@@ -1371,7 +1559,7 @@
     var both = (input.events || []).length > 0 && (input.races || []).length > 0;
     // until the season ends in April, only the finished winter part can be shown
     var done = ready(input.season, input.today);
-    ui.part = done.track ? 'both' : 'oos'; ui.signature = '';
+    ui.part = done.track ? 'both' : 'oos'; ui.signature = ''; ui.factTurn = 0;
     el('sc-seasons').hidden = !both;
     var parts = document.querySelectorAll('input[name="sc-part"]');
     Array.prototype.forEach.call(parts, function (r) {
