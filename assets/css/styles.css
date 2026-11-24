@@ -1595,6 +1595,10 @@ table.schedule tbody.ath-season-group:first-of-type > tr.ath-season-band > th { 
 .sc__field[hidden] { display: none; }
 .sc__label { margin: 0; font-weight: 700; color: var(--heading); }
 .sc__said { margin: 0; font-size: .9rem; color: var(--text-soft); }
+/* the public link, below the saves */
+.sc__public { display: flex; flex-direction: column; gap: .5rem; padding-top: .75rem; border-top: 1px solid var(--line); }
+.sc__public[hidden] { display: none; }
+.sc__public > p { margin: 0; }
 .sc__row { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem 1rem; }
 .sc__row[hidden] { display: none; }
 .sc__check { margin: 0; }

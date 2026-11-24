@@ -54,7 +54,8 @@
         : month(s.from) === month(s.to) ? month(s.from)
         : month(s.from) + ' to ' + month(s.to));
     }
-    out.push(s.view === 'pb-card' ? CARDS[s.kind] || 'PB card' : s.view === 'by-season' ? 'By season' : 'Timeline');
+    out.push(s.view === 'season-card' ? 'Season card' : s.view === 'pb-card' ? CARDS[s.kind] || 'PB card'
+      : s.view === 'by-season' ? 'By season' : 'Timeline');
     return out.join(' · ');
   }
 
@@ -141,7 +142,7 @@
       thumb.rel = 'noopener';
       var img = el('img');
       img.src = s.image;
-      img.alt = (s.view === 'pb-card' ? 'The shared card: ' : 'The shared chart: ') + (s.title || what(s));
+      img.alt = (/-card$/.test(s.view) ? 'The shared card: ' : 'The shared chart: ') + (s.title || what(s));
       img.loading = 'lazy';
       img.width = 120;
       img.height = s.width && s.height ? Math.round(120 * s.height / s.width) : 80;
@@ -219,7 +220,7 @@
         });
       } else {
         rm.addEventListener('click', function () {
-          if (!window.confirm('Remove this shared ' + (s.view === 'pb-card' ? 'card' : 'chart') + '? Its link stops working straight away, for everyone ' +
+          if (!window.confirm('Remove this shared ' + (/-card$/.test(s.view) ? 'card' : 'chart') + '? Its link stops working straight away, for everyone ' +
                               'it was sent to. This can’t be undone: sharing again makes a new link.')) { return; }
           rm.disabled = true;
           opts.remove(s, said, '').then(null, function () { rm.disabled = false; });
