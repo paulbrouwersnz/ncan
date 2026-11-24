@@ -10,7 +10,7 @@
   - /athletes/ (#my-shares): "Your shared charts", every share of the athletes
     this person manages and any they made (GET /v1/me/shares); shown only when
     there is at least one.
-  - /admin/shared-charts/ (#shares-admin): every share in the club, for admins
+  - /admin/shared/ (#shares-admin): every share in the club, for admins
     (GET /v1/admin/shares), with Remove (a reason is required and logged; the
     makers see only "Removed by the club") and Pause sharing.
 
@@ -320,7 +320,7 @@
     NCAN.me().then(function (who) { if (who) { load(); } }, function () { /* the list stays hidden */ });
   }
 
-  /* /admin/shared-charts/ (started by admin.js once it knows this is an admin) ------ */
+  /* /admin/shared/ (started by admin.js once it knows this is an admin) ------ */
 
   function startAdmin() {
     var section = $('shares-admin');
