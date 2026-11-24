@@ -7,7 +7,7 @@
      rainbow holo, club green or onyx), the club crest, the season badge, a
      Rookie Card badge in their first season, and their name on a slanted
      nameplate. The photo can be given a look: chrome, gold rush, pencil sketch,
-     vintage, noir or heat map.
+     vintage, noir, heat map, club duotone, film, soft glow or bold contrast.
    - the stats side: the season in numbers, as on the back of a baseball card:
      each event's starts, season best, personal best, wins and top-three
      places, with a totals row; cross country, road and relay races; a few
@@ -51,7 +51,8 @@
   var FILTERS = [
     { id: 'natural', name: 'Natural' }, { id: 'chrome', name: 'Chrome' }, { id: 'gold', name: 'Gold rush' },
     { id: 'sketch', name: 'Pencil sketch' }, { id: 'vintage', name: 'Vintage' }, { id: 'noir', name: 'Noir' },
-    { id: 'thermal', name: 'Heat map' }
+    { id: 'thermal', name: 'Heat map' }, { id: 'duotone', name: 'Club duotone' }, { id: 'film', name: 'Film' },
+    { id: 'glow', name: 'Soft glow' }, { id: 'bold', name: 'Bold contrast' }
   ];
   function lookName(id) { return (FILTERS.filter(function (x) { return x.id === id; })[0] || FILTERS[0]).name; }
 
@@ -408,6 +409,43 @@
     },
     thermal: function (img) {
       return gradientMap(blur(img, px(img, 1), 1), ['#05001A', '#2A0A8C', '#9B0FA3', '#F0306A', '#FF8A00', '#FFE14D', '#FFFFF2']);
+    },
+    // the club's colours: deep green shadows to gold highlights, like a team poster
+    duotone: function (img) {
+      return gradientMap(adjust(img, { contrast: 1.2 }), [C.ink, C.green2, C.leaf, C.gold, C.cream]);
+    },
+    // warm, a little faded, lifted blacks and soft grain: an old trading card print
+    film: function (img) {
+      var d = img.data;
+      adjust(img, { contrast: 0.92, saturation: 0.85 });
+      for (var i = 0; i < d.length; i += 4) {
+        var l = lumAt(d, i) / 255;
+        d[i] = clamp255(d[i] * 0.9 + 24 + 10 * l);          // warm highlights
+        d[i + 1] = clamp255(d[i + 1] * 0.88 + 22);
+        d[i + 2] = clamp255(d[i + 2] * 0.8 + 30 - 14 * l);  // cool, faded shadows
+      }
+      return grain(vignette(img, 0.3), 16, 7);
+    },
+    // the bright parts bloom softly over the photo: flattering for a portrait
+    glow: function (img) {
+      var d = img.data, b = blur(img, px(img, 14), 3).data;
+      for (var i = 0; i < d.length; i += 4) {
+        for (var c = 0; c < 3; c++) {
+          var a = d[i + c] / 255, s = b[i + c] / 255;
+          var screen = 1 - (1 - a) * (1 - s * s);              // only the highlights glow
+          d[i + c] = clamp255((a * 0.45 + screen * 0.55) * 255 + 6);
+        }
+      }
+      return adjust(img, { contrast: 0.96, saturation: 1.08 });
+    },
+    // punchy colour, crisp edges and deep blacks: a sports magazine cover
+    bold: function (img) {
+      var s = blur(img, px(img, 3), 2).data, d = img.data;
+      for (var i = 0; i < d.length; i += 4) { for (var c = 0; c < 3; c++) { d[i + c] = clamp255(d[i + c] + (d[i + c] - s[i + c]) * 0.9); } }
+      for (var j = 0; j < d.length; j += 4) {
+        for (var k = 0; k < 3; k++) { var v = d[j + k] / 255; d[j + k] = clamp255(v * v * (3 - 2 * v) * 255); }   // an S curve
+      }
+      return vignette(adjust(img, { contrast: 1.12, saturation: 1.35, brightness: -4 }), 0.35);
     }
   };
   // the photo with a look: a new { data, width, height }, the one given left as it was

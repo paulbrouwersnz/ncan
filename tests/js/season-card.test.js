@@ -74,7 +74,7 @@ test('canMake: only once a part with results has finished', () => {
 });
 
 test('the looks: the removed ones are gone, and each one left works and keeps the size', () => {
-  assert.deepStrictEqual(SC.FILTERS.map(f => f.id), ['natural', 'chrome', 'gold', 'sketch', 'vintage', 'noir', 'thermal']);
+  assert.deepStrictEqual(SC.FILTERS.map(f => f.id), ['natural', 'chrome', 'gold', 'sketch', 'vintage', 'noir', 'thermal', 'duotone', 'film', 'glow', 'bold']);
   SC.FILTERS.forEach((f) => {
     assert.strictEqual(typeof SC.LOOKS[f.id], 'function', f.id);
     const out = SC.look({ width: 8, height: 6, data: new Uint8ClampedArray(8 * 6 * 4).fill(128) }, f.id);
