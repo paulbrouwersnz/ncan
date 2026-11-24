@@ -40,13 +40,13 @@ test('a share is sent with its details, and the consent tick', () => {
                               source: 'https://x.anet.live/meets/1/events/individual/2' }),
     'event=100m&from=2026-11-21&to=2026-11-21&view=pb-card&name=first&kind=pb' +
     '&source=https%3A%2F%2Fx.anet.live%2Fmeets%2F1%2Fevents%2Findividual%2F2&confirm=1');
-  assert.equal(I.SHARE_MAX, 4 * 1024 * 1024);
+  assert.equal(I.SHARE_MAX, 8 * 1024 * 1024);
 });
 
 test('an image too big to share says its size in MB', () => {
-  assert.equal(I.mb(I.SHARE_MAX), '4 MB');
+  assert.equal(I.mb(I.SHARE_MAX), '8 MB');
   assert.equal(I.mb(5.2 * 1048576), '5.2 MB');
-  assert.equal(I.mb(I.SHARE_MAX + 1), '4.1 MB');   // just over: never shown as the limit itself
+  assert.equal(I.mb(I.SHARE_MAX + 1), '8.1 MB');   // just over: never shown as the limit itself
 });
 
 test('the subtitle names the range picked, but not All results', () => {

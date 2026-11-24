@@ -1513,13 +1513,10 @@
     cv.width = two ? SIDE.w * 2 + GAP : SIDE.w; cv.height = SIDE.h;
     var c = cv.getContext('2d');
     c.imageSmoothingEnabled = true; c.imageSmoothingQuality = 'high';
-    if (two) {
-      // white behind the gap and the rounded corners, which a JPEG can't leave clear
-      c.fillStyle = '#FFFFFF'; c.fillRect(0, 0, cv.width, cv.height);
-      c.drawImage(ui.front, 0, 0, SIDE.w, SIDE.h);
-    }
+    // a PNG: the gap and the rounded corners stay clear
+    if (two) { c.drawImage(ui.front, 0, 0, SIDE.w, SIDE.h); }
     c.drawImage(ui.back, two ? SIDE.w + GAP : 0, 0, SIDE.w, SIDE.h);
-    return { canvas: cv, sides: two ? 2 : 1, type: two ? 'image/jpeg' : 'image/png' };
+    return { canvas: cv, sides: two ? 2 : 1, type: 'image/png' };
   }
   function makeLink() {
     if (el('sc-go').disabled || !ready2()) { return; }

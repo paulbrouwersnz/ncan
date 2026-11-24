@@ -78,7 +78,7 @@
       return k + '=' + encodeURIComponent(f[k] || '');
     }).join('&') + '&confirm=1';
   }
-  var SHARE_MAX = 4 * 1024 * 1024;   // the API's limit on a shared image (4 MB)
+  var SHARE_MAX = 8 * 1024 * 1024;   // the API's limit on a shared image (8 MB)
   // a size in MB, for the warning when an image is over the limit: "5.2 MB"
   function mb(bytes) { return (Math.ceil(bytes / 104857.6) / 10).toFixed(1).replace(/\.0$/, '') + ' MB'; }
 
