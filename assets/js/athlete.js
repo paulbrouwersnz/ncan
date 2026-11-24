@@ -1829,7 +1829,8 @@
      alone. info: { type, sides, season, from, to, surname }. Resolves the share. */
   function seasonCardShare(canvas, info) {
     var IMG = window.NCANChartImage, size = 0, hint = 'Try another photo or look.';
-    return cardBlob(canvas, info.type).then(function (blob) {
+    // sent at full size, never shrunk to fit: too big is said instead
+    return blobOf(canvas, info.type).then(function (blob) {
       if (!blob) { throw new Error('Sorry, the card could not be made.'); }
       size = blob.size;
       if (blob.size > IMG.SHARE_MAX) { throw tooBig('card', blob.size, hint); }
