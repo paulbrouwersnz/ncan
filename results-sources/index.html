@@ -227,6 +227,10 @@
                 <input type="checkbox" id="src-ours">
                 <label for="src-ours">Only meetings with our athletes</label>
               </p>
+              <p class="records-field ath-check">
+                <input type="checkbox" id="src-noplace">
+                <label for="src-noplace">No location yet</label>
+              </p>
             </div>
           </div>
           <div class="records-actions">
@@ -241,6 +245,10 @@
             <button type="button" class="btn btn--ghost btn--small" id="src-fold-all">Collapse all seasons</button>
           </p>
         </div>
+        <!-- locations saved for by-hand meetings that no meeting has any more (renamed): admins move or remove them -->
+        <div class="src-unmatched" id="src-unmatched" hidden></div>
+        <datalist id="src-used-location"></datalist>
+        <datalist id="src-used-city"></datalist>
         <div id="src-out"></div>
         <p class="records-note" id="src-updated"></p>
       </div>
@@ -431,7 +439,7 @@
       function filters() {
         return {
           season: $('src-season').value, type: $('src-type').value, from: $('src-from').value,
-          ours: $('src-ours').checked,
+          ours: $('src-ours').checked, noplace: $('src-noplace').checked,
           needle: $('src-text').value.replace(/\s+/g, ' ').trim().toLowerCase()
         };
       }
@@ -441,6 +449,8 @@
         if (f.type && m.type !== f.type) { return false; }
         if (f.from && m.from !== f.from) { return false; }
         if (f.ours && !m.results) { return false; }
+        // meetings with results on our athletes' pages (so share cards) but no location saved
+        if (f.noplace && (!m.results || m.location || m.city)) { return false; }
         if (f.needle) {
           var hay = (m.name + ' ' + (m.athletes || []).map(function (a) { return a.name; }).join(' ')).toLowerCase();
           if (hay.indexOf(f.needle) === -1) { return false; }
@@ -538,6 +548,11 @@
           manage.appendChild(linksForm(m, showOther));
           manage.appendChild(removeControl(m));
           body.appendChild(manage);
+        } else if (CAN_REMOVE) {
+          // a meeting typed in by hand: only where it was can be set here (its results are in the file)
+          var handBox = text('div', 'src-manage');
+          handBox.appendChild(placeForm(m));
+          body.appendChild(handBox);
         }
         // the athletes' names (the API sends a count instead to anyone not allowed every athlete)
         if (m.athletes && m.athletes.length) {
@@ -558,7 +573,7 @@
 
       function render() {
         var f = filters();
-        $('src-clear').disabled = !(f.season || f.type || f.from || f.ours || f.needle);
+        $('src-clear').disabled = !(f.season || f.type || f.from || f.ours || f.noplace || f.needle);
         var ms = all.filter(function (m) { return matches(m, f); });
         renderStats(ms);
         $('src-status').textContent = ms.length === all.length
@@ -567,7 +582,7 @@
         out.textContent = '';
         var seasons = [];
         ms.forEach(function (m) { var s = m.season || 'Not dated'; if (seasons.indexOf(s) === -1) { seasons.push(s); } });
-        var filtered = !!(f.season || f.type || f.from || f.ours || f.needle);
+        var filtered = !!(f.season || f.type || f.from || f.ours || f.noplace || f.needle);
         seasons.forEach(function (s, i) {
           var these = ms.filter(function (m) { return (m.season || 'Not dated') === s; });
           // each season folds away: the newest starts open, older ones folded, and one
@@ -588,6 +603,7 @@
           out.appendChild(group);
         });
         $('src-folds').hidden = seasons.length < 2;
+        renderUnmatched();
         if (collecting) { lockList(true); }
       }
 
@@ -788,10 +804,32 @@
 
       // where the meeting was, for share cards: never collected, so saving starts no
       // collect and shows straight away. Both boxes empty clears it.
+      var tidy = function (s) { return (s || '').replace(/\s+/g, ' ').trim(); };
+      // which meeting a location is saved for: an AthleticLIVE meeting by its address,
+      // one typed in by hand by its name
+      function placeTarget(m) { return m.from === 'AthleticLIVE' ? { url: m.link } : { meeting: m.name }; }
+
+      // the locations already saved, offered in the boxes so the spelling stays the same
+      var USED = [];
+      function showUsed() {
+        [['src-used-location', 'location'], ['src-used-city', 'city']].forEach(function (x) {
+          var list = $(x[0]), seen = {};
+          list.textContent = '';
+          USED.forEach(function (p) {
+            var v = p[x[1]];
+            if (v && !seen[v]) { seen[v] = 1; var o = text('option'); o.value = v; list.appendChild(o); }
+          });
+        });
+      }
+      function remember(place) {
+        if (!place.location && !place.city) { return; }
+        var same = USED.some(function (p) { return (p.location || '') === place.location && (p.city || '') === place.city; });
+        if (!same) { USED.push({ location: place.location, city: place.city }); showUsed(); }
+      }
+
       function placeForm(m) {
         var form = text('form', 'src-type-form src-place-form');
-        var key = (m.link || '').replace(/\D+/g, '-');
-        var tidy = function (s) { return (s || '').replace(/\s+/g, ' ').trim(); };
+        var key = (m.from === 'AthleticLIVE' ? m.link || '' : 'hand-' + m.name).replace(/\W+/g, '-');
         var now = { location: m.location || '', city: m.city || '' };
         var fields = [['location', 'Location', 'e.g. Ngā Puna Wai'],
                       ['city', 'City and country', 'e.g. Christchurch, New Zealand']].map(function (f) {
@@ -805,6 +843,7 @@
           box.autocomplete = 'off';
           box.placeholder = f[2];
           box.value = now[f[0]];
+          box.setAttribute('list', 'src-used-' + f[0]);   // the locations already saved
           field.appendChild(label);
           field.appendChild(box);
           form.appendChild(field);
@@ -815,27 +854,50 @@
         go.disabled = true;
         var said = text('span', 'src-type-form__said lock-keep');
         said.setAttribute('role', 'status');
-        if (!now.location && !now.city) { said.textContent = 'Shown on share cards under the meeting name'; }
         function changed() {
           return tidy(fields[0].value) !== now.location || tidy(fields[1].value) !== now.city;
         }
+        if (!now.location && !now.city && m.suggest) {
+          // the same meeting another year: filled in, so the admin only presses Save
+          fields[0].value = m.suggest.location || '';
+          fields[1].value = m.suggest.city || '';
+          go.disabled = false;
+          said.textContent = 'Suggested from ' + m.suggest.meeting + '. Press Save to use it.';
+          form.classList.add('is-suggested');
+        } else if (!now.location && !now.city) {
+          said.textContent = 'Shown on share cards under the meeting name';
+        }
         fields.forEach(function (box) {
-          box.addEventListener('input', function () { go.disabled = !changed(); said.textContent = ''; });
+          box.addEventListener('input', function () {
+            go.disabled = !changed(); said.textContent = ''; form.classList.remove('is-suggested');
+          });
+        });
+        // a location picked from those already saved brings its city and country
+        fields[0].addEventListener('change', function () {
+          var v = tidy(fields[0].value);
+          var hit = USED.filter(function (p) { return p.location === v && p.city; });
+          if (hit.length && !tidy(fields[1].value)) { fields[1].value = hit[0].city; go.disabled = !changed(); }
         });
         form.addEventListener('submit', function (e) {
           e.preventDefault();
           if (!changed()) { return; }
           lockMeeting(form, true);
           said.textContent = 'Saving…';
-          NCAN.send('/sources/place', { url: m.link, location: tidy(fields[0].value), city: tidy(fields[1].value) })
+          var body = placeTarget(m);
+          body.location = tidy(fields[0].value);
+          body.city = tidy(fields[1].value);
+          NCAN.send('/sources/place', body)
             .then(function (r) {
               lockMeeting(form, false);
               if (r.status !== 200) { said.textContent = r.body.error || 'Sorry, that didn’t work.'; return; }
               now = { location: r.body.meeting.location || '', city: r.body.meeting.city || '' };
               m.location = now.location; m.city = now.city;
+              delete m.suggest;
+              remember(now);
               fields[0].value = now.location; fields[1].value = now.city;
               go.disabled = true;
-              said.textContent = 'Saved';
+              form.classList.remove('is-suggested');
+              said.textContent = now.location || now.city ? 'Saved' : 'Cleared';
             }, function (err) { lockMeeting(form, false); said.textContent = err.message; });
         });
         form.appendChild(go);
@@ -969,9 +1031,83 @@
         return box;
       }
 
+      // locations saved for by-hand meetings whose names no meeting has any more (renamed
+      // in extra-results.json): an admin moves each to the right meeting, or removes it
+      var UNMATCHED = [];
+      function renderUnmatched() {
+        var box = $('src-unmatched');
+        box.textContent = '';
+        box.hidden = !(CAN_REMOVE && UNMATCHED.length);
+        if (box.hidden) { return; }
+        box.appendChild(text('h3', 'src-unmatched__head', 'Locations with no meeting'));
+        box.appendChild(text('p', 'src-xlinks__hint',
+          'Saved for a manually entered meeting that has since been renamed. Move each to the meeting it belongs to, or remove it.'));
+        var hand = all.filter(function (m) { return m.from !== 'AthleticLIVE'; })
+          .sort(function (a, b) { return (!!(a.location || a.city) - !!(b.location || b.city)) || (b.first || '').localeCompare(a.first || ''); });
+        UNMATCHED.forEach(function (u, i) {
+          var form = text('form', 'src-type-form src-manage src-unmatched__row');
+          var what = text('p', 'src-unmatched__what');
+          what.appendChild(text('strong', null, u.meeting));
+          what.appendChild(document.createTextNode(': ' + [u.location, u.city].filter(Boolean).join(' · ')));
+          form.appendChild(what);
+          var field = text('p', 'records-field');
+          var label = text('label', null, 'Move to');
+          label.htmlFor = 'src-unmatched-' + i;
+          var pick = text('select');
+          pick.id = label.htmlFor;
+          pick.appendChild(text('option', null, 'Choose a meeting…')).value = '';
+          hand.forEach(function (m) {
+            var o = text('option', null, m.name + (m.location || m.city ? ' (has a location)' : ''));
+            o.value = m.name;
+            pick.appendChild(o);
+          });
+          field.appendChild(label);
+          field.appendChild(pick);
+          form.appendChild(field);
+          var go = text('button', 'btn btn--ghost', 'Move');
+          go.type = 'submit';
+          go.disabled = true;
+          var rm = text('button', 'btn btn--ghost', 'Remove');
+          rm.type = 'button';
+          var said = text('span', 'src-type-form__said lock-keep');
+          said.setAttribute('role', 'status');
+          pick.addEventListener('change', function () { go.disabled = !pick.value; said.textContent = ''; });
+          function send(body, done) {
+            FormLock.lock(form, true);
+            said.textContent = 'Saving…';
+            NCAN.send('/sources/place', body).then(function (r) {
+              FormLock.lock(form, false);
+              if (r.status !== 200) { said.textContent = r.body.error || 'Sorry, that didn’t work.'; return; }
+              UNMATCHED = UNMATCHED.filter(function (x) { return x !== u; });
+              done(r.body.meeting);
+              render();
+            }, function (err) { FormLock.lock(form, false); said.textContent = err.message; });
+          }
+          form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            if (!pick.value) { return; }
+            send({ meeting: pick.value, location: u.location || '', city: u.city || '', move_from: u.meeting }, function (saved) {
+              all.forEach(function (m) {
+                if (m.from !== 'AthleticLIVE' && m.name === pick.value) {
+                  m.location = saved.location || ''; m.city = saved.city || ''; delete m.suggest;
+                }
+              });
+            });
+          });
+          rm.addEventListener('click', function () {
+            send({ meeting: u.meeting, location: '', city: '' }, function () {});
+          });
+          [go, rm, said].forEach(function (x) { form.appendChild(x); });
+          box.appendChild(form);
+        });
+      }
+
       function loadMeetings() {
         return NCAN.get('/meetings').then(function (json) {
           all = json.meetings || [];
+          USED = json.places_used || [];
+          UNMATCHED = json.unmatched_places || [];
+          showUsed();
           var names = all.some(function (m) { return m.athletes; });
           $('src-text').placeholder = names ? 'meeting or athlete' : 'meeting';
           var seasons = {}, types = {};
@@ -982,11 +1118,12 @@
           Object.keys(types).sort().forEach(function (t) {
             var o = text('option', null, t); o.value = t; $('src-type').appendChild(o);
           });
-          ['src-season', 'src-type', 'src-from', 'src-ours'].forEach(function (id) { $(id).addEventListener('change', render); });
+          ['src-season', 'src-type', 'src-from', 'src-ours', 'src-noplace'].forEach(function (id) { $(id).addEventListener('change', render); });
           $('src-text').addEventListener('input', render);
           $('src-clear').addEventListener('click', function () {
             ['src-season', 'src-type', 'src-from', 'src-text'].forEach(function (id) { $(id).value = ''; });
             $('src-ours').checked = false;
+            $('src-noplace').checked = false;
             render();
           });
           $('src-open-all').addEventListener('click', function () { foldAll(true); });

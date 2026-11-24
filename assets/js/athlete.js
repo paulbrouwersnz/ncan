@@ -1293,9 +1293,11 @@
                drawing: false, again: false, shape: 'square', surname: false, where: false, canvas: null, seq: 0, busy: false, from: null, url: '' };
 
   // where the result's meeting was ({location, city}), from the page's meeting_places
+  // (an AthleticLIVE meeting by its number; one typed in by hand by name, as "hand:<name>")
   function cardWhere(r) {
-    var n = window.NCANMeetingLinks ? NCANMeetingLinks.meetNumber(r && r.source) : null;
     var all = (NCAN.athlete && NCAN.athlete.meeting_places) || {};
+    if (r && r.manual) { return all['hand:' + r.meeting] || null; }
+    var n = window.NCANMeetingLinks ? NCANMeetingLinks.meetNumber(r && r.source) : null;
     return (n && all[String(n)]) || null;
   }
 
