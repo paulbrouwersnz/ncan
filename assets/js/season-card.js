@@ -135,10 +135,30 @@
   }
   /* The events to choose a signature event from: most starts first, then most
      new PBs, then running order (the sort keeps it). The first is the default. */
-  function signatureChoices(events) {
-    return (events || []).slice().sort(function (x, y) {
-      return (y.starts || 0) - (x.starts || 0) || (y.newPbs || 0) - (x.newPbs || 0);
+  function signatureChoices(events, races) {
+    return (events || []).concat(raceKinds(races)).sort(function (x, y) {
+      return (y.starts || 0) - (x.starts || 0) || (y.newPbs || 0) - (x.newPbs || 0) || (y.podiums || 0) - (x.podiums || 0);
     });
+  }
+  /* Cross country, road and relay races as signature choices: one per kind, all
+     distances together (a cross country course changes with grade and venue).
+     The season line plots each finishing place, first at the top; podiums in gold. */
+  var RACE_KINDS = [['Cross country', 'Cross country'], ['Road', 'Road'], ['Relay', 'Relays']];
+  function raceKinds(races) {
+    var out = [];
+    RACE_KINDS.forEach(function (k) {
+      var list = (races || []).filter(function (r) { return (r.team ? 'Relay' : r.kind) === k[0]; })
+        .sort(function (a, b) { return String(a.date) < String(b.date) ? -1 : String(a.date) > String(b.date) ? 1 : 0; });
+      if (!list.length) { return; }
+      var placed = list.filter(function (r) { return r.place >= 1; });
+      out.push({
+        event: k[1], race: true, kind: k[0], starts: list.length,
+        wins: placed.filter(function (r) { return r.place === 1; }).length,
+        podiums: placed.filter(function (r) { return r.place <= 3; }).length,
+        points: placed.map(function (r) { return { value: r.place, date: r.date, pb: r.place <= 3 }; })
+      });
+    });
+    return out;
   }
   function facts(a) {
     a = a || {};
@@ -164,7 +184,7 @@
       ? { kind: 'pbs', value: totals.newPbs, label: totals.newPbs === 1 ? 'NEW PB' : 'NEW PBS' }
       : { kind: 'podiums', value: podiums, label: podiums === 1 ? 'PODIUM' : 'PODIUMS' };
     // the signature event: the one chosen, or by default the first by starts
-    var byStarts = signatureChoices(events);
+    var byStarts = signatureChoices(events, races);
     var sig = byStarts.filter(function (e) { return e.event === a.signature; })[0] || byStarts[0] || null;
     return {
       first: first, last: last, name: a.surname && last ? first + ' ' + last : first,
@@ -334,8 +354,9 @@
     events.forEach(function (e) { var k = kindOf(e.event); weight[k] = (weight[k] || 0) + (e.starts || 0); });
     races.forEach(function (r) { var k = r.team ? 'relay' : kindOf(r.kind || r.race); weight[k] = (weight[k] || 0) + 1; });
 
-    // the signature event's own facts
-    if (sig) { eventFacts(sig, add, 'sig'); }
+    // the signature event's own facts; a race kind as signature has its kind's facts count as its own
+    var sigKind = sig && sig.race ? kindOf(sig.event) : '';
+    if (sig && !sig.race) { eventFacts(sig, add, 'sig'); }
     // the busiest event of each kind, for that kind
     var seen = {};
     signatureChoices(events).forEach(function (e) {
@@ -362,7 +383,7 @@
     // the ground covered, on the track and off it
     var off = 0, offKind = 'xc';
     races.forEach(function (r) { off += metresOf(r.race); });
-    if (races.length) { offKind = (weight.road || 0) > (weight.xc || 0) ? 'road' : 'xc'; }
+    if (races.length) { offKind = sigKind === 'xc' || sigKind === 'road' ? sigKind : (weight.road || 0) > (weight.xc || 0) ? 'road' : 'xc'; }
     var all = ran + off, distKind = off > ran ? offKind : 'distance';
     if (all >= 800) {
       add(distKind, 'Raced ' + (all >= 1000 ? km(all) : all + ' m') + ' in competition this season: that’s ' + Math.round(all / 400) + ' laps of a track.');
@@ -416,7 +437,7 @@
 
     // the kinds that suit them: half the starts of their busiest kind, or more
     var top1 = Math.max.apply(null, [0].concat(Object.keys(weight).map(function (k) { return weight[k]; })));
-    var suits = function (f) { return f.kind === 'sig' || (f.kind !== 'any' && top1 && (weight[f.kind] || 0) >= top1 / 2); };
+    var suits = function (f) { return f.kind === 'sig' || (sigKind && f.kind === sigKind) || (f.kind !== 'any' && top1 && (weight[f.kind] || 0) >= top1 / 2); };
     var pool = facts.filter(suits);
     if (pool.length < 2) { pool = pool.concat(facts.filter(function (f) { return !suits(f); })); }
     if (!pool.length) { return { icon: 'star', words: 'Every collection starts somewhere. This card is a first edition.', choices: 1 }; }
@@ -1126,9 +1147,10 @@
       c.save(); spaced(c, 2); setFont(c, 800, 12, S);
       var lx = X0 + 30 + Math.min(260, c.measureText(label).width);
       c.restore();
-      if (sig) { sparkline(c, sig.points, sig.field, lx, fy0 + 11, X1 - 96 - lx, 24); }
+      if (sig) { sparkline(c, sig.points, !sig.race && sig.field, lx, fy0 + 11, X1 - 96 - lx, 24); }
       text('ncan.nz', X1 - 14, fy0 + 28, { size: 13, weight: 800, colour: '#FFFFFF', align: 'right' });
-      text('From results published by meetings' + (f.upTo ? ', to ' + f.upTo : '') + '. ★ a new personal best that season.',
+      text('From results published by meetings' + (f.upTo ? ', to ' + f.upTo : '') + '. ★ a new personal best that season.' +
+        (sig && sig.race ? ' Gold dots: top-three finishes.' : ''),
         W / 2, H - 29, { size: 10.5, weight: 500, colour: 'rgba(255,255,255,.72)', max: W - 90 });
       c.restore();
       return s.canvas;
@@ -1274,13 +1296,13 @@
   /* The Signature event dropdown: the shown part's events, most starts first.
      A choice that's no longer there (another part shown) falls back to the first. */
   function fillSignature() {
-    var list = signatureChoices(partOf(ui.input, ui.part).events), sel = el('sc-signature');
+    var shown = partOf(ui.input, ui.part), list = signatureChoices(shown.events, shown.races), sel = el('sc-signature');
     if (!list.some(function (e) { return e.event === ui.signature; })) { ui.signature = list.length ? list[0].event : ''; }
     sel.textContent = '';
     list.forEach(function (e) {
       var o = document.createElement('option');
       o.value = e.event;
-      o.textContent = e.event + ' (' + plural(e.starts || 0, 'start') + ')';
+      o.textContent = e.event + ' (' + plural(e.starts || 0, e.race ? 'race' : 'start') + ')';
       o.selected = e.event === ui.signature;
       sel.appendChild(o);
     });
