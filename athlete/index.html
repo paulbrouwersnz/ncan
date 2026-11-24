@@ -228,7 +228,8 @@
         <div class="section-head section-head--wide" data-reveal>
           <h3 class="ath-sub__title" id="results-heading">All results</h3>
           <p class="lede">
-            Newest first, or grouped by event. Each mark links to the official result. Place is the
+            By season, newest first, or grouped by event. Each season&rsquo;s band has a
+            <strong>Season card</strong>: a collector card of the season to save and share. Each mark links to the official result. Place is the
             place in the whole race or competition, out of everyone who recorded a result.
           </p>
         </div>
@@ -238,6 +239,7 @@
             <p class="records-field">
               <label for="ath-group">Group by</label>
               <select id="ath-group">
+                <option value="season" selected>By season</option>
                 <option value="date">Newest first</option>
                 <option value="event">By event</option>
               </select>
@@ -294,7 +296,7 @@
           <p class="eyebrow">Out of Stadia</p>
           <h2 id="out-of-stadia-heading">Cross country, road and relays</h2>
           <p class="lede">
-            Newest first. Cross country times depend on the course and the conditions, so they
+            By season, newest first. Cross country times depend on the course and the conditions, so they
             aren&rsquo;t compared as personal bests: the place in the race tells more. A relay shows
             the runner&rsquo;s own leg and their team&rsquo;s place. Grades are cross country and road
             grades: two-year junior grades by age on 31&nbsp;December, and Masters by age on the day.
@@ -302,8 +304,8 @@
         </div>
         <h3 class="ath-sub__title ath-sub__title--plain">Results</h3>
         <div class="table-wrap">
-          <table class="schedule ath-table ath-offtrack">
-            <caption class="visually-hidden">Cross country, road and relay results, newest first</caption>
+          <table class="schedule ath-table ath-offtrack" id="offtrack-table">
+            <caption class="visually-hidden">Cross country, road and relay results, by season, newest first</caption>
             <thead>
               <tr>
                 <th scope="col">Date</th><th scope="col">Race</th><th scope="col">Time</th>
@@ -311,7 +313,6 @@
                 <th scope="col">Representing</th>
               </tr>
             </thead>
-            <tbody id="offtrack-body"></tbody>
           </table>
         </div>
       </div>
@@ -685,6 +686,86 @@
       <p class="ath-share__said" id="ath-card-said" aria-live="polite"></p>
     </dialog>
 
+    <!-- a season's collector card: opened by the Season card button on each season's band
+         in the results tables (assets/js/athlete.js, season-card.js). A photo side and a
+         stats side, each saved on its own; with no photo, the stats side alone. -->
+    <dialog class="ath-share sc" id="sc" aria-labelledby="sc-title">
+      <div class="ath-share__head">
+        <h2 class="ath-share__title" id="sc-title" tabindex="-1">Season card</h2>
+        <button type="button" class="ath-zoom__close" data-sc-close aria-label="Close">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+      <p class="ath-share__intro">A collector card of the season, made on this device: nothing is posted until you share it.</p>
+      <div class="sc__body">
+        <div class="sc__view">
+          <div class="sc__stage" id="sc-stage" data-finish="chrome">
+            <div class="sc__card" id="sc-card" tabindex="0" aria-label="The card. On the photo side, drag the photo to place it, or use the arrow keys, and + or − to zoom.">
+              <div class="sc__face sc__face--front"><img id="sc-front" alt=""></div>
+              <div class="sc__face sc__face--back"><img id="sc-back" alt=""></div>
+              <div class="sc__shine" aria-hidden="true"></div>
+            </div>
+          </div>
+          <button type="button" class="btn btn--ghost btn--sm sc__flip" id="sc-flip" hidden>
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12a8 8 0 0 1 14-5.3M20 12a8 8 0 0 1-14 5.3"/><path d="M18 3v4h-4M6 21v-4h4"/></svg>
+            <span id="sc-flip-words">Turn to the stats side</span>
+          </button>
+        </div>
+        <div class="sc__controls">
+          <div class="sc__field">
+            <p class="sc__label">Photo</p>
+            <p class="sc__said" id="sc-photo-said"></p>
+            <div class="sc__row">
+              <label class="btn btn--ghost btn--sm ath-card__pick">
+                <input type="file" id="sc-file" accept="image/*" class="visually-hidden">
+                <span id="sc-pick-words">Add a photo</span>
+              </label>
+              <button type="button" class="btn btn--ghost btn--sm" id="sc-use-header" hidden>Use the header photo</button>
+              <button type="button" class="btn btn--ghost btn--sm" id="sc-nophoto" hidden>No photo</button>
+            </div>
+            <div class="sc__row" id="sc-adjust" hidden>
+              <label class="ath-card__zoom" for="sc-zoom">Zoom
+                <input type="range" id="sc-zoom" min="100" max="400" step="5" value="100">
+              </label>
+              <button type="button" class="btn btn--ghost btn--sm" id="sc-reset">Reset</button>
+            </div>
+          </div>
+          <div class="sc__field" id="sc-looks-field" hidden>
+            <p class="sc__label" id="sc-looks-label">Photo look</p>
+            <div class="sc__looks" id="sc-looks" role="radiogroup" aria-labelledby="sc-looks-label"></div>
+          </div>
+          <div class="sc__field">
+            <p class="sc__label" id="sc-finishes-label">Finish: <span id="sc-finish-name">Chrome</span></p>
+            <div class="sc__swatches" id="sc-finishes" role="radiogroup" aria-labelledby="sc-finishes-label"></div>
+          </div>
+          <fieldset class="sc__field sc__seasons" id="sc-seasons" hidden>
+            <legend class="sc__label">Stats from</legend>
+            <div class="sc__row">
+              <label class="ath-check sc__check"><input type="radio" name="sc-part" value="both" checked> Both</label>
+              <label class="ath-check sc__check"><input type="radio" name="sc-part" value="track"> Track and field</label>
+              <label class="ath-check sc__check"><input type="radio" name="sc-part" value="oos"> Cross country, road and relays</label>
+            </div>
+          </fieldset>
+          <p class="ath-check sc__check">
+            <input type="checkbox" id="sc-surname">
+            <label for="sc-surname">Show surname</label>
+          </p>
+          <label class="ath-share__label" for="sc-caption">Suggested caption</label>
+          <div class="ath-share__link">
+            <input type="text" id="sc-caption" readonly>
+            <button type="button" class="btn btn--ghost btn--sm" id="sc-copy">Copy caption</button>
+          </div>
+          <div class="ath-share__actions">
+            <button type="button" class="btn btn--ghost btn--sm" data-sc-close>Close</button>
+            <button type="button" class="btn btn--ghost btn--sm" id="sc-save-front" hidden disabled>Save photo side</button>
+            <button type="button" class="btn btn--accent btn--sm" id="sc-save-back" disabled>Save stats side</button>
+          </div>
+          <p class="ath-share__note ath-share__yours">If you post this card on social media, that post is yours to look after: the club can’t edit or remove it.</p>
+          <p class="ath-share__said" id="sc-said" aria-live="polite"></p>
+        </div>
+      </div>
+    </dialog>
+
     <!-- one chart enlarged: opened by the button on each chart (assets/js/athlete.js) -->
     <dialog class="ath-zoom" id="ath-zoom" aria-labelledby="ath-zoom-title">
       <div class="ath-zoom__head">
@@ -887,6 +968,7 @@
   <script src="/assets/js/athlete-seasons.js"></script>
   <script src="/assets/js/chart-image.js"></script>
   <script src="/assets/js/pb-card.js"></script>
+  <script src="/assets/js/season-card.js"></script>
   <script src="/assets/js/shared-charts.js"></script>
   <script src="/assets/js/athlete.js"></script>
 

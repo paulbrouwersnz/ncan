@@ -1527,6 +1527,97 @@ table.schedule.champs-table { min-width: 0; }
 .ath-card__box.is-adjustable img { cursor: grab; touch-action: none; -webkit-user-drag: none; user-select: none; }
 .ath-card__box.is-adjustable.is-dragging img { cursor: grabbing; }
 .ath-card__box.is-adjustable:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 12px; }
+/* the results tables by season: a band per season, with its Season card button */
+.ath-season-band__line { display: flex; flex-wrap: wrap; align-items: center; gap: .35rem 1rem; }
+.ath-season-band__name { font-family: var(--font-display); font-weight: 800; font-size: 1.02rem; color: var(--heading); }
+.ath-season-band__counts { font-weight: 500; font-size: .9rem; color: var(--text-soft); }
+.ath-season-band__card {
+  display: inline-flex; align-items: center; gap: .4rem; margin-left: auto; min-height: 36px; padding: .3rem .8rem .3rem .65rem;
+  border: 1px solid transparent; border-radius: 999px; cursor: pointer; font: inherit; font-size: .85rem; font-weight: 700;
+  color: #062A20; background: linear-gradient(135deg, #FFE27A, #FFC629 45%, #F5D77A 60%, #E0A800);
+  box-shadow: 0 1px 0 rgba(255,255,255,.6) inset, 0 2px 6px rgba(6,42,32,.18);
+}
+.ath-season-band__card:hover { filter: brightness(1.05); box-shadow: 0 1px 0 rgba(255,255,255,.6) inset, 0 4px 12px rgba(6,42,32,.25); }
+.ath-season-band__card:focus-visible { outline: 2px solid var(--heading); outline-offset: 2px; }
+.ath-season-band__card svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linejoin: round; stroke-linecap: round; }
+table.schedule tbody.ath-season-group + tbody.ath-season-group > tr:first-child > th { border-top: 0; }
+table.schedule tbody.ath-season-group > tr.ath-season-band > th { border-top: 10px solid var(--surface); }
+.section--tint table.schedule tbody.ath-season-group > tr.ath-season-band > th { border-top-color: var(--surface); }
+table.schedule tbody.ath-season-group:first-of-type > tr.ath-season-band > th { border-top: 0; }
+
+/* the season card dialog: the card on the left, turned and tilted in the hand; the choices on the right */
+.sc { max-width: 1040px; }
+.sc__body { display: grid; grid-template-columns: minmax(260px, 400px) 1fr; gap: 1.25rem 1.75rem; align-items: start; }
+@media (max-width: 760px) { .sc__body { grid-template-columns: 1fr; } }
+.sc__view { position: sticky; top: 0; display: flex; flex-direction: column; align-items: center; gap: .6rem; }
+.sc__stage {
+  --rx: 0deg; --ry: 0deg; --gx: 50%; --gy: 50%;
+  width: 100%; max-width: min(400px, calc((100dvh - 230px) * 5 / 7)); min-width: 220px; perspective: 1400px; padding: 6px;
+}
+.sc__card {
+  position: relative; aspect-ratio: 5 / 7; border-radius: 4.2% / 3%; transform-style: preserve-3d;
+  transform: rotateX(var(--rx)) rotateY(var(--ry));
+  transition: transform .7s cubic-bezier(.2, .8, .2, 1);
+  filter: drop-shadow(0 18px 24px rgba(6, 28, 22, .35));
+  outline: none;
+}
+.sc__stage.is-tilting .sc__card { transition: transform .12s ease-out; }
+.sc__stage.is-flipped .sc__card { transform: rotateX(var(--rx)) rotateY(calc(180deg + var(--ry))); }
+.sc__stage.is-single .sc__card { transform: rotateX(var(--rx)) rotateY(var(--ry)); }
+.sc__card:focus-visible { outline: 3px solid var(--accent); outline-offset: 6px; border-radius: 18px; }
+.sc__face { position: absolute; inset: 0; border-radius: inherit; overflow: hidden; backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  background: linear-gradient(135deg, #DDE3EA, #8F9BA7); }
+.sc__face img { display: block; width: 100%; height: 100%; object-fit: cover; user-select: none; -webkit-user-drag: none; }
+.sc__face img:not([src]) { visibility: hidden; }
+.sc__face--back { transform: rotateY(180deg); }
+.sc__stage.is-single .sc__face--front { display: none; }
+.sc__stage.is-single .sc__face--back { transform: none; }
+.sc__card.is-placeable .sc__face--front img { cursor: grab; touch-action: none; }
+.sc__stage.is-dragging .sc__face--front img { cursor: grabbing; }
+/* light over the foil, following the pointer; stronger on a holo finish */
+.sc__shine {
+  position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity .3s;
+  background:
+    radial-gradient(circle at var(--gx) var(--gy), rgba(255,255,255,.55), rgba(255,255,255,0) 45%),
+    linear-gradient(115deg, transparent 20%, rgba(255,95,162,.35) 35%, rgba(255,211,107,.35) 45%, rgba(125,255,176,.35) 55%, rgba(107,198,255,.35) 65%, transparent 80%);
+  background-size: 100% 100%, 250% 250%;
+  background-position: 0 0, var(--gx) var(--gy);
+  mix-blend-mode: soft-light;
+}
+.sc__stage.is-tilting .sc__shine { opacity: .9; }
+.sc__stage[data-finish="holo"].is-tilting .sc__shine { opacity: 1; mix-blend-mode: color-dodge; }
+.sc__stage.is-flipped:not(.is-single) .sc__shine { transform: rotateY(180deg); }
+.sc__flip svg { width: 17px; height: 17px; margin-right: .35rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; vertical-align: -3px; }
+.sc__controls { display: flex; flex-direction: column; gap: .9rem; min-width: 0; }
+.sc__field { display: flex; flex-direction: column; gap: .45rem; }
+.sc__field[hidden] { display: none; }
+.sc__label { margin: 0; font-weight: 700; color: var(--heading); }
+.sc__said { margin: 0; font-size: .9rem; color: var(--text-soft); }
+.sc__row { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem 1rem; }
+.sc__row[hidden] { display: none; }
+.sc__check { margin: 0; }
+.sc__looks { display: grid; grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); gap: .5rem; }
+.sc__look {
+  display: flex; flex-direction: column; align-items: stretch; gap: .25rem; padding: 4px 4px 6px; cursor: pointer;
+  font: inherit; font-size: .76rem; font-weight: 600; line-height: 1.2; color: var(--text); text-align: center;
+  background: var(--surface); border: 2px solid var(--line); border-radius: 10px;
+}
+.sc__look:hover { border-color: var(--line-strong); }
+.sc__look[aria-checked="true"] { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+.sc__look:focus-visible { outline: 2px solid var(--heading); outline-offset: 2px; }
+.sc__thumb { display: block; width: 100%; height: auto; aspect-ratio: 3 / 4; border-radius: 6px; background: var(--surface-tint); }
+.sc__swatches { display: flex; flex-wrap: wrap; gap: .6rem; }
+.sc__swatch {
+  width: 42px; height: 42px; padding: 0; cursor: pointer; border-radius: 50%; border: 3px solid var(--surface);
+  box-shadow: 0 0 0 1px var(--line-strong), inset 0 1px 2px rgba(255,255,255,.6);
+}
+.sc__swatch[aria-checked="true"] { box-shadow: 0 0 0 3px var(--accent), inset 0 1px 2px rgba(255,255,255,.6); }
+.sc__swatch:focus-visible { outline: 2px solid var(--heading); outline-offset: 4px; }
+@media (prefers-reduced-motion: reduce) {
+  .sc__card, .sc__stage.is-tilting .sc__card { transition: none; }
+  .sc__shine { display: none; }
+}
+
 /* a mark with its share icon pushed to the right edge */
 .ath-markline, .ath-pb__mark, .ath-zoom__mark { display: flex; align-items: center; gap: .4rem; }
 .ath-markline .ath-pb-share, .ath-pb__mark .ath-pb-share, .ath-zoom__mark .ath-pb-share { margin-left: auto; vertical-align: 0; }
