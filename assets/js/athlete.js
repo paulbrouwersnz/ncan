@@ -1807,6 +1807,7 @@
       grade: latest ? (latest.oos ? latest.oos_grade || '' : groupOf(latest)) : '',
       meetings: Object.keys(meetings).length, trackMeetings: count(track), oosMeetings: count(races), upTo: lastDay ? longDate(lastDay) : '',
       surnameByDefault: window.NCANPbCard ? window.NCANPbCard.surnameByDefault(latest) : false,
+      today: isoOf(new Date()),
       events: events, races: raceList
     };
   }
@@ -2006,7 +2007,12 @@
     line.appendChild(text('span', 'ath-season-band__name', (SEASONS ? SEASONS.label(season, today) : season) + ' season'));
     var said = counts.filter(Boolean).join(' · ');
     if (said) { line.appendChild(text('span', 'ath-season-band__counts', said)); }
-    if (window.NCANSeasonCard) {
+    /* the card only once a part of the season has finished: cross country, road
+       and relays from 1 October, track and field from 1 April */
+    var inSeason = function (r) { return seasonKey(r) === season; };
+    if (window.NCANSeasonCard && athlete &&
+        window.NCANSeasonCard.canMake(season, isoOf(new Date()),
+          (athlete.results || []).some(inSeason), (athlete.offTrack || []).some(inSeason))) {
       var b = text('button', 'ath-season-band__card');
       b.type = 'button';
       b.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="5" y="3" width="14" height="18" rx="2"/>' +

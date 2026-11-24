@@ -109,6 +109,28 @@
                     points: [{ value, date, pb }] }],
          races: [{ date, race, kind, mark, place, of, team }] }
      events in a meeting's running order; races newest first. */
+  /* Which parts of a season ('2025/26': 1 April 2025 to 31 March 2026) have
+     finished by today, an ISO day: cross country, road and relays run through
+     the winter, so their card opens on 1 October; track and field runs through
+     the summer, so its card (and Both) opens on 1 April, when the season ends.
+     { oos, track, oosFrom, trackFrom } */
+  var FULL_MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  // '2026-04-01' → '1 April 2026'
+  function dayText(day) {
+    var p = String(day || '').split('-');
+    return p.length === 3 ? +p[2] + ' ' + FULL_MONTHS[+p[1] - 1] + ' ' + p[0] : '';
+  }
+  function ready(season, today) {
+    var s = parseInt(String(season || ''), 10);
+    if (!s) { return { oos: true, track: true, oosFrom: '', trackFrom: '' }; }
+    var oosFrom = s + '-10-01', trackFrom = (s + 1) + '-04-01';
+    return { oos: !today || today >= oosFrom, track: !today || today >= trackFrom, oosFrom: oosFrom, trackFrom: trackFrom };
+  }
+  /* Whether a season's card can be made yet: a finished part with results in it. */
+  function canMake(season, today, hasTrack, hasOos) {
+    var r = ready(season, today);
+    return (r.track && !!hasTrack) || (r.oos && !!hasOos);
+  }
   /* The events to choose a signature event from: most starts first, then most
      new PBs, then running order (the sort keeps it). The first is the default. */
   function signatureChoices(events) {
@@ -1298,10 +1320,18 @@
     ui.surname = !!input.surnameByDefault;
     el('sc-surname').checked = ui.surname;
     var both = (input.events || []).length > 0 && (input.races || []).length > 0;
-    ui.part = 'both'; ui.signature = '';
+    // until the season ends in April, only the finished winter part can be shown
+    var done = ready(input.season, input.today);
+    ui.part = done.track ? 'both' : 'oos'; ui.signature = '';
     el('sc-seasons').hidden = !both;
     var parts = document.querySelectorAll('input[name="sc-part"]');
-    Array.prototype.forEach.call(parts, function (r) { r.checked = r.value === 'both'; });
+    Array.prototype.forEach.call(parts, function (r) {
+      r.disabled = !done.track && r.value !== 'oos';
+      r.checked = r.value === ui.part;
+    });
+    var wait = el('sc-seasons-said');
+    wait.hidden = done.track || !both;
+    wait.textContent = done.track ? '' : 'Track and field, and Both, open on ' + dayText(done.trackFrom) + ', when the season ends.';
     refacts();
     el('sc-title').textContent = 'The ' + input.season + ' season card';
     var stored = null;
@@ -1329,7 +1359,7 @@
     }, function () { if (n === ui.seq) { usePhoto(); } });
   }
 
-  return { W: W, H: H, FINISHES: FINISHES, FILTERS: FILTERS, facts: facts, signatureChoices: signatureChoices, partOf: partOf, highlights: highlights, funFact: funFact,
+  return { W: W, H: H, FINISHES: FINISHES, FILTERS: FILTERS, facts: facts, signatureChoices: signatureChoices, ready: ready, canMake: canMake, partOf: partOf, highlights: highlights, funFact: funFact,
            caption: caption, fileName: fileName, metresOf: metresOf, groupOf: groupOf, gain: gain,
            look: look, LOOKS: LOOKS, blur: blur, edges: edges, rng: rng,
            front: front, back: back, filtered: filtered, open: open };
