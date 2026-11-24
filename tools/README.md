@@ -276,7 +276,7 @@ Each `tests/js/<name>.test.js` tests the helpers in `assets/js/<name>.js` (or
 | `athlete-seasons.test.js` | seasons on the athlete charts (1 April to 31 March, winter and summer bands, "so far", season bests per weight), the By season view (each date's day in its season, 29 February included, and each season's colour), Hide empty months (only months with no result in any season, each run of them a break on the axis) and the enlarged chart's date ranges |
 | `pb-card.test.js` | Share cards (`assets/js/pb-card.js`): the headline for a new PB, PB, season best, podium place or result, with its caption and file name; the Photo card filling the card with its washes, the Event card's scene for each event (and its track colour), the crop keeping the focus point in view, zooming in and dragging the photo (stopping at its edges); the improvement wording (−0.32s, +18cm, +1.05m), the place only for 1st–3rd, first name only by default for children, the season count, the caption and file name, and the square and story layouts: the mark in gold, the ribbon only with an improvement, every word inside the card and nothing overlapping |
 | `chart-image.test.js` | the enlarged chart saved as an image (Download, `assets/js/chart-image.js`): the file name (athlete and event, accents dropped), the dates line, the key wrapping into rows, reading a key swatch's ring from its CSS, the image shapes (Auto, landscape 3:2, portrait 4:5, square 1:1) and the layout leaving the chart room in each; for Share, the name on a shared image (full, or first name only) and the details sent with it |
-| `shared-charts.test.js` | the shared charts lists (`assets/js/shared-charts.js`): what each share shows (event, dates, view), its views and link previews, who shared it ("you" or someone else for families, the email for admins), the removed wording ("Removed by the club" for families, with who and why for admins) and the admin page's Show and Find; the share usage badges (today and live against the limits, which is full) |
+| `shared-charts.test.js` | the shared charts lists (`assets/js/shared-charts.js`): what each share shows (event, dates, view), who shared it ("you" or someone else for families, the email for admins), the removed wording ("Removed by the club" for families, with who and why for admins) and the admin page's Show and Find; the share usage badges (today and live against the limits, which is full) |
 
 `tests/py/test_page_photos.py` tests the header photo checks
 (`python -m unittest discover -s tests/py`). Add a test file with any new helper
@@ -954,7 +954,7 @@ the API refuses everyone else, so nothing shows), **Your shared charts** on
 `/admin/shared/` (`GET /v1/admin/shares`) with every share, Show (live,
 removed, all), Find, Remove with a required reason, and Pause sharing. Each
 share shows its thumbnail, event, dates and view, the name it shows, when it was
-made and its views (people once a day, link previews apart), with Copy link,
+made, with Copy link,
 Open and Remove. A share is never changed; Remove stops its link at once and
 can't be undone. A new share made on the page appears in the list straight away
 (the `ncan:shared` event from `athlete.js`). The admin landing card counts

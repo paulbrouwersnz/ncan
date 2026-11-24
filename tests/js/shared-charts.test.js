@@ -9,7 +9,7 @@ const S = require('../../assets/js/shared-charts.js');
 const share = (over) => Object.assign({
   id: 'abcdefgh12345678', event: '100m', from: '2024-10-05', to: '2026-11-21', view: 'by-season',
   title: 'Sam B. · 100m', at: '2026-11-23 19:05', by: 'jo@example.invalid', mine: false,
-  views: 48, recent_views: 12, previews: 6, removed: null
+  removed: null
 }, over);
 
 test('share usage: today and live against the limits', () => {
@@ -45,10 +45,8 @@ test('what was shared: the event, the dates and the view', () => {
   assert.equal(S.what(share({ from: '2026-11-21', to: '2026-11-21', view: 'pb-card', kind: 'sb' })), '100m · 21 Nov 2026 · Season’s best card');
 });
 
-test('views count people once a day, with link previews apart', () => {
-  assert.equal(S.views(share()), '48 views (12 in the last 7 days) · 6 link previews');
-  assert.equal(S.views(share({ views: 1, recent_views: 0, previews: 1 })), '1 view · 1 link preview');
-  assert.equal(S.views(share({ views: 0, recent_views: 0, previews: 0 })), 'No views yet');
+test('no view counts are shown', () => {
+  assert.equal(S.views, undefined);
 });
 
 test('families see who shared it only as "you" or someone else; admins see the email', () => {
