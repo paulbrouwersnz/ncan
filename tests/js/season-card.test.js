@@ -55,3 +55,20 @@ test('facts: the signature event defaults to the most starts, and can be chosen'
   assert.strictEqual(SC.facts({ name: 'Lily', events, signature: '400m' }).signature.event, '400m');
   assert.strictEqual(SC.facts({ name: 'Lily', events, signature: 'Shot Put' }).signature.event, '200m');
 });
+
+test('ready: the winter part opens in October, track and field in April', () => {
+  const at = day => { const r = SC.ready('2025/26', day); return [r.oos, r.track]; };
+  assert.deepStrictEqual(at('2025-09-30'), [false, false]);
+  assert.deepStrictEqual(at('2025-10-01'), [true, false]);
+  assert.deepStrictEqual(at('2026-03-31'), [true, false]);
+  assert.deepStrictEqual(at('2026-04-01'), [true, true]);
+  assert.strictEqual(SC.ready('2025/26', '2025-12-01').trackFrom, '2026-04-01');
+});
+
+test('canMake: only once a part with results has finished', () => {
+  assert.strictEqual(SC.canMake('2025/26', '2025-08-01', true, true), false);
+  assert.strictEqual(SC.canMake('2025/26', '2025-12-01', true, true), true);
+  assert.strictEqual(SC.canMake('2025/26', '2025-12-01', true, false), false);
+  assert.strictEqual(SC.canMake('2025/26', '2026-04-01', true, false), true);
+  assert.strictEqual(SC.canMake('2024/25', '2025-12-01', false, true), true);
+});
