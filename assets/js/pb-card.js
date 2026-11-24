@@ -111,16 +111,35 @@
     var city = tidy(w.city).replace(/,\s*new zealand$/i, '');
     return [tidy(w.location), city].filter(Boolean).join(' · ');
   }
+  /* Progress line: p { points: [{ value, date }] oldest first, this mark last; span
+     ("2026/27 season", "Since 2024/25") }. Two marks at least, or there's no line. */
+  function progressFacts(p, r) {
+    var pts = p && (p.points || []).filter(function (q) { return q && typeof q.value === 'number' && q.date; })
+      .map(function (q) { return { value: q.value, date: q.date, mark: q.mark || '' }; });
+    if (!pts || pts.length < 2) { return null; }
+    var e = String(r.event || '').toLowerCase();
+    var note = !r.field ? 'Up is faster' : /high jump|pole/.test(e) ? 'Up is higher' : 'Up is further';
+    return { points: pts, field: !!r.field, span: p.span || '', note: note };
+  }
   function facts(a) {
     var r = a.result || {}, kind = kindOf(a), place = r.relay ? '' : placeWord(r.place);
     var newpb = kind === 'newpb';
     // showPlace: the place on a medal in the corner, any place (a relay's: the team's place)
     var medal = a.showPlace ? medalFor(r.place) : null;
     if (medal) { place = ''; }     // said on the medal, so not in the words too
+    // pbTitle false: a PB card without "Personal best" at the top (the sharer's choice);
+    // it says the podium place there instead, or nothing
+    var untitled = a.pbTitle === false && (kind === 'pb' || kind === 'newpb');
+    var then = newpb && a.then && typeof a.then.value === 'number' ? a.then : null;
     return {
       kind: kind,
       medal: medal,
-      headline: headlineFor(kind, place),
+      untitled: untitled,
+      headline: untitled ? (place ? place.toUpperCase() + ' PLACE' : '') : headlineFor(kind, place),
+      // Then and now: the earlier mark it's set against, what it was, and the gap
+      then: then ? { mark: then.mark || '', date: day(then.date), label: then.label || 'Previous best' } : null,
+      gap: then ? improvement(r, then) : '',
+      progress: progressFacts(a.progress, r),
       name: cardName(a.name, a.surname),
       event: a.event || r.event || '',
       mark: a.mark || r.mark || '',
@@ -132,7 +151,7 @@
       date: day(r.date),
       iso: r.date || '',
       // a podium place already in the headline isn't said twice
-      place: kind === 'result' ? '' : place,
+      place: kind === 'result' || untitled ? '' : place,
       group: a.group || '',
       season: newpb ? seasonWords(a.pbsThisSeason || 0) : ''
     };
@@ -142,7 +161,7 @@
   function caption(f) {
     var who = f.name || 'our athlete', at = (f.meeting ? ' at ' + f.meeting : '') + ' 👏 #NCANathletics';
     if (f.kind === 'sb') { return 'Season best for ' + who + '! ' + f.event + ' in ' + f.mark + at; }
-    if (f.kind === 'result') {
+    if (f.kind === 'result' || f.untitled) {
       var m = /^(\S+) PLACE$/.exec(f.headline || '');
       var pl = f.medal ? f.medal.words : m ? m[1].toLowerCase() : '';
       return (pl ? pl + ' place for ' + who + '! ' + f.event + ' in ' + f.mark
@@ -169,6 +188,8 @@
     if (style === 'event') {
       return photoLayout(f, shape, { kind: 'scene', scene: sceneFor(f.event), surface: SURFACES[surface] ? surface : 'blue', event: f.event });
     }
+    if (style === 'thennow' && f.then) { return thenNowLayout(f, shape); }
+    if (style === 'progress' && f.progress) { return progressLayout(f, shape); }
     var S = SIZES[shape] || SIZES.square, W = S.w, H = S.h, pad = 40, story = shape === 'story';
     var items = [];
     var t = function (words, x, y, size, o) {
@@ -187,7 +208,7 @@
           mark: 264, markSize: 86, rib: [278, 180, 36, 20], lines: 348, step: 22, sizes: [15, 16, 17, 15, 14, 15] };
     items.push({ kind: 'rect', x: 0, y: P.band[0], w: W, h: P.band[1], colour: COLOURS.bg2 });
     var md = f.medal ? medalItem(f.medal, W, pad, story) : null, narrow = W - 2 * pad - (md ? 2 * md.r + 16 : 0);
-    t(f.headline || 'PERSONAL BEST', pad, P.head, P.headSize, { weight: 800, font: 'display', colour: COLOURS.gold, spacing: 2, max: narrow });
+    t(f.headline || (f.untitled ? '' : 'PERSONAL BEST'), pad, P.head, P.headSize, { weight: 800, font: 'display', colour: COLOURS.gold, spacing: 2, max: narrow });
     t(f.name, pad, P.name, P.nameSize, { weight: 800, font: 'display', max: narrow });
     t(f.group, pad, P.group, P.headSize - 3, { colour: COLOURS.soft, max: narrow });
     if (md) { items.push(md); }
@@ -224,6 +245,121 @@
     return { w: W, h: H, items: items };
   }
 
+  /* What the club-colour designs share: the green card, the headline, name and group at
+     the top (the medal beside them), and the crest at the bottom. band: [y, h] of the
+     lighter band the design puts its marks in. */
+  function clubFrame(f, shape, band) {
+    var S = SIZES[shape] || SIZES.square, W = S.w, H = S.h, pad = 40, story = shape === 'story';
+    var items = [];
+    var t = function (words, x, y, size, o) {
+      if (!words) { return; }
+      o = o || {};
+      items.push({ kind: 'text', words: words, x: x, y: y, size: size, weight: o.weight || 400,
+                   font: o.font || 'sans', colour: o.colour || COLOURS.text, align: o.align || 'left',
+                   max: o.max || W - 2 * pad, spacing: o.spacing || 0 });
+    };
+    items.push({ kind: 'rect', x: 0, y: 0, w: W, h: H, colour: COLOURS.bg });
+    items.push({ kind: 'rect', x: 0, y: band[0], w: W, h: band[1], colour: COLOURS.bg2 });
+    var P = story ? { head: 84, headSize: 22, name: 140, nameSize: 44, group: 174 }
+                  : { head: 70, headSize: 18, name: 106, nameSize: 32, group: 130 };
+    var md = f.medal ? medalItem(f.medal, W, pad, story) : null, narrow = W - 2 * pad - (md ? 2 * md.r + 16 : 0);
+    t(f.headline || (f.untitled ? '' : 'PERSONAL BEST'), pad, P.head, P.headSize, { weight: 800, font: 'display', colour: COLOURS.gold, spacing: 2, max: narrow });
+    t(f.name, pad, P.name, P.nameSize, { weight: 800, font: 'display', max: narrow });
+    t(f.group, pad, P.group, P.headSize - 3, { colour: COLOURS.soft, max: narrow });
+    if (md) { items.push(md); }
+    var crest = function () {
+      var lh = story ? 60 : 46;
+      items.push({ kind: 'logo', x: pad, y: H - pad - lh, h: lh, w: lh * 888 / 508 });
+      t('North Canterbury', pad + lh * 888 / 508 + 10, H - pad - lh * 0.52, 14, { weight: 700, font: 'display' });
+      t('Athletic Club', pad + lh * 888 / 508 + 10, H - pad - lh * 0.12, 14, { weight: 700, font: 'display' });
+      t('ncan.nz', W - pad, H - pad - lh * 0.3, 15, { weight: 600, colour: COLOURS.soft, align: 'right', max: 120 });
+      return { w: W, h: H, items: items };
+    };
+    return { W: W, H: H, pad: pad, story: story, items: items, t: t, crest: crest };
+  }
+
+  /* Then and now: the earlier mark (faded) and the new one (bold, gold) side by side, an
+     arrow between, each with its date, and the gap on a gold ribbon. */
+  function thenNowLayout(f, shape) {
+    var story = shape === 'story';
+    var P = story
+      ? { band: [240, 360], event: 296, eventSize: 30, label: 360, labelSize: 17, mark: 436, thenSize: 50, nowSize: 66,
+          date: 480, dateSize: 19, rib: [526, 54, 30], lines: 664, step: 36, size: 22 }
+      : { band: [148, 182], event: 182, eventSize: 24, label: 210, labelSize: 12, mark: 258, thenSize: 42, nowSize: 56,
+          date: 282, dateSize: 14, rib: [296, 26, 17], lines: 356, step: 22, size: 15 };
+    var C = clubFrame(f, shape, P.band), W = C.W, t = C.t, items = C.items;
+    var aw = story ? 36 : 26;
+    // Each mark is centred in its half and shrinks to keep clear of the arrow in the middle.
+    var left = W * (story ? 0.24 : 0.27), right = W - left, half = 2 * (W / 2 - left) - aw - (story ? 28 : 20);
+    t(f.event, W / 2, P.event, P.eventSize, { weight: 700, font: 'display', align: 'center' });
+    t(f.then.label.toUpperCase(), left, P.label, P.labelSize, { weight: 700, colour: COLOURS.soft, align: 'center', spacing: 1, max: half });
+    t('NOW', right, P.label, P.labelSize, { weight: 700, colour: COLOURS.gold, align: 'center', spacing: 1, max: half });
+    t(f.then.mark, left, P.mark, P.thenSize, { weight: 700, font: 'display', colour: COLOURS.soft, align: 'center', max: half });
+    t(f.mark, right, P.mark, P.nowSize, { weight: 800, font: 'display', colour: COLOURS.gold, align: 'center', max: half });
+    t(f.then.date, left, P.date, P.dateSize, { colour: COLOURS.soft, align: 'center', max: half });
+    t(f.date, right, P.date, P.dateSize, { align: 'center', max: half });
+    items.push({ kind: 'arrow', x1: W / 2 - aw / 2, x2: W / 2 + aw / 2, y: P.mark - P.nowSize * 0.32, size: story ? 12 : 9, colour: COLOURS.gold });
+    if (f.gap) {
+      var rh = P.rib[1], rw = story ? 200 : 130, ry = P.rib[0];
+      items.push({ kind: 'rect', x: (W - rw) / 2, y: ry, w: rw, h: rh, colour: COLOURS.gold, round: rh / 2 });
+      t(f.gap, W / 2, ry + rh * 0.7, P.rib[2], { weight: 800, font: 'display', colour: COLOURS.ink, align: 'center', max: rw - 16 });
+    }
+    var y = P.lines;
+    [[[f.place, f.wind].filter(Boolean).join(' · '), { weight: 600 }],
+     [f.meeting, { weight: 600 }],
+     [f.where, { colour: COLOURS.soft }],
+     [f.season, { colour: COLOURS.goldSoft, weight: 600 }]].forEach(function (l) {
+      if (l[0]) { t(l[0], W / 2, y, P.size, Object.assign({ align: 'center' }, l[1])); y += P.step; }
+    });
+    return C.crest();
+  }
+
+  /* Progress line: every mark in the event (and weight) from the chosen season up to
+     this one, as a line that climbs as the athlete improves (times are turned upside
+     down, so up is always better), this mark circled in gold, with the first and last
+     dates under it (the first with its mark). f.progress: { points: [{ value, date, mark }], field, span, note }, oldest
+     first, this mark last. */
+  function progressLayout(f, shape) {
+    var story = shape === 'story', pr = f.progress;
+    var P = story
+      ? { band: [230, 410], event: 280, eventSize: 30, note: 312, noteSize: 17, plot: [340, 236], dates: 614, dateSize: 17,
+          mark: 724, markSize: 80, lines: 778, step: 34, size: 21 }
+      : { band: [148, 198], event: 176, eventSize: 22, note: 198, noteSize: 12, plot: [206, 112], dates: 334, dateSize: 12,
+          mark: 384, markSize: 42, lines: 410, step: 20, size: 15 };
+    var C = clubFrame(f, shape, P.band), W = C.W, pad = C.pad, t = C.t, items = C.items;
+    t(f.event, W / 2, P.event, P.eventSize, { weight: 700, font: 'display', align: 'center' });
+    t(pr.note, pad, P.note, P.noteSize, { colour: COLOURS.soft, max: W / 2 - pad });
+    t(pr.span, W - pad, P.note, P.noteSize, { colour: COLOURS.soft, align: 'right', max: W / 2 - pad });
+    var x0 = pad + 14, x1 = W - pad - 14, y0 = P.plot[0] + 14, h = P.plot[1] - 28;
+    items.push({ kind: 'chart', x: pad, y: P.plot[0], w: W - 2 * pad, h: P.plot[1], story: story,
+                 points: chartPoints(pr.points, pr.field, x0, x1, y0, h) });
+    var pts = pr.points;
+    t([pts[0].mark, day(pts[0].date)].filter(Boolean).join(' · '), pad, P.dates, P.dateSize, { colour: COLOURS.soft, max: W / 2 - pad });
+    t(day(pts[pts.length - 1].date), W - pad, P.dates, P.dateSize, { colour: COLOURS.soft, align: 'right', max: W / 2 - pad });
+    t(f.mark, W / 2, P.mark, P.markSize, { weight: 800, font: 'display', colour: COLOURS.gold, align: 'center' });
+    var y = P.lines;
+    [[[f.better ? 'PB ' + f.better : '', f.place, f.wind].filter(Boolean).join(' · '), { weight: 700, colour: COLOURS.goldSoft }],
+     [[f.meeting, f.date].filter(Boolean).join(' · '), { weight: 600 }],
+     [f.where, { colour: COLOURS.soft }]].forEach(function (l) {
+      if (l[0]) { t(l[0], W / 2, y, P.size, Object.assign({ align: 'center' }, l[1])); y += P.step; }
+    });
+    return C.crest();
+  }
+  /* Where each mark sits in the plot (x from x0 to x1 by date, y within y0..y0+h, better
+     higher); evenly spaced when every mark is on the same day. */
+  function chartPoints(points, field, x0, x1, y0, h) {
+    var dn = function (iso) { var p = String(iso).split('-'); return Date.UTC(+p[0], +p[1] - 1, +p[2]) / 864e5; };
+    var ds = points.map(function (p) { return dn(p.date); }), vs = points.map(function (p) { return p.value; });
+    var dMin = Math.min.apply(null, ds), dMax = Math.max.apply(null, ds);
+    var vMin = Math.min.apply(null, vs), vMax = Math.max.apply(null, vs), n = points.length;
+    return points.map(function (p, i) {
+      var fx = dMax > dMin ? (ds[i] - dMin) / (dMax - dMin) : n > 1 ? i / (n - 1) : 0.5;
+      var fy = vMax > vMin ? (p.value - vMin) / (vMax - vMin) : 0.5;
+      if (!field) { fy = 1 - fy; }   // a faster time is higher
+      return { x: Math.round((x0 + fx * (x1 - x0)) * 10) / 10, y: Math.round((y0 + (1 - fy) * h) * 10) / 10 };
+    });
+  }
+
   /* The Photo hero card: the photo fills the card (cropped to cover it, keeping the focus
      point in view), a dark wash at the top for the headline and name and a deeper one at
      the bottom for the event, mark and meeting. Text is white and gold, as on Podium. */
@@ -249,7 +385,7 @@
     items.push({ kind: 'shade', x: 0, y: 0, w: W, h: P.top, from: 0.7, to: 0 });
     items.push({ kind: 'shade', x: 0, y: H - P.bottom, w: W, h: P.bottom, from: 0, to: 0.88 });
     var md = f.medal ? medalItem(f.medal, W, pad, story) : null, narrow = W - 2 * pad - (md ? 2 * md.r + 16 : 0);
-    t(f.headline || 'PERSONAL BEST', pad, P.head, P.headSize, { weight: 800, font: 'display', colour: COLOURS.gold, spacing: 2, max: narrow });
+    t(f.headline || (f.untitled ? '' : 'PERSONAL BEST'), pad, P.head, P.headSize, { weight: 800, font: 'display', colour: COLOURS.gold, spacing: 2, max: narrow });
     t(f.name, pad, P.name, P.nameSize, { weight: 800, font: 'display', max: narrow });
     t(f.group, pad, P.group, P.headSize - 3, { colour: COLOURS.text, max: narrow });
     if (md) { items.push(md); }
@@ -696,11 +832,43 @@
     c.restore();
   }
 
+  // Then and now's arrow: a short gold line with a head, pointing to the new mark
+  function drawArrow(c, i) {
+    c.save();
+    c.strokeStyle = i.colour; c.fillStyle = i.colour; c.lineWidth = i.size * 0.45; c.lineCap = 'round';
+    c.beginPath(); c.moveTo(i.x1, i.y); c.lineTo(i.x2 - i.size * 0.6, i.y); c.stroke();
+    c.beginPath(); c.moveTo(i.x2, i.y); c.lineTo(i.x2 - i.size, i.y - i.size * 0.7);
+    c.lineTo(i.x2 - i.size, i.y + i.size * 0.7); c.closePath(); c.fill();
+    c.restore();
+  }
+  /* Progress line: a faint floor and ceiling, the line through every mark (small white
+     dots), and the last mark - this one - as a big gold dot in a gold ring. */
+  function drawChart(c, i) {
+    var p = i.points, big = i.story ? 1.5 : 1;
+    c.save();
+    c.strokeStyle = 'rgba(255,255,255,.14)'; c.lineWidth = 1;
+    [i.y + 0.5, i.y + i.h - 0.5].forEach(function (y) { c.beginPath(); c.moveTo(i.x, y); c.lineTo(i.x + i.w, y); c.stroke(); });
+    c.strokeStyle = 'rgba(255,255,255,.75)'; c.lineWidth = 2.5 * big; c.lineJoin = 'round';
+    c.beginPath();
+    p.forEach(function (q, n) { if (n) { c.lineTo(q.x, q.y); } else { c.moveTo(q.x, q.y); } });
+    c.stroke();
+    c.fillStyle = COLOURS.text;
+    var dot = p.length > 40 ? 2 : 3.5;
+    p.slice(0, -1).forEach(function (q) { c.beginPath(); c.arc(q.x, q.y, dot * big, 0, Math.PI * 2); c.fill(); });
+    var last = p[p.length - 1];
+    c.strokeStyle = COLOURS.gold; c.lineWidth = 3 * big;
+    c.beginPath(); c.arc(last.x, last.y, 11 * big, 0, Math.PI * 2); c.stroke();
+    c.fillStyle = COLOURS.gold;
+    c.beginPath(); c.arc(last.x, last.y, 5.5 * big, 0, Math.PI * 2); c.fill();
+    c.restore();
+  }
+
   /* Browser only: the card as a canvas. fonts { display, sans } are CSS font-family
      lists; waits for them so the first card isn't drawn in a fallback font. */
   function render(f, shape, fonts, opts) {
     opts = opts || {};
-    var style = opts.style === 'photo' && opts.photo ? 'photo' : opts.style === 'event' ? 'event' : 'podium';
+    var style = opts.style === 'photo' && opts.photo ? 'photo'
+      : ['event', 'thennow', 'progress'].indexOf(opts.style) >= 0 ? opts.style : 'podium';
     var L = layout(f, shape, style, opts.surface), scale = 2;
     var family = function (i) { return i.font === 'display' ? fonts.display : fonts.sans; };
     var css = function (i, size) { return i.weight + ' ' + size + 'px ' + family(i); };
@@ -742,6 +910,10 @@
           drawScene(c, i);
         } else if (i.kind === 'medal') {
           drawMedal(c, i, i.font || fonts.display);
+        } else if (i.kind === 'arrow') {
+          drawArrow(c, i);
+        } else if (i.kind === 'chart') {
+          drawChart(c, i);
         } else if (i.kind === 'shade') {
           var g = c.createLinearGradient(0, i.y, 0, i.y + i.h);
           g.addColorStop(0, 'rgba(6,30,23,' + i.from + ')');
@@ -767,7 +939,7 @@
 
   var api = { SIZES: SIZES, COLOURS: COLOURS, day: day, placeWord: placeWord, medalFor: medalFor, improvement: improvement,
            cardName: cardName, surnameByDefault: surnameByDefault, seasonWords: seasonWords, facts: facts, whereWords: whereWords,
-           caption: caption, fileName: fileName, headlineFor: headlineFor, cover: cover, parseFocus: parseFocus, move: move, ZOOM_MAX: ZOOM_MAX, STYLES: ['podium', 'photo', 'event'],
+           caption: caption, fileName: fileName, headlineFor: headlineFor, cover: cover, parseFocus: parseFocus, move: move, ZOOM_MAX: ZOOM_MAX, STYLES: ['podium', 'photo', 'event', 'thennow', 'progress'], chartPoints: chartPoints,
            SURFACES: Object.keys(SURFACES), setTracks: setTracks, sceneFor: sceneFor, sceneHasTrack: sceneHasTrack, layout: layout, overlaps: overlaps, render: render };
   return api;
 }));

@@ -580,7 +580,19 @@
               <option value="podium" selected>Club colours</option>
               <option value="photo">Photo</option>
               <option value="event">Event</option>
+              <option value="thennow">Then and now</option>
+              <option value="progress">Progress line</option>
             </select>
+          </p>
+          <!-- Then and now: the earlier mark the new PB is set against -->
+          <p class="ath-card__style" id="ath-card-then-row" hidden>
+            <label for="ath-card-then">Compare with</label>
+            <select id="ath-card-then"></select>
+          </p>
+          <!-- Progress line: where the line starts; it always ends at this mark -->
+          <p class="ath-card__style" id="ath-card-span-row" hidden>
+            <label for="ath-card-span">Seasons</label>
+            <select id="ath-card-span"></select>
           </p>
           <p class="ath-card__style" id="ath-card-surface-row" hidden>
             <label for="ath-card-surface">Track</label>
@@ -596,6 +608,11 @@
               <option value="square" selected>Square</option>
               <option value="story">Story (tall)</option>
             </select>
+          </p>
+          <!-- "Personal best" at the top of the card: only for a PB, on unless turned off -->
+          <p class="ath-check ath-card__surname" id="ath-card-pbtitle-row" hidden>
+            <input type="checkbox" id="ath-card-pbtitle" checked>
+            <label for="ath-card-pbtitle">Show “Personal best”</label>
           </p>
           <p class="ath-check ath-card__surname">
             <input type="checkbox" id="ath-card-surname">

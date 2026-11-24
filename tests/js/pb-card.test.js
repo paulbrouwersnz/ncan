@@ -260,3 +260,62 @@ test('the club’s own track colours replace the built-in ones, keeping blue', (
   fresh.setTracks([]);                                            // nothing sent: kept as it was
   assert.deepEqual(fresh.SURFACES, ['red', 'sky', 'blue']);
 });
+
+test('a PB card can leave out "Personal best" at the top', () => {
+  const prev = run({ value: 14.42, mark: '14.42' });
+  const f = PB.facts({ name: 'Sam', result: run(), prev, pbTitle: false });
+  assert.equal(f.headline, '');
+  assert.equal(f.better, '−0.32s');                    // the rest of the card is the same
+  assert.equal(PB.caption(f), 'Sam: 100m in 14.10 at Interclub 5 👏 #NCANathletics');
+  assert.ok(!PB.layout(f, 'square').items.some((i) => i.words === 'PERSONAL BEST' || i.words === 'NEW PERSONAL BEST'));
+  // a podium place takes its spot, said once
+  const g = PB.facts({ name: 'Sam', result: run({ place: 1 }), prev, pbTitle: false });
+  assert.equal(g.headline, '1ST PLACE');
+  assert.equal(g.place, '');
+  // only PB cards: a season best keeps its headline
+  assert.equal(PB.facts({ kind: 'sb', name: 'Sam', result: run(), prev, pbTitle: false }).headline, 'SEASON BEST');
+});
+
+test('Then and now: the earlier mark, the gap, both dates', () => {
+  const prev = run({ value: 14.42, mark: '14.42' });
+  const f = PB.facts({ name: 'Sam', result: run(), prev,
+    then: { value: 15.6, mark: '15.60', date: '2025-01-18', label: 'First mark' } });
+  assert.deepEqual(f.then, { mark: '15.60', date: '18 Jan 2025', label: 'First mark' });
+  assert.equal(f.gap, '−1.50s');
+  assert.equal(f.better, '−0.32s');
+  for (const shape of ['square', 'story']) {
+    const L = PB.layout(f, shape, 'thennow');
+    const words = L.items.filter((i) => i.kind === 'text').map((i) => i.words);
+    for (const w of ['FIRST MARK', 'NOW', '15.60', '14.10', '18 Jan 2025', '1 Nov 2026', '−1.50s']) { assert.ok(words.includes(w), w + ' on ' + shape); }
+    assert.ok(L.items.some((i) => i.kind === 'arrow'));
+    assert.deepEqual(PB.overlaps(L), [], shape);
+  }
+  // no earlier mark: the club-colour card
+  assert.equal(PB.layout(PB.facts({ name: 'Sam', result: run(), prev }), 'square', 'thennow').items.some((i) => i.kind === 'arrow'), false);
+});
+
+test('Progress line: up is better, this mark last', () => {
+  const pts = [{ value: 15.2, date: '2026-10-04', mark: '15.20' }, { value: 14.8, date: '2026-10-18' }, { value: 14.10, date: '2026-11-01' }];
+  const f = PB.facts({ name: 'Sam', result: run(), prev: run({ value: 14.8, mark: '14.80' }), progress: { points: pts, span: '2026/27 season' } });
+  assert.equal(f.progress.note, 'Up is faster');
+  for (const shape of ['square', 'story']) {
+    const L = PB.layout(f, shape, 'progress');
+    const chart = L.items.find((i) => i.kind === 'chart');
+    assert.equal(chart.points.length, 3);
+    // faster times are higher up the card; the line runs left to right by date
+    assert.ok(chart.points[2].y < chart.points[1].y && chart.points[1].y < chart.points[0].y);
+    assert.ok(chart.points[0].x < chart.points[1].x && chart.points[1].x < chart.points[2].x);
+    chart.points.forEach((p) => { assert.ok(p.y >= chart.y && p.y <= chart.y + chart.h && p.x >= chart.x && p.x <= chart.x + chart.w); });
+    const words = L.items.filter((i) => i.kind === 'text').map((i) => i.words);
+    for (const w of ['Up is faster', '2026/27 season', '15.20 · 4 Oct 2026', '1 Nov 2026', '14.10']) { assert.ok(words.includes(w), w + ' on ' + shape); }
+    assert.deepEqual(PB.overlaps(L), [], shape);
+  }
+  // distances: further is higher; a high jump says higher
+  const jump = PB.facts({ name: 'Sam', result: run({ field: true, event: 'High Jump', value: 1.5 }),
+    progress: { points: [{ value: 1.3, date: '2026-10-04' }, { value: 1.5, date: '2026-11-01' }] } });
+  assert.equal(jump.progress.note, 'Up is higher');
+  const c = PB.chartPoints([{ value: 1.3, date: '2026-10-04' }, { value: 1.5, date: '2026-11-01' }], true, 0, 100, 0, 100);
+  assert.ok(c[1].y < c[0].y);
+  // one mark is no line
+  assert.equal(PB.facts({ name: 'Sam', result: run(), progress: { points: [pts[2]] } }).progress, null);
+});
