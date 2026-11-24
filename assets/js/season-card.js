@@ -109,6 +109,13 @@
                     points: [{ value, date, pb }] }],
          races: [{ date, race, kind, mark, place, of, team }] }
      events in a meeting's running order; races newest first. */
+  /* The events to choose a signature event from: most starts first, then most
+     new PBs, then running order (the sort keeps it). The first is the default. */
+  function signatureChoices(events) {
+    return (events || []).slice().sort(function (x, y) {
+      return (y.starts || 0) - (x.starts || 0) || (y.newPbs || 0) - (x.newPbs || 0);
+    });
+  }
   function facts(a) {
     a = a || {};
     var names = String(a.name || '').trim().split(/\s+/);
@@ -125,10 +132,9 @@
       races: races.length,
       meetings: a.meetings || 0
     };
-    // the signature event: most new PBs, then most starts, then running order
-    var sig = events.slice().sort(function (x, y) {
-      return (y.newPbs || 0) - (x.newPbs || 0) || (y.starts || 0) - (x.starts || 0);
-    })[0] || null;
+    // the signature event: the one chosen, or by default the first by starts
+    var byStarts = signatureChoices(events);
+    var sig = byStarts.filter(function (e) { return e.event === a.signature; })[0] || byStarts[0] || null;
     return {
       first: first, last: last, name: a.surname && last ? first + ' ' + last : first,
       season: a.season || '', cardNo: pad2(+a.cardNo || 1), rookie: !!a.rookie, grade: a.grade || '',
@@ -1019,6 +1025,7 @@
       if (e.target.name !== 'sc-part') { return; }
       ui.part = e.target.value; refacts(); drawAll();
     });
+    el('sc-signature').addEventListener('change', function () { ui.signature = this.value; refacts(); drawAll(); });
     el('sc-file').addEventListener('change', function () {
       var file = this.files && this.files[0];
       if (!file) { return; }
@@ -1091,8 +1098,24 @@
     if (part === 'oos') { return { events: [], races: races, meetings: input.oosMeetings || input.meetings }; }
     return { events: events, races: races, meetings: input.meetings };
   }
+  /* The Signature event dropdown: the shown part's events, most starts first.
+     A choice that's no longer there (another part shown) falls back to the first. */
+  function fillSignature() {
+    var list = signatureChoices(partOf(ui.input, ui.part).events), sel = el('sc-signature');
+    if (!list.some(function (e) { return e.event === ui.signature; })) { ui.signature = list.length ? list[0].event : ''; }
+    sel.textContent = '';
+    list.forEach(function (e) {
+      var o = document.createElement('option');
+      o.value = e.event;
+      o.textContent = e.event + ' (' + plural(e.starts || 0, 'start') + ')';
+      o.selected = e.event === ui.signature;
+      sel.appendChild(o);
+    });
+    el('sc-signature-field').hidden = list.length < 2;
+  }
   function refacts() {
-    ui.f = facts(Object.assign({}, ui.input, partOf(ui.input, ui.part), { surname: ui.surname }));
+    fillSignature();
+    ui.f = facts(Object.assign({}, ui.input, partOf(ui.input, ui.part), { surname: ui.surname, signature: ui.signature }));
     el('sc-caption').value = caption(ui.f);
   }
   function photoChoice() { return ui.usePhoto ? (ui.picked || ui.header) : null; }
@@ -1275,7 +1298,7 @@
     ui.surname = !!input.surnameByDefault;
     el('sc-surname').checked = ui.surname;
     var both = (input.events || []).length > 0 && (input.races || []).length > 0;
-    ui.part = 'both';
+    ui.part = 'both'; ui.signature = '';
     el('sc-seasons').hidden = !both;
     var parts = document.querySelectorAll('input[name="sc-part"]');
     Array.prototype.forEach.call(parts, function (r) { r.checked = r.value === 'both'; });
@@ -1306,7 +1329,7 @@
     }, function () { if (n === ui.seq) { usePhoto(); } });
   }
 
-  return { W: W, H: H, FINISHES: FINISHES, FILTERS: FILTERS, facts: facts, partOf: partOf, highlights: highlights, funFact: funFact,
+  return { W: W, H: H, FINISHES: FINISHES, FILTERS: FILTERS, facts: facts, signatureChoices: signatureChoices, partOf: partOf, highlights: highlights, funFact: funFact,
            caption: caption, fileName: fileName, metresOf: metresOf, groupOf: groupOf, gain: gain,
            look: look, LOOKS: LOOKS, blur: blur, edges: edges, rng: rng,
            front: front, back: back, filtered: filtered, open: open };
