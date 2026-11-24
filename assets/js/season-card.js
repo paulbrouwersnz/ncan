@@ -1459,10 +1459,24 @@
   function sides() {
     el('sc-stage').classList.remove('is-single');
     el('sc-flip').hidden = false;
-    flip(false);
+    flip(false, true);
     stale(); publicShow(); linkButton();
   }
-  function flip(toBack) {
+  /* The card's spin, in degrees: the turn button adds half a turn side to side, and
+     dragging the card spins it any way, settling on the nearest side (upside down after
+     an end-over-end turn, as a real card). */
+  var spin = { x: 0, y: 0 };
+  function spinShow() {
+    var s = el('sc-stage');
+    s.style.setProperty('--sx', spin.x + 'deg'); s.style.setProperty('--sy', spin.y + 'deg');
+  }
+  function flip(toBack, reset) {
+    if (reset) { spin.x = 0; spin.y = 0; }
+    else if (toBack !== ui.flipped) { spin.y += 180; }
+    spinShow();
+    side(toBack);
+  }
+  function side(toBack) {
     ui.flipped = toBack;
     el('sc-stage').classList.toggle('is-flipped', toBack);
     el('sc-flip-words').textContent = toBack ? 'Turn to the photo side' : 'Turn to the stats side';
@@ -1628,7 +1642,7 @@
       stage.classList.remove('is-tilting');
     };
     stage.addEventListener('pointermove', function (e) {
-      if (drag || reduced() || e.pointerType !== 'mouse') { return; }
+      if (drag || turn || reduced() || e.pointerType !== 'mouse') { return; }
       var r = card.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
       x = Math.max(0, Math.min(1, x)); y = Math.max(0, Math.min(1, y));
       stage.style.setProperty('--rx', ((0.5 - y) * 14).toFixed(2) + 'deg');
@@ -1638,6 +1652,44 @@
       stage.classList.add('is-tilting');
     });
     stage.addEventListener('pointerleave', rest);
+    // drag the card to spin it (not the photo while it is being placed)
+    var turn = null;
+    stage.addEventListener('pointerdown', function (e) {
+      if (drag || e.button !== 0 || stage.classList.contains('is-single')) { return; }
+      if (card.classList.contains('is-placeable') && e.target === img) { return; }
+      if (!card.contains(e.target)) { return; }
+      turn = { id: e.pointerId, x: e.clientX, y: e.clientY, sx: spin.x, sy: spin.y, t: e.timeStamp, vx: 0, vy: 0, moved: false,
+        touch: e.pointerType !== 'mouse' };
+    });
+    stage.addEventListener('pointermove', function (e) {
+      if (!turn || e.pointerId !== turn.id) { return; }
+      var dx = e.clientX - turn.x, dy = turn.touch ? 0 : e.clientY - turn.y;
+      if (!turn.moved) {
+        if (Math.abs(dx) + Math.abs(dy) < 6) { return; }
+        turn.moved = true; stage.classList.add('is-spinning');
+        try { stage.setPointerCapture(e.pointerId); } catch (err) { /* fine */ }
+      }
+      var dt = Math.max(1, e.timeStamp - turn.t);
+      turn.vx = (e.clientX - (turn.lx || turn.x)) / dt; turn.vy = turn.touch ? 0 : (e.clientY - (turn.ly || turn.y)) / dt;
+      turn.lx = e.clientX; turn.ly = e.clientY; turn.t = e.timeStamp;
+      spin.y = turn.sy + dx * 0.6; spin.x = turn.sx - dy * 0.6;
+      spinShow();
+      rest();
+    });
+    var settle = function (e) {
+      if (!turn || e.pointerId !== turn.id) { return; }
+      var t = turn; turn = null;
+      if (!t.moved) { return; }
+      stage.classList.remove('is-spinning');
+      // a flick carries on; a drag that stopped before letting go doesn't
+      var fl = function (v) { return e.timeStamp - t.t > 80 ? 0 : Math.max(-2, Math.min(2, v)) * 180; };
+      spin.y = Math.round((spin.y + fl(t.vx)) / 180) * 180;
+      spin.x = Math.round((spin.x - fl(t.vy)) / 180) * 180;
+      spinShow();
+      side(((Math.abs(spin.y / 180) + Math.abs(spin.x / 180)) % 2) === 1);
+    };
+    stage.addEventListener('pointerup', settle);
+    stage.addEventListener('pointercancel', settle);
     img.draggable = false;
     img.addEventListener('pointerdown', function (e) {
       if (ui.flipped || !ui.front || !ui.front.photo) { return; }

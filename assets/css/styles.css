@@ -1557,18 +1557,22 @@ table.schedule tbody.ath-season-group:first-of-type > tr.ath-season-band > th { 
   .sc__view { position: static; }
 }
 .sc__stage {
-  --rx: 0deg; --ry: 0deg; --gx: 50%; --gy: 50%;
+  --rx: 0deg; --ry: 0deg; --sx: 0deg; --sy: 0deg; --gx: 50%; --gy: 50%;
   width: 100%; max-width: min(400px, calc((100dvh - 230px) * 5 / 7)); min-width: 220px; perspective: 1400px; padding: 6px;
 }
 .sc__card {
   position: relative; aspect-ratio: 5 / 7; border-radius: 4.2% / 3%; transform-style: preserve-3d;
-  transform: rotateX(var(--rx)) rotateY(var(--ry));
+  /* --sx and --sy are the card's spin (the turn button and dragging it), --rx and --ry the hover tilt */
+  transform: rotateX(calc(var(--sx) + var(--rx))) rotateY(calc(var(--sy) + var(--ry)));
   transition: transform .7s cubic-bezier(.2, .8, .2, 1);
   /* no filter here: a filter flattens the 3D, and the turned card would show the photo side mirrored */
   outline: none;
 }
 .sc__stage.is-tilting .sc__card { transition: transform .12s ease-out; }
-.sc__stage.is-flipped .sc__card { transform: rotateX(var(--rx)) rotateY(calc(180deg + var(--ry))); }
+.sc__stage.is-spinning .sc__card { transition: none; }
+.sc__stage:not(.is-single) .sc__card:not(.is-placeable) { cursor: grab; }
+.sc__stage.is-spinning .sc__card { cursor: grabbing; }
+.sc__stage:not(.is-single) { touch-action: pan-y; }
 .sc__stage.is-single .sc__card { transform: rotateX(var(--rx)) rotateY(var(--ry)); }
 .sc__card:focus-visible { outline: 3px solid var(--accent); outline-offset: 6px; border-radius: 18px; }
 .sc__face { position: absolute; inset: 0; border-radius: inherit; overflow: hidden; backface-visibility: hidden; -webkit-backface-visibility: hidden;
