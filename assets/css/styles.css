@@ -1558,7 +1558,7 @@ table.schedule tbody.ath-season-group:first-of-type > tr.ath-season-band > th { 
   position: relative; aspect-ratio: 5 / 7; border-radius: 4.2% / 3%; transform-style: preserve-3d;
   transform: rotateX(var(--rx)) rotateY(var(--ry));
   transition: transform .7s cubic-bezier(.2, .8, .2, 1);
-  filter: drop-shadow(0 18px 24px rgba(6, 28, 22, .35));
+  /* no filter here: a filter flattens the 3D, and the turned card would show the photo side mirrored */
   outline: none;
 }
 .sc__stage.is-tilting .sc__card { transition: transform .12s ease-out; }
@@ -1566,7 +1566,7 @@ table.schedule tbody.ath-season-group:first-of-type > tr.ath-season-band > th { 
 .sc__stage.is-single .sc__card { transform: rotateX(var(--rx)) rotateY(var(--ry)); }
 .sc__card:focus-visible { outline: 3px solid var(--accent); outline-offset: 6px; border-radius: 18px; }
 .sc__face { position: absolute; inset: 0; border-radius: inherit; overflow: hidden; backface-visibility: hidden; -webkit-backface-visibility: hidden;
-  background: linear-gradient(135deg, #DDE3EA, #8F9BA7); }
+  background: linear-gradient(135deg, #DDE3EA, #8F9BA7); box-shadow: 0 18px 24px rgba(6, 28, 22, .35); }
 .sc__face img { display: block; width: 100%; height: 100%; object-fit: cover; user-select: none; -webkit-user-drag: none; }
 .sc__face img:not([src]) { visibility: hidden; }
 .sc__face--back { transform: rotateY(180deg); }
