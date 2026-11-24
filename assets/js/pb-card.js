@@ -278,7 +278,7 @@
 
   /* The Event card: the Photo card's layout over a scene of the event, drawn here.
      Track scenes are on the Ngā Puna Wai blue track unless the sharer picks red or grass. */
-  var SURFACES = { blue: { track: '#2E63AC', line: 'rgba(255,255,255,.92)' },
+  var SURFACES = { blue: { track: '#0072B5', line: 'rgba(255,255,255,.92)' },
                    red: { track: '#B4472F', line: 'rgba(255,255,255,.92)' },
                    grass: { track: '#62A84C', line: 'rgba(255,255,255,.95)' } };
   // which scene an event gets, from its name ("100m Hurdles", "Shot put (3kg)", "Cross country 3 km")
@@ -408,20 +408,21 @@
       });
       line('#F2D33A', 4, [[X(0.235), Y(0.13)], [X(0.765), Y(0.13)]]);                                   // the bar
     } else if (s === 'high') {
-      // the mat sits where the surfaced fan meets the grass, the uprights just in front of it,
-      // the bar a little above the mat's leading edge
+      // the mat sits where the surfaced fan meets the grass, the uprights just in front of it, and the bar
+      // well above the mat's leading edge, resting on a peg on each upright
       stadium();
       var lift = function (u, v, h) { var p = P(u, v); return [p[0], p[1] - unit(v) * h]; };
-      var MF = 3, MB = 5.6, MU = 2, MH = 0.42;
+      var MF = 3, MB = 5.6, MU = 1.3, MH = 0.42;
       quad(S.track, -8, 8, 0, MF + 0.5);                                        // the fan, ending under the mat
       fill('#1B3F7A', [P(-MU, MF), P(MU, MF), lift(MU, MF, MH), lift(-MU, MF, MH)]);            // the mat's front
       fill('#2F5FA8', [lift(-MU, MF, MH), lift(MU, MF, MH), lift(MU, MB, MH), lift(-MU, MB, MH)]);  // its top
       line('rgba(255,255,255,.75)', 2, [lift(-MU, MF, MH * 0.7), lift(MU, MF, MH * 0.7)]);
-      var bar = MH + 0.14, ux = MU + 0.15, uv = MF - 0.12;
+      var bar = (MH + 0.14) * 2, ux = MU + 0.15, uv = MF - 0.12;
       [-ux, ux].forEach(function (u) {
         var foot = P(u, uv), w = unit(uv) * 0.16;
         c.fillStyle = '#333333'; c.fillRect(foot[0] - w, foot[1] - 3, w * 2, 6);
         line('#D8D8D8', Math.max(3, unit(uv) * 0.035), [foot, lift(u, uv, bar + 0.3)]);
+        line('#333333', Math.max(3, unit(uv) * 0.03), [lift(u, uv, bar - 0.04), lift(u * 0.94, uv, bar - 0.04)]);   // the peg
       });
       var b0 = lift(-ux, uv, bar), b1 = lift(ux, uv, bar), bt = Math.max(4, unit(uv) * 0.035);
       for (var b = 0; b < 8; b++) {
