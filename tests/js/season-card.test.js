@@ -56,6 +56,29 @@ test('facts: the signature event defaults to the most starts, and can be chosen'
   assert.strictEqual(SC.facts({ name: 'Lily', events, signature: 'Shot Put' }).signature.event, '200m');
 });
 
+const race = (kind, place, date, team) => ({ kind: team ? 'Relay' : kind, race: kind + ' 3 km', place, of: 20, date, team: !!team });
+
+test('signatureChoices: race kinds count all their races, most races first, then podiums', () => {
+  const races = [race('Cross country', 5, '2025-06-01'), race('Cross country', 2, '2025-05-01'),
+    race('Road', 1, '2025-07-01'), race('Road', 2, '2025-08-01'), race('Cross country', 1, '2025-06-08', true)];
+  const list = SC.signatureChoices([], races);
+  assert.deepStrictEqual(list.map(e => e.event), ['Road', 'Cross country', 'Relays']);
+  const xc = list[1];
+  assert.ok(xc.race);
+  assert.deepStrictEqual(xc.points.map(p => p.value), [2, 5]);
+  assert.deepStrictEqual(xc.points.map(p => p.pb), [true, false]);
+});
+
+test('facts: a cross country runner gets a race kind as signature', () => {
+  const races = [race('Cross country', 4, '2025-05-01'), race('Cross country', 3, '2025-06-01'), race('Road', 1, '2025-07-01')];
+  const f = SC.facts({ name: 'Dale', races });
+  assert.strictEqual(f.signature.event, 'Cross country');
+  assert.strictEqual(f.position, 'Cross country');
+  assert.strictEqual(SC.facts({ name: 'Dale', races, signature: 'Road' }).signature.event, 'Road');
+  // with track events too, the most starts still wins
+  assert.strictEqual(SC.facts({ name: 'Dale', races, events: [ev('1500m', 5, 0)] }).signature.event, '1500m');
+});
+
 test('ready: the winter part opens in October, track and field in April', () => {
   const at = day => { const r = SC.ready('2025/26', day); return [r.oos, r.track]; };
   assert.deepStrictEqual(at('2025-09-30'), [false, false]);
