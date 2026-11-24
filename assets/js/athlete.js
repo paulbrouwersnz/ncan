@@ -1753,6 +1753,72 @@
     $('ath-card-link-copy').addEventListener('click', function () { copyText(this, card.url, 'Copy link'); });
   }
 
+  /* Season cards (assets/js/season-card.js) ---------------------------------
+     A collector card of one season, from every result in it, whatever the
+     filters show: per event (and throwing weight), the starts, the season's
+     best legal mark, the personal best at the season's end, new PBs set, wins
+     and top-three places; and the season's cross country, road and relay races.
+     The card's number is the season's place among the athlete's seasons: the
+     first is their rookie card. */
+  function seasonCardInput(season) {
+    var track = (athlete.results || []).filter(function (r) { return seasonKey(r) === season; });
+    var races = (athlete.offTrack || []).filter(function (r) { return seasonKey(r) === season; });
+    var all = (athlete.everything || []).concat(athlete.offTrack || []);
+    var seasons = [];
+    all.forEach(function (r) { var s = seasonKey(r); if (seasons.indexOf(s) < 0) { seasons.push(s); } });
+    seasons.sort();
+    var legal = function (r) { return typeof r.value === 'number' && !windy(r); };
+    var events = byWeight(track).map(function (g) {
+      var key = g.name, first = g.results[0];
+      var marks = g.results.filter(legal), sb = best(marks);
+      // the personal best by the season's end, and the one it started from
+      var upTo = (athlete.everything || []).filter(function (q) { return legal(q) && pbKey(q) === key && seasonKey(q) <= season; });
+      var before = upTo.filter(function (q) { return seasonKey(q) < season; });
+      var pb = best(upTo), pbBefore = best(before);
+      var placed = g.results.filter(function (r) { return r.place >= 1; });
+      return {
+        event: eventLabel(first), field: !!first.field, starts: g.results.length,
+        sb: sb ? { mark: markText(sb), value: sb.value } : null,
+        pb: pb ? { mark: markText(pb), value: pb.value } : null,
+        pbBefore: pbBefore ? { mark: markText(pbBefore), value: pbBefore.value } : null,
+        newPbs: g.results.filter(isNewPb).length,
+        wins: placed.filter(function (r) { return r.place === 1; }).length,
+        podiums: placed.filter(function (r) { return r.place <= 3; }).length,
+        points: marks.slice().sort(function (a, b) { return cmp(a.date, b.date); })
+          .map(function (r) { return { value: r.value, date: r.date, pb: isNewPb(r) }; })
+      };
+    });
+    var raceList = races.slice().sort(function (a, b) { return cmp(b.date, a.date); }).map(function (r) {
+      var leg = r.relay;
+      var dist = /\d+m$/.test(r.event) ? inKm(r.event.match(/(\d+m)$/)[1]) : '';
+      return {
+        date: r.date, kind: leg ? 'Relay' : r.oos, mark: r.mark || '', place: r.place || 0, of: r.of || 0, team: !!leg,
+        race: leg ? r.oos + ' relay, leg ' + leg.leg + (dist ? ' (' + dist + ')' : '')
+                  : r.oos + ' ' + inKm(r.event.replace(/^(Cross country|Road) /, ''))
+      };
+    });
+    var meetings = {};
+    track.concat(races).forEach(function (r) { meetings[r.date + '|' + r.meeting] = 1; });
+    var count = function (rs) { var m = {}; rs.forEach(function (r) { m[r.date + '|' + r.meeting] = 1; }); return Object.keys(m).length; };
+    var latest = track.concat(races).sort(function (a, b) { return cmp(b.date, a.date); })[0];
+    var lastDay = latest ? latest.date : '';
+    return {
+      name: athlete.name, season: season, cardNo: seasons.indexOf(season) + 1, rookie: seasons.indexOf(season) === 0,
+      grade: latest ? (latest.oos ? latest.oos_grade || '' : groupOf(latest)) : '',
+      meetings: Object.keys(meetings).length, trackMeetings: count(track), oosMeetings: count(races), upTo: lastDay ? longDate(lastDay) : '',
+      surnameByDefault: window.NCANPbCard ? window.NCANPbCard.surnameByDefault(latest) : false,
+      events: events, races: raceList
+    };
+  }
+  function seasonCardOpen(season, from) {
+    if (!window.NCANSeasonCard || !athlete) { return; }
+    window.NCANSeasonCard.open(seasonCardInput(season), from, {
+      headerPhoto: function () {
+        return loadHeaderPhoto().then(function (url) { return url ? { url: url, focus: headerPhoto.focus } : null; });
+      }
+    });
+  }
+
   // the result picked: mark, date, meeting, wind, grade or weight, PB or season best
   function zoomDetails(p) {
     var out = $('ath-zoom-details');
@@ -1916,6 +1982,46 @@
     return x.key + ' (' + words[x.dir > 0 ? 0 : 1] + ')';
   }
 
+  /* Seasons in the tables ---------------------------------------------------
+     A season runs 1 April to 31 March (assets/js/athlete-seasons.js), so a
+     winter's cross country and the summer's track share one: 2026/27. */
+  function seasonKey(r) {
+    return r.season || (SEASONS ? SEASONS.seasonOf(r.date) : String(r.date).slice(0, 4));
+  }
+  // [{ season, results }], newest season first
+  function bySeasonOf(rs) {
+    var out = {};
+    rs.forEach(function (r) { var s = seasonKey(r); (out[s] = out[s] || []).push(r); });
+    return Object.keys(out).sort().reverse().map(function (s) { return { season: s, results: out[s] }; });
+  }
+  /* A season's band across the table: its name, a few counts, and the button
+     for the season's collector card (assets/js/season-card.js). */
+  function seasonBand(season, span, counts) {
+    var band = text('tr', 'schedule__band ath-season-band');
+    var th = text('th');
+    th.setAttribute('scope', 'colgroup');
+    th.colSpan = span;
+    var line = text('div', 'ath-season-band__line');
+    var today = SEASONS ? isoOf(new Date()) : '';
+    line.appendChild(text('span', 'ath-season-band__name', (SEASONS ? SEASONS.label(season, today) : season) + ' season'));
+    var said = counts.filter(Boolean).join(' · ');
+    if (said) { line.appendChild(text('span', 'ath-season-band__counts', said)); }
+    if (window.NCANSeasonCard) {
+      var b = text('button', 'ath-season-band__card');
+      b.type = 'button';
+      b.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="5" y="3" width="14" height="18" rx="2"/>' +
+        '<path d="M8 15h8M8 18h5M12 6.5l1.2 2.4 2.6.4-1.9 1.8.5 2.6-2.4-1.3-2.4 1.3.5-2.6-1.9-1.8 2.6-.4z"/></svg>';
+      b.appendChild(text('span', null, 'Season card'));
+      b.title = 'Make a collector card of the ' + season + ' season';
+      b.setAttribute('aria-label', 'Make a collector card of the ' + season + ' season');
+      b.addEventListener('click', function () { seasonCardOpen(season, b); });
+      line.appendChild(b);
+    }
+    th.appendChild(line);
+    band.appendChild(th);
+    return band;
+  }
+
   function renderTable(rs, groups) {
     var out = $('ath-table');
     out.textContent = '';
@@ -1972,6 +2078,23 @@
     table.appendChild(thead);
     var tbody = document.createElement('tbody');
     var newestFirst = function (a, b) { return order(a, b); };
+    if ($('ath-group').value === 'season') {
+      // a band per season, newest season first, its results in the table's sort order
+      bySeasonOf(rs).forEach(function (s) {
+        var body = document.createElement('tbody');
+        body.className = 'ath-season-group';
+        var pbsIn = s.results.filter(isNewPb).length;
+        body.appendChild(seasonBand(s.season, 8, [
+          s.results.length + ' result' + (s.results.length === 1 ? '' : 's'),
+          pbsIn ? pbsIn + ' new personal best' + (pbsIn === 1 ? '' : 's') : ''
+        ]));
+        s.results.slice().sort(newestFirst).forEach(function (r) { body.appendChild(row(r, pbs, sbs)); });
+        table.appendChild(body);
+      });
+      wrap.appendChild(table);
+      out.appendChild(wrap);
+      return;
+    }
     if ($('ath-group').value === 'event') {
       // a band per event, in a meeting's running order, its results newest first
       groups.forEach(function (g) {
@@ -2068,10 +2191,20 @@
   // the share icon for a cross country, road or relay result: an Event card of the race
   function oosCardButton(r, event) { return cardButton(r, 'result', { event: event }); }
   function renderOffTrack(list) {
-    var body = $('offtrack-body');
-    body.textContent = '';
+    var table = $('offtrack-table');
+    Array.prototype.slice.call(table.tBodies).forEach(function (b) { b.remove(); });
     $('out-of-stadia').hidden = !list.length;
-    list.slice().sort(function (a, b) { return a.date < b.date ? 1 : a.date > b.date ? -1 : 0; })
+    // a band per season, newest first; each season's races newest first
+    bySeasonOf(list).forEach(function (s) {
+      var body = document.createElement('tbody');
+      body.className = 'ath-season-group';
+      var wins = s.results.filter(function (r) { return r.place === 1; }).length;
+      body.appendChild(seasonBand(s.season, 7, [
+        s.results.length + ' race' + (s.results.length === 1 ? '' : 's'),
+        wins ? wins + ' win' + (wins === 1 ? '' : 's') : ''
+      ]));
+      table.appendChild(body);
+      s.results.slice().sort(function (a, b) { return a.date < b.date ? 1 : a.date > b.date ? -1 : 0; })
       .forEach(function (r) {
         var tr = document.createElement('tr');
         var p = r.date.split('-');
@@ -2114,6 +2247,7 @@
         });
         body.appendChild(tr);
       });
+    });
   }
 
   /* Everything ----------------------------------------------------------- */
@@ -2259,13 +2393,14 @@
       });
     });
 
-    // grouping is a viewing preference, kept on this device when it can be
+    // grouping is a viewing preference, kept on this device when it can be. By season is
+    // the default; the key is new with it, so a choice kept from before starts by season
     try {
-      var saved = localStorage.getItem('ncan-athlete-group');
-      if (saved === 'event' || saved === 'date') { $('ath-group').value = saved; }
+      var saved = localStorage.getItem('ncan-athlete-grouping');
+      if (saved === 'event' || saved === 'date' || saved === 'season') { $('ath-group').value = saved; }
     } catch (e) { /* private mode or blocked storage: start from the default */ }
     $('ath-group').addEventListener('change', function () {
-      try { localStorage.setItem('ncan-athlete-group', $('ath-group').value); } catch (e) { /* not kept */ }
+      try { localStorage.setItem('ncan-athlete-grouping', $('ath-group').value); } catch (e) { /* not kept */ }
       render();
     });
   }
