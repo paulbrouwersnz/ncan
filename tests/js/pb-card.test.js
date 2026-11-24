@@ -319,3 +319,18 @@ test('Progress line: up is better, this mark last', () => {
   // one mark is no line
   assert.equal(PB.facts({ name: 'Sam', result: run(), progress: { points: [pts[2]] } }).progress, null);
 });
+
+test('the Progress line leaves out empty months quietly, as the progress chart does', () => {
+  // March and October, with nothing in April to September (winter): those months are left out
+  const pts = [{ value: 15, date: '2026-03-01' }, { value: 14.8, date: '2026-03-31' }, { value: 14.5, date: '2026-10-01' }];
+  const winter = [4, 5, 6, 7, 8, 9];
+  const plain = PB.chartPoints(pts, false, 0, 100, 0, 100);
+  const quiet = PB.chartPoints(pts, false, 0, 100, 0, 100, winter);
+  assert.ok(plain[1].x < 20, 'the empty months take most of the axis');
+  assert.ok(quiet[1].x > 90, 'with them left out, 31 March sits next to 1 October');
+  assert.deepEqual([quiet[0].x, quiet[2].x], [0, 100]);
+  // carried from the facts; all twelve hidden (nonsense) hides none
+  const r = { event: '100m', field: false, value: 14.5, date: '2026-10-01', mark: '14.50' };
+  assert.deepEqual(PB.facts({ name: 'Sam', result: r, progress: { points: pts, hide: winter } }).progress.hide, winter);
+  assert.deepEqual(PB.facts({ name: 'Sam', result: r, progress: { points: pts, hide: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] } }).progress.hide, []);
+});
