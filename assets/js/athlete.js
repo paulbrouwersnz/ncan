@@ -2027,7 +2027,7 @@
   }
   /* A season's band across the table: its name, a few counts, and the button
      for the season's collector card (assets/js/season-card.js). */
-  function seasonBand(season, span, counts) {
+  function seasonBand(season, span, part, counts) {
     var band = text('tr', 'schedule__band ath-season-band');
     var th = text('th');
     th.setAttribute('scope', 'colgroup');
@@ -2037,12 +2037,13 @@
     line.appendChild(text('span', 'ath-season-band__name', (SEASONS ? SEASONS.label(season, today) : season) + ' season'));
     var said = counts.filter(Boolean).join(' · ');
     if (said) { line.appendChild(text('span', 'ath-season-band__counts', said)); }
-    /* the card only once a part of the season has finished: cross country, road
-       and relays from 1 October, track and field from 1 April */
+    /* the card only once this table's part of the season has finished: cross
+       country, road and relays from 1 October, track and field from 1 April */
     var inSeason = function (r) { return seasonKey(r) === season; };
     if (window.NCANSeasonCard && athlete &&
         window.NCANSeasonCard.canMake(season, isoOf(new Date()),
-          (athlete.results || []).some(inSeason), (athlete.offTrack || []).some(inSeason))) {
+          part === 'track' && (athlete.results || []).some(inSeason),
+          part === 'oos' && (athlete.offTrack || []).some(inSeason))) {
       var b = text('button', 'ath-season-band__card');
       b.type = 'button';
       b.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="5" y="3" width="14" height="18" rx="2"/>' +
@@ -2120,7 +2121,7 @@
         var body = document.createElement('tbody');
         body.className = 'ath-season-group';
         var pbsIn = s.results.filter(isNewPb).length;
-        body.appendChild(seasonBand(s.season, 8, [
+        body.appendChild(seasonBand(s.season, 8, 'track', [
           s.results.length + ' result' + (s.results.length === 1 ? '' : 's'),
           pbsIn ? pbsIn + ' new personal best' + (pbsIn === 1 ? '' : 's') : ''
         ]));
@@ -2235,7 +2236,7 @@
       var body = document.createElement('tbody');
       body.className = 'ath-season-group';
       var wins = s.results.filter(function (r) { return r.place === 1; }).length;
-      body.appendChild(seasonBand(s.season, 7, [
+      body.appendChild(seasonBand(s.season, 7, 'oos', [
         s.results.length + ' race' + (s.results.length === 1 ? '' : 's'),
         wins ? wins + ' win' + (wins === 1 ? '' : 's') : ''
       ]));
