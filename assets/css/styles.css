@@ -398,7 +398,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 .nav__cta { display: none; }
 
 .site-header__cta { display: flex; align-items: center; gap: clamp(.7rem, 1.2vw, 1.1rem); }
-/* "Sign in" / "My pages" (account-link.js): beside "Join the club" on wide
+/* "Sign in" / "My NCAN" (account-link.js): beside "Join the club" on wide
    screens, the last plain link in the menu on narrow ones */
 .nav__account { display: none; }
 .site-header__account {

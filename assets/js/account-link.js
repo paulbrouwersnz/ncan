@@ -1,5 +1,5 @@
 /*
-  account-link.js - the header's "Sign in" / "My pages" link, on every page
+  account-link.js - the header's "Sign in" / "My NCAN" link, on every page
   (loaded deferred from partials/head.html), and the banner an admin sees on
   every page while acting as another role.
 
@@ -99,7 +99,7 @@
       }
       if (!res.ok) { return; }
       [].forEach.call(links, function (a) {
-        a.textContent = 'My pages';
+        a.textContent = 'My NCAN';
       });
       return res.json().then(function (who) {
         if (who && who.acting) { banner(doc, api, who); }

@@ -993,7 +993,7 @@ the page (`assets/js/athlete-manage.js`). The shared sign-in code is
 `assets/js/ncan-account.js`.
 
 Signing in has one address, `/sign-in/` (`assets/js/sign-in.js`), and the header
-links to it on every page: "Sign in", or "My pages" for someone signed in
+links to it on every page: "Sign in", or "My NCAN" for someone signed in
 (`assets/js/account-link.js`, loaded from `partials/head.html`; it asks the API
 only when the device has signed in before, so most visitors cause no request).
 Signed in, `/sign-in/` sends people on to the page named after `#/next`, for
