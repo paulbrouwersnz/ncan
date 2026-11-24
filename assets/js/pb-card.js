@@ -277,10 +277,22 @@
   }
 
   /* The Event card: the Photo card's layout over a scene of the event, drawn here.
-     Track scenes are on the Ngā Puna Wai blue track unless the sharer picks red or grass. */
+     Track scenes start on blue, or on the colour an admin set for the meeting's location; the sharer can pick another. */
   var SURFACES = { blue: { track: '#2E63AC', line: 'rgba(255,255,255,.92)' },
                    red: { track: '#B4472F', line: 'rgba(255,255,255,.92)' },
                    grass: { track: '#62A84C', line: 'rgba(255,255,255,.95)' } };
+  // the club's own track colours (admins set them: /admin/track-colours/), from the athlete page:
+  // [{id, name, hex}]. Blue stays as the fallback, so a card always has a track.
+  function setTracks(list) {
+    var got = {};
+    (list || []).forEach(function (c) {
+      if (c && c.id && /^#[0-9a-f]{6}$/i.test(c.hex || '')) { got[c.id] = { track: c.hex, line: 'rgba(255,255,255,.92)' }; }
+    });
+    if (!Object.keys(got).length) { return; }
+    if (!got.blue) { got.blue = SURFACES.blue; }
+    SURFACES = got;
+    api.SURFACES = Object.keys(SURFACES);
+  }
   // which scene an event gets, from its name ("100m Hurdles", "Shot put (3kg)", "Cross country 3 km")
   function sceneFor(event) {
     var e = String(event || '').toLowerCase().replace(/,/g, '');
@@ -752,8 +764,9 @@
     });
   }
 
-  return { SIZES: SIZES, COLOURS: COLOURS, day: day, placeWord: placeWord, medalFor: medalFor, improvement: improvement,
+  var api = { SIZES: SIZES, COLOURS: COLOURS, day: day, placeWord: placeWord, medalFor: medalFor, improvement: improvement,
            cardName: cardName, surnameByDefault: surnameByDefault, seasonWords: seasonWords, facts: facts, whereWords: whereWords,
            caption: caption, fileName: fileName, headlineFor: headlineFor, cover: cover, parseFocus: parseFocus, move: move, ZOOM_MAX: ZOOM_MAX, STYLES: ['podium', 'photo', 'event'],
-           SURFACES: Object.keys(SURFACES), sceneFor: sceneFor, sceneHasTrack: sceneHasTrack, layout: layout, overlaps: overlaps, render: render };
+           SURFACES: Object.keys(SURFACES), setTracks: setTracks, sceneFor: sceneFor, sceneHasTrack: sceneHasTrack, layout: layout, overlaps: overlaps, render: render };
+  return api;
 }));

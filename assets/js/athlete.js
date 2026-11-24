@@ -1301,6 +1301,26 @@
     return (n && all[String(n)]) || null;
   }
 
+  // the Track list: the club's track colours (admins set them, and which one each location
+  // starts on: /admin/track-colours/), as the athlete page sends them
+  function cardTracks(list) {
+    var PB = window.NCANPbCard, sel = $('ath-card-surface');
+    if (!PB || !sel || !list || !list.length) { return; }
+    PB.setTracks(list);
+    sel.textContent = '';
+    list.forEach(function (c) {
+      if (PB.SURFACES.indexOf(c.id) < 0) { return; }
+      var o = document.createElement('option');
+      o.value = c.id; o.textContent = c.name;
+      sel.appendChild(o);
+    });
+  }
+  // the track a card starts on: its location's colour if an admin set one, else blue
+  function cardTrackFor(r) {
+    var w = cardWhere(r), PB = window.NCANPbCard;
+    return (w && w.track && PB && PB.SURFACES.indexOf(w.track) >= 0) ? w.track : 'blue';
+  }
+
   function cardFacts() {
     var r = card.r;
     // cross country, road and relay legs: no PBs (courses differ), their own race name and grade
@@ -1400,6 +1420,8 @@
     card.where = where;
     $('ath-card-where-row').hidden = !where;
     $('ath-card-where').checked = where;
+    card.surface = cardTrackFor(r);
+    $('ath-card-surface').value = card.surface;
     $('ath-card-ok').checked = false;
     $('ath-card-form').hidden = false;
     $('ath-card-done').hidden = true;
@@ -2358,6 +2380,7 @@
         can_change_photo: !!json.can_change_photo, can_remove_photo: !!json.can_remove_photo,
         can_share: !!json.can_share, share_usage: json.share_usage || null,
         meeting_places: json.meeting_places || {} };
+      cardTracks(json.track_colours);
       document.dispatchEvent(new CustomEvent('ncan:athlete', { detail: NCAN.athlete }));
       // cross country, road and relay legs have a section of their own: the
       // track sections (PBs, charts, filters, the results table) never see them
