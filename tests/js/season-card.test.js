@@ -41,3 +41,17 @@ test('there are finishes and looks to choose from', () => {
   assert.ok(SC.FINISHES.length >= 3);
   assert.ok(SC.FILTERS.length >= 4);
 });
+
+const ev = (event, starts, newPbs) => ({ event, starts, newPbs, results: [] });
+
+test('signatureChoices: most starts first, then most new PBs', () => {
+  const list = SC.signatureChoices([ev('100m', 9, 0), ev('400m', 3, 2), ev('200m', 16, 1), ev('Long Jump', 3, 0)]);
+  assert.deepStrictEqual(list.map(e => e.event), ['200m', '100m', '400m', 'Long Jump']);
+});
+
+test('facts: the signature event defaults to the most starts, and can be chosen', () => {
+  const events = [ev('400m', 3, 2), ev('200m', 16, 1)];
+  assert.strictEqual(SC.facts({ name: 'Lily', events }).signature.event, '200m');
+  assert.strictEqual(SC.facts({ name: 'Lily', events, signature: '400m' }).signature.event, '400m');
+  assert.strictEqual(SC.facts({ name: 'Lily', events, signature: 'Shot Put' }).signature.event, '200m');
+});

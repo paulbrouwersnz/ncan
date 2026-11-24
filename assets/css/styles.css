@@ -1015,7 +1015,8 @@ ul { margin: 0; padding: 0; list-style: none; }
   color: var(--link);
 }
 .records-field select,
-.records-field input {
+.records-field input,
+.sc__select {
   font: inherit;
   font-size: .95rem;
   padding: .6rem .75rem;
@@ -1028,7 +1029,8 @@ ul { margin: 0; padding: 0; list-style: none; }
 }
 .records-field input { min-width: 0; }
 /* the site's own arrow, set in from the edge (the browser's sits hard against it) */
-.records-field select {
+.records-field select,
+.sc__select {
   -webkit-appearance: none;
   appearance: none;
   padding-right: 2.4rem;
