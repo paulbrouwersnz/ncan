@@ -1433,9 +1433,10 @@
     el('sc-photo-said').textContent = !on
       ? 'No photo yet: the club crest shows where it will go. Without one, only the stats side is saved or shared. A photo you add stays on this device.'
       : ui.picked ? 'Using the photo you chose: drag it on the card to move it into place. It stays on this device unless you make a public link.'
-      : 'Using the header photo.';
+      : 'Using the header photo: drag it on the card to move it into place.';
     el('sc-looks-field').hidden = !on;
     el('sc-adjust').hidden = !on;
+    if (el('sc-adjust-hint')) { el('sc-adjust-hint').hidden = !on; }   // missing from a page cached before it
     el('sc-save-front').hidden = !on;
   }
   // each look's preview, one at a time, so the page stays responsive
