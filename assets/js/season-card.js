@@ -1472,7 +1472,13 @@
   }
   function flip(toBack, reset) {
     if (reset) { spin.x = 0; spin.y = 0; }
-    else if (toBack !== ui.flipped) { spin.y += 180; }
+    else if (toBack !== ui.flipped) {
+      /* the turn button lands the other side the right way up, in one half turn:
+         upside down, it turns end over end; upright, side to side */
+      var up = Math.round(spin.x / 360) * 360;
+      if (Math.abs(up - spin.x) % 360 !== 180) { spin.y = Math.round(spin.y / 180) * 180 + 180; }
+      spin.x = up;
+    }
     spinShow();
     side(toBack);
   }
