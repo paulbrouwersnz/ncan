@@ -4,8 +4,8 @@
   A card for each athlete this person is family for (GET /v1/auth/me, `own`),
   styled like the Club admin page's cards: a small round photo (their athlete
   page's photo, GET /v1/athletes/<address>, centred on its focus point, or their
-  initials when it has none), Results and progression, Membership (coming
-  soon), and, when any of their cards or charts are shared publicly
+  initials when it has none), Results and progression, Membership
+  (/my/membership/), and, when any of their cards or charts are shared publicly
   (GET /v1/me/shares), Shared links with a count badge, linking to
   where they are managed on /athletes/.
 
@@ -149,7 +149,8 @@
     list.appendChild(c.href
       ? row(doc, 'Results and progression', c.href, 'Every result, with charts of their progression and personal bests.')
       : row(doc, 'No athlete page yet', null, 'It appears once they have a result or are registered with the club.'));
-    list.appendChild(row(doc, 'Membership', null, 'Their seasons and registrations with the club. Coming soon.'));
+    list.appendChild(row(doc, 'Membership', c.slug ? '/my/membership/#/athlete/' + c.slug : '/my/membership/',
+      'Their National ID, seasons and registrations with the club, Athletics Canterbury and Athletics NZ.'));
     if (c.shares) {
       list.appendChild(row(doc, 'Shared links', c.slug ? '/my/shares/#/athlete/' + c.slug : '/my/shares/',
         'Public links to their charts and cards: open, copy, download or remove them.', c.shares));
