@@ -1167,21 +1167,30 @@
           text(h, cols[i], y + 20, { size: 12, weight: 800, colour: C.goldSoft, align: i ? 'center' : 'left', spacing: 1.5 });
         });
         y += 30;
+        // Every new-PB pill is the same size, its star in one column: measure the visible new
+        // PBs first, then use the widest left and right ends for all of them
+        var pill = null;
+        f.events.slice(0, eventRows).forEach(function (e) {
+          if (!(e.newPbs > 0 && e.sb)) { return; }
+          var ends = figures(c, e.sb.mark, cols[2] + 6, 0, { weight: 800, family: S, max: 78, dry: true });
+          pill = pill ? [Math.min(pill[0], ends[0]), Math.max(pill[1], ends[1])] : ends;
+        });
+        if (pill) {
+          setFont(c, 800, 16, S);
+          var starX = pill[1] + 5, starW = c.measureText('\u2605').width;
+          pill = { l: Math.min(cols[2] - 52, pill[0] - 10), r: Math.max(cols[2] + 52, starX + starW + 8), star: starX };
+        }
         f.events.slice(0, eventRows).forEach(function (e, i) {
           c.fillStyle = i % 2 ? C.paper : C.cream; c.fillRect(X0, y, IW, ROW);
           var yy = y + 22, newPb = e.newPbs > 0 && e.sb;
           text(e.event, cols[0], yy, { weight: 700, align: 'left', max: 232 });
           text(e.starts || 0, cols[1], yy, {});
-          // SB and PB line up on the decimal point, digit for digit; a new PB's star sits just
-          // after its mark (a unit such as 'm' runs further right), inside a gold pill
+          // SB and PB line up on the decimal point, digit for digit; a new PB sits in a gold pill
+          // with its star in the shared star column (after the furthest-reaching mark or unit)
           var sbo = { weight: newPb ? 800 : 600, family: S, colour: C.ink, max: newPb ? 78 : 96 };
           if (newPb) {
-            var ends = figures(c, e.sb.mark, cols[2] + 6, yy, { weight: 800, family: S, max: 78, dry: true });
-            setFont(c, 800, 16, S);
-            var star = ends[1] + 5, starW = c.measureText('★').width;
-            var pl = Math.min(cols[2] - 52, ends[0] - 10), pr = Math.max(cols[2] + 52, star + starW + 8);
-            c.fillStyle = C.gold; rounded(c, pl, y + 4, pr - pl, ROW - 8, 6); c.fill();
-            text('★', star, yy, { weight: 800, align: 'left' });
+            c.fillStyle = C.gold; rounded(c, pill.l, y + 4, pill.r - pill.l, ROW - 8, 6); c.fill();
+            text('\u2605', pill.star, yy, { weight: 800, align: 'left' });
           }
           figures(c, e.sb ? e.sb.mark : '–', cols[2] + 6, yy, sbo);
           figures(c, e.pb ? e.pb.mark : '–', cols[3] + 6, yy, { family: S, colour: C.ink, max: 88 });
