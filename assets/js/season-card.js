@@ -831,7 +831,8 @@
   }
   /* Draws a mark with its decimal point at x and every digit in a cell of the same width
      (canvas has no tabular figures), so times in a column line up digit for digit.
-     o: { size, weight, family, colour, max (the widest the whole mark may be) } */
+     o: { size, weight, family, colour, max (the widest the whole mark may be), dry (measure
+     only) }. Returns the mark's left and right edges, [left, right]. */
   function figures(c, mark, x, y, o) {
     var parts = markParts(mark), size = o.size || 16, cell, widths;
     var measure = function () {
@@ -846,10 +847,12 @@
     while (o.max && total() > o.max && size > 10) { size -= 1; measure(); }
     c.fillStyle = o.colour; c.textAlign = 'center';
     var at = x, ws = widths(parts[0]);
-    for (var i = parts[0].length - 1; i >= 0; i--) { at -= ws[i]; c.fillText(parts[0][i], at + ws[i] / 2, y); }
+    for (var i = parts[0].length - 1; i >= 0; i--) { at -= ws[i]; if (!o.dry) { c.fillText(parts[0][i], at + ws[i] / 2, y); } }
+    var left = at;
     at = x; ws = widths(parts[1]);
-    for (var j = 0; j < parts[1].length; j++) { c.fillText(parts[1][j], at + ws[j] / 2, y); at += ws[j]; }
+    for (var j = 0; j < parts[1].length; j++) { if (!o.dry) { c.fillText(parts[1][j], at + ws[j] / 2, y); } at += ws[j]; }
     c.restore();
+    return [left, at];
   }
   function wrap(c, words, maxW) {
     var lines = [], line = '';
@@ -1169,10 +1172,18 @@
           var yy = y + 22, newPb = e.newPbs > 0 && e.sb;
           text(e.event, cols[0], yy, { weight: 700, align: 'left', max: 232 });
           text(e.starts || 0, cols[1], yy, {});
-          if (newPb) { c.fillStyle = C.gold; rounded(c, cols[2] - 52, y + 4, 104, ROW - 8, 6); c.fill(); }
-          // SB and PB line up on the decimal point, digit for digit
-          figures(c, e.sb ? e.sb.mark : '–', cols[2] + 6, yy, { weight: newPb ? 800 : 600, family: S, colour: C.ink, max: newPb ? 78 : 96 });
-          if (newPb) { text('★', cols[2] + 50, yy, { weight: 800, align: 'right' }); }
+          // SB and PB line up on the decimal point, digit for digit; a new PB's star sits just
+          // after its mark (a unit such as 'm' runs further right), inside a gold pill
+          var sbo = { weight: newPb ? 800 : 600, family: S, colour: C.ink, max: newPb ? 78 : 96 };
+          if (newPb) {
+            var ends = figures(c, e.sb.mark, cols[2] + 6, yy, { weight: 800, family: S, max: 78, dry: true });
+            setFont(c, 800, 16, S);
+            var star = ends[1] + 5, starW = c.measureText('★').width;
+            var pl = Math.min(cols[2] - 52, ends[0] - 10), pr = Math.max(cols[2] + 52, star + starW + 8);
+            c.fillStyle = C.gold; rounded(c, pl, y + 4, pr - pl, ROW - 8, 6); c.fill();
+            text('★', star, yy, { weight: 800, align: 'left' });
+          }
+          figures(c, e.sb ? e.sb.mark : '–', cols[2] + 6, yy, sbo);
           figures(c, e.pb ? e.pb.mark : '–', cols[3] + 6, yy, { family: S, colour: C.ink, max: 88 });
           text(e.wins || 0, cols[4], yy, {});
           text(e.podiums || 0, cols[5], yy, {});
