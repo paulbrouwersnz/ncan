@@ -788,10 +788,11 @@ ul { margin: 0; padding: 0; list-style: none; }
 }
 .me-card__head { display: flex; align-items: center; gap: .85rem; margin-bottom: 1.1rem; }
 .me-card__name { margin: 0; }
-.me-card__name a { color: inherit; }
+.me-card__name a { color: inherit; text-decoration: none; }
+.me-card__name a:hover { color: var(--accent); }
 .me-card__links { list-style: none; margin: 0; padding: 0; display: grid; gap: 1rem; }
 .me-card__title { margin: 0 0 .2rem; font-size: 1.05rem; }
-.me-card__title a { color: var(--heading); }
+.me-card__title a { color: var(--heading); text-decoration: none; }
 .me-card__title a:hover { color: var(--accent); }
 .me-card__soon { color: var(--text-soft); }
 .me-card__row p { margin: 0; color: var(--text-soft); font-size: .95rem; }
@@ -2560,6 +2561,46 @@ table.schedule tbody + tbody > tr:first-child > th { border-top: 2px solid var(-
 }
 .page-head--fade-plain::before { background: var(--green-800); }
 .page-head--faded::before { opacity: 0; }
+/* the athlete page: the band takes the photo's own shape (2:1, as athlete-photo.js
+   crops it) on wide screens, up to 40rem tall, and a lighter wash, so as much of
+   the photo shows as can while the white text stays readable on the left */
+.page-head--athlete.page-head--photo {
+  min-height: min(50vw, 40rem);
+  display: flex;
+  align-items: center;
+}
+.page-head--athlete.page-head--photo > .wrap { width: 100%; }
+.page-head--athlete.page-head--photo,
+.page-head--athlete.page-head--fade::before {
+  --wash: linear-gradient(100deg, rgba(6, 42, 32, .86) 0%, rgba(6, 42, 32, .62) 38%, rgba(11, 59, 46, .12) 100%);
+}
+/* on a phone the words run the whole width: a more even wash behind them */
+@media (max-width: 40rem) {
+  .page-head--athlete.page-head--photo,
+  .page-head--athlete.page-head--fade::before {
+    --wash: linear-gradient(100deg, rgba(6, 42, 32, .84), rgba(11, 59, 46, .58));
+  }
+}
+.page-head--athlete.page-head--photo {
+  background:
+    var(--wash),
+    var(--photo) var(--photo-focus, center 35%) / cover no-repeat var(--green-800);
+  background:
+    var(--wash),
+    image-set(var(--photo-webp) type("image/webp"), var(--photo) type("image/jpeg")) var(--photo-focus, center 35%) / cover no-repeat var(--green-800);
+}
+.page-head--athlete.page-head--fade:not(.page-head--fade-plain)::before {
+  background:
+    var(--wash),
+    var(--photo-old) var(--photo-old-focus, center 35%) / cover no-repeat var(--green-800);
+  background:
+    var(--wash),
+    image-set(var(--photo-old-webp) type("image/webp"), var(--photo-old) type("image/jpeg")) var(--photo-old-focus, center 35%) / cover no-repeat var(--green-800);
+}
+.page-head--athlete.page-head--photo h1,
+.page-head--athlete.page-head--photo .eyebrow,
+.page-head--athlete.page-head--photo .lede,
+.page-head--athlete.page-head--photo .breadcrumb { text-shadow: 0 1px 3px rgba(0, 0, 0, .45); }
 @media (prefers-reduced-motion: reduce) {
   .page-head--fade::before { transition: none; }
 }
