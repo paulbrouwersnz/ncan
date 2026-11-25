@@ -823,6 +823,34 @@
     c.fillText(words, 0, 0);
     c.restore();
   }
+  /* A mark split at its decimal point: '21:31.6' -> ['21:31', '.6'], '5.42m' -> ['5', '.42m'],
+     '17:27' -> ['17:27', ''], so a column of marks can line up on the point */
+  function markParts(mark) {
+    var m = String(mark == null || mark === '' ? '\u2013' : mark), dot = m.search(/\.\d+\D*$/);
+    return dot < 0 ? [m, ''] : [m.slice(0, dot), m.slice(dot)];
+  }
+  /* Draws a mark with its decimal point at x and every digit in a cell of the same width
+     (canvas has no tabular figures), so times in a column line up digit for digit.
+     o: { size, weight, family, colour, max (the widest the whole mark may be) } */
+  function figures(c, mark, x, y, o) {
+    var parts = markParts(mark), size = o.size || 16, cell, widths;
+    var measure = function () {
+      setFont(c, o.weight || 600, size, o.family);
+      cell = Math.max.apply(null, '0123456789'.split('').map(function (d) { return c.measureText(d).width; }));
+      widths = function (s) { return s.split('').map(function (ch) { return /\d/.test(ch) ? cell : c.measureText(ch).width; }); };
+    };
+    var total = function () { return widths(parts[0]).concat(widths(parts[1])).reduce(function (t, w) { return t + w; }, 0); };
+    c.save();
+    spaced(c, 0);
+    measure();
+    while (o.max && total() > o.max && size > 10) { size -= 1; measure(); }
+    c.fillStyle = o.colour; c.textAlign = 'center';
+    var at = x, ws = widths(parts[0]);
+    for (var i = parts[0].length - 1; i >= 0; i--) { at -= ws[i]; c.fillText(parts[0][i], at + ws[i] / 2, y); }
+    at = x; ws = widths(parts[1]);
+    for (var j = 0; j < parts[1].length; j++) { c.fillText(parts[1][j], at + ws[j] / 2, y); at += ws[j]; }
+    c.restore();
+  }
   function wrap(c, words, maxW) {
     var lines = [], line = '';
     String(words).split(/\s+/).forEach(function (w) {
@@ -1142,8 +1170,10 @@
           text(e.event, cols[0], yy, { weight: 700, align: 'left', max: 232 });
           text(e.starts || 0, cols[1], yy, {});
           if (newPb) { c.fillStyle = C.gold; rounded(c, cols[2] - 52, y + 4, 104, ROW - 8, 6); c.fill(); }
-          text(e.sb ? e.sb.mark + (newPb ? ' ★' : '') : '–', cols[2], yy, { weight: newPb ? 800 : 600, max: 98 });
-          text(e.pb ? e.pb.mark : '–', cols[3], yy, { max: 90 });
+          // SB and PB line up on the decimal point, digit for digit
+          figures(c, e.sb ? e.sb.mark : '–', cols[2] + 6, yy, { weight: newPb ? 800 : 600, family: S, colour: C.ink, max: newPb ? 78 : 96 });
+          if (newPb) { text('★', cols[2] + 50, yy, { weight: 800, align: 'right' }); }
+          figures(c, e.pb ? e.pb.mark : '–', cols[3] + 6, yy, { family: S, colour: C.ink, max: 88 });
           text(e.wins || 0, cols[4], yy, {});
           text(e.podiums || 0, cols[5], yy, {});
           y += ROW;
@@ -1167,10 +1197,8 @@
           var yy = y + 21, podium = r.place >= 1 && r.place <= 3;
           text(day(r.date), rc[0], yy, { size: 14, weight: 700, colour: C.leaf, align: 'left', max: 72 });
           text(r.race, rc[1], yy, { size: 15, align: 'left', max: 380 });
-          // times line up on the decimal point: the whole seconds end at one line, any tenths or hundredths after it
-          var mk = String(r.mark || '–'), dot = mk.search(/\.\d+$/);
-          text(dot < 0 ? mk : mk.slice(0, dot), rc[2] + 14, yy, { weight: 700, align: 'right', max: 90 });
-          if (dot >= 0) { text(mk.slice(dot), rc[2] + 14, yy, { weight: 700, align: 'left', max: 40 }); }
+          // times line up on the decimal point, digit for digit: whole seconds end at one line, tenths or hundredths after it
+          figures(c, r.mark || '–', rc[2] + 14, yy, { weight: 700, family: S, colour: C.ink, max: 120 });
           if (podium) { c.fillStyle = MEDALS[r.place]; rounded(c, rc[3] - 58, y + 4, 116, RROW - 8, 6); c.fill(); }
           text(r.place ? ordinal(r.place) + (r.of ? ' of ' + r.of : '') + (r.team ? ' (team)' : '') : '–', rc[3], yy, { size: 14, weight: 700, max: 100 });
           y += RROW;
@@ -1776,7 +1804,7 @@
     }, function () { if (n === ui.seq) { usePhoto(); } });
   }
 
-  return { W: W, H: H, FINISHES: FINISHES, FILTERS: FILTERS, facts: facts, signatureChoices: signatureChoices, ready: ready, canMake: canMake, partOf: partOf, highlights: highlights, funFact: funFact,
+  return { W: W, H: H, markParts: markParts, FINISHES: FINISHES, FILTERS: FILTERS, facts: facts, signatureChoices: signatureChoices, ready: ready, canMake: canMake, partOf: partOf, highlights: highlights, funFact: funFact,
            caption: caption, fileName: fileName, metresOf: metresOf, groupOf: groupOf, gain: gain,
            look: look, LOOKS: LOOKS, blur: blur, edges: edges, rng: rng,
            front: front, back: back, filtered: filtered, open: open };

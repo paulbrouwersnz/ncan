@@ -192,3 +192,12 @@ test('funFact: cross country, road and relay runners get time, pace, field and r
   assert.match(all, /Longest race of the season: the Cross country 8 km, done in 36:12\.74\./);
   for (const w of seen) { assert.ok(w.length <= 170, w); }
 });
+
+test('markParts splits a mark at its decimal point', function () {
+  var SC = require('../../assets/js/season-card.js');
+  assert.deepStrictEqual(SC.markParts('21:31.6'), ['21:31', '.6']);
+  assert.deepStrictEqual(SC.markParts('17:27'), ['17:27', '']);
+  assert.deepStrictEqual(SC.markParts('5.42m'), ['5', '.42m']);
+  assert.deepStrictEqual(SC.markParts('1:02.45'), ['1:02', '.45']);
+  assert.deepStrictEqual(SC.markParts(''), ['–', '']);
+});
