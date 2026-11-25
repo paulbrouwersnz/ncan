@@ -380,17 +380,18 @@
       </div>
     </section>
 
-    <!-- Header photo: the athlete's own photo behind the heading, for the people
+    <!-- Profile and header photo: the athlete's own photo behind the heading and in
+         their round profile photo (My athletes, /me/), for the people
          who manage who sees this page, and coaches to remove one
          (assets/js/athlete-photo.js) -->
     <section class="section section--tint" id="ath-photo" aria-labelledby="photo-heading" hidden>
       <div class="wrap">
         <div class="section-head section-head--wide">
-          <p class="eyebrow">Header photo</p>
-          <h2 id="photo-heading">A photo for this page</h2>
+          <p class="eyebrow">Profile and header photo</p>
+          <h2 id="photo-heading">A photo of the athlete</h2>
           <p class="lede">
-            A photo of the athlete behind the heading at the top of this page. Only the people who can
-            see the page see it. The photo is cropped and made smaller here, on your device, which also
+            A photo of the athlete, shown behind the heading at the top of this page and as their round
+            profile photo on My athletes. Only the people who can see the page see it. The photo is cropped and made smaller here, on your device, which also
             leaves out where and when it was taken.
           </p>
         </div>
@@ -402,7 +403,7 @@
           <p class="mem-help">
             Choose which part of the photo stays in view as the heading gets narrower or wider, or click
             the photo to pick a point yourself. The heading at the top of the page changes as you choose;
-            the narrow box shows a phone.
+            the narrow box shows a phone, and the circle the profile photo, centred on the same point.
           </p>
           <div class="photo-edit__row">
             <fieldset class="anchor-grid" id="photo-edit-anchor"><legend>Keep in view</legend></fieldset>
@@ -411,6 +412,7 @@
               <span class="photo-edit__dot" id="photo-edit-dot" aria-hidden="true"></span>
             </div>
             <div class="photo-edit__phone" id="photo-edit-phone" aria-hidden="true"></div>
+            <div class="photo-edit__avatar" id="photo-edit-avatar" aria-hidden="true"></div>
           </div>
           <p class="photo-edit__status" id="photo-edit-status" role="status"></p>
           <div class="btn-row">
@@ -426,8 +428,8 @@
           <div class="photo-crop" id="photo-crop" hidden>
             <p class="mem-help">
               Drag the frame to choose the part to show, and zoom to make it smaller. Click on the
-              athlete to keep them in view on a phone, where less of the photo shows. The heading at
-              the top of the page shows how it will look.
+              athlete to keep them in view on a phone, where less of the photo shows, and at the centre
+              of their round profile photo. The heading at the top of the page shows how it will look.
             </p>
             <div class="photo-crop__stage">
               <canvas id="photo-canvas" tabindex="0" aria-label="The photo, with the part to show framed. Arrow keys move the frame."></canvas>
@@ -436,7 +438,10 @@
               <label for="photo-zoom">Zoom</label>
               <input type="range" id="photo-zoom" step="1" style="direction: rtl">
             </p>
-            <fieldset class="anchor-grid" id="photo-crop-anchor"><legend>Keep in view</legend></fieldset>
+            <div class="photo-edit__row">
+              <fieldset class="anchor-grid" id="photo-crop-anchor"><legend>Keep in view</legend></fieldset>
+              <div class="photo-edit__avatar" id="photo-crop-avatar" aria-hidden="true"></div>
+            </div>
             <p class="records-field ath-check">
               <input type="checkbox" id="photo-confirm">
               <label for="photo-confirm">I have the right to share this photo, and it shows

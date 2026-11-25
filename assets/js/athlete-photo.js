@@ -1,6 +1,8 @@
 /*
   athlete-photo.js - the athlete's own photo behind the athlete page's heading
-  (/athlete/), and "Header photo" for the people who may change it.
+  (/athlete/), and "Profile and header photo" for the people who may change it.
+  The same photo is the athlete's round profile photo on My athletes (/me/),
+  centred on the same focus point; the editor shows that circle too.
 
   The photo is private, like the page: the club's API gives it only to someone
   who can see the page (GET /v1/athletes/<address>/photo), so it is fetched
@@ -145,6 +147,7 @@
     previewTimer = setTimeout(function () {
       var url = render(Math.min(900, crop.cw)).toDataURL('image/jpeg', 0.7);
       NCAN.pageHead.photo({ photo: { src: url, webp: url }, focus: focus() });
+      avatarShow($('photo-crop-avatar'), url, focus());
     }, 120);
   }
 
@@ -285,6 +288,13 @@
 
   /* Edit photo: only what stays in view --------------------------------------- */
 
+  // the round profile photo (as on /me/): the photo, cropped round about its focus point
+  function avatarShow(box, url, focusValue) {
+    if (!box) { return; }
+    box.style.backgroundImage = 'url("' + url + '")';
+    box.style.backgroundPosition = focusValue || '50% 50%';
+  }
+
   function editShow(focusValue) {
     edit.focus = focusValue;
     var p = NCANAnchor.parse(focusValue) || [50, 50];
@@ -292,6 +302,7 @@
     dot.style.left = p[0] + '%';
     dot.style.top = p[1] + '%';
     $('photo-edit-phone').style.backgroundPosition = focusValue;
+    avatarShow($('photo-edit-avatar'), shownUrl, focusValue);
     // the same photo: only its focus point moves (no fade)
     var head = document.querySelector('.page-head');
     if (head) { head.style.setProperty('--photo-focus', focusValue); }
