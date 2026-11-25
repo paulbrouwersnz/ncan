@@ -1500,6 +1500,7 @@ table.schedule.champs-table { min-width: 0; }
 .ath-zoom__shape[hidden] { display: none; }
 @media (max-width: 480px) {
   .ath-zoom__download { width: 44px; padding: 0; justify-content: center; }
+  .ath-zoom__download.is-busy::before { left: 50%; margin-left: -9px; }   /* the icon sits in the middle here */
   .ath-zoom__shape { max-width: 7.5rem; font-size: .82rem; }
   .ath-zoom__download-words { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 }
