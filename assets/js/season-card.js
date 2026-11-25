@@ -1161,7 +1161,8 @@
       if (f.events.length) {
         head('TRACK & FIELD', 'SB season best · PB personal best');
         // EVENT | ST | SB | PB | WINS | TOP 3
-        var cols = [X0 + 14, X0 + 262, X0 + 352, X0 + 466, X0 + 562, X0 + 630];
+        // SB gets the widest column: a new PB pill holds an hour-plus mark (1:01:10.4) and its star
+        var cols = [X0 + 14, X0 + 220, X0 + 340, X0 + 496, X0 + 576, X0 + 638];
         c.fillStyle = C.ink; c.fillRect(X0, y, IW, 30);
         ['EVENT', 'ST', 'SB', 'PB', 'WINS', 'TOP 3'].forEach(function (h, i) {
           text(h, cols[i], y + 20, { size: 12, weight: 800, colour: C.goldSoft, align: i ? 'center' : 'left', spacing: 1.5 });
@@ -1172,7 +1173,7 @@
         var pill = null;
         f.events.slice(0, eventRows).forEach(function (e) {
           if (!(e.newPbs > 0 && e.sb)) { return; }
-          var ends = figures(c, e.sb.mark, cols[2] + 6, 0, { weight: 800, family: S, max: 78, dry: true });
+          var ends = figures(c, e.sb.mark, cols[2] + 6, 0, { weight: 800, family: S, max: 96, dry: true });
           pill = pill ? [Math.min(pill[0], ends[0]), Math.max(pill[1], ends[1])] : ends;
         });
         if (pill) {
@@ -1183,17 +1184,17 @@
         f.events.slice(0, eventRows).forEach(function (e, i) {
           c.fillStyle = i % 2 ? C.paper : C.cream; c.fillRect(X0, y, IW, ROW);
           var yy = y + 22, newPb = e.newPbs > 0 && e.sb;
-          text(e.event, cols[0], yy, { weight: 700, align: 'left', max: 232 });
+          text(e.event, cols[0], yy, { weight: 700, align: 'left', max: 190 });
           text(e.starts || 0, cols[1], yy, {});
           // SB and PB line up on the decimal point, digit for digit; a new PB sits in a gold pill
           // with its star in the shared star column (after the furthest-reaching mark or unit)
-          var sbo = { weight: newPb ? 800 : 600, family: S, colour: C.ink, max: newPb ? 78 : 96 };
+          var sbo = { weight: newPb ? 800 : 600, family: S, colour: C.ink, max: 96 };
           if (newPb) {
             c.fillStyle = C.gold; rounded(c, pill.l, y + 4, pill.r - pill.l, ROW - 8, 6); c.fill();
             text('\u2605', pill.star, yy, { weight: 800, align: 'left' });
           }
           figures(c, e.sb ? e.sb.mark : '–', cols[2] + 6, yy, sbo);
-          figures(c, e.pb ? e.pb.mark : '–', cols[3] + 6, yy, { family: S, colour: C.ink, max: 88 });
+          figures(c, e.pb ? e.pb.mark : '–', cols[3] + 6, yy, { family: S, colour: C.ink, max: 96 });
           text(e.wins || 0, cols[4], yy, {});
           text(e.podiums || 0, cols[5], yy, {});
           y += ROW;
