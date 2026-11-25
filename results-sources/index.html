@@ -538,6 +538,12 @@
         if (facts.children.length > 2) { facts.insertBefore(otherDd, facts.children[2]); facts.insertBefore(otherDt, otherDd); }
         else { facts.appendChild(otherDt); facts.appendChild(otherDd); }
         body.appendChild(facts);
+        // anyone on staff can have an AthleticLIVE meeting read again (a corrected result)
+        if (REFRESH && m.from === 'AthleticLIVE' && meetNumber(m)) {
+          var again = text('div', 'src-manage');
+          again.appendChild(refreshControl(m));
+          body.appendChild(again);
+        }
         // a club administrator can change an AthleticLIVE meeting's type, or take it off the list
         if (CAN_REMOVE && m.from === 'AthleticLIVE') {
           // one box, so it can be shaded and locked as a whole while a change is sent or collected
@@ -679,7 +685,9 @@
             $('add-status').textContent = 'Results are being collected. You can add a meeting when that’s done.';
             setTimeout(watchCollect, 15000);
           }
-          if (info.can_remove) { CAN_REMOVE = true; if (all.length) { render(); } }
+          if (info.can_remove) { CAN_REMOVE = true; }
+          if (info.refresh) { REFRESH = info.refresh; }
+          if ((CAN_REMOVE || REFRESH) && all.length) { render(); }
         }, function () { /* not staff after all: nothing to show */ });
 
         $('add-url').addEventListener('input', function () { checked = null; $('add-found').hidden = true; });
@@ -910,7 +918,8 @@
         // the list (Save keeps it open, for its links)
         var dismiss = null, leave = false;
         if ($('src-noplace').checked) {
-          dismiss = text('button', 'btn btn--sm', 'Save & dismiss');
+          // the same size as Save beside it (green: the one that also closes the meeting)
+          dismiss = text('button', 'btn', 'Save & dismiss');
           dismiss.type = 'submit';
           dismiss.disabled = go.disabled;
           dismiss.addEventListener('click', function () { leave = true; });
@@ -1039,6 +1048,126 @@
         form.appendChild(said);
         fill();
         return form;
+      }
+
+      /* Refreshing a meeting (POST /v1/sources/refresh) -----------------------
+         A collect keeps what it downloads from AthleticLIVE, so a result corrected
+         after the meeting isn't seen. Refreshing deletes this meeting's downloads and
+         collects again, fetching the whole meeting: a load on AthleticLIVE, so
+         coaches and the committee may refresh each meeting once a day, up to
+         REFRESH.limit meetings a day (the server enforces it), and admins are asked
+         to keep it for real corrections. Only AthleticLIVE meetings: the ones typed
+         in by hand are read from their file at every collect anyway. */
+      var REFRESH = null;     // {limit (null for an admin), mine: [meetings refreshed today], today, busy}
+
+      function meetNumber(m) {
+        var hit = /\/meets\/(\d+)/.exec(m.link || '');
+        return hit ? Number(hit[1]) : null;
+      }
+
+      // why this person can't refresh this meeting now, or ''
+      function refreshBlocked(meet) {
+        if (!REFRESH || REFRESH.limit === null) { return ''; }
+        if (REFRESH.mine.indexOf(meet) !== -1) {
+          return 'You refreshed this meeting today. You can refresh it again tomorrow.';
+        }
+        if (REFRESH.mine.length >= REFRESH.limit) {
+          return 'You have refreshed ' + REFRESH.limit + ' meetings today, the most for one day. ' +
+            'Try again tomorrow, or ask a club administrator.';
+        }
+        return '';
+      }
+
+      function helpTip(id, label, words) {
+        var tip = text('span', 'help-tip');
+        var b = text('button', 'help-tip__btn', '?');
+        b.type = 'button';
+        b.setAttribute('aria-label', label);
+        b.setAttribute('aria-expanded', 'false');
+        b.setAttribute('aria-controls', id);
+        var t = text('span', 'help-tip__text', words);
+        t.id = id;
+        t.setAttribute('role', 'tooltip');
+        // shown on hover and focus by the stylesheet; a tap or click keeps it open
+        b.addEventListener('click', function () {
+          var open = b.getAttribute('aria-expanded') !== 'true';
+          b.setAttribute('aria-expanded', open ? 'true' : 'false');
+          tip.classList.toggle('is-open', open);
+        });
+        b.addEventListener('blur', function () { b.setAttribute('aria-expanded', 'false'); tip.classList.remove('is-open'); });
+        tip.appendChild(b); tip.appendChild(t);
+        return tip;
+      }
+
+      function refreshControl(m) {
+        var meet = meetNumber(m);
+        var admin = REFRESH.limit === null;
+        var box = text('div', 'src-refresh');
+        var row = text('div', 'src-refresh__row');
+        var go = text('button', 'btn btn--ghost', 'Refresh results');
+        go.type = 'button';
+        row.appendChild(go);
+        row.appendChild(helpTip('src-refresh-tip-' + meet, 'About refreshing results',
+          'Reads this meeting’s results from AthleticLIVE again: use it when a result has been corrected there ' +
+          'since the meeting was collected. The whole meeting is downloaded again, which puts load on ' +
+          'AthleticLIVE, and every meeting’s results are collected again (5–10 minutes). ' +
+          (admin ? 'Administrators can refresh at any time, but please only when something has changed.'
+                 : 'You can refresh each meeting once a day, and up to ' + REFRESH.limit + ' meetings a day.')));
+        box.appendChild(row);
+
+        var ask = text('div', 'src-remove__ask');
+        ask.hidden = true;
+        var q = text('p', 'src-remove__q');
+        var yes = text('button', 'btn btn--accent btn--sm', 'Yes, refresh it');
+        var no = text('button', 'btn btn--ghost btn--sm', 'Not now');
+        yes.type = no.type = 'button';
+        ask.appendChild(q); ask.appendChild(yes); ask.appendChild(no);
+        box.appendChild(ask);
+        var said = text('p', 'src-remove__said lock-keep');
+        said.setAttribute('role', 'status');
+        box.appendChild(said);
+
+        var blocked = refreshBlocked(meet);
+        if (blocked) { go.disabled = true; said.textContent = blocked; }
+
+        go.addEventListener('click', function () {
+          var left = admin ? 0 : REFRESH.limit - REFRESH.mine.length;
+          if (admin) {
+            q.textContent = 'Refresh “' + m.name + '”? This downloads the whole meeting from AthleticLIVE again ' +
+              'and collects every meeting’s results again. Refreshing often adds load to AthleticLIVE, which every ' +
+              'club and meeting relies on, and could get the club’s downloads blocked, so only refresh when a ' +
+              'result has been corrected.' +
+              (REFRESH.today >= REFRESH.busy
+                ? ' There have already been ' + REFRESH.today + ' refreshes today: please check this one is needed.' : '');
+          } else {
+            q.textContent = 'Refresh “' + m.name + '”? This downloads the whole meeting from AthleticLIVE again ' +
+              'and collects every meeting’s results again, so only refresh when a result has been corrected. ' +
+              'You can’t refresh this meeting again until tomorrow, and you can refresh ' +
+              (left - 1 ? (left - 1) + ' more meeting' + (left - 1 === 1 ? '' : 's') : 'no more meetings') + ' today after this.';
+          }
+          q.classList.toggle('src-refresh__warn', admin && REFRESH.today >= REFRESH.busy);
+          row.hidden = true; ask.hidden = false; said.textContent = ''; yes.focus();
+        });
+        no.addEventListener('click', function () { ask.hidden = true; row.hidden = false; go.focus(); });
+        yes.addEventListener('click', function () {
+          lockMeeting(box, true);
+          said.textContent = 'Refreshing…';
+          NCAN.send('/sources/refresh', { meet: meet }).then(function (r) {
+            if (r.status !== 200) {
+              lockMeeting(box, false);
+              ask.hidden = true; row.hidden = false;
+              if (r.status === 429) { go.disabled = true; }
+              said.textContent = (r.body && r.body.error) || 'Sorry, that didn’t work.';
+              return;
+            }
+            REFRESH = r.body.refresh || REFRESH;
+            ask.hidden = true; row.hidden = false; go.disabled = true;
+            said.textContent = 'Refreshing: the results are being collected again. This page updates when that’s done.';
+            startCollecting();
+            setTimeout(watchCollect, 3000);
+          }, function (err) { lockMeeting(box, false); ask.hidden = true; row.hidden = false; said.textContent = err.message; });
+        });
+        return box;
       }
 
       // "Remove this meeting", asked and answered on the page itself (a browser's
