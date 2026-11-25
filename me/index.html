@@ -136,7 +136,9 @@
           </div>
         </div>
 
-        <!-- their own photo (assets/js/athlete-photo.js, the same editor as an athlete's) -->
+<!-- @partial:own-photo -->
+        <!-- their own photo (assets/js/athlete-photo.js, the same editor as an athlete's),
+             on My NCAN (/me/) and Club admin (/admin/): edit partials/own-photo.html, then python tools/sync-partials.py -->
         <div class="me-photo" id="me-photo" hidden>
           <h3 class="me-photo__head">Profile and header photo</h3>
           <!-- When team messaging is built, profile photos will be shown to others there:
@@ -209,6 +211,7 @@
           </div>
           <p class="access-status" id="photo-status" role="status"></p>
         </div>
+<!-- /@partial:own-photo -->
       </div>
     </section>
   </main>

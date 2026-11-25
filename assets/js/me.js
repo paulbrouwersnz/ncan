@@ -162,6 +162,24 @@
     return li;
   }
 
+  // Your account (on /me/, and on /admin/ for staff, admin.js): their round photo or
+  // initial in #me-avatar, and their own photo's editor (athlete-photo.js, started by
+  // the ncan:me event), which tells this circle when the photo changes
+  function account(win, who) {
+    var doc = win.document;
+    var box = doc.getElementById('me-avatar'), acct = doc.getElementById('me-account');
+    if (!box || !who) { return; }
+    var mine = emailInitial(who.email);
+    box.textContent = '';
+    box.appendChild(avatar(doc, mine));
+    doc.addEventListener('ncan:own-photo', function (e) {
+      box.textContent = '';
+      box.appendChild(avatar(doc, mine, e.detail));
+    });
+    if (acct) { acct.hidden = false; }
+    doc.dispatchEvent(new win.CustomEvent('ncan:me', { detail: who }));
+  }
+
   function start(win) {
     var doc = win.document;
     var N = win.NCAN;
@@ -169,13 +187,6 @@
     var status = $('me-status'), out = $('me-out'), signin = $('me-signin');
     var acct = $('me-account'), who_el = $('me-who'), empty = $('me-empty');
     if (!N || !out) { return; }
-    var mine = '?';
-    // their own photo: athlete-photo.js says when it's shown, changed or removed
-    doc.addEventListener('ncan:own-photo', function (e) {
-      var box = $('me-avatar');
-      box.textContent = '';
-      box.appendChild(avatar(doc, mine, e.detail));
-    });
 
     N.me().then(function (who) {
       status.hidden = true;
@@ -184,13 +195,8 @@
         return;
       }
       // who is signed in
-      acct.hidden = false;
-      var me = $('me-avatar');
-      me.textContent = '';
-      mine = emailInitial(who.email);
-      me.appendChild(avatar(doc, mine));
+      account(win, who);
       N.account(who_el, who);
-      doc.dispatchEvent(new win.CustomEvent('ncan:me', { detail: who }));   // their own photo
       if (N.atLeast(who, 'coach')) { $('me-staff').hidden = false; }
 
       var own = Array.isArray(who.own) ? who.own : [];
@@ -235,5 +241,5 @@
   }
 
   return { initials: initials, emailInitial: emailInitial, shareCounts: shareCounts, cards: cards,
-    sharesText: sharesText, start: start };
+    sharesText: sharesText, account: account, start: start };
 }));

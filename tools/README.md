@@ -151,7 +151,10 @@ Copies `partials/head.html`, `header.html` and `footer.html` into every page,
 between marker comments such as `<!-- @partial:header -->`. Edit the partial,
 never the copy in a page. Marks the current page's own nav link with
 `aria-current`. Links in the partials are written from the site root (`/#join`);
-in the home page they become plain anchors (`#join`).
+in the home page they become plain anchors (`#join`). `partials/own-photo.html`
+(a signed-in person's own profile and header photo editor) goes only into the
+pages that carry its `<!-- @partial:own-photo -->` markers: My NCAN (`/me/`) and
+Club admin (`/admin/`).
 
 ```bash
 python tools/sync-partials.py

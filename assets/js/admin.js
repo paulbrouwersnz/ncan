@@ -1341,7 +1341,12 @@
         : 'This page is for club administrators. Sign in with your email address.');
       return;
     }
-    if (tools && NCAN.atLeast(who, 'coach')) { startTools(who); return; }
+    if (tools && NCAN.atLeast(who, 'coach')) {
+      // their own profile and header photo, as on My NCAN (me.js)
+      if (window.NCANMe && $('me-account')) { window.NCANMe.account(window, who); }
+      startTools(who);
+      return;
+    }
     if (!NCAN.atLeast(who, 'admin')) {
       $('admin-status').textContent = tools ? 'This page is for club staff. ' : 'This page is for club administrators. ';
       var mine = el('a', null, 'Go to your own page');
