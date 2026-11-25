@@ -30,12 +30,19 @@
   from the current "Keep in view". Edit photo changes only what stays in view (a
   3 x 3 grid, anchor-grid.js, or a point clicked on the photo: Custom) and saves
   just that (POST .../photo/settings), with no new upload.
+
+  The same editor, with the same element ids, is the signed-in person's own photo
+  on My NCAN (/me/, #me-photo in "Your account"): behind that page's heading and
+  in the circle beside Your account, seen only by them (GET/POST /v1/me/photo).
+  me.js starts it (the ncan:me event) and redraws its circle on ncan:own-photo.
 */
 (function () {
   'use strict';
 
+  var section = document.getElementById('ath-photo') || document.getElementById('me-photo');
   var route = /^#\/([a-z0-9]+(?:-[a-z0-9]+)*)/.exec(location.hash);
-  if (!route || !document.getElementById('ath-photo')) { return; }
+  if (!section || (section.id === 'ath-photo' && !route)) { return; }
+  var own = section.id === 'me-photo';     // the signed-in person's own photo (/me/)
   var $ = function (x) { return document.getElementById(x); };
 
   var ASPECT = 2;            // width : height of the crop
@@ -51,6 +58,11 @@
 
   function say(words) { $('photo-status').textContent = words || ''; }
   function first() { return (who.name || 'the athlete').split(' ')[0]; }
+  function base() { return own ? '/me/photo' : '/athletes/' + who.slug + '/photo'; }
+  // /me/: the circle beside Your account follows the photo (me.js)
+  function tell(photo) {
+    if (own) { document.dispatchEvent(new CustomEvent('ncan:own-photo', { detail: photo })); }
+  }
 
   /* The photo in the heading ------------------------------------------------- */
 
@@ -58,6 +70,7 @@
     if (!who.photo || !who.photo.url) {
       if (shownUrl) { URL.revokeObjectURL(shownUrl); shownUrl = ''; }
       NCAN.pageHead.photo({ release: true });
+      tell(null);
       return Promise.resolve();
     }
     return fetch(who.photo.url, { credentials: 'include' })
@@ -67,6 +80,7 @@
         shownUrl = URL.createObjectURL(blob);
         NCAN.pageHead.photo({ photo: { src: shownUrl, webp: shownUrl }, focus: who.photo.focus });
         avatarShow($('photo-now-avatar'), shownUrl, who.photo.focus);   // beside Edit photo
+        tell({ url: shownUrl, focus: who.photo.focus });
       })
       .catch(function () { /* keep the band as it is */ });
   }
@@ -352,7 +366,7 @@
       if (window.FormLock) { FormLock.lock(box, false, 'button, input'); }
       said.classList.remove('is-busy');
     }
-    NCAN.send('/athletes/' + who.slug + '/photo/settings', { focus: edit.focus }).then(function (r) {
+    NCAN.send(base() + '/settings', { focus: edit.focus }).then(function (r) {
       done();
       if (r.status === 200 && r.body.photo) {
         who.photo = r.body.photo;
@@ -386,7 +400,7 @@
     say('Making the photo…');
     encode().then(function (blob) {
       say('Uploading (' + Math.round(blob.size / 1024) + ' KB)…');
-      return NCAN.sendFile('/athletes/' + who.slug + '/photo?confirm=1&focus=' + encodeURIComponent(focus()), blob);
+      return NCAN.sendFile(base() + '?confirm=1&focus=' + encodeURIComponent(focus()), blob);
     }).then(function (r) {
       if (r.status === 201 && r.body.photo) {
         who.photo = r.body.photo;
@@ -396,7 +410,7 @@
         $('photo-file').value = '';
         showOwn();
         render0();
-        say('Saved: ' + first() + '’s page shows this photo now.');
+        say(own ? 'Saved: your photo shows now.' : 'Saved: ' + first() + '’s page shows this photo now.');
       } else {
         btn.disabled = false;
         say((r.body && r.body.error) || 'Sorry, the photo couldn’t be saved.');
@@ -408,10 +422,10 @@
   }
 
   function remove() {
-    if (!window.confirm('Take the photo off ' + first() + '’s page?')) { return; }
+    if (!window.confirm(own ? 'Remove your photo?' : 'Take the photo off ' + first() + '’s page?')) { return; }
     var why = $('photo-why') ? $('photo-why').value.trim() : '';
     say('Removing…');
-    NCAN.send('/athletes/' + who.slug + '/photo/remove', why ? { why: why } : {}).then(function (r) {
+    NCAN.send(base() + '/remove', why ? { why: why } : {}).then(function (r) {
       if (r.status === 200 || r.status === 404) {
         who.photo = null;
         showOwn();
@@ -425,17 +439,18 @@
 
   // the section's state: what's shown now, and what this person can do
   function render0() {
-    var section = $('ath-photo');
     section.hidden = !(who.can_change_photo || (who.photo && who.can_remove_photo));
     if (section.hidden) { return; }
-    $('photo-now').textContent = who.photo
-      ? first() + '’s page shows a photo of their own.'
-      : 'No photo of ' + first() + '’s own yet' + (who.can_change_photo ? ': choose one below.' : '.');
+    $('photo-now').textContent = own
+      ? (who.photo ? 'Your photo is behind the heading at the top of this page, and beside Your account.'
+        : 'No photo yet: choose one below.')
+      : who.photo ? first() + '’s page shows a photo of their own.'
+        : 'No photo of ' + first() + '’s own yet' + (who.can_change_photo ? ': choose one below.' : '.');
     $('photo-choose').hidden = !who.can_change_photo;
     $('photo-file-label').textContent = who.photo ? 'Replace photo' : 'Choose a photo';
     $('photo-actions').hidden = !(who.photo && who.can_change_photo && window.NCANAnchor);
     $('photo-remove-row').hidden = !(who.photo && who.can_remove_photo);
-    $('photo-confirm-name').textContent = who.name || 'the athlete';
+    if ($('photo-confirm-name')) { $('photo-confirm-name').textContent = who.name || 'the athlete'; }
   }
 
   function start(detail) {
@@ -454,6 +469,13 @@
     setUpCropping();
   }
 
+  if (own) {
+    // signed in on /me/: always theirs to change (me.js sends who is signed in)
+    document.addEventListener('ncan:me', function (e) {
+      start({ photo: e.detail && e.detail.photo, can_change_photo: true, can_remove_photo: true });
+    });
+    return;
+  }
   if (window.NCAN && NCAN.athlete) { start(NCAN.athlete); }
   document.addEventListener('ncan:athlete', function (e) { start(e.detail); });
 }());

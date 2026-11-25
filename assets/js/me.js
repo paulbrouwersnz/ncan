@@ -9,8 +9,10 @@
   (GET /v1/me/shares), Shared links with a count badge, linking to
   where they are managed on /athletes/.
 
-  Below the cards: who is signed in, with a round initial, Sign out, and links
-  to privacy and contacting the club. Someone not signed in gets the sign-in
+  Below the cards: who is signed in, with their own photo in a circle (or a
+  round initial), Sign out, and links to privacy and contacting the club; then
+  "Profile and header photo", where they add or change that photo
+  (athlete-photo.js, GET/POST /v1/me/photo), also shown behind the heading. Someone not signed in gets the sign-in
   box, which brings them back here.
 
   The wording helpers are kept apart from the page so the Node tests can check
@@ -166,6 +168,13 @@
     var status = $('me-status'), out = $('me-out'), signin = $('me-signin');
     var acct = $('me-account'), who_el = $('me-who'), empty = $('me-empty');
     if (!N || !out) { return; }
+    var mine = '?';
+    // their own photo: athlete-photo.js says when it's shown, changed or removed
+    doc.addEventListener('ncan:own-photo', function (e) {
+      var box = $('me-avatar');
+      box.textContent = '';
+      box.appendChild(avatar(doc, mine, e.detail));
+    });
 
     N.me().then(function (who) {
       status.hidden = true;
@@ -177,8 +186,10 @@
       acct.hidden = false;
       var me = $('me-avatar');
       me.textContent = '';
-      me.appendChild(avatar(doc, emailInitial(who.email)));
+      mine = emailInitial(who.email);
+      me.appendChild(avatar(doc, mine));
       N.account(who_el, who);
+      doc.dispatchEvent(new win.CustomEvent('ncan:me', { detail: who }));   // their own photo
       if (N.atLeast(who, 'coach')) { $('me-staff').hidden = false; }
 
       var own = Array.isArray(who.own) ? who.own : [];
