@@ -93,7 +93,14 @@
     img.alt = '';
     img.decoding = 'async';
     img.style.objectPosition = photo.focus || '50% 50%';
-    img.addEventListener('load', function () { box.classList.add('avatar--photo'); });
+    img.addEventListener('load', function () {
+      // centred on the focus point, as the editor shows it (anchor-grid.js)
+      var A = doc.defaultView && doc.defaultView.NCANAnchor;
+      if (A && img.naturalWidth && img.naturalHeight) {
+        img.style.objectPosition = A.centred(photo.focus, img.naturalWidth / img.naturalHeight, 1);
+      }
+      box.classList.add('avatar--photo');
+    });
     img.addEventListener('error', function () { img.remove(); });
     img.src = photo.url;
     box.appendChild(img);

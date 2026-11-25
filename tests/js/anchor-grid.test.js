@@ -46,3 +46,18 @@ test('a focus is read as two percentages, or not at all', () => {
   assert.equal(A.parse('30%'), null);
   assert.equal(A.parse(7), null);
 });
+
+test('a round photo is centred on the focus point, as far as the photo reaches', () => {
+  // a 2:1 photo in a circle: the photo is twice as wide as the circle
+  assert.equal(A.centred('50% 50%', 2, 1), '50% 50%');
+  assert.equal(A.centred('70% 30%', 2, 1), '90% 50%');     // the point at 1.4 widths: 0.9 of the overflow
+  assert.equal(A.centred('62% 40%', 2, 1), '74% 50%');
+  assert.equal(A.centred('10% 50%', 2, 1), '0% 50%');      // the photo's edge stops it
+  assert.equal(A.centred('90% 50%', 2, 1), '100% 50%');
+  // a tall photo moves up and down instead
+  assert.equal(A.centred('50% 20%', 0.5, 1), '50% 0%');
+  assert.equal(A.centred('50% 60%', 0.5, 1), '50% 70%');
+  // no focus, or no size: as before
+  assert.equal(A.centred('', 2, 1), '50% 50%');
+  assert.equal(A.centred('70% 30%', 0, 1), '70% 30%');
+});
