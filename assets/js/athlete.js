@@ -1417,8 +1417,8 @@
   }
 
   /* The Photo card's photo: one picked on this device for this card, else the athlete's
-     header photo (fetched with the sign-in, as a local copy the canvas can read). With
-     no header photo, picking one is the only way to a Photo card. Nothing picked here
+     profile photo (fetched with the sign-in, as a local copy the canvas can read). With
+     no profile photo, picking one is the only way to a Photo card. Nothing picked here
      leaves the device unless a public link is made of the finished card. */
   var headerPhoto = { slug: null, url: null, focus: null, loading: null };
   function cardPhoto() {
@@ -1457,8 +1457,8 @@
     $('ath-card-use-header').hidden = !(card.picked && has);
     $('ath-card-pick-words').textContent = card.picked || has ? 'Use a different photo' : 'Choose a photo';
     $('ath-card-photo-said').textContent = card.picked ? 'Using the photo you chose. It stays on this device.'
-      : has ? (headerPhoto.url ? 'Using the header photo.' : 'Loading the header photo…')
-      : 'There’s no header photo yet: choose a photo for the card. It stays on this device.';
+      : has ? (headerPhoto.url ? 'Using the profile photo.' : 'Loading the profile photo…')
+      : 'There’s no profile photo yet: choose a photo for the card. It stays on this device.';
   }
   function cardPhotoSetUp() {
     if (card.picked) { URL.revokeObjectURL(card.picked.url); card.picked = null; }
