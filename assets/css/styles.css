@@ -4392,10 +4392,8 @@ html:has(.plan-editor:not([hidden])) { scroll-padding-bottom: 5rem; }
 .share-row__why label { flex-basis: 100%; font-size: .9rem; font-weight: 600; color: var(--heading); }
 .share-row__why input { flex: 1 1 14rem; min-width: 0; }
 /* Shared links (/my/shares/): one group per athlete, a filter, the line on an athlete page */
-.shares-pick { display: flex; align-items: center; gap: .6rem; margin: 0 0 1rem; }
+.shares-pick { max-width: 20rem; margin: 0 0 1.4rem; }
 .shares-pick[hidden] { display: none; }
-.shares-pick label { font-weight: 600; color: var(--heading); }
-.shares-pick select { max-width: 100%; min-width: 0; }
 .shares-group { margin: 0 0 2.2rem; }
 .shares-group__name { margin: 0 0 .2rem; font-size: 1.35rem; }
 .shares-group__name a { color: inherit; text-decoration: none; }
