@@ -114,3 +114,27 @@ test('the chart gets the room the title, key and footer leave, and they never ov
   assert.ok(I.layout('landscape', 2).chartH < I.layout('landscape', 1).chartH);
   assert.deepEqual(I.layout('nonsense', 0), I.layout('landscape', 0));
 });
+
+test('a note (the wind-adjusted caution) sits under the key and above the footer', () => {
+  for (const shape of ['landscape', 'portrait', 'square']) {
+    for (const rows of [0, 2]) {
+      for (const notes of [1, 3]) {
+        const L = I.layout(shape, rows, notes);
+        assert.ok(L.chartH >= 300, shape + ' ' + rows + ' rows, ' + notes + ' note lines: chart ' + L.chartH);
+        assert.ok(L.noteY >= L.keyY + rows * 26 - 26 + 13, 'note below the key');
+        assert.ok(L.noteY + (notes - 1) * 20 + 7 < L.footY, 'note above the footer');
+      }
+    }
+  }
+  assert.ok(I.layout('landscape', 1, 2).chartH < I.layout('landscape', 1).chartH);
+  assert.deepEqual(I.layout('portrait', 1, 0), I.layout('portrait', 1));
+});
+
+test('the note wraps by words to the width given', () => {
+  const w = (s) => s.length * 10;   // ten points a character
+  assert.deepEqual(I.wrap('one two three four', 90, w), ['one two', 'three', 'four']);
+  assert.deepEqual(I.wrap('  spaced   out  ', 500, w), ['spaced out']);
+  assert.deepEqual(I.wrap('', 100, w), []);
+  assert.deepEqual(I.wrap(undefined, 100, w), []);
+  assert.deepEqual(I.wrap('unbreakablewordhere', 50, w), ['unbreakablewordhere']);
+});
