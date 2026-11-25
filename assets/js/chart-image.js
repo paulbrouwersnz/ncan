@@ -6,7 +6,8 @@
 
   The image explains itself: a title strip (athlete, event, dates shown), the
   chart as shown (date range, Timeline or By season, hidden months, the
-  selected result, a lit key entry), the key for the marks it has, and a footer
+  selected result, a lit key entry, wind-adjusted estimates), the key for the
+  marks it has, the estimates' caution when they're shown, and a footer
   with the club's share image (the crest and name) and "ncan.nz". It's a
   photo-friendly shape the viewer picks beside Download: Auto (landscape 3:2
   on wide screens, portrait 4:5 on phones), Landscape, Portrait or Square 1:1,
@@ -104,14 +105,28 @@
   function pick(choice, width, height) {
     return SIZES.hasOwnProperty(choice) ? choice : shapeFor(width, height);
   }
-  var PAD = 28, TITLE = 76, KEY_ROW = 26, FOOT = 72;
-  // where everything goes in an image of this shape with this many key rows
-  function layout(shape, keyRows) {
+  var PAD = 28, TITLE = 76, KEY_ROW = 26, FOOT = 72, NOTE_ROW = 20;
+  // where everything goes in an image of this shape with this many key rows and
+  // note lines (the note sits under the key: the wind-adjusted estimates' caution)
+  function layout(shape, keyRows, noteRows) {
     var size = SIZES[shape] || SIZES.landscape;
     var key = keyRows ? keyRows * KEY_ROW + 14 : 0;
-    var chartH = size.h - TITLE - 12 - key - FOOT;
+    var note = noteRows ? noteRows * NOTE_ROW + 8 : 0;
+    var chartH = size.h - TITLE - 12 - key - note - FOOT;
+    var keyY = TITLE + chartH + 12 + 13;
     return { w: size.w, h: size.h, pad: PAD, chartX: PAD, chartY: TITLE, chartW: size.w - PAD * 2,
-             chartH: chartH, keyY: TITLE + chartH + 12 + 13, footY: size.h - FOOT };
+             chartH: chartH, keyY: keyY, noteY: keyY + (keyRows || 0) * KEY_ROW + (keyRows ? 4 : 0),
+             footY: size.h - FOOT };
+  }
+  // words broken into lines no wider than max, widthOf(text) measuring a line
+  function wrap(words, max, widthOf) {
+    var lines = [], line = '';
+    String(words || '').split(/\s+/).filter(Boolean).forEach(function (w) {
+      var next = line ? line + ' ' + w : w;
+      if (line && widthOf(next) > max) { lines.push(line); line = w; } else { line = next; }
+    });
+    if (line) { lines.push(line); }
+    return lines;
   }
 
   // the club's lockup in share.png (1200 x 630, white around it): the part with the crest and name
@@ -230,6 +245,7 @@
   /* opts: shape ('landscape', 'portrait' or 'square'); draw(w, h), which puts the chart's SVG at
      that size on the page (so it's styled) and returns it; done(), called after;
      title, the athlete; subtitle; key, a list of { swatch: element, words: text };
+     note, words under the key (optional, wrapped to the image's width);
      colours { bg, heading, text, soft }; dark; fonts { display, sans }; scale (default 2:
      pixels per point, so it's sharp on phones).
      Resolves with a canvas. */
@@ -239,7 +255,9 @@
     measure.font = '14px ' + font.sans;
     var widths = (opts.key || []).map(function (k) { return 24 + measure.measureText(k.words).width; });
     var rows = keyRows(widths, layout(opts.shape, 0).chartW, 22);
-    var L = layout(opts.shape, rows.length);
+    measure.font = '13px ' + font.sans;
+    var noteLines = wrap(opts.note, layout(opts.shape, 0).chartW, function (s) { return measure.measureText(s).width; });
+    var L = layout(opts.shape, rows.length, noteLines.length);
     var svgEl;
     try { svgEl = opts.draw(L.chartW, L.chartH); } catch (e) { if (opts.done) { opts.done(); } return Promise.reject(e); }
     var finish = function () { if (opts.done) { opts.done(); } };
@@ -271,6 +289,9 @@
           });
           y += KEY_ROW;
         });
+        // the note, in the quiet colour, under the key
+        c.fillStyle = col.soft; c.font = '13px ' + font.sans;
+        noteLines.forEach(function (line, i) { c.fillText(line, L.pad, L.noteY + i * NOTE_ROW); });
         // the footer: a hairline, the club's lockup, ncan.nz
         c.strokeStyle = col.soft; c.globalAlpha = 0.35; c.lineWidth = 1;
         c.beginPath(); c.moveTo(L.pad, L.footY + 0.5); c.lineTo(L.w - L.pad, L.footY + 0.5); c.stroke();
@@ -312,7 +333,7 @@
   }
 
   return { slug: slug, fileName: fileName, day: day, dateRange: dateRange, subtitle: subtitle,
-           keyRows: keyRows, shadow: shadow, shapeFor: shapeFor, pick: pick, layout: layout, SIZES: SIZES,
+           keyRows: keyRows, shadow: shadow, shapeFor: shapeFor, pick: pick, layout: layout, wrap: wrap, SIZES: SIZES,
            PROPS: PROPS, render: render, save: save,
            shownName: shownName, shareQuery: shareQuery, SHARE_MAX: SHARE_MAX, mb: mb };
 }));

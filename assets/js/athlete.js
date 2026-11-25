@@ -34,6 +34,10 @@
   try { SEASONS_ON = localStorage.getItem('ncan-athlete-seasons') !== '0'; } catch (e) { /* default */ }
   var BY_SEASON = false;     // the charts' view: Timeline (false) or By season; kept on the device
   try { BY_SEASON = localStorage.getItem('ncan-athlete-chart-view') === 'season'; } catch (e) { /* default */ }
+  // wind-adjusted estimates (assets/js/wind-adjust.js); the page still works without it
+  var WIND = window.NCANWind || null;
+  var WIND_ADJ = false;      // the charts' marks: As run (false) or Wind adjusted; kept on the device
+  try { WIND_ADJ = localStorage.getItem('ncan-athlete-wind-view') === 'adjusted'; } catch (e) { /* default */ }
   var HIDE_EMPTY = false;    // "Hide empty months": off by default; kept on the device
   try { HIDE_EMPTY = localStorage.getItem('ncan-athlete-hide-months') === '1'; } catch (e) { /* default */ }
   // the downloaded image's shape: what's picked beside Download, which starts as last time's pick
@@ -112,6 +116,16 @@
   }
   function qualified(r) { return typeof r.value === 'number' && /[qQ]$/.test((r.mark || '').trim()); }
   function windText(w) { return (w > 0 ? '+' : '') + w.toFixed(1); }
+  // A result's wind-adjusted estimate ({ value, rough }), or null: a guide only,
+  // never the mark. noEstimate: a reading on an event that has estimates, but
+  // beyond its limit.
+  function windEst(r) { return WIND && typeof r.value === 'number' ? WIND.estimate(r.event, r.value, r.wind) : null; }
+  function noEstimate(r) {
+    return !!WIND && typeof r.value === 'number' && typeof r.wind === 'number' && WIND.applies(r.event) && !windEst(r);
+  }
+  function estWords(r, e) {
+    return 'Wind adjusted ≈ ' + formatValue(e.value, r.field) + (e.rough ? ' (rough)' : '');
+  }
 
   // A result's age group: the grade the meeting recorded, or else the one worked
   // out from the member's birth year (U16-U20, Senior, Masters, or a grade).
@@ -487,14 +501,20 @@
     seasonsIn.sort();
     var canSwitch = !!SEASONS && seasonsIn.length > 1;
     var bySeason = canSwitch && BY_SEASON;
+    // Wind adjusted: each result with an estimate is drawn at it, a faint hollow
+    // dot left at the mark as run; one beyond the wind limit stays, dashed
+    var canAdjust = pts.some(function (p) { return !!windEst(p); });
+    var adjusted = canAdjust && WIND_ADJ;
+    var shown = function (p) { var e = adjusted && windEst(p); return e ? e.value : p.value; };
     // season bands and names: over 60 days only, as one season adds nothing
     var bands = !!SEASONS && SEASONS_ON && span > 60 && !bySeason;
     if (bands) { T = 34; }   // season names sit just above the chart area
     var card = text('figure', 'ath-chart' + (bySeason ? ' ath-chart--seasons' : ''));
     var cap = text('figcaption', 'ath-chart__title');
-    cap.appendChild(text('span', 'ath-chart__name', group.name));
+    cap.appendChild(text('span', 'ath-chart__name', group.name + (adjusted ? ', wind-adjusted estimate' : '')));
     var end = text('span', 'ath-chart__end');
     if (canSwitch) { end.appendChild(viewToggle(group, bySeason, opts.zoom)); }
+    if (canAdjust) { end.appendChild(windToggle(group, adjusted, opts.zoom)); }
     end.appendChild(text('span', 'ath-chart__dir', field ? '↑ further' : '↑ faster'));
     if (!opts.zoom && SEASONS) { end.appendChild(zoomButton(group)); }
     cap.appendChild(end);
@@ -519,8 +539,11 @@
       return card;
     }
 
-    var lo = Math.min.apply(null, pts.map(function (p) { return p.value; }));
-    var hi = Math.max.apply(null, pts.map(function (p) { return p.value; }));
+    // the scale holds the marks as run and, when shown, the estimates
+    var vals = pts.map(function (p) { return p.value; });
+    if (adjusted) { vals = vals.concat(pts.map(shown)); }
+    var lo = Math.min.apply(null, vals);
+    var hi = Math.max.apply(null, vals);
     // at least 3% of the mark either side, so marks a hundredth apart still get a readable scale
     var pad = Math.max((hi - lo) * 0.15, hi * 0.03);
     lo = Math.max(0, lo - pad); hi += pad;
@@ -678,7 +701,7 @@
     runs.forEach(function (r) {
       if (r.length > 1) {
         var line = { 'class': 'ath-line',
-          points: r.map(function (p) { return px(p) + ',' + y(p.value); }).join(' ') };
+          points: r.map(function (p) { return px(p) + ',' + y(shown(p)); }).join(' ') };
         if (bySeason) {
           var rse = seasonOf(r[0]);
           line['class'] += ' ath-line--season' + (rse === SEASONS.seasonOf(TODAY) ? ' ath-line--current' : '');
@@ -703,9 +726,13 @@
     pts.forEach(function (p, i) {
       var isPb = p === pbOf[pbKey(p)];
       var isSb = sbOf[pbKey(p) + '|' + p.season] === p;
-      var cls = 'ath-point' + (isPb ? ' ath-point--pb' : isNewPb(p) ? ' ath-point--newpb' : '') +
+      // Wind adjusted: a moved point is an estimate, never the PB itself; the
+      // PB's ring stays on its mark as run
+      var est = adjusted ? windEst(p) : null, none = adjusted && noEstimate(p);
+      var cls = 'ath-point' + (isPb && !est ? ' ath-point--pb' : isNewPb(p) && !est ? ' ath-point--newpb' : '') +
                 (p.club ? '' : ' ath-point--rep') +
-                (windy(p) ? (isPb ? ' ath-point--pb-wind' : ' ath-point--wind') : '');
+                (windy(p) && !est ? (isPb ? ' ath-point--pb-wind' : ' ath-point--wind') : '') +
+                (est ? ' ath-point--est' : '') + (none ? ' ath-point--noest' : '');
       var g = svg('a', { href: p.source, target: '_blank', rel: 'noopener', class: 'ath-point-link' });
       // which chart key entries this point belongs to, so the enlarged chart's key can light them up
       g.setAttribute('data-key', [isPb ? 'pb' : isNewPb(p) ? 'newpb' : '', isSb ? 'sb' : '', p.club ? '' : 'rep',
@@ -718,9 +745,17 @@
                   (groupOf(p) ? ', ' + groupOf(p) : '') +
                   (typeof p.wind === 'number' ? ', wind ' + (p.wind > 0 ? '+' : '') + p.wind.toFixed(1) : '') +
                   (p.unattached ? ', entered Unattached' : p.club ? '' : ', representing ' + p.team) + (isPb ? ', personal best' : isNewPb(p) ? ', a new personal best at the time' : '') +
-                  (p.season ? ', ' + p.season + ' season' : '') + (isSb ? ', season best' : '');
+                  (p.season ? ', ' + p.season + ' season' : '') + (isSb ? ', season best' : '') +
+                  (est && est.value !== p.value ? '. ' + estWords(p, est) + ', a guide, not an official mark' : '') +
+                  (none ? '. No wind-adjusted estimate: wind beyond the limit for this event' : '');
       g.setAttribute('aria-label', label);
-      var cx = px(p), cy = y(p.value);
+      var cx = px(p), cy = y(shown(p));
+      if (est && est.value !== p.value) {
+        // where it was run: a faint hollow dot, joined to the estimate
+        var ay = y(p.value);
+        g.appendChild(svg('line', { x1: cx, x2: cx, y1: ay, y2: cy, class: 'ath-shift' }));
+        g.appendChild(svg('circle', { cx: cx, cy: ay, r: isPb ? 8 : 4.5, class: 'ath-ghost' + (isPb ? ' ath-ghost--pb' : '') }));
+      }
       var shape = p.club
         ? svg('circle', { cx: cx, cy: cy, r: isPb ? 8 : 5.5, class: cls })
         : svg('rect', { x: cx - 6, y: cy - 6, width: 12, height: 12, transform: 'rotate(45 ' + cx + ' ' + cy + ')', class: cls });
@@ -760,6 +795,28 @@
     var unmeasured = group.results.length - pts.length;
     if (unmeasured > 0) { notes.push(unmeasured + ' result' + (unmeasured === 1 ? '' : 's') + ' without a counted mark not charted.'); }
     if (notes.length) { card.appendChild(text('p', 'ath-chart__note', notes.join(' '))); }
+    if (adjusted) {
+      // the event's limits, e.g. "Dashed: no estimate (wind beyond ±4 m/s)"
+      var lim = WIND.limits(pts[0].event);
+      var wn = text('p', 'ath-chart__note ath-chart__note--wind',
+        'Wind-adjusted estimates are a guide, not official marks. Hollow dots: as run. Dashed: no estimate (wind beyond ±' +
+        lim.limit + ' m/s).' + (lim.rough < lim.limit ? ' Rough over ±' + lim.rough + ' m/s.' : '') + ' ');
+      if (!opts.zoom) {
+        var hb = text('button', 'ath-chart__help', 'How they are worked out');
+        hb.type = 'button';
+        hb.addEventListener('click', function () {
+          var help = $('ath-wind-help');
+          if (!help) { return; }
+          help.hidden = false;
+          help.open = true;
+          help.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          var sum = help.querySelector('summary');
+          if (sum) { sum.focus({ preventScroll: true }); }
+        });
+        wn.appendChild(hb);
+      }
+      card.appendChild(wn);
+    }
     return card;
   }
 
@@ -777,6 +834,7 @@
   function renderCharts(groups) {
     var out = $('ath-charts');
     out.textContent = '';
+    if ($('ath-wind-help')) { $('ath-wind-help').hidden = true; }
     var all = [];
     groups.forEach(function (g) { all = all.concat(countable(g.results)); });
     if (!all.length) { out.appendChild(text('p', 'records-status', 'No measured marks to chart for these filters.')); return; }
@@ -796,6 +854,9 @@
     // Hide empty months: only months with no result for any event shown, so the charts still line up
     var hide = HIDE_EMPTY && SEASONS ? SEASONS.emptyMonths(all.map(function (r) { return r.date; })) : null;
     groups.forEach(function (g) { out.appendChild(chart(g, t0, t1, pbOf, { sbOf: sbOf, hide: hide })); });
+    // how wind-adjusted estimates are worked out: only when a chart has them
+    var help = $('ath-wind-help');
+    if (help) { help.hidden = !out.querySelector('.ath-view__btn[data-view="adjusted"]'); }
   }
 
   /* The enlarged chart ---------------------------------------------------
@@ -812,20 +873,35 @@
      applies to every chart on the page and the enlarged one, and is kept on the
      device. */
   function viewToggle(group, bySeason, inZoom) {
+    return chartSwitch(group, inZoom, 'Chart view', [['timeline', 'Timeline'], ['season', 'By season']],
+      bySeason ? 'season' : 'timeline', function (v) {
+        BY_SEASON = v === 'season';
+        try { localStorage.setItem('ncan-athlete-chart-view', v); } catch (e) { /* not kept */ }
+      });
+  }
+  /* As run / Wind adjusted, on each chart with at least one wind-adjusted
+     estimate: the same kind of switch, also for every chart and kept on the device. */
+  function windToggle(group, adjusted, inZoom) {
+    return chartSwitch(group, inZoom, 'Wind', [['asrun', 'As run'], ['adjusted', 'Wind adjusted']],
+      adjusted ? 'adjusted' : 'asrun', function (v) {
+        WIND_ADJ = v === 'adjusted';
+        try { localStorage.setItem('ncan-athlete-wind-view', v); } catch (e) { /* not kept */ }
+      });
+  }
+  // a pair of pressed-or-not buttons on a chart; pick(value) sets the choice, then every chart is redrawn
+  function chartSwitch(group, inZoom, name, options, on, pick) {
     var w = text('span', 'ath-view');
     w.setAttribute('role', 'group');
-    w.setAttribute('aria-label', 'Chart view for ' + group.name);
-    [['timeline', 'Timeline'], ['season', 'By season']].forEach(function (o) {
+    w.setAttribute('aria-label', name + ' for ' + group.name);
+    options.forEach(function (o) {
       var b = text('button', 'ath-view__btn', o[1]);
       b.type = 'button';
       b.dataset.view = o[0];
-      b.dataset.chart = SEASONS.slug(group.name);
-      b.setAttribute('aria-pressed', (o[0] === 'season') === bySeason ? 'true' : 'false');
+      b.dataset.chart = SEASONS ? SEASONS.slug(group.name) : group.name;
+      b.setAttribute('aria-pressed', o[0] === on ? 'true' : 'false');
       b.addEventListener('click', function () {
-        var next = o[0] === 'season';
-        if (next === BY_SEASON) { return; }
-        BY_SEASON = next;
-        try { localStorage.setItem('ncan-athlete-chart-view', next ? 'season' : 'timeline'); } catch (e) { /* not kept */ }
+        if (o[0] === on) { return; }
+        pick(o[0]);
         render();
         var dlg = $('ath-zoom');
         if (dlg && dlg.open && zoom.group) { zoomDraw(); }
@@ -1026,6 +1102,9 @@
       if (sw && !li.classList.contains('is-none')) { key.push({ swatch: sw, words: li.dataset.words || li.textContent.trim() }); }
     });
     var f = zoomFacts();
+    // with Wind adjusted on, the image says so and carries the chart's caution
+    var wn = zoom.card && zoom.card.querySelector('.ath-chart__note--wind');
+    var windNote = wn ? wn.textContent.trim() : '';
     // the chart drawn again at the size the image's shape leaves for it, out of sight on the
     // page so the stylesheet reaches it, with the same result selected and key entry lit
     var holder = null;
@@ -1060,8 +1139,9 @@
       done: done,
       dark: dark,
       title: title,
-      subtitle: IMG.subtitle(f.event, f.range, f.from, f.to),
+      subtitle: IMG.subtitle(f.event + (windNote ? ', wind-adjusted estimate' : ''), f.range, f.from, f.to),
       key: key,
+      note: windNote,
       colours: { bg: cs.backgroundColor, heading: css('.ath-zoom__title', 'color', cs.color),
                  text: cs.color, soft: css('.ath-zoom__prompt', 'color', cs.color) },
       fonts: { display: css('.ath-zoom__title', 'fontFamily', cs.fontFamily), sans: cs.fontFamily }
@@ -1872,6 +1952,8 @@
     add('Date', longDate(p.date) + (p.season ? ' (' + p.season + ' season)' : ''));
     add('Meeting', p.meeting);
     if (typeof p.wind === 'number') { add('Wind', windText(p.wind) + ' m/s'); }
+    var ze = windEst(p);
+    if (ze && ze.value !== p.value) { add('Wind adjusted', '≈ ' + formatValue(ze.value, p.field) + (ze.rough ? ' (rough)' : '') + ', a guide, not an official mark'); }
     if (isThrow(p)) { add('Weight', weightWords(p)); }
     add(p.grade ? 'Grade' : 'Age group', groupOf(p));
     if (p.place) { add('Place', ordinal(p.place) + (p.of ? ' of ' + p.of : '')); }
@@ -2211,6 +2293,8 @@
           var assisted = windy(r);
           var w = text('span', 'champs-tag ath-badge ath-wind' + (assisted ? ' ath-wind--assisted' : ''), windText(r.wind));
           w.title = assisted ? 'Wind-assisted: over +2.0 m/s, so not a legal mark' : 'Wind-legal';
+          var te = windEst(r);
+          if (te && te.value !== r.value) { w.title += '. ' + estWords(r, te) + ' (a guide)'; }
           td.appendChild(w);
         }
         tr.appendChild(td);
