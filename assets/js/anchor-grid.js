@@ -110,5 +110,24 @@
     return { set: set, get: function () { return current; } };
   }
 
-  return { POSITIONS: POSITIONS, keyOf: keyOf, focusOf: focusOf, parse: parse, build: build };
+  /* The position ("62% 50%") that puts a photo's focus point in the middle of a
+     box it covers (background-size: cover, or object-fit: cover), as near as the
+     photo's edges allow. A plain percentage lines the photo's 70% up with the
+     box's 70%, which is right for the wide heading but leaves a small round
+     profile photo off centre. aspect and box are width / height. */
+  function centred(focus, aspect, box) {
+    var p = parse(focus) || [50, 50];
+    if (!(aspect > 0)) { return p[0] + '% ' + p[1] + '%'; }
+    box = box > 0 ? box : 1;
+    function one(f, over) {   // over: the photo's size against the box's, along this side
+      if (over <= 1.0001) { return 50; }
+      var v = (f / 100 * over - 0.5) / (over - 1);
+      return Math.round(Math.max(0, Math.min(1, v)) * 1000) / 10;
+    }
+    return aspect >= box
+      ? one(p[0], aspect / box) + '% ' + 50 + '%'
+      : 50 + '% ' + one(p[1], box / aspect) + '%';
+  }
+
+  return { POSITIONS: POSITIONS, keyOf: keyOf, focusOf: focusOf, parse: parse, build: build, centred: centred };
 }));

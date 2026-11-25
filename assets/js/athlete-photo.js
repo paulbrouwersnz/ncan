@@ -66,6 +66,7 @@
         if (shownUrl) { URL.revokeObjectURL(shownUrl); }
         shownUrl = URL.createObjectURL(blob);
         NCAN.pageHead.photo({ photo: { src: shownUrl, webp: shownUrl }, focus: who.photo.focus });
+        avatarShow($('photo-now-avatar'), shownUrl, who.photo.focus);   // beside Edit photo
       })
       .catch(function () { /* keep the band as it is */ });
   }
@@ -288,11 +289,11 @@
 
   /* Edit photo: only what stays in view --------------------------------------- */
 
-  // the round profile photo (as on /me/): the photo, cropped round about its focus point
+  // the round profile photo (as on /me/): the photo, cropped round and centred on its focus point
   function avatarShow(box, url, focusValue) {
     if (!box) { return; }
     box.style.backgroundImage = 'url("' + url + '")';
-    box.style.backgroundPosition = focusValue || '50% 50%';
+    box.style.backgroundPosition = window.NCANAnchor ? NCANAnchor.centred(focusValue, ASPECT, 1) : focusValue || '50% 50%';
   }
 
   function editShow(focusValue) {
