@@ -469,7 +469,8 @@
   /* opts (all optional): W and H, the size; yTicks, about how many value labels;
      dateTicks, the span in days under which every result date is a tick; sbOf,
      each season's best (key|season -> result); zoom, drawn in the enlarged view
-     (no maximise button, points select rather than open); select(i), called
+     (no maximise button, points select rather than open); asRun, marks as run
+     even when Wind adjusted is on (the saved image); select(i), called
      with the point picked; hide, the calendar months (1-12) to take out of the date
      axis (Hide empty months), each run of them drawn as a narrow // break.
      The By season view (BY_SEASON, for an event with results in more than one
@@ -504,7 +505,7 @@
     // Wind adjusted: each result with an estimate is drawn at it, a faint hollow
     // dot left at the mark as run; one beyond the wind limit stays, dashed
     var canAdjust = pts.some(function (p) { return !!windEst(p); });
-    var adjusted = canAdjust && WIND_ADJ;
+    var adjusted = canAdjust && WIND_ADJ && !opts.asRun;   // saved and shared images are always as run
     var shown = function (p) { var e = adjusted && windEst(p); return e ? e.value : p.value; };
     // season bands and names: over 60 days only, as one season adds nothing
     var bands = !!SEASONS && SEASONS_ON && span > 60 && !bySeason;
@@ -1109,7 +1110,7 @@
       // off screen, not hidden: its styles are copied into the image, visibility included
       holder.style.cssText = 'position:absolute;left:-10000px;top:0;width:' + w + 'px;pointer-events:none';
       var card = chart({ name: zoom.group.name, results: d.rs }, d.t0, d.t1, CHART.pbOf,
-        { W: w, H: h, yTicks: h > 380 ? 8 : 6, dateTicks: 90, zoom: true, sbOf: CHART.sbOf, select: function () {}, hide: d.hide });
+        { W: w, H: h, yTicks: h > 380 ? 8 : 6, dateTicks: 90, zoom: true, asRun: true, sbOf: CHART.sbOf, select: function () {}, hide: d.hide });
       holder.appendChild(card);
       $('ath-zoom-chart').appendChild(holder);
       var links = card.ncanLinks || [];
