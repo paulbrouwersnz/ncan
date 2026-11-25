@@ -7,9 +7,12 @@
     who may share for them (the athlete's contacts from GameDay, and admins):
     GET /v1/athletes/<address>/shares. Anyone else gets 403 and sees nothing.
     A new share made on the page appears at once (the 'ncan:shared' event).
-  - /athletes/ (#my-shares): "Your shared charts", every share of the athletes
-    this person manages and any they made (GET /v1/me/shares); shown only when
-    there is at least one.
+    The athlete page shows only how many links there are, with Manage: making a
+    link stays there, but its list and Remove live on Shared links.
+  - /my/shares/ (#shares-page): Shared links, every share of the athletes this
+    person manages and any they made (GET /v1/me/shares), grouped by athlete,
+    newest first, with open, copy, download and remove. #/athlete/<address>
+    shows one athlete.
   - /admin/shared/ (#shares-admin): every share in the club, for admins
     (GET /v1/admin/shares), with Remove (a reason is required and logged; the
     makers see only "Removed by the club") and Pause sharing.
@@ -47,7 +50,16 @@
   // said what it was of is called one, as it was)
   var CARDS = { pb: 'PB card', newpb: 'PB card', sb: 'Season’s best card', result: 'Result card' };
   // "100m · Oct 2024 to Nov 2026 · By season"; a card: "100m · 21 Nov 2026 · PB card"
+  // "2025/26": the season (1 April to 31 March) a day is in, as the API names it
+  function seasonOf(d) {
+    var m = /^(\d{4})-(\d{2})/.exec(d || '');
+    if (!m) { return ''; }
+    var y = Number(m[1]) - (m[2] < '04' ? 1 : 0);
+    return y + '/' + String((y + 1) % 100).padStart(2, '0');
+  }
+
   function what(s) {
+    if (s.view === 'season-card') { return ['Season card', seasonOf(s.from) && seasonOf(s.from) + ' season'].filter(Boolean).join(' · '); }
     var out = [s.event || 'Chart'];
     if (s.from && s.to) {
       out.push(s.from === s.to ? day(s.from)
@@ -102,11 +114,61 @@
     var said = 'You\u2019ve shared ' + today.used + ' of ' + today.max + ' today. This athlete has ' +
       live.used + ' of ' + live.max + ' live shares.';
     if (today.full) { said += ' You can share again tomorrow.'; }
-    else if (live.full) { said += ' Remove one under Shared cards and charts to share another.'; }
+    else if (live.full) { said += ' Remove one on your Shared links page to share another.'; }
     return { badges: [today, live], said: said, full: today.full || live.full };
   }
 
-  var helpers = { day: day, month: month, what: what, made: made, removed: removed, pick: pick, usage: usage };
+  /* Shared links page ------------------------------------------------------- */
+
+  // the athlete a hash picks: "#/athlete/lily-smith" -> "lily-smith"
+  function hashAthlete(hash) {
+    var m = /^#\/athlete\/([a-z0-9][a-z0-9-]*)\/?$/i.exec(hash || '');
+    return m ? m[1].toLowerCase() : null;
+  }
+  function manageHref(address) {
+    return '/my/shares/' + (address ? '#/athlete/' + address : '');
+  }
+  function firstName(name) { return String(name || '').trim().split(/\s+/)[0] || 'This athlete'; }
+  function links(n) { return n === 1 ? '1 public link' : (n || 'no') + ' public links'; }
+  // the athlete page's one line: "Lily has 3 public links"
+  function summary(name, n) { return firstName(name) + ' has ' + links(n); }
+
+  /* The athletes on the page, each with their links, live ones first, newest
+     first: own is who the person manages ({name, slug}, by name), shares is
+     GET /v1/me/shares. An athlete with a link but not in own (a share this
+     person made as an administrator) comes after. */
+  function groups(own, shares) {
+    var out = [], by = {};
+    function add(name, address) {
+      var key = address || name;
+      if (!by[key]) { by[key] = { name: name, address: address || null, shares: [], live: 0 }; out.push(by[key]); }
+      return by[key];
+    }
+    (own || []).forEach(function (a) { if (a && a.name) { add(a.name, a.slug); } });
+    (shares || []).forEach(function (s) {
+      if (!s) { return; }
+      var g = by[s.address] || by[s.athlete] || add(s.athlete || 'Athlete', s.address);
+      g.shares.push(s);
+      if (!s.removed) { g.live++; }
+    });
+    out.forEach(function (g) {
+      g.shares.sort(function (a, b) {
+        if (!a.removed !== !b.removed) { return a.removed ? 1 : -1; }
+        return String(b.at || '').localeCompare(String(a.at || ''));
+      });
+    });
+    return out;
+  }
+
+  // "ncan-lily-smith-100m.png", for Download image
+  function fileName(s) {
+    var ext = /\.jpe?g(\?|$)/i.test(s.image || '') ? 'jpg' : 'png';
+    var bits = ['ncan', s.address || s.athlete, s.event || (s.view === 'season-card' ? 'season-card' : 'chart')];
+    return bits.filter(Boolean).join('-').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') + '.' + ext;
+  }
+
+  var helpers = { day: day, month: month, what: what, made: made, removed: removed, pick: pick, usage: usage,
+    hashAthlete: hashAthlete, manageHref: manageHref, summary: summary, groups: groups, fileName: fileName };
   if (typeof document === 'undefined') { return helpers; }
 
   /* The page ------------------------------------------------------------------ */
@@ -132,7 +194,28 @@
     }
   }
 
-  /* One share in a list. opts: {full (admin), athlete (show its name), remove(s, row, why)} */
+  // the share's image saved as a file; where the browser can't fetch it, opened instead
+  function download(s, button) {
+    var was = button.textContent;
+    button.disabled = true;
+    button.textContent = 'Downloading…';
+    var done = function () { button.disabled = false; button.textContent = was; };
+    fetch(s.image).then(function (r) {
+      if (!r.ok) { throw new Error(r.status); }
+      return r.blob();
+    }).then(function (blob) {
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = fileName(s);
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
+      done();
+    }).then(null, function () { done(); window.open(s.image, '_blank', 'noopener'); });
+  }
+
+  /* One share in a list. opts: {full (admin), athlete (show its name), download, remove(s, row, why)} */
   function row(s, opts) {
     var li = el('li', 'share-row' + (s.removed ? ' share-row--gone' : ''));
     if (s.image && s.url) {
@@ -181,8 +264,14 @@
       open.rel = 'noopener';
       var rm = el('button', 'btn btn--ghost btn--small', 'Remove');
       rm.type = 'button';
-      acts.appendChild(copy);
       acts.appendChild(open);
+      acts.appendChild(copy);
+      if (opts.download && s.image) {
+        var dl = el('button', 'btn btn--ghost btn--small', 'Download image');
+        dl.type = 'button';
+        dl.addEventListener('click', function () { download(s, dl); });
+        acts.appendChild(dl);
+      }
       acts.appendChild(rm);
       body.appendChild(acts);
       var said = el('p', 'access-status');
@@ -220,7 +309,8 @@
         });
       } else {
         rm.addEventListener('click', function () {
-          if (!window.confirm('Remove this shared ' + (/-card$/.test(s.view) ? 'card' : 'chart') + '? Its link stops working straight away, for everyone ' +
+          if (!window.confirm('Remove this public link to ' + (s.athlete ? s.athlete + '’s ' : 'this ') +
+                              (/-card$/.test(s.view) ? 'card' : 'chart') + '? The link stops working straight away, for everyone ' +
                               'it was sent to. This can’t be undone: sharing again makes a new link.')) { return; }
           rm.disabled = true;
           opts.remove(s, said, '').then(null, function () { rm.disabled = false; });
@@ -257,14 +347,18 @@
       });
   }
 
-  /* Athlete page --------------------------------------------------------------- */
+  /* Athlete page: how many links, and Manage ---------------------------------- */
 
   function startAthlete() {
     var section = $('ath-shares');
-    var slug = null;
+    var who = null;
+    function manage() {
+      var href = manageHref(who && who.slug);
+      document.querySelectorAll('[data-share-manage]').forEach(function (a) { a.href = href; });
+    }
     function load() {
-      if (!slug) { return Promise.resolve(); }
-      return NCAN.get('/athletes/' + encodeURIComponent(slug) + '/shares').then(function (r) {
+      if (!who || !who.slug) { return Promise.resolve(); }
+      return NCAN.get('/athletes/' + encodeURIComponent(who.slug) + '/shares').then(function (r) {
         section.hidden = false;
         var live = (r.shares || []).filter(function (s) { return !s.removed; }).length;
         // the usage badges (athlete.js draws them, beside Share too)
@@ -276,39 +370,94 @@
         var note = [];
         if (r.paused) { note.push('Sharing is paused by the club for now. Links already shared keep working.'); }
         if (limits.live && live >= limits.live) {
-          note.push('This athlete has ' + live + ' shared cards and charts, the most there can be: remove one to share another.');
+          note.push('This athlete has ' + live + ' public links, the most there can be: remove one to share another.');
         }
         $('ath-shares-note').textContent = note.join(' ');
-        list($('ath-shares-out'), r.shares || [], {
-          empty: 'Nothing shared yet. To share a chart, open it with the enlarge button and choose Share; ' +
-                 'to share a result or personal best as a card, use the share button beside it.',
-          remove: function (s, said, why) { return removeShare(s, said, why, load); }
-        });
+        $('ath-shares-count').textContent = summary(who.name, live);
       }, function () { section.hidden = true; });   // not theirs to share (or signed out): nothing shown
     }
     document.addEventListener('ncan:athlete', function (e) {
-      slug = e.detail && e.detail.slug;
+      who = e.detail || null;
+      manage();
       load();
     });
     document.addEventListener('ncan:shared', function () { load(); });
-    if (window.NCAN && NCAN.athlete) { slug = NCAN.athlete.slug; load(); }
+    if (window.NCAN && NCAN.athlete) { who = NCAN.athlete; manage(); load(); }
   }
 
-  /* /athletes/: Your shared charts --------------------------------------------- */
+  /* /my/shares/: Shared links -------------------------------------------------- */
 
-  function startMine() {
-    var section = $('my-shares');
-    function load() {
-      return NCAN.get('/me/shares').then(function (r) {
-        var shares = r.shares || [];
-        section.hidden = !shares.length;
-        list($('my-shares-out'), shares, {
-          athlete: true,
+  function startPage() {
+    var status = $('shares-page-status'), out = $('shares-page-out'), pickEl = $('shares-page-pick');
+    var sel = $('shares-page-athlete');
+    var own = [], shares = [];
+    var failed = 'Sorry, your shared links couldn’t be loaded. Please try again later.';
+    function draw() {
+      var all = groups(own, shares);
+      var want = hashAthlete(location.hash);
+      if (want && !all.some(function (g) { return g.address === want; })) { want = null; }
+      var picks = all.filter(function (g) { return g.address; });
+      pickEl.hidden = picks.length < 2;
+      sel.textContent = '';
+      sel.appendChild(new Option('All athletes', ''));
+      picks.forEach(function (g) { sel.appendChild(new Option(g.name, g.address)); });
+      sel.value = want || '';
+      out.textContent = '';
+      var shown = want ? all.filter(function (g) { return g.address === want; }) : all;
+      var any = shown.some(function (g) { return g.shares.length; });
+      $('shares-page-empty').hidden = any || !!want;
+      shown.forEach(function (g) {
+        if (!g.shares.length && !want) { return; }   // athletes with no links show only when picked
+        var box = el('section', 'shares-group');
+        var h = el('h2', 'shares-group__name');
+        if (g.address) {
+          var a = el('a', null, g.name);
+          a.href = '/athlete/#/' + g.address;
+          h.appendChild(a);
+        } else {
+          h.textContent = g.name;
+        }
+        box.appendChild(h);
+        box.appendChild(el('p', 'shares-group__count', summary(g.name, g.live)));
+        var holder = el('div');
+        box.appendChild(holder);
+        list(holder, g.shares, {
+          download: true,
+          empty: 'To make one, open ' + firstName(g.name) + '’s page and choose Share on a chart, ' +
+                 'or the share button beside a personal best or a season.',
           remove: function (s, said, why) { return removeShare(s, said, why, load); }
         });
-      }, function () { section.hidden = true; });
+        out.appendChild(box);
+      });
     }
-    NCAN.me().then(function (who) { if (who) { load(); } }, function () { /* the list stays hidden */ });
+    function load() {
+      return NCAN.get('/me/shares').then(function (r) {
+        shares = (r && r.shares) || [];
+        status.hidden = true;
+        draw();
+      }, function (e) {
+        status.hidden = false;
+        status.textContent = (e && e.status === 0 && e.message) || failed;
+      });
+    }
+    sel.addEventListener('change', function () {
+      var v = sel.value;
+      history.replaceState(null, '', v ? '#/athlete/' + v : location.pathname);
+      draw();
+    });
+    window.addEventListener('hashchange', draw);
+    NCAN.me().then(function (who) {
+      if (!who) {
+        status.hidden = true;
+        NCAN.signIn($('shares-page-signin'), null, null, 'Sign in to see your shared links');
+        return;
+      }
+      own = Array.isArray(who.own) ? who.own : [];
+      $('shares-page-body').hidden = false;
+      return load();
+    }, function (e) {
+      status.textContent = (e && e.status === 0 && e.message) || failed;
+    });
   }
 
   /* /admin/shared/ (started by admin.js once it knows this is an admin) ------ */
@@ -362,7 +511,7 @@
   }
 
   if ($('ath-shares')) { startAthlete(); }
-  if ($('my-shares')) { startMine(); }
+  if ($('shares-page')) { startPage(); }
   helpers.startAdmin = startAdmin;
   return helpers;
 }));
