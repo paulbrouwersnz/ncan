@@ -252,7 +252,7 @@
         <!-- /@tools:admin -->
       </div>
     </section>
-    <!-- who is signed in, and their own photo (me.js account(), athlete-photo.js) -->
+    <!-- who is signed in, with their round photo (me.js account()); their profile is on /my/profile/ -->
     <section class="section section--tint" id="me-account" aria-labelledby="me-account-heading" hidden>
       <div class="wrap">
         <div class="me-account">
@@ -260,89 +260,13 @@
           <div>
             <h2 id="me-account-heading" class="me-account__head">Your account</h2>
             <p class="me-account__links">
+              <a href="/my/profile/">Your profile</a>
               <a href="/me/">My athletes</a>
               <a href="/my/shares/">Shared links</a>
               <a href="/privacy/">How the club handles your information</a>
             </p>
           </div>
         </div>
-
-<!-- @partial:own-photo -->
-        <!-- their own photo (assets/js/athlete-photo.js, the same editor as an athlete's),
-             on My NCAN (/me/) and Club admin (/admin/): edit partials/own-photo.html, then python tools/sync-partials.py -->
-        <div class="me-photo" id="me-photo" hidden>
-          <h3 class="me-photo__head">Profile and header photo</h3>
-          <!-- When team messaging is built, profile photos will be shown to others there:
-               change "Only you see it" below, and ask the person's permission (opt-in) first. -->
-          <p class="mem-help">
-            A photo of you, behind the heading at the top of this page and in the circle beside Your
-            account. Only you see it. The photo is cropped and made smaller here, on your device, which
-            also leaves out where and when it was taken.
-          </p>
-          <p class="photo-now" id="photo-now"></p>
-          <div class="btn-row photo-actions" id="photo-actions" hidden>
-            <div class="photo-edit__avatar" id="photo-now-avatar" aria-hidden="true"></div>
-            <button type="button" class="btn btn--ghost" id="photo-edit-open">Edit photo</button>
-          </div>
-          <div class="photo-edit" id="photo-edit" hidden>
-            <p class="mem-help">
-              Choose which part of the photo stays in view as the heading gets narrower or wider, or click
-              the photo to pick a point yourself. The heading at the top of the page changes as you choose;
-              the narrow box shows a phone, and the circle your round photo, centred on the same point.
-            </p>
-            <div class="photo-edit__row">
-              <fieldset class="anchor-grid" id="photo-edit-anchor"><legend>Keep in view</legend></fieldset>
-              <div class="photo-edit__full" id="photo-edit-full" title="Click to pick the point to keep in view">
-                <img id="photo-edit-img" alt="Your photo now">
-                <span class="photo-edit__dot" id="photo-edit-dot" aria-hidden="true"></span>
-              </div>
-              <div class="photo-edit__phone" id="photo-edit-phone" aria-hidden="true"></div>
-              <div class="photo-edit__avatar" id="photo-edit-avatar" aria-hidden="true"></div>
-            </div>
-            <p class="photo-edit__status" id="photo-edit-status" role="status"></p>
-            <div class="btn-row">
-              <button type="button" class="btn btn--accent" id="photo-edit-save" disabled>Save</button>
-              <button type="button" class="btn btn--ghost" id="photo-edit-cancel">Cancel</button>
-            </div>
-          </div>
-          <div id="photo-choose">
-            <p class="records-field">
-              <label for="photo-file" id="photo-file-label">Choose a photo</label>
-              <input type="file" id="photo-file" accept="image/*">
-            </p>
-            <div class="photo-crop" id="photo-crop" hidden>
-              <p class="mem-help">
-                Drag the frame to choose the part to show, and zoom to make it smaller. Click the part to
-                keep in view on a phone, where less of the photo shows, and at the centre of your round
-                photo. The heading at the top of the page shows how it will look.
-              </p>
-              <div class="photo-crop__stage">
-                <canvas id="photo-canvas" tabindex="0" aria-label="The photo, with the part to show framed. Arrow keys move the frame."></canvas>
-              </div>
-              <p class="records-field photo-crop__zoom">
-                <label for="photo-zoom">Zoom</label>
-                <input type="range" id="photo-zoom" step="1" style="direction: rtl">
-              </p>
-              <div class="photo-edit__row">
-                <fieldset class="anchor-grid" id="photo-crop-anchor"><legend>Keep in view</legend></fieldset>
-                <div class="photo-edit__avatar" id="photo-crop-avatar" aria-hidden="true"></div>
-              </div>
-              <p class="records-field ath-check">
-                <input type="checkbox" id="photo-confirm">
-                <label for="photo-confirm">I have the right to use this photo.</label>
-              </p>
-              <div class="btn-row">
-                <button type="button" class="btn btn--accent" id="photo-save" disabled>Use this photo</button>
-                <button type="button" class="btn btn--ghost" id="photo-cancel">Cancel</button>
-              </div>
-            </div>
-          </div>
-          <div class="btn-row" id="photo-remove-row" hidden>
-            <button type="button" class="btn btn--ghost" id="photo-remove">Remove the photo</button>
-          </div>
-          <p class="access-status" id="photo-status" role="status"></p>
-        </div>
-<!-- /@partial:own-photo -->
       </div>
     </section>
   </main>
@@ -489,8 +413,6 @@
 
   <script src="/assets/js/ncan-account.js"></script>
   <script src="/assets/js/anchor-grid.js"></script>
-  <script src="/assets/js/form-lock.js"></script>
-  <script src="/assets/js/athlete-photo.js"></script>
   <script src="/assets/js/me.js"></script>
   <script src="/assets/js/admin.js"></script>
 

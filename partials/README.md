@@ -7,11 +7,6 @@ regions between these markers are overwritten:
     <!-- @partial:header -->  ...generated...  <!-- /@partial:header -->
     <!-- @partial:footer -->  ...generated...  <!-- /@partial:footer -->
 
-`own-photo.html` is a person's own profile and header photo editor, synced the
-same way but only into the pages that carry its markers (`/me/` and `/admin/`):
-
-    <!-- @partial:own-photo -->  ...generated...  <!-- /@partial:own-photo -->
-
 ## Workflow
 
 1. Edit `partials/header.html` or `partials/footer.html`.

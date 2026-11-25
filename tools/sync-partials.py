@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 """Sync the shared head, header and footer into every page.
 
-Edit partials/head.html, partials/header.html, partials/footer.html,
-partials/own-photo.html (a person's own photo, on /me/ and /admin/) or
+Edit partials/head.html, partials/header.html, partials/footer.html or
 partials/staff-tools.json (the staff tools cards), then run:
 
     python tools/sync-partials.py
@@ -35,9 +34,7 @@ import staff_tools  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # head first, so a page reads in the order it is written
-PARTIALS = ('head', 'header', 'footer', 'own-photo')
-# only on the pages that carry its markers (My NCAN, Club admin): no warning elsewhere
-OPTIONAL = ('own-photo',)
+PARTIALS = ('head', 'header', 'footer')
 STAFF_TOOLS = None  # partials/staff-tools.json, loaded in main()
 
 
@@ -112,8 +109,7 @@ def sync(page_path, page):
         close_tag = '<!-- /@partial:%s -->' % name
 
         if open_tag not in html or close_tag not in html:
-            if name not in OPTIONAL:
-                print('   ! %s: no %s markers, skipped' % (page, name))
+            print('   ! %s: no %s markers, skipped' % (page, name))
             continue
 
         start = html.index(open_tag) + len(open_tag)
