@@ -121,6 +121,47 @@
             </div>
           </div>
 
+        <!-- Your name, and the athletes linked to your email (assets/js/my-profile.js,
+             GET/POST /v1/me/profile in the API). A name never links anyone to an athlete. -->
+        <div class="profile-part" id="profile-name-box" hidden>
+          <h3 class="me-photo__head">Your name</h3>
+          <p class="mem-help">
+            The name you go by. It doesn’t link you to an athlete or let you see anyone’s page: only
+            the club does that, from its membership records.
+          </p>
+          <form class="profile-name" id="profile-name-form">
+            <p class="records-field">
+              <label for="profile-name">Name</label>
+              <input type="text" id="profile-name" maxlength="80" autocomplete="name">
+            </p>
+            <button type="submit" class="btn btn--accent">Save</button>
+          </form>
+          <p class="mem-help" id="profile-name-hint" hidden></p>
+          <p class="access-status" id="profile-name-status" role="status"></p>
+        </div>
+
+        <div class="profile-part" id="profile-athletes-box" hidden>
+          <h3 class="me-photo__head">Athletes linked to your email</h3>
+          <p class="mem-help">
+            The club links athletes to the emails in its membership records: the athlete’s own, and
+            their parents’ and whoever registered them. Say which one is you, if any. If you’re linked
+            to an athlete who isn’t your family (you registered them for someone else, say), you can
+            leave their family here.
+          </p>
+          <p class="mem-help" id="profile-staff-note" hidden>
+            As staff you see every athlete’s page anyway. Leaving a family only takes the athlete out
+            of My athletes and off the list of people who can see their page.
+          </p>
+          <div id="profile-ask"></div>
+          <ul class="profile-athletes" id="profile-athletes"></ul>
+          <p class="mem-help" id="profile-athletes-none" hidden>No athletes are linked to your email now.</p>
+          <div id="profile-left-box" hidden>
+            <h4 class="profile-left__head">Families you’ve left</h4>
+            <ul class="profile-athletes" id="profile-left"></ul>
+          </div>
+          <p class="access-status" id="profile-athletes-status" role="status"></p>
+        </div>
+
         <div class="me-photo" id="me-photo" hidden>
           <h3 class="me-photo__head">Profile and header photo</h3>
           <!-- When team messaging is built, profile photos will be shown to others there:
@@ -343,6 +384,7 @@
   <script src="/assets/js/form-lock.js"></script>
   <script src="/assets/js/athlete-photo.js"></script>
   <script src="/assets/js/me.js"></script>
+  <script src="/assets/js/my-profile.js"></script>
 
 </body>
 
