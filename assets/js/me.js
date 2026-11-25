@@ -1,11 +1,13 @@
 /*
   me.js - "My athletes" (/me/), where families land after signing in.
 
-  A card for each athlete this person is family for (GET /v1/auth/me, `own`):
-  a small round photo (their athlete page's photo, or their initials when it has
-  none), a link to their athlete page, their membership (coming soon), and,
-  when any of their cards or charts are shared publicly (GET /v1/me/shares),
-  how many, with a link to manage them on /athletes/.
+  A card for each athlete this person is family for (GET /v1/auth/me, `own`),
+  styled like the Club admin page's cards: a small round photo (their athlete
+  page's photo, GET /v1/athletes/<address>, centred on its focus point, or their
+  initials when it has none), Results and progression, Membership (coming
+  soon), and, when any of their cards or charts are shared publicly
+  (GET /v1/me/shares), Shared cards and charts with a count badge, linking to
+  where they are managed on /athletes/.
 
   Below the cards: who is signed in, with a round initial, Sign out, and links
   to privacy and contacting the club. Someone not signed in gets the sign-in
@@ -75,30 +77,56 @@
     return e;
   }
 
+  // photo: {url, focus} from the athlete's page (GET /v1/athletes/<address>), shown
+  // round and centred on the same focus point as the page's heading
   function avatar(doc, letters, photo) {
     var box = el(doc, 'span', 'avatar');
     box.setAttribute('aria-hidden', 'true');
-    var text = el(doc, 'span', 'avatar__text', letters);
-    box.appendChild(text);
-    if (photo) {
-      // the athlete page's own photo (only for someone who may see the page);
-      // none set, or it can't load: the initials stay
-      var img = el(doc, 'img', 'avatar__img');
-      img.alt = '';
-      img.loading = 'lazy';
-      img.decoding = 'async';
-      img.addEventListener('load', function () { box.classList.add('avatar--photo'); });
-      img.addEventListener('error', function () { img.remove(); });
-      img.src = photo;
-      box.appendChild(img);
-    }
+    box.appendChild(el(doc, 'span', 'avatar__text', letters));
+    if (photo) { setPhoto(doc, box, photo); }
     return box;
   }
 
-  function card(doc, api, c) {
+  function setPhoto(doc, box, photo) {
+    if (!photo || !photo.url) { return; }
+    var img = el(doc, 'img', 'avatar__img');
+    img.alt = '';
+    img.decoding = 'async';
+    img.style.objectPosition = photo.focus || '50% 50%';
+    img.addEventListener('load', function () { box.classList.add('avatar--photo'); });
+    img.addEventListener('error', function () { img.remove(); });
+    img.src = photo.url;
+    box.appendChild(img);
+  }
+
+  // one row of a card, as on the Club admin page: a title (a link, or plain when
+  // not there yet), a count badge, and a line saying what it is
+  function row(doc, title, href, about, count) {
+    var li = el(doc, 'li', 'me-card__row');
+    var h = el(doc, 'h4', 'me-card__title');
+    if (href) {
+      var a = el(doc, 'a', null, title);
+      a.href = href;
+      h.appendChild(a);
+    } else {
+      h.appendChild(el(doc, 'span', 'me-card__soon', title));
+    }
+    if (count) {
+      var badge = el(doc, 'span', 'admin-count', String(count));
+      badge.title = sharesText(count);
+      h.appendChild(doc.createTextNode(' '));
+      h.appendChild(badge);
+    }
+    li.appendChild(h);
+    li.appendChild(el(doc, 'p', null, about));
+    return li;
+  }
+
+  function card(doc, c) {
     var li = el(doc, 'li', 'me-card');
     var head = el(doc, 'div', 'me-card__head');
-    head.appendChild(avatar(doc, c.initials, c.slug ? api + '/athletes/' + encodeURIComponent(c.slug) + '/photo' : null));
+    var pic = avatar(doc, c.initials);
+    head.appendChild(pic);
     var h = el(doc, 'h3', 'me-card__name');
     if (c.href) {
       var a = el(doc, 'a', null, c.name);
@@ -111,23 +139,16 @@
     li.appendChild(head);
 
     var list = el(doc, 'ul', 'me-card__links');
-    function item(text, href, note) {
-      var row = el(doc, 'li');
-      if (href) {
-        var link = el(doc, 'a', null, text);
-        link.href = href;
-        row.appendChild(link);
-      } else {
-        row.appendChild(el(doc, 'span', 'me-card__soon', text));
-      }
-      if (note) { row.appendChild(el(doc, 'span', 'me-card__note', ' ' + note)); }
-      list.appendChild(row);
+    list.appendChild(c.href
+      ? row(doc, 'Results and progression', c.href, 'Every result, with charts of their progression and personal bests.')
+      : row(doc, 'No athlete page yet', null, 'It appears once they have a result or are registered with the club.'));
+    list.appendChild(row(doc, 'Membership', null, 'Their seasons and registrations with the club. Coming soon.'));
+    if (c.shares) {
+      list.appendChild(row(doc, 'Shared cards and charts', '/athletes/#my-shares',
+        'Cards and charts shared publicly: how often each was opened, and removing one.', c.shares));
     }
-    if (c.href) { item('Results and progression', c.href); }
-    else { item('No athlete page yet', null, '(it appears once they have a result or are registered)'); }
-    item('Membership', null, '(coming soon)');
-    if (c.shares) { item('Manage shared cards and charts', '/athletes/#my-shares', '(' + sharesText(c.shares) + ')'); }
     li.appendChild(list);
+    li.ncanAvatar = pic;
     return li;
   }
 
@@ -158,12 +179,35 @@
         empty.hidden = false;
         return;
       }
+      var drawn = [];
       var draw = function (shares) {
         out.textContent = '';
-        cards(own, shares).forEach(function (c) { out.appendChild(card(doc, N.api, c)); });
+        drawn = cards(own, shares).map(function (c) {
+          var li = card(doc, c);
+          out.appendChild(li);
+          return { c: c, li: li };
+        });
       };
       draw([]);
-      N.get('/me/shares').then(function (r) { draw(r && r.shares); }, function () { /* no counts */ });
+      // each athlete's photo and its focus point, from their page (a family has a few)
+      var photos = {};
+      var addPhotos = function () {
+        drawn.forEach(function (d) {
+          if (photos[d.c.slug]) { setPhoto(doc, d.li.ncanAvatar, photos[d.c.slug]); }
+        });
+      };
+      own.forEach(function (a) {
+        if (!a.slug) { return; }
+        N.get('/athletes/' + encodeURIComponent(a.slug)).then(function (page) {
+          if (page && page.photo && page.photo.url) {
+            photos[a.slug] = page.photo;
+            drawn.forEach(function (d) {
+              if (d.c.slug === a.slug) { setPhoto(doc, d.li.ncanAvatar, page.photo); }
+            });
+          }
+        }, function () { /* initials stay */ });
+      });
+      N.get('/me/shares').then(function (r) { draw(r && r.shares); addPhotos(); }, function () { /* no counts */ });
     }, function (err) {
       status.hidden = false;
       status.textContent = err.status === 0 ? err.message
