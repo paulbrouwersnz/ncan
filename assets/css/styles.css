@@ -256,7 +256,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 .btn--ghost { --btn-bg: transparent; --btn-fg: var(--heading); border-color: var(--line-strong); }
 .btn--ghost:hover { --btn-bg: var(--solid); --btn-fg: var(--white); border-color: var(--solid); }
 
-.btn--ghost-light { --btn-bg: transparent; --btn-fg: var(--white); border-color: rgba(255, 255, 255, .4); }
+.btn--ghost-light { --btn-bg: var(--green-800); --btn-fg: var(--white); border-color: rgba(255, 255, 255, .4); }
 .btn--ghost-light:hover { --btn-bg: var(--white); --btn-fg: var(--green-800); border-color: var(--white); }
 
 .btn--sm { padding: .6rem 1.1rem; font-size: .9rem; }
