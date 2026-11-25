@@ -42,6 +42,15 @@ test('each event has its own wind limit, inclusive', () => {
   assert.equal(W.estimate('Long Jump', 3.5, 4.1), null);
 });
 
+test('each event says its limits, for the chart note', () => {
+  assert.deepEqual(W.limits('60m'), { limit: 4, rough: 4 });
+  assert.deepEqual(W.limits('200m'), { limit: 4, rough: 4 });
+  assert.deepEqual(W.limits('80m Hurdles'), { limit: 2, rough: 2 });
+  assert.deepEqual(W.limits('Triple Jump'), { limit: 2, rough: 2 });
+  assert.deepEqual(W.limits('Long Jump'), { limit: 4, rough: 2 });
+  assert.equal(W.limits('400m'), null);
+});
+
 test('long jump over 2 m/s is marked rough; other estimates are not', () => {
   assert.deepEqual(W.estimate('Long Jump', 3.50, 4.0), { value: 3.38, rough: true });
   assert.equal(W.estimate('Long Jump', 3.50, 2.0).rough, false);

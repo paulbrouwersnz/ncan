@@ -796,8 +796,11 @@
     if (unmeasured > 0) { notes.push(unmeasured + ' result' + (unmeasured === 1 ? '' : 's') + ' without a counted mark not charted.'); }
     if (notes.length) { card.appendChild(text('p', 'ath-chart__note', notes.join(' '))); }
     if (adjusted) {
+      // the event's limits, e.g. "Dashed: no estimate (wind beyond ±4 m/s)"
+      var lim = WIND.limits(pts[0].event);
       var wn = text('p', 'ath-chart__note ath-chart__note--wind',
-        'Wind-adjusted estimates are a guide, not official marks. Hollow dots: as run. Dashed: no estimate (wind beyond the limit). ');
+        'Wind-adjusted estimates are a guide, not official marks. Hollow dots: as run. Dashed: no estimate (wind beyond ±' +
+        lim.limit + ' m/s).' + (lim.rough < lim.limit ? ' Rough over ±' + lim.rough + ' m/s.' : '') + ' ');
       if (!opts.zoom) {
         var hb = text('button', 'ath-chart__help', 'How they are worked out');
         hb.type = 'button';

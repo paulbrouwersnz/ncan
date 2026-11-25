@@ -61,6 +61,12 @@
   // does the event get estimates at all (whatever the wind)?
   function applies(event) { return !!rule(event); }
 
+  // the event's limits in m/s: { limit, rough } (rough = limit when nothing is rough), or null
+  function limits(event) {
+    var r = rule(event);
+    return r ? { limit: r.limit, rough: r.rough } : null;
+  }
+
   /* The estimate for a mark (seconds, or metres for a jump) in a wind (m/s):
      { value, rough } or null when there is none: another event, no mark, no
      reading, or a wind beyond the event's limit. */
@@ -73,5 +79,5 @@
     return { value: Math.round(r.est(mark, w) * 100) / 100, rough: Math.abs(w) > r.rough };
   }
 
-  return { estimate: estimate, applies: applies };
+  return { estimate: estimate, applies: applies, limits: limits };
 }));
