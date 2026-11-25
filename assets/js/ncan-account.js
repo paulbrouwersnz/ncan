@@ -29,7 +29,7 @@
     account(el, who)       -> fills el with "Signed in as ... Sign out".
     home(who)              -> where someone lands after signing in with nowhere
                               else to go: staff (coach and above) /admin/,
-                              family /athletes/.
+                              family /me/ (My athletes).
     safeNext(value)        -> value as a path on this website ("/athlete/#/x"),
                               or null if it points anywhere else (or back to
                               /sign-in/ itself).
@@ -141,9 +141,9 @@
     return note;
   }
 
-  var HOMES = { admin: '/admin/', committee: '/admin/', coach: '/admin/', family: '/athletes/' };
+  var HOMES = { admin: '/admin/', committee: '/admin/', coach: '/admin/', family: '/me/' };
   function home(who) {
-    return (who && HOMES[who.role]) || '/athletes/';
+    return (who && HOMES[who.role]) || '/me/';
   }
 
   // Only ever send people on to a page of this website: a path ("/athletes/",
@@ -284,16 +284,12 @@
     box.appendChild(document.createTextNode('Signed in as ' + who.email + (acting
       ? ' (club administrator), acting as ' + acting + '. '
       : (ROLES[who.role] ? ' (' + ROLES[who.role] + ')' : '') + '. ')));
-    // staff who are also family: their own athletes' pages, one step away
-    var own = atLeast(who, 'coach') && Array.isArray(who.own) ? who.own.filter(function (a) { return a.slug; }) : [];
-    if (own.length) {
-      box.appendChild(document.createTextNode(own.length > 1 ? 'Your athletes: ' : 'Your athlete: '));
-      own.forEach(function (a, i) {
-        if (i) { box.appendChild(document.createTextNode(', ')); }
-        var link = el('a', 'account-line__own', a.name);
-        link.href = '/athlete/#/' + a.slug;
-        box.appendChild(link);
-      });
+    // staff who are also family: their own athletes, one step away (My athletes)
+    var own = atLeast(who, 'coach') && Array.isArray(who.own) ? who.own : [];
+    if (own.length && !/^\/me\/?(index\.html)?$/.test(location.pathname)) {
+      var mine = el('a', 'account-line__own', own.length > 1 ? 'My athletes' : 'My athlete');
+      mine.href = '/me/';
+      box.appendChild(mine);
       box.appendChild(document.createTextNode(' · '));
     }
     if (who.role === 'admin' && !/\/admin\/?(index\.html)?$/.test(location.pathname)) {

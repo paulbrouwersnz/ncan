@@ -5,7 +5,7 @@
 
   The link always works as it is written: /sign-in/, which signs people in
   and then, or straight away when they already are, sends them on to their
-  own page (staff /admin/, family /athletes/). Pages that need signing in have their
+  own page (staff /admin/, family /me/, My athletes). Pages that need signing in have their
   own sign-in box, which brings people back to that page instead.
 
   Only the words change. Most visitors never sign in, so the club's API is

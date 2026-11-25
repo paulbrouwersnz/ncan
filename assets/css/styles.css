@@ -756,6 +756,54 @@ ul { margin: 0; padding: 0; list-style: none; }
 .card__link::after { content: ""; position: absolute; inset: 0; z-index: 1; }
 .card__link:hover { color: var(--accent); }
 
+/* /me/: a card for each of a family's athletes, with a round photo or initials */
+.avatar {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 3rem; height: 3rem;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--green-900);
+  color: #fff;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.05rem;
+  letter-spacing: .02em;
+}
+.avatar__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.avatar--photo .avatar__text { visibility: hidden; }
+.me-cards {
+  list-style: none; margin: 0; padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  gap: clamp(1rem, 2.5vw, 1.5rem);
+}
+.me-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.35rem 1.4rem;
+}
+.me-card__head { display: flex; align-items: center; gap: .85rem; margin-bottom: .9rem; }
+.me-card__name { margin: 0; font-size: 1.2rem; }
+.me-card__name a { color: inherit; }
+.me-card__links { list-style: none; margin: 0; padding: 0; display: grid; gap: .45rem; }
+.me-card__soon { color: var(--text-soft); }
+.me-card__note { color: var(--text-soft); font-size: .88rem; }
+.me-empty { max-width: 42rem; }
+.me-account { display: flex; align-items: flex-start; gap: 1rem; }
+.me-account__head { font-size: 1.15rem; margin: 0 0 .4rem; }
+.me-account p { margin: 0 0 .5rem; }
+.me-account__links { display: flex; flex-wrap: wrap; gap: .4rem 1.2rem; }
+.me-account__links a[hidden] { display: none; }
+/* the account line, on a light section here (it is white on the green page heads) */
+.me-account .account-line { margin: 0 0 .5rem; color: var(--text-soft); }
+.me-account .account-line__admin,
+.me-account .account-line__out { color: var(--link); }
+.me-account .account-line__out:hover { color: var(--accent); }
+
 /* /admin/: the tools, in groups; "Needs a look" shows how many are waiting */
 /* each group carries its lowest role (data-lowest); admin.js hides the groups
    the signed-in role does not reach, so space them by the visible ones only */

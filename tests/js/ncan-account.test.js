@@ -126,8 +126,8 @@ test('each role has its own page to land on', () => {
   assert.equal(N.home({ role: 'admin' }), '/admin/');
   assert.equal(N.home({ role: 'committee' }), '/admin/');
   assert.equal(N.home({ role: 'coach' }), '/admin/');
-  assert.equal(N.home({ role: 'family' }), '/athletes/');
-  assert.equal(N.home(null), '/athletes/');
+  assert.equal(N.home({ role: 'family' }), '/me/');
+  assert.equal(N.home(null), '/me/');
 });
 
 test('each role can do everything the roles below it can', () => {
@@ -166,8 +166,8 @@ test('staff who are also family see their own athletes in the account line', () 
   N.account(box, { email: 'pat@club.example', role: 'coach', athletes: 'all',
     own: [{ id: 1, name: 'Sam Brown', slug: 'sam-brown' }, { id: 2, name: 'Amy Brown', slug: 'amy-brown' }] });
   const links = box.children.filter((c) => c.className === 'account-line__own');
-  assert.deepEqual(links.map((a) => [a.textContent, a.href]),
-    [['Sam Brown', '/athlete/#/sam-brown'], ['Amy Brown', '/athlete/#/amy-brown']]);
+  // one link to My athletes (/me/), which has a card for each
+  assert.deepEqual(links.map((a) => [a.textContent, a.href]), [['My athletes', '/me/']]);
   // a family's own pages are their whole athletes list: nothing extra
   const fam = makeEl('p');
   N.account(fam, { email: 'p@home.example', role: 'family', athletes: [], own: [{ id: 1, name: 'Sam Brown', slug: 'sam-brown' }] });
