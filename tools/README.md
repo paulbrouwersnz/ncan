@@ -275,6 +275,7 @@ Each `tests/js/<name>.test.js` tests the helpers in `assets/js/<name>.js` (or
 | `calendar-edit.test.js` | the calendar editor: form to event and back, its checks, the words for dates and repeats |
 | `athlete-seasons.test.js` | seasons on the athlete charts (1 April to 31 March, winter and summer bands, "so far", season bests per weight), the By season view (each date's day in its season, 29 February included, and each season's colour), Hide empty months (only months with no result in any season, each run of them a break on the axis) and the enlarged chart's date ranges |
 | `pb-card.test.js` | Share cards (`assets/js/pb-card.js`): the headline for a new PB, PB, season best, podium place or result, with its caption and file name; the Photo card filling the card with its washes, the Event card's scene for each event (and its track colour), the crop keeping the focus point in view, zooming in and dragging the photo (stopping at its edges); the improvement wording (−0.32s, +18cm, +1.05m), the place only for 1st–3rd, first name only by default for children, the season count, the caption and file name, and the square and story layouts: the mark in gold, the ribbon only with an improvement, every word inside the card and nothing overlapping |
+| `wind-adjust.test.js` | wind-adjusted estimates (`assets/js/wind-adjust.js`): sprints by race distance (a 200m on the straight only), hurdles, long and triple jump, each event's wind limit, long jump marked rough over 2 m/s, and no estimate for other events, no mark or no reading |
 | `chart-image.test.js` | the enlarged chart saved as an image (Download, `assets/js/chart-image.js`): the file name (athlete and event, accents dropped), the dates line, the key wrapping into rows, reading a key swatch's ring from its CSS, the image shapes (Auto, landscape 3:2, portrait 4:5, square 1:1) and the layout leaving the chart room in each; for Share, the name on a shared image (full, or first name only) and the details sent with it |
 | `shared-charts.test.js` | the shared links lists (`assets/js/shared-charts.js`): what each share shows (event, dates, view; a season card by its season), who shared it ("you" or someone else for families, the email for admins), the removed wording ("Removed by the club" for families, with who and why for admins) and the admin page's Show and Find; the share usage badges (today and live against the limits, which is full) |
 
@@ -891,6 +892,18 @@ March axis, one coloured line per season. "Hide empty months" (off by default,
 with a ? tip) squashes out months with no result in any season, each run shown as
 a // break; page charts hide only months empty for every event shown, so they
 still line up. All three choices are remembered on the device.
+
+**Wind-adjusted estimates** (`assets/js/wind-adjust.js`): an As run / Wind
+adjusted switch, on each chart with at least one estimate, built like Timeline /
+By season (for every chart and the enlarged one, remembered on the device). In
+Wind adjusted, a result with an estimate is drawn at it, with a faint hollow dot
+where it was run; one beyond its event's wind limit stays, dashed; the PB's ring
+stays on the mark as run. The details panel and the results table's wind tag give
+the estimate too, and "How they are worked out" opens the note under the charts.
+Sprints (60m, 80m, 100m, 200m) use Mureika's air-resistance model to 4 m/s;
+hurdles and triple jump use Moinat (2018) to 2 m/s; long jump Moinat to 4 m/s,
+"rough" over 2. Estimates are a guide: PBs, records, "Wind-legal only", share
+cards and club champs always use the mark as run.
 
 The maximise button opens an **enlarged chart** (`#/<athlete>/chart/<event>`,
 so Back closes it): more labels, range chips (All, This season, Last season,

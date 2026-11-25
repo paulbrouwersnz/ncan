@@ -219,6 +219,28 @@
           </span>
         </p>
         <div class="ath-charts" id="ath-charts"></div>
+        <details class="ath-wind-help" id="ath-wind-help" hidden>
+          <summary>How wind-adjusted estimates are worked out</summary>
+          <p>
+            Wind changes sprint times and jump distances: a tailwind helps, a headwind slows.
+            A wind-adjusted estimate is an estimate of the mark with no wind.
+          </p>
+          <ul>
+            <li><strong>Sprints (60m to 200m):</strong> worked out from air resistance and the race
+              distance, for winds up to 4 m/s either way
+              (<a href="https://arxiv.org/abs/physics/0006057" target="_blank" rel="noopener">Mureika, 2000</a>).</li>
+            <li><strong>Hurdles and triple jump:</strong> from a study of 150,000 results, for winds up
+              to 2 m/s
+              (<a href="https://lida.sport-iat.de/ta/Record/4053716?lng=en" target="_blank" rel="noopener">Moinat, Fabius and Emanuel, 2018</a>).</li>
+            <li><strong>Long jump:</strong> from the same study, up to 2 m/s, and marked &ldquo;rough&rdquo;
+              up to 4 m/s, because measured gains in strong winds are smaller than the formulas predict
+              (<a href="https://ojs.ub.uni-konstanz.de/cpa/article/view/2720" target="_blank" rel="noopener">Murrie, 1996</a>).</li>
+          </ul>
+          <p>
+            Stronger winds get no estimate. Estimates are a guide only: personal bests, records
+            and results always use the mark as run.
+          </p>
+        </details>
       </div>
     </div>
 
@@ -1008,6 +1030,7 @@
   <script src="/assets/js/athlete-manage.js" defer></script>
   <script src="/assets/js/meeting-links.js"></script>
   <script src="/assets/js/athlete-seasons.js"></script>
+  <script src="/assets/js/wind-adjust.js"></script>
   <script src="/assets/js/chart-image.js"></script>
   <script src="/assets/js/pb-card.js"></script>
   <script src="/assets/js/season-card.js"></script>
