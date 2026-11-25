@@ -1432,6 +1432,11 @@ table.schedule.champs-table { min-width: 0; }
 .ath-zoom__download:focus-visible { outline: 2px solid var(--yellow-500); outline-offset: 2px; }
 .ath-zoom__download:disabled { cursor: progress; opacity: .7; }
 .ath-zoom__download[hidden] { display: none; }
+/* while the image is made, the spinner takes the icon's place instead of sitting beside it */
+.ath-zoom__download.is-busy { position: relative; }
+.ath-zoom__download.is-busy svg { visibility: hidden; }
+.ath-zoom__download.is-busy::before { position: absolute; top: 50%; left: 1rem;
+  width: 18px; height: 18px; margin: -9px 0 0; }
 /* the image's shape, beside Download */
 .ath-zoom__shape {
   min-height: 44px; padding: 0 .6rem; max-width: 9.5rem;
