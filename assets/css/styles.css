@@ -801,6 +801,10 @@ ul { margin: 0; padding: 0; list-style: none; }
 .me-account p { margin: 0 0 .5rem; }
 .me-account__links { display: flex; flex-wrap: wrap; gap: .4rem 1.2rem; }
 .me-account__links a[hidden] { display: none; }
+/* their own photo, under Your account (athlete-photo.js) */
+.me-photo { margin-top: 2rem; padding-top: 1.6rem; border-top: 1px solid var(--line); }
+.me-photo[hidden] { display: none; }
+.me-photo__head { font-size: 1.05rem; margin: 0 0 .4rem; }
 /* the account line, on a light section here (it is white on the green page heads) */
 .me-account .account-line { margin: 0 0 .5rem; color: var(--text-soft); }
 .me-account .account-line__admin,
