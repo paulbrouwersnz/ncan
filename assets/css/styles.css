@@ -805,6 +805,28 @@ ul { margin: 0; padding: 0; list-style: none; }
 .me-photo { margin-top: 2rem; padding-top: 1.6rem; border-top: 1px solid var(--line); }
 .me-photo[hidden] { display: none; }
 .me-photo__head { font-size: 1.05rem; margin: 0 0 .4rem; }
+/* Your profile: name, and the athletes linked to their email (my-profile.js) */
+.profile-part { margin-top: 2rem; padding-top: 1.6rem; border-top: 1px solid var(--line); }
+.profile-part[hidden] { display: none; }
+.profile-name { display: flex; flex-wrap: wrap; align-items: flex-end; gap: .6rem 1rem; margin-top: .8rem; }
+.profile-name .records-field { flex: 1 1 16rem; max-width: 24rem; }
+.profile-ask { margin: 1rem 0; padding: 1rem 1.2rem; border: 1px solid var(--line); border-left: 4px solid var(--accent);
+  border-radius: var(--radius-sm); background: var(--surface); max-width: 42rem; }
+.profile-ask__q { font-weight: 700; margin: 0 0 .3rem; }
+.profile-ask .btn-row { margin-top: .6rem; }
+.profile-athletes { list-style: none; margin: .8rem 0 0; padding: 0; max-width: 42rem; }
+.profile-athlete { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+  gap: .4rem 1rem; padding: .7rem 0; border-bottom: 1px solid var(--line); }
+.profile-athlete__name { margin: 0; font-weight: 600; }
+.profile-athlete__name a { color: var(--green-800); text-decoration: none; }
+.profile-athlete__name a:hover { color: var(--accent); }
+.profile-athlete__tag { display: inline-block; margin-left: .5rem; padding: .05rem .5rem; border-radius: 999px;
+  background: var(--green-800); color: #fff; font-size: .75rem; font-weight: 700; vertical-align: .1em; }
+.profile-athlete__actions { display: flex; flex-wrap: wrap; gap: .3rem 1rem; }
+.profile-athlete__btn { background: none; border: 0; padding: 0; color: var(--link); font: inherit; font-size: .95rem;
+  cursor: pointer; text-decoration: underline; text-underline-offset: .15em; }
+.profile-athlete__btn:hover { color: var(--accent); }
+.profile-left__head { font-size: .95rem; margin: 1.4rem 0 0; color: var(--text-soft); }
 /* the account line, on a light section here (it is white on the green page heads) */
 .me-account .account-line { margin: 0 0 .5rem; color: var(--text-soft); }
 .me-account .account-line__admin,
@@ -4297,6 +4319,13 @@ html:has(.plan-editor:not([hidden])) { scroll-padding-bottom: 5rem; }
 /* a small spinner before a status line while it's working */
 .is-busy::before { content: ""; display: inline-block; vertical-align: -.2em;
   width: 1em; height: 1em; margin-right: .5em; }
+/* Refresh results: a button with its "?" beside it, asked on the page, as Remove is */
+.src-refresh { margin: .9rem 0 .75rem; padding-top: .9rem; border-top: 1px solid var(--line); }
+.src-refresh__row { display: flex; align-items: center; gap: .6rem; }
+.src-refresh [hidden] { display: none; }   /* a .btn sets its own display */
+.src-refresh .help-tip__text { left: 0; transform: none; }   /* opens rightwards: never off the left edge */
+.src-refresh .src-remove__ask { margin-top: 0; }
+.src-refresh__warn { font-weight: 700; color: var(--heading); }
 .src-remove { margin: .2rem 0 1rem; }
 .src-remove__ask { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem .6rem; max-width: 40rem; }
 .src-remove [hidden] { display: none; }   /* a .btn sets its own display */

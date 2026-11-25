@@ -173,7 +173,7 @@
     var doc = win.document;
     var box = doc.getElementById('me-avatar'), acct = doc.getElementById('me-account');
     if (!box || !who) { return; }
-    var mine = emailInitial(who.email);
+    var mine = who.name ? initials(who.name) : emailInitial(who.email);
     var draw = function (photo) {
       box.textContent = '';
       box.appendChild(avatar(doc, mine, photo));
