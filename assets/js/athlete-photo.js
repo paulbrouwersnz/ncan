@@ -32,7 +32,7 @@
   just that (POST .../photo/settings), with no new upload.
 
   The same editor, with the same element ids, is the signed-in person's own photo
-  on My NCAN (/me/, #me-photo in "Your account"): behind that page's heading and
+  on Your profile (/my/profile/, #me-photo): behind the heading of their own pages and
   in the circle beside Your account, seen only by them (GET/POST /v1/me/photo).
   me.js starts it (the ncan:me event) and redraws its circle on ncan:own-photo.
 */

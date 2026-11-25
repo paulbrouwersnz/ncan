@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en-NZ">
+
+<head>
+<!-- @partial:head -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0B3B2E">
+<!-- the site has its own dark mode: the Dark Reader browser extension leaves it alone -->
+<meta name="darkreader-lock">
+
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://ncan.nz/assets/img/share.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="North Canterbury Athletic Club">
+<meta property="og:locale" content="en_NZ">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" href="/assets/img/logo.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="preload" href="/assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/archivo-variable.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/css/styles.css">
+<script src="/assets/js/page-photos.js" defer></script>
+<script src="/assets/js/account-link.js" defer></script>
+<!-- /@partial:head -->
+
+<link rel="canonical" href="https://ncan.nz/my/profile/">
+<!-- for people signed in: keep this page out of search engines -->
+<meta name="robots" content="noindex">
+
+<title>Your profile &mdash; North Canterbury Athletic Club</title>
+<meta name="description" content="Your profile at North Canterbury Athletic Club, once you sign in: your account and your photo.">
+<meta property="og:title" content="Your profile &mdash; North Canterbury Athletic Club">
+<meta property="og:description" content="Your account and your photo.">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<!-- @partial:header -->
+<!-- ================= Header ================= -->
+<header class="site-header" id="site-header">
+  <div class="wrap site-header__bar">
+    <a class="brand" href="/" aria-label="North Canterbury Athletic Club — home">
+      <img class="brand__logo" src="/assets/img/logo.svg" alt="" width="888" height="508">
+      <img class="brand__logo-dark" src="/assets/img/logo-dark.svg" alt="" width="888" height="508">
+      <span class="brand__name">
+        North Canterbury<br>Athletic Club
+      </span>
+    </a>
+
+    <button class="nav-toggle" type="button" id="nav-toggle" aria-expanded="false" aria-controls="primary-nav">
+      <span class="nav-toggle__bars" aria-hidden="true"><i></i></span>
+      Menu
+    </button>
+
+    <nav class="nav" id="primary-nav" aria-label="Primary">
+      <ul>
+        <li><a href="/#why">Why NCAN</a></li>
+        <li><a href="/#programmes">Programmes</a></li>
+        <li><a href="/#training">Training</a></li>
+        <li><a href="/calendar/">Calendar</a></li>
+        <li><a href="/gallery/">Gallery</a></li>
+        <li><a href="/#contact">Contact</a></li>
+        <li class="nav__account"><a href="/sign-in/" data-account-link>Sign in</a></li>
+        <li class="nav__cta"><a class="btn btn--accent" href="/#join">Join the club</a></li>
+      </ul>
+    </nav>
+
+    <div class="site-header__cta">
+      <a class="site-header__account" href="/sign-in/" data-account-link>Sign in</a>
+      <a class="btn btn--accent btn--sm" href="/#join">Join the club</a>
+    </div>
+  </div>
+</header>
+<!-- /@partial:header -->
+
+  <main id="main">
+    <span id="top"></span>
+
+    <!-- ================= Page head ================= -->
+    <section class="page-head" aria-labelledby="page-heading">
+      <div class="wrap">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="/">Home</a> <span aria-hidden="true">/</span> <a href="/me/">My NCAN</a> <span aria-hidden="true">/</span> <span>Your profile</span>
+        </nav>
+        <p class="eyebrow eyebrow--light">Signed in</p>
+        <h1 id="page-heading">Your profile</h1>
+        <p class="lede">
+          Your account and your photo, in one place for families, coaches, the committee and
+          administrators.
+        </p>
+      </div>
+    </section>
+
+    <!-- Your profile: who is signed in, and their own photo (assets/js/me.js startProfile(),
+         assets/js/athlete-photo.js, GET/POST /v1/me/photo in the API) -->
+    <section class="section" aria-labelledby="me-account-heading">
+      <div class="wrap">
+        <div id="profile-signin" hidden></div>
+        <p class="records-status" id="profile-status" role="status">Loading your profile&hellip;</p>
+
+        <div id="me-account" hidden>
+          <div class="me-account">
+            <span id="me-avatar"></span>
+            <div>
+              <h2 id="me-account-heading" class="me-account__head">Your account</h2>
+              <p id="me-who"></p>
+              <p class="me-account__links">
+                <a href="/me/">My athletes</a>
+                <a href="/admin/" id="me-staff" hidden>Club tools</a>
+                <a href="/my/shares/">Shared links</a>
+                <a href="/privacy/">How the club handles your information</a>
+                <a href="/#contact">Contact the club</a>
+              </p>
+            </div>
+          </div>
+
+        <div class="me-photo" id="me-photo" hidden>
+          <h3 class="me-photo__head">Profile and header photo</h3>
+          <!-- When team messaging is built, profile photos will be shown to others there:
+               change "Only you see it" below, and ask the person's permission (opt-in) first. -->
+          <p class="mem-help">
+            A photo of you, behind the heading of your own pages (this one, My NCAN, and Club admin
+            for staff) and in the circle beside your account. Only you see it. The photo is cropped and made smaller here, on your device, which
+            also leaves out where and when it was taken.
+          </p>
+          <p class="photo-now" id="photo-now"></p>
+          <div class="btn-row photo-actions" id="photo-actions" hidden>
+            <div class="photo-edit__avatar" id="photo-now-avatar" aria-hidden="true"></div>
+            <button type="button" class="btn btn--ghost" id="photo-edit-open">Edit photo</button>
+          </div>
+          <div class="photo-edit" id="photo-edit" hidden>
+            <p class="mem-help">
+              Choose which part of the photo stays in view as the heading gets narrower or wider, or click
+              the photo to pick a point yourself. The heading at the top of the page changes as you choose;
+              the narrow box shows a phone, and the circle your round photo, centred on the same point.
+            </p>
+            <div class="photo-edit__row">
+              <fieldset class="anchor-grid" id="photo-edit-anchor"><legend>Keep in view</legend></fieldset>
+              <div class="photo-edit__full" id="photo-edit-full" title="Click to pick the point to keep in view">
+                <img id="photo-edit-img" alt="Your photo now">
+                <span class="photo-edit__dot" id="photo-edit-dot" aria-hidden="true"></span>
+              </div>
+              <div class="photo-edit__phone" id="photo-edit-phone" aria-hidden="true"></div>
+              <div class="photo-edit__avatar" id="photo-edit-avatar" aria-hidden="true"></div>
+            </div>
+            <p class="photo-edit__status" id="photo-edit-status" role="status"></p>
+            <div class="btn-row">
+              <button type="button" class="btn btn--accent" id="photo-edit-save" disabled>Save</button>
+              <button type="button" class="btn btn--ghost" id="photo-edit-cancel">Cancel</button>
+            </div>
+          </div>
+          <div id="photo-choose">
+            <p class="records-field">
+              <label for="photo-file" id="photo-file-label">Choose a photo</label>
+              <input type="file" id="photo-file" accept="image/*">
+            </p>
+            <div class="photo-crop" id="photo-crop" hidden>
+              <p class="mem-help">
+                Drag the frame to choose the part to show, and zoom to make it smaller. Click the part to
+                keep in view on a phone, where less of the photo shows, and at the centre of your round
+                photo. The heading at the top of the page shows how it will look.
+              </p>
+              <div class="photo-crop__stage">
+                <canvas id="photo-canvas" tabindex="0" aria-label="The photo, with the part to show framed. Arrow keys move the frame."></canvas>
+              </div>
+              <p class="records-field photo-crop__zoom">
+                <label for="photo-zoom">Zoom</label>
+                <input type="range" id="photo-zoom" step="1" style="direction: rtl">
+              </p>
+              <div class="photo-edit__row">
+                <fieldset class="anchor-grid" id="photo-crop-anchor"><legend>Keep in view</legend></fieldset>
+                <div class="photo-edit__avatar" id="photo-crop-avatar" aria-hidden="true"></div>
+              </div>
+              <p class="records-field ath-check">
+                <input type="checkbox" id="photo-confirm">
+                <label for="photo-confirm">I have the right to use this photo.</label>
+              </p>
+              <div class="btn-row">
+                <button type="button" class="btn btn--accent" id="photo-save" disabled>Use this photo</button>
+                <button type="button" class="btn btn--ghost" id="photo-cancel">Cancel</button>
+              </div>
+            </div>
+          </div>
+          <div class="btn-row" id="photo-remove-row" hidden>
+            <button type="button" class="btn btn--ghost" id="photo-remove">Remove the photo</button>
+          </div>
+          <p class="access-status" id="photo-status" role="status"></p>
+        </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- @partial:footer -->
+<!-- ================= Footer ================= -->
+<footer class="site-footer" aria-labelledby="footer-heading">
+  <div class="wrap">
+    <h2 class="visually-hidden" id="footer-heading">Site footer</h2>
+
+    <div class="site-footer__grid">
+      <div>
+        <div class="footer-brand">
+          <img src="/assets/img/logo.svg" alt="" width="888" height="508">
+          <div>
+            <strong><a href="/">North Canterbury<br>Athletic Club</a></strong>
+            <span>Rangiora, New Zealand</span>
+          </div>
+        </div>
+        <p>A volunteer-run club affiliated with <a href="https://athletics.org.nz/">Athletics New Zealand</a> and <a href="https://athleticscanterbury.org.nz/">Athletics Canterbury</a>, welcoming athletes of every age and ability since 1978.</p>
+
+        <div class="socials">
+          <a href="https://www.facebook.com/NorthCanterburyAthleticClub" aria-label="North Canterbury Athletic Club on Facebook">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 22v-8h2.8l.4-3.2h-3.2V8.7c0-.9.3-1.5 1.6-1.5h1.7V4.1A22 22 0 0 0 14.4 4C12 4 10.3 5.5 10.3 8.3v2.5H7.6V14h2.7v8Z"/></svg>
+            <span>Club</span>
+          </a>
+          <a href="https://www.facebook.com/NorthCanterburyChildrensAthletics" aria-label="Children's Athletics on Facebook">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 22v-8h2.8l.4-3.2h-3.2V8.7c0-.9.3-1.5 1.6-1.5h1.7V4.1A22 22 0 0 0 14.4 4C12 4 10.3 5.5 10.3 8.3v2.5H7.6V14h2.7v8Z"/></svg>
+            <span>Children&rsquo;s</span>
+          </a>
+        </div>
+      </div>
+      <div>
+        <h3>Quick links</h3>
+        <ul>
+          <li><a href="/#programmes">Our programmes</a></li>
+          <li><a href="/#training">Training times</a></li>
+          <li><a href="/#join">Register &amp; fees</a></li>
+          <li><a href="/#news">News &amp; results</a></li>
+          <li><a href="/club-champs/">Children&rsquo;s Club Champs</a></li>
+          <li><a href="/gallery/">Photo gallery</a></li>
+          <li><a href="/#contact">Contact the club</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3>Get involved</h3>
+        <ul>
+          <li><a href="/#join">Become a member</a></li>
+          <li><a href="/calendar/">Club calendar</a></li>
+          <li><a href="/coaches-officials-volunteers/#volunteer">Volunteer roles</a></li>
+          <li><a href="/coaches-officials-volunteers/#coaching">Coaching development</a></li>
+          <li><a href="/coaches-officials-volunteers/#officials">Officials training</a></li>
+          <li><a href="/#sponsors">Sponsor the club</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3>Club information</h3>
+        <ul>
+          <li><a href="/committee/">Committee and documents</a></li>
+          <li><a href="/safeguarding/">Child safeguarding</a></li>
+          <li><a href="/privacy/">Privacy</a></li>
+          <li><a href="/records/">Children&rsquo;s records</a></li>
+          <li><a href="/history/">History</a></li>
+          <li><a href="https://codesport.co.nz/catalog/%20NorthCanterburyAthleticsClub%20-1107550.htmx">Uniform and apparel</a></li>
+          <li><a href="/resources/">Athletics resources</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="site-footer__base">
+      <p>&copy; 2026 <a href="/">North Canterbury Athletic Club Incorporated</a>. All rights reserved.</p>
+      <ul>
+        <li><a href="/">Back to top</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+<!-- /@partial:footer -->
+
+  <script>
+    (function () {
+      'use strict';
+
+      /* Mobile navigation ------------------------------------------------ */
+      var toggle = document.getElementById('nav-toggle');
+      var nav = document.getElementById('primary-nav');
+
+      function closeNav() {
+        nav.removeAttribute('data-open');
+        toggle.setAttribute('aria-expanded', 'false');
+      }
+
+      toggle.addEventListener('click', function () {
+        if (nav.getAttribute('data-open') === 'true') {
+          closeNav();
+        } else {
+          nav.setAttribute('data-open', 'true');
+          toggle.setAttribute('aria-expanded', 'true');
+        }
+      });
+
+      nav.addEventListener('click', function (event) {
+        if (event.target.closest('a')) { closeNav(); }
+      });
+
+      document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && nav.getAttribute('data-open') === 'true') {
+          closeNav();
+          toggle.focus();
+        }
+      });
+
+      /* Header shadow once scrolled ------------------------------------- */
+      var header = document.getElementById('site-header');
+      var onScroll = function () {
+        header.classList.toggle('is-stuck', window.scrollY > 8);
+      };
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+
+      /* Reveal on scroll ------------------------------------------------- */
+      var targets = document.querySelectorAll('[data-reveal]');
+
+      if (!('IntersectionObserver' in window) ||
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        Array.prototype.forEach.call(targets, function (el) { el.classList.add('is-visible'); });
+        return;
+      }
+
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { rootMargin: '0px 0px -8% 0px', threshold: 0.12 });
+
+      Array.prototype.forEach.call(targets, function (el) { observer.observe(el); });
+    }());
+  </script>
+
+  <script src="/assets/js/ncan-account.js"></script>
+  <script src="/assets/js/anchor-grid.js"></script>
+  <script src="/assets/js/form-lock.js"></script>
+  <script src="/assets/js/athlete-photo.js"></script>
+  <script src="/assets/js/me.js"></script>
+
+</body>
+
+</html>

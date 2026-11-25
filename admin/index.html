@@ -252,6 +252,23 @@
         <!-- /@tools:admin -->
       </div>
     </section>
+    <!-- who is signed in, with their round photo (me.js account()); their profile is on /my/profile/ -->
+    <section class="section section--tint" id="me-account" aria-labelledby="me-account-heading" hidden>
+      <div class="wrap">
+        <div class="me-account">
+          <span id="me-avatar"></span>
+          <div>
+            <h2 id="me-account-heading" class="me-account__head">Your account</h2>
+            <p class="me-account__links">
+              <a href="/my/profile/">Your profile</a>
+              <a href="/me/">My athletes</a>
+              <a href="/my/shares/">Shared links</a>
+              <a href="/privacy/">How the club handles your information</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 
   <!-- @partial:footer -->
@@ -395,6 +412,8 @@
   </script>
 
   <script src="/assets/js/ncan-account.js"></script>
+  <script src="/assets/js/anchor-grid.js"></script>
+  <script src="/assets/js/me.js"></script>
   <script src="/assets/js/admin.js"></script>
 
 </body>

@@ -10,10 +10,13 @@
   where they are managed on /athletes/.
 
   Below the cards: who is signed in, with their own photo in a circle (or a
-  round initial), Sign out, and links to privacy and contacting the club; then
-  "Profile and header photo", where they add or change that photo
-  (athlete-photo.js, GET/POST /v1/me/photo), also shown behind the heading. Someone not signed in gets the sign-in
-  box, which brings them back here.
+  round initial) and behind the heading, Sign out, and links to Your profile,
+  privacy and contacting the club. Someone not signed in gets the sign-in box,
+  which brings them back here.
+
+  Your profile (/my/profile/, startProfile) is where families and staff alike
+  change their own photo (athlete-photo.js, GET/POST /v1/me/photo); Club admin
+  shows the same Your account circle (admin.js calls account()).
 
   The wording helpers are kept apart from the page so the Node tests can check
   them (tests/js/me.test.js).
@@ -162,20 +165,69 @@
     return li;
   }
 
+  // Your account (on /me/, /my/profile/, and /admin/ for staff, admin.js): their round
+  // photo or initial in #me-avatar. On /my/profile/ the photo's editor (athlete-photo.js,
+  // started by the ncan:me event) shows the photo and tells this circle when it changes;
+  // elsewhere the photo is fetched here and shown behind the heading too.
+  function account(win, who) {
+    var doc = win.document;
+    var box = doc.getElementById('me-avatar'), acct = doc.getElementById('me-account');
+    if (!box || !who) { return; }
+    var mine = emailInitial(who.email);
+    var draw = function (photo) {
+      box.textContent = '';
+      box.appendChild(avatar(doc, mine, photo));
+    };
+    draw(null);
+    doc.addEventListener('ncan:own-photo', function (e) { draw(e.detail); });
+    if (acct) { acct.hidden = false; }
+    if (doc.getElementById('me-photo')) {
+      doc.dispatchEvent(new win.CustomEvent('ncan:me', { detail: who }));
+      return;
+    }
+    var photo = who.photo;
+    if (!photo || !photo.url || !win.fetch || !win.URL) { return; }
+    win.fetch(photo.url, { credentials: 'include' })
+      .then(function (r) { if (!r.ok) { throw new Error(r.status); } return r.blob(); })
+      .then(function (blob) {
+        var url = win.URL.createObjectURL(blob);
+        var N = win.NCAN;
+        if (N && N.pageHead) { N.pageHead.photo({ photo: { src: url, webp: url }, focus: photo.focus }); }
+        draw({ url: url, focus: photo.focus });
+      })
+      .catch(function () { /* the initial stays */ });
+  }
+
+  // /my/profile/: their account and their own photo's editor
+  function startProfile(win) {
+    var doc = win.document;
+    var N = win.NCAN;
+    var $ = function (id) { return doc.getElementById(id); };
+    var status = $('profile-status');
+    if (!N) { return; }
+    N.me().then(function (who) {
+      status.hidden = true;
+      if (!who) {
+        N.signIn($('profile-signin'), null, null, 'Sign in to change your profile');
+        return;
+      }
+      account(win, who);
+      N.account($('me-who'), who);
+      if (N.atLeast(who, 'coach')) { $('me-staff').hidden = false; }
+    }, function (err) {
+      status.textContent = err.status === 0 ? err.message
+        : 'Sorry, your profile couldn’t be loaded. Please try again later.';
+    });
+  }
+
   function start(win) {
     var doc = win.document;
     var N = win.NCAN;
     var $ = function (id) { return doc.getElementById(id); };
     var status = $('me-status'), out = $('me-out'), signin = $('me-signin');
-    var acct = $('me-account'), who_el = $('me-who'), empty = $('me-empty');
+    var who_el = $('me-who'), empty = $('me-empty');
+    if ($('profile-status')) { startProfile(win); return; }
     if (!N || !out) { return; }
-    var mine = '?';
-    // their own photo: athlete-photo.js says when it's shown, changed or removed
-    doc.addEventListener('ncan:own-photo', function (e) {
-      var box = $('me-avatar');
-      box.textContent = '';
-      box.appendChild(avatar(doc, mine, e.detail));
-    });
 
     N.me().then(function (who) {
       status.hidden = true;
@@ -184,13 +236,8 @@
         return;
       }
       // who is signed in
-      acct.hidden = false;
-      var me = $('me-avatar');
-      me.textContent = '';
-      mine = emailInitial(who.email);
-      me.appendChild(avatar(doc, mine));
+      account(win, who);
       N.account(who_el, who);
-      doc.dispatchEvent(new win.CustomEvent('ncan:me', { detail: who }));   // their own photo
       if (N.atLeast(who, 'coach')) { $('me-staff').hidden = false; }
 
       var own = Array.isArray(who.own) ? who.own : [];
@@ -235,5 +282,5 @@
   }
 
   return { initials: initials, emailInitial: emailInitial, shareCounts: shareCounts, cards: cards,
-    sharesText: sharesText, start: start };
+    sharesText: sharesText, account: account, start: start };
 }));
