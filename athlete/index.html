@@ -84,7 +84,7 @@
     <span id="top"></span>
 
     <!-- ================= Page head ================= -->
-    <section class="page-head page-head--athlete" aria-labelledby="page-heading">
+    <section class="page-head" aria-labelledby="page-heading">
       <div class="wrap">
         <nav class="breadcrumb" aria-label="Breadcrumb">
           <a href="/">Home</a> <span aria-hidden="true">/</span>
@@ -464,24 +464,19 @@
       </div>
     </section>
 
-    <!-- Shared charts: the charts shared publicly from this page, for the people who
-         may share for this athlete; the API answers nobody else (assets/js/shared-charts.js) -->
-    <section class="section" id="ath-shares" aria-labelledby="shares-heading" hidden>
+    <!-- Shared links: how many public links this athlete has, for the people who may
+         share for them, with Manage (the list and Remove are on /my/shares/); the API
+         answers nobody else (assets/js/shared-charts.js) -->
+    <section class="section section--slim" id="ath-shares" aria-labelledby="shares-heading" hidden>
       <div class="wrap">
-        <div class="section-head section-head--wide">
-          <p class="eyebrow">Shared publicly</p>
-          <h2 id="shares-heading">Shared cards and charts</h2>
-          <p class="lede">
-            Charts, result cards and personal best cards from this page that have been shared with a
-            public link, newest first, with how often each has been opened. Once shared, a card or chart
-            never changes: to show something different, share a new one and remove the old. Removing one
-            stops its link working straight away.
-          </p>
-        </div>
+        <h2 class="visually-hidden" id="shares-heading">Shared links</h2>
+        <p class="ath-shares-line">
+          <span id="ath-shares-count"></span>
+          <span aria-hidden="true">&middot;</span>
+          <a href="/my/shares/" data-share-manage>Manage<span class="visually-hidden"> shared links</span></a>
+        </p>
         <p class="share-usage" data-share-usage hidden></p>
-        <p class="mem-help share-yours">Posted one on social media? Those posts, and any copies people have saved, are yours to manage: removing a link here stops the link, not the posts.</p>
         <p class="mem-help" id="ath-shares-note"></p>
-        <div id="ath-shares-out"></div>
       </div>
     </section>
 
@@ -547,7 +542,7 @@
           <label for="ath-share-ok">I’m allowed to share this athlete’s results publicly.</label>
         </p>
         <p class="ath-share__note">A shared image never changes. To show something different, share a new chart.</p>
-        <p class="ath-share__note ath-share__yours">If you post it on social media, that post is yours to look after: the club can’t edit or remove it, and removing a public link here won’t take down copies already posted or saved.</p>
+        <p class="ath-share__note ath-share__yours">If you post it on social media, that post is yours to look after: the club can’t edit or remove it, and removing its public link won’t take down copies already posted or saved.</p>
         <p class="share-usage" data-share-usage hidden></p>
         <div class="ath-share__actions">
           <button type="button" class="btn btn--ghost btn--sm" data-share-close>Cancel</button>
@@ -562,6 +557,7 @@
         </div>
         <div class="ath-share__actions">
           <a class="ath-share__open" id="ath-share-open" target="_blank" rel="noopener">Open the share page</a>
+          <a class="ath-share__manage" href="/my/shares/" data-share-manage>Manage your shared links</a>
           <button type="button" class="btn btn--ghost btn--sm" id="ath-share-send" hidden>Share…</button>
           <button type="button" class="btn btn--accent btn--sm" data-share-close>Done</button>
         </div>
@@ -663,14 +659,14 @@
           <button type="button" class="btn btn--ghost btn--sm" data-card-close>Close</button>
           <button type="button" class="btn btn--accent btn--sm" id="ath-card-save" disabled>Download</button>
         </div>
-        <p class="ath-share__note ath-share__yours">If you post this card on social media, that post is yours to look after: the club can’t edit or remove it, and removing a public link here won’t take down copies already posted or saved.</p>
+        <p class="ath-share__note ath-share__yours">If you post this card on social media, that post is yours to look after: the club can’t edit or remove it, and removing its public link won’t take down copies already posted or saved.</p>
         <div class="ath-card__public" id="ath-card-public" hidden>
           <p class="ath-share__label">Or make a public link</p>
           <p class="ath-check ath-share__ok">
             <input type="checkbox" id="ath-card-ok">
             <label for="ath-card-ok">I’m allowed to share this athlete’s results publicly.</label>
           </p>
-          <p class="ath-share__note">Anyone with the link will see this card. It never changes, and you can remove it under Shared cards and charts.</p>
+          <p class="ath-share__note">Anyone with the link will see this card. It never changes, and you can remove it on your Shared links page.</p>
           <p class="share-usage" data-share-usage hidden></p>
           <div class="ath-share__actions">
             <button type="button" class="btn btn--ghost btn--sm" id="ath-card-go" disabled>Create public link</button>
@@ -685,6 +681,7 @@
         </div>
         <div class="ath-share__actions">
           <a class="ath-share__open" id="ath-card-open" target="_blank" rel="noopener">Open the share page</a>
+          <a class="ath-share__manage" href="/my/shares/" data-share-manage>Manage your shared links</a>
           <button type="button" class="btn btn--accent btn--sm" data-card-close>Done</button>
         </div>
       </div>
@@ -788,7 +785,7 @@
               <input type="checkbox" id="sc-ok">
               <label for="sc-ok">I’m allowed to share this athlete’s results publicly.</label>
             </p>
-            <p class="ath-share__note" id="sc-public-note">Anyone with the link will see this card as it is now, both sides. It never changes, and you can remove it under Shared cards and charts.</p>
+            <p class="ath-share__note" id="sc-public-note">Anyone with the link will see this card as it is now, both sides. It never changes, and you can remove it on your Shared links page.</p>
             <p class="share-usage" data-share-usage hidden></p>
             <div class="ath-share__actions">
               <button type="button" class="btn btn--ghost btn--sm" id="sc-go" disabled>Create public link</button>
@@ -802,6 +799,7 @@
             </div>
             <div class="ath-share__actions">
               <a class="ath-share__open" id="sc-open" target="_blank" rel="noopener">Open the share page</a>
+              <a class="ath-share__manage" href="/my/shares/" data-share-manage>Manage your shared links</a>
             </div>
           </div>
           <p class="ath-share__said" id="sc-said" aria-live="polite"></p>

@@ -1515,8 +1515,8 @@
     var can = !!(ui.hooks.share && ui.hooks.canShare && ui.hooks.canShare());
     el('sc-public').hidden = !can || !el('sc-done').hidden;
     el('sc-public-note').textContent = twoSided()
-      ? 'Anyone with the link will see this card as it is now, both sides, with the photo. It never changes, and you can remove it under Shared cards and charts.'
-      : 'Anyone with the link will see this card as it is now. It never changes, and you can remove it under Shared cards and charts.';
+      ? 'Anyone with the link will see this card as it is now, both sides, with the photo. It never changes, and you can remove it on your Shared links page.'
+      : 'Anyone with the link will see this card as it is now. It never changes, and you can remove it on your Shared links page.';
   }
   // the card changed: a link made already is of the card as it was
   function stale() {

@@ -24,7 +24,7 @@ import os
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SITE = 'https://ncan.nz'
 # folders at the root that hold the site's files, not pages
-NOT_PAGES = {'assets', 'partials', 'tools', 'actions', '.git', '.github', '.claude', 'node_modules'}
+NOT_PAGES = {'assets', 'partials', 'tools', 'tests', 'actions', '.git', '.github', '.claude', 'node_modules'}
 REDIRECT_MARK = '<meta name="ncan-redirect"'
 
 
@@ -38,9 +38,14 @@ def pages(root=ROOT):
         out.append(('index', '/', home))
     for name in sorted(os.listdir(root)):
         path = os.path.join(root, name, 'index.html')
-        if name not in NOT_PAGES and not name.startswith('.') and os.path.isfile(path) and not _redirect(path):
-            out.append((name, '/%s/' % name, path))
-            out += _subpages(root, name)
+        if name in NOT_PAGES or name.startswith('.'):
+            continue
+        if os.path.isfile(path):
+            if not _redirect(path):
+                out.append((name, '/%s/' % name, path))
+                out += _subpages(root, name)
+        elif os.path.isdir(os.path.join(root, name)):
+            out += _subpages(root, name)   # a folder of pages only: my/shares/
     return out
 
 

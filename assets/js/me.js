@@ -6,7 +6,7 @@
   page's photo, GET /v1/athletes/<address>, centred on its focus point, or their
   initials when it has none), Results and progression, Membership (coming
   soon), and, when any of their cards or charts are shared publicly
-  (GET /v1/me/shares), Shared cards and charts with a count badge, linking to
+  (GET /v1/me/shares), Shared links with a count badge, linking to
   where they are managed on /athletes/.
 
   Below the cards: who is signed in, with a round initial, Sign out, and links
@@ -144,8 +144,8 @@
       : row(doc, 'No athlete page yet', null, 'It appears once they have a result or are registered with the club.'));
     list.appendChild(row(doc, 'Membership', null, 'Their seasons and registrations with the club. Coming soon.'));
     if (c.shares) {
-      list.appendChild(row(doc, 'Shared cards and charts', '/athletes/#my-shares',
-        'Cards and charts shared publicly: how often each was opened, and removing one.', c.shares));
+      list.appendChild(row(doc, 'Shared links', c.slug ? '/my/shares/#/athlete/' + c.slug : '/my/shares/',
+        'Public links to their charts and cards: open, copy, download or remove them.', c.shares));
     }
     li.appendChild(list);
     li.ncanAvatar = pic;

@@ -45,6 +45,12 @@ test('what was shared: the event, the dates and the view', () => {
   assert.equal(S.what(share({ from: '2026-11-21', to: '2026-11-21', view: 'pb-card', kind: 'sb' })), '100m · 21 Nov 2026 · Season’s best card');
 });
 
+test('a season card is named by its season', () => {
+  assert.equal(S.what(share({ view: 'season-card', from: '2025-10-04', to: '2026-03-14' })), 'Season card · 2025/26 season');
+  assert.equal(S.what(share({ view: 'season-card', from: '2026-01-10', to: '2026-01-10' })), 'Season card · 2025/26 season');
+  assert.equal(S.what(share({ view: 'season-card', from: '2026-04-01', to: '2026-04-01' })), 'Season card · 2026/27 season');
+});
+
 test('no view counts are shown', () => {
   assert.equal(S.views, undefined);
 });
