@@ -755,10 +755,10 @@
       g.setAttribute('aria-label', label);
       var cx = px(p), cy = y(p.value);
       if (est) {
-        // the estimate: a stalk from the point, ending in a small square
+        // the estimate: a faint dotted stalk from the point, ending in a faint dotted circle
         var ey = y(est.value);
         g.appendChild(svg('line', { x1: cx, x2: cx, y1: cy, y2: ey, class: 'ath-shift' }));
-        g.appendChild(svg('rect', { x: cx - 4.5, y: ey - 4.5, width: 9, height: 9, rx: 1.5, class: 'ath-est' }));
+        g.appendChild(svg('circle', { cx: cx, cy: ey, r: 4.5, class: 'ath-est' }));
       }
       var shape = p.club
         ? svg('circle', { cx: cx, cy: cy, r: isPb ? 8 : 5.5, class: cls })
@@ -803,7 +803,7 @@
       // the event's limits, e.g. "Greyed out: no estimate (wind beyond ±4 m/s)"
       var lim = WIND.limits(pts[0].event);
       var wn = text('p', 'ath-chart__note ath-chart__note--wind',
-        'Wind-adjusted estimates are a guide, not official marks. The line joins the marks as run; squares on stalks: estimates. ' +
+        'Wind-adjusted estimates are a guide, not official marks. The line joins the marks as run; dotted circles on dotted stalks: estimates. ' +
         'Greyed out: no estimate (wind beyond ±' + lim.limit + ' m/s).' +
         (lim.rough < lim.limit ? ' Rough over ±' + lim.rough + ' m/s.' : '') + ' ');
       if (!opts.zoom) {

@@ -1379,14 +1379,14 @@ table.schedule.champs-table { min-width: 0; }
 .ath-badge--newpb { opacity: .8; }
 .ath-key__mark--pb-wind { box-shadow: none; outline: 2px dashed var(--heading); outline-offset: 0; border-color: var(--yellow-500); }
 /* Wind adjusted: the points and line stay on the marks as run; each estimate is a
-   small square at the end of a stalk from its point; a result beyond the wind
-   limit, with no estimate, is greyed out as if switched off */
-.ath-est { fill: var(--link); stroke: var(--surface); stroke-width: 1; }
-.ath-shift { stroke: var(--link); stroke-width: 1.5; opacity: .6; }
+   faint dotted circle at the end of a faint dotted stalk from its point; a result
+   beyond the wind limit, with no estimate, is greyed out as if switched off */
+.ath-est { fill: var(--surface); fill-opacity: .6; stroke: var(--link); stroke-width: 1.5; stroke-dasharray: 1.5 1.8; opacity: .7; }
+.ath-shift { stroke: var(--link); stroke-width: 1.5; stroke-dasharray: 1.5 3; stroke-linecap: round; opacity: .5; }
 .ath-point.ath-point--noest { fill: var(--chart-off); stroke: var(--chart-off-edge); stroke-width: 1.5; stroke-dasharray: none; }
 .ath-sb.ath-sb--noest { fill: var(--chart-off); opacity: .45; }
 .ath-key li[hidden] { display: none; }
-.ath-key__mark--est { width: .65rem; height: .65rem; border: 0; border-radius: 2px; box-shadow: none; }
+.ath-key__mark--est { background: var(--surface); border: 0; box-shadow: none; outline: 1.5px dashed var(--link); outline-offset: -1.5px; opacity: .75; }
 .ath-key__mark--noest { background: var(--chart-off); border-color: var(--surface); box-shadow: 0 0 0 1px var(--chart-off-edge); }
 .ath-chart__help {
   padding: 0; border: 0; background: none; cursor: pointer;

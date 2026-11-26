@@ -897,7 +897,7 @@ still line up. All three choices are remembered on the device.
 adjusted switch, on each chart with at least one estimate, built like Timeline /
 By season (for every chart and the enlarged one, remembered on the device). In
 Wind adjusted, the line and points stay on the marks as run; each estimate is a
-small square at the end of a stalk from its point, and a result beyond its event's
+faint dotted circle at the end of a faint dotted stalk from its point, and a result beyond its event's
 wind limit is greyed out (`--chart-off`). The key's "Wind-adjusted estimate" and
 "No estimate" entries show only then. The details panel gives the estimate, or
 says the wind exceeds the event's limit; the results table's wind tag gives the
