@@ -896,10 +896,12 @@ still line up. All three choices are remembered on the device.
 **Wind-adjusted estimates** (`assets/js/wind-adjust.js`): an As run / Wind
 adjusted switch, on each chart with at least one estimate, built like Timeline /
 By season (for every chart and the enlarged one, remembered on the device). In
-Wind adjusted, a result with an estimate is drawn at it, with a faint hollow dot
-where it was run; one beyond its event's wind limit stays, dashed; the PB's ring
-stays on the mark as run. The details panel and the results table's wind tag give
-the estimate too, and "How they are worked out" opens the note under the charts.
+Wind adjusted, the line and points stay on the marks as run; each estimate is a
+small square at the end of a stalk from its point, and a result beyond its event's
+wind limit is greyed out (`--chart-off`). The key's "Wind-adjusted estimate" and
+"No estimate" entries show only then. The details panel gives the estimate, or
+says the wind exceeds the event's limit; the results table's wind tag gives the
+estimate too, and "How they are worked out" opens the note under the charts.
 The chart's title becomes "100m, wind-adjusted estimate"; a downloaded or shared
 image of it says the same in its title line and carries the chart's caution
 under its key (`render`'s `note` in `assets/js/chart-image.js`).

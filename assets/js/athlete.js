@@ -501,8 +501,9 @@
     seasonsIn.sort();
     var canSwitch = !!SEASONS && seasonsIn.length > 1;
     var bySeason = canSwitch && BY_SEASON;
-    // Wind adjusted: each result with an estimate is drawn at it, a faint hollow
-    // dot left at the mark as run; one beyond the wind limit stays, dashed
+    // Wind adjusted: the line and points stay on the marks as run; each estimate
+    // sits at the end of a stalk from its point, and a result beyond the wind
+    // limit is greyed out, as it has none
     var canAdjust = pts.some(function (p) { return !!windEst(p); });
     var adjusted = canAdjust && WIND_ADJ;
     var shown = function (p) { var e = adjusted && windEst(p); return e ? e.value : p.value; };
@@ -701,7 +702,7 @@
     runs.forEach(function (r) {
       if (r.length > 1) {
         var line = { 'class': 'ath-line',
-          points: r.map(function (p) { return px(p) + ',' + y(shown(p)); }).join(' ') };
+          points: r.map(function (p) { return px(p) + ',' + y(p.value); }).join(' ') };
         if (bySeason) {
           var rse = seasonOf(r[0]);
           line['class'] += ' ath-line--season' + (rse === SEASONS.seasonOf(TODAY) ? ' ath-line--current' : '');
@@ -726,17 +727,19 @@
     pts.forEach(function (p, i) {
       var isPb = p === pbOf[pbKey(p)];
       var isSb = sbOf[pbKey(p) + '|' + p.season] === p;
-      // Wind adjusted: a moved point is an estimate, never the PB itself; the
-      // PB's ring stays on its mark as run
+      // Wind adjusted: the estimate on a stalk from the point (none when it equals
+      // the mark); a result with no estimate, as the wind was beyond the limit, greyed out
       var est = adjusted ? windEst(p) : null, none = adjusted && noEstimate(p);
-      var cls = 'ath-point' + (isPb && !est ? ' ath-point--pb' : isNewPb(p) && !est ? ' ath-point--newpb' : '') +
+      if (est && est.value === p.value) { est = null; }
+      var cls = 'ath-point' + (isPb ? ' ath-point--pb' : isNewPb(p) ? ' ath-point--newpb' : '') +
                 (p.club ? '' : ' ath-point--rep') +
-                (windy(p) && !est ? (isPb ? ' ath-point--pb-wind' : ' ath-point--wind') : '') +
-                (est ? ' ath-point--est' : '') + (none ? ' ath-point--noest' : '');
+                (windy(p) ? (isPb ? ' ath-point--pb-wind' : ' ath-point--wind') : '') +
+                (none ? ' ath-point--noest' : '');
       var g = svg('a', { href: p.source, target: '_blank', rel: 'noopener', class: 'ath-point-link' });
       // which chart key entries this point belongs to, so the enlarged chart's key can light them up
       g.setAttribute('data-key', [isPb ? 'pb' : isNewPb(p) ? 'newpb' : '', isSb ? 'sb' : '', p.club ? '' : 'rep',
-        windy(p) ? (isPb ? 'pbwind' : 'wind') : '', !isPb && !isNewPb(p) && p.club && !windy(p) ? 'result' : '']
+        windy(p) ? (isPb ? 'pbwind' : 'wind') : '', !isPb && !isNewPb(p) && p.club && !windy(p) ? 'result' : '',
+        est ? 'est' : '', none ? 'noest' : '']
         .filter(Boolean).join(' '));
       if (bySeason) { g.setAttribute('style', '--season: ' + SEASONS.seasonColour(seasonOf(p))); }
       var label = markSpoken(p) + (windy(p) ? ' (wind-assisted)' : '') + ', ' + longDate(p.date) + ', ' + p.meeting +
@@ -746,15 +749,16 @@
                   (typeof p.wind === 'number' ? ', wind ' + (p.wind > 0 ? '+' : '') + p.wind.toFixed(1) : '') +
                   (p.unattached ? ', entered Unattached' : p.club ? '' : ', representing ' + p.team) + (isPb ? ', personal best' : isNewPb(p) ? ', a new personal best at the time' : '') +
                   (p.season ? ', ' + p.season + ' season' : '') + (isSb ? ', season best' : '') +
-                  (est && est.value !== p.value ? '. ' + estWords(p, est) + ', a guide, not an official mark' : '') +
-                  (none ? '. No wind-adjusted estimate: wind beyond the limit for this event' : '');
+                  (est ? '. ' + estWords(p, est) + ', a guide, not an official mark' : '') +
+                  (none ? '. No wind-adjusted estimate: the wind is beyond the ±' + WIND.limits(p.event).limit +
+                          ' m/s limit for estimates' : '');
       g.setAttribute('aria-label', label);
-      var cx = px(p), cy = y(shown(p));
-      if (est && est.value !== p.value) {
-        // where it was run: a faint hollow dot, joined to the estimate
-        var ay = y(p.value);
-        g.appendChild(svg('line', { x1: cx, x2: cx, y1: ay, y2: cy, class: 'ath-shift' }));
-        g.appendChild(svg('circle', { cx: cx, cy: ay, r: isPb ? 8 : 4.5, class: 'ath-ghost' + (isPb ? ' ath-ghost--pb' : '') }));
+      var cx = px(p), cy = y(p.value);
+      if (est) {
+        // the estimate: a stalk from the point, ending in a small square
+        var ey = y(est.value);
+        g.appendChild(svg('line', { x1: cx, x2: cx, y1: cy, y2: ey, class: 'ath-shift' }));
+        g.appendChild(svg('rect', { x: cx - 4.5, y: ey - 4.5, width: 9, height: 9, rx: 1.5, class: 'ath-est' }));
       }
       var shape = p.club
         ? svg('circle', { cx: cx, cy: cy, r: isPb ? 8 : 5.5, class: cls })
@@ -762,7 +766,7 @@
       var title = svg('title'); title.textContent = label;
       shape.appendChild(title);
       // a season's best gets a light green surround behind the point, like the new PB's yellow one; it shows round PB and new PB markers too
-      if (isSb) { g.appendChild(svg('circle', { cx: cx, cy: cy, r: (isPb ? 8 : 5.5) + 4.5, class: 'ath-sb' })); }
+      if (isSb) { g.appendChild(svg('circle', { cx: cx, cy: cy, r: (isPb ? 8 : 5.5) + 4.5, class: 'ath-sb' + (none ? ' ath-sb--noest' : '') })); }
       g.appendChild(shape);
       links.push(g);
       if (opts.select) {
@@ -796,11 +800,12 @@
     if (unmeasured > 0) { notes.push(unmeasured + ' result' + (unmeasured === 1 ? '' : 's') + ' without a counted mark not charted.'); }
     if (notes.length) { card.appendChild(text('p', 'ath-chart__note', notes.join(' '))); }
     if (adjusted) {
-      // the event's limits, e.g. "Dashed: no estimate (wind beyond ±4 m/s)"
+      // the event's limits, e.g. "Greyed out: no estimate (wind beyond ±4 m/s)"
       var lim = WIND.limits(pts[0].event);
       var wn = text('p', 'ath-chart__note ath-chart__note--wind',
-        'Wind-adjusted estimates are a guide, not official marks. Hollow dots: as run. Dashed: no estimate (wind beyond ±' +
-        lim.limit + ' m/s).' + (lim.rough < lim.limit ? ' Rough over ±' + lim.rough + ' m/s.' : '') + ' ');
+        'Wind-adjusted estimates are a guide, not official marks. The line joins the marks as run; squares on stalks: estimates. ' +
+        'Greyed out: no estimate (wind beyond ±' + lim.limit + ' m/s).' +
+        (lim.rough < lim.limit ? ' Rough over ±' + lim.rough + ' m/s.' : '') + ' ');
       if (!opts.zoom) {
         var hb = text('button', 'ath-chart__help', 'How they are worked out');
         hb.type = 'button';
@@ -856,7 +861,16 @@
     groups.forEach(function (g) { out.appendChild(chart(g, t0, t1, pbOf, { sbOf: sbOf, hide: hide })); });
     // how wind-adjusted estimates are worked out: only when a chart has them
     var help = $('ath-wind-help');
-    if (help) { help.hidden = !out.querySelector('.ath-view__btn[data-view="adjusted"]'); }
+    var canAdj = !!out.querySelector('.ath-view__btn[data-view="adjusted"]');
+    if (help) { help.hidden = !canAdj; }
+    windKey(document.querySelector('main .ath-key'), canAdj && WIND_ADJ);
+  }
+  // the key's Wind adjusted entries (estimate, no estimate): only while estimates are shown
+  function windKey(key, on) {
+    if (!key) { return; }
+    Array.prototype.forEach.call(key.querySelectorAll('li[data-key="est"], li[data-key="noest"]'), function (li) {
+      li.hidden = !on;
+    });
   }
 
   /* The enlarged chart ---------------------------------------------------
@@ -1028,6 +1042,7 @@
   }
   function keyCounts() {
     var links = zoom.card ? zoom.card.ncanLinks : [];
+    windKey(document.querySelector('#ath-zoom .ath-key'), !!(zoom.card && zoom.card.querySelector('.ath-chart__note--wind')));
     Array.prototype.forEach.call(document.querySelectorAll('#ath-zoom .ath-key li[data-key]'), function (li) {
       var n = links.filter(function (g) { return keyMatch(g, li.dataset.key); }).length;
       li.classList.toggle('is-none', n === 0);
@@ -1099,7 +1114,7 @@
     });
     Array.prototype.forEach.call(dlg.querySelectorAll('.ath-zoom__key li[data-key]'), function (li) {
       var sw = li.querySelector('.ath-key__mark');
-      if (sw && !li.classList.contains('is-none')) { key.push({ swatch: sw, words: li.dataset.words || li.textContent.trim() }); }
+      if (sw && !li.hidden && !li.classList.contains('is-none')) { key.push({ swatch: sw, words: li.dataset.words || li.textContent.trim() }); }
     });
     var f = zoomFacts();
     // with Wind adjusted on, the image says so and carries the chart's caution
@@ -1954,6 +1969,9 @@
     if (typeof p.wind === 'number') { add('Wind', windText(p.wind) + ' m/s'); }
     var ze = windEst(p);
     if (ze && ze.value !== p.value) { add('Wind adjusted', '≈ ' + formatValue(ze.value, p.field) + (ze.rough ? ' (rough)' : '') + ', a guide, not an official mark'); }
+    else if (noEstimate(p)) {
+      add('Wind adjusted', 'No estimate: the wind speed exceeds the ±' + WIND.limits(p.event).limit + ' m/s limit for estimation');
+    }
     if (isThrow(p)) { add('Weight', weightWords(p)); }
     add(p.grade ? 'Grade' : 'Age group', groupOf(p));
     if (p.place) { add('Place', ordinal(p.place) + (p.of ? ' of ' + p.of : '')); }
