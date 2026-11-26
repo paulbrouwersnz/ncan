@@ -72,9 +72,10 @@
   }
   // the share's details as the query the API takes; confirm=1 is the consent tick
   function shareQuery(f) {
-    // kind (a card's: 'pb', 'newpb', 'sb' or 'result') and source (its official result's link) only when given
-    return ['event', 'from', 'to', 'view', 'name', 'kind', 'source'].filter(function (k) {
-      return (k !== 'kind' && k !== 'source') || f[k];
+    // kind (a card's: 'pb', 'newpb', 'sb' or 'result'), source (its official result's link)
+    // and wind ('adjusted': a chart drawn with its wind-adjusted estimates) only when given
+    return ['event', 'from', 'to', 'view', 'name', 'kind', 'source', 'wind'].filter(function (k) {
+      return (k !== 'kind' && k !== 'source' && k !== 'wind') || f[k];
     }).map(function (k) {
       return k + '=' + encodeURIComponent(f[k] || '');
     }).join('&') + '&confirm=1';

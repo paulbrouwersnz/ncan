@@ -1080,7 +1080,8 @@
     var chip = dlg.querySelector('#ath-zoom-ranges [aria-pressed="true"]');
     return { event: zoom.group.name, from: dates[0] || '', to: dates[dates.length - 1] || '',
              range: chip ? chip.textContent.trim() : '',
-             view: zoom.card && zoom.card.classList.contains('ath-chart--seasons') ? 'by-season' : 'timeline' };
+             view: zoom.card && zoom.card.classList.contains('ath-chart--seasons') ? 'by-season' : 'timeline',
+             wind: zoom.card && zoom.card.querySelector('.ath-chart__note--wind') ? 'adjusted' : '' };
   }
 
   // the enlarged chart as an image (a canvas), with this name above it
@@ -1289,7 +1290,7 @@
       size = blob.size;
       if (blob.size > IMG.SHARE_MAX) { throw tooBig('chart', blob.size, hint); }
       return NCAN.sendFile('/athletes/' + encodeURIComponent(NCAN.athlete.slug) + '/shares?' +
-        IMG.shareQuery({ event: f.event, from: f.from, to: f.to, view: f.view, name: style }), blob);
+        IMG.shareQuery({ event: f.event, from: f.from, to: f.to, view: f.view, name: style, wind: f.wind }), blob);
     }).then(function (r) {
       if (r.status === 201 && r.body && r.body.share && r.body.share.url) {
         if (r.body.usage) { NCAN.athlete.share_usage = r.body.usage; usageShow(); }
