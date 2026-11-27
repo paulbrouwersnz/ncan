@@ -1057,8 +1057,16 @@
     zoom.card = chart({ name: zoom.group.name, results: rs }, t0, t1, CHART.pbOf,
       { W: W, H: H, yTicks: H > 380 ? 8 : 6, dateTicks: 90, zoom: true, sbOf: CHART.sbOf, select: zoomSelect, hide: hide });
     out.appendChild(zoom.card);
-    // the row above the chart (switch, "↑ faster") may be taller or shorter than allowed for:
-    // drawn once more at the height that fits exactly
+    // the key's Wind adjusted entries come and go with this chart and can add a line to the key,
+    // taking height from the chart: set them now, then measure the room again
+    keyCounts();
+    if (room > 320) {
+      out.textContent = '';
+      room = Math.round(out.clientHeight);
+      out.appendChild(zoom.card);
+    }
+    // the row above the chart (switch, "↑ faster", the wind note) may be taller or shorter than
+    // allowed for: drawn once more at the height that fits exactly
     var over = room > 320 ? zoom.card.offsetHeight - room : 0;
     if (over > 2 || over < -2) {
       out.textContent = '';
