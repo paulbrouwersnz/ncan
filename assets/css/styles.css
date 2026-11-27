@@ -1494,6 +1494,16 @@ table.schedule.champs-table { min-width: 0; }
 .is-keying .ath-point-link { opacity: .18; transition: opacity .15s; }
 .is-keying .ath-point-link.is-lit { opacity: 1; }
 @media (prefers-reduced-motion: reduce) { .is-keying .ath-point-link { transition: none; } }
+/* Wind-adjusted estimate picked in the enlarged chart's key: a dashed line through the
+   estimates, which show in full, with the as-run line and marks faded behind them */
+.ath-line--est { display: none; stroke: var(--link); stroke-dasharray: 7 4; }
+.ath-line--est.ath-line--season { stroke: var(--season); stroke-width: 2.5; }
+.is-keying--est .ath-line--est { display: inline; }
+.is-keying--est .ath-line:not(.ath-line--est) { opacity: .2; }
+.is-keying--est .ath-point-link.is-lit > :not(.ath-est):not(.ath-shift) { opacity: .3; }
+.is-keying--est .ath-point-link.is-lit > .ath-shift { opacity: .35; }
+.is-keying--est .ath-est { opacity: 1; fill: var(--link); fill-opacity: 1; stroke-dasharray: none; }
+.ath-chart--seasons .is-keying--est .ath-est { fill: var(--season, var(--link)); }
 .ath-chart__zoom {
   display: inline-grid; place-items: center;
   width: 32px; height: 32px; padding: 0;
