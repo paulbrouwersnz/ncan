@@ -40,6 +40,11 @@ test('a share is sent with its details, and the consent tick', () => {
                               source: 'https://x.anet.live/meets/1/events/individual/2' }),
     'event=100m&from=2026-11-21&to=2026-11-21&view=pb-card&name=first&kind=pb' +
     '&source=https%3A%2F%2Fx.anet.live%2Fmeets%2F1%2Fevents%2Findividual%2F2&confirm=1');
+  // a chart in Wind adjusted says so; as run, nothing is added
+  assert.equal(I.shareQuery({ event: '100m', from: '2024-10-05', to: '2026-11-21', view: 'timeline', name: 'first', wind: 'adjusted' }),
+    'event=100m&from=2024-10-05&to=2026-11-21&view=timeline&name=first&wind=adjusted&confirm=1');
+  assert.equal(I.shareQuery({ event: '100m', from: '2024-10-05', to: '2026-11-21', view: 'timeline', name: 'first', wind: '' }),
+    'event=100m&from=2024-10-05&to=2026-11-21&view=timeline&name=first&confirm=1');
   assert.equal(I.SHARE_MAX, 8 * 1024 * 1024);
 });
 

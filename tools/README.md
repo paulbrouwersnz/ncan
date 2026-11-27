@@ -277,7 +277,7 @@ Each `tests/js/<name>.test.js` tests the helpers in `assets/js/<name>.js` (or
 | `pb-card.test.js` | Share cards (`assets/js/pb-card.js`): the headline for a new PB, PB, season best, podium place or result, with its caption and file name; the Photo card filling the card with its washes, the Event card's scene for each event (and its track colour), the crop keeping the focus point in view, zooming in and dragging the photo (stopping at its edges); the improvement wording (−0.32s, +18cm, +1.05m), the place only for 1st–3rd, first name only by default for children, the season count, the caption and file name, and the square and story layouts: the mark in gold, the ribbon only with an improvement, every word inside the card and nothing overlapping |
 | `wind-adjust.test.js` | wind-adjusted estimates (`assets/js/wind-adjust.js`): sprints by race distance (a 200m on the straight only), hurdles, long and triple jump, each event's wind limit, long jump marked rough over 2 m/s, and no estimate for other events, no mark or no reading |
 | `chart-image.test.js` | the enlarged chart saved as an image (Download, `assets/js/chart-image.js`): the file name (athlete and event, accents dropped), the dates line, the key wrapping into rows, reading a key swatch's ring from its CSS, the image shapes (Auto, landscape 3:2, portrait 4:5, square 1:1) and the layout leaving the chart room in each, a note (the wind-adjusted caution) wrapped under the key; for Share, the name on a shared image (full, or first name only) and the details sent with it |
-| `shared-charts.test.js` | the shared links lists (`assets/js/shared-charts.js`): what each share shows (event, dates, view; a season card by its season), who shared it ("you" or someone else for families, the email for admins), the removed wording ("Removed by the club" for families, with who and why for admins) and the admin page's Show and Find; the share usage badges (today and live against the limits, which is full) |
+| `shared-charts.test.js` | the shared links lists (`assets/js/shared-charts.js`): what each share shows (event, dates, view, wind adjusted; a season card by its season), who shared it ("you" or someone else for families, the email for admins), the removed wording ("Removed by the club" for families, with who and why for admins) and the admin page's Show and Find; the share usage badges (today and live against the limits, which is full) |
 
 `tests/py/test_page_photos.py` tests the header photo checks
 (`python -m unittest discover -s tests/py`). Add a test file with any new helper
@@ -965,7 +965,9 @@ browser) and drawn on a canvas, since an image made from SVG can't use the site'
 fonts.
 
 Charts, PB cards and season cards shared publicly are managed with
-`assets/js/shared-charts.js`. Links are made on the athlete page (the chart, PB
+`assets/js/shared-charts.js`. A chart shared in Wind adjusted is sent with
+`wind=adjusted`, so its title ends ", wind-adjusted estimate" and the lists say
+"Timeline, wind adjusted". Links are made on the athlete page (the chart, PB
 card and season card dialogs, each with a **Manage your shared links** link);
 the athlete page shows only one line for the people who may share for that
 athlete ("Lily has 3 public links · Manage", `GET /v1/athletes/<address>/shares`;

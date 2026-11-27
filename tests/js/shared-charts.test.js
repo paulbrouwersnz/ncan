@@ -36,6 +36,8 @@ test('dates read as day month year, and months as month year', () => {
 test('what was shared: the event, the dates and the view', () => {
   assert.equal(S.what(share()), '100m · Oct 2024 to Nov 2026 · By season');
   assert.equal(S.what(share({ view: 'timeline' })), '100m · Oct 2024 to Nov 2026 · Timeline');
+  assert.equal(S.what(share({ view: 'timeline', wind: 'adjusted' })), '100m · Oct 2024 to Nov 2026 · Timeline, wind adjusted');
+  assert.equal(S.what(share({ wind: 'adjusted' })), '100m · Oct 2024 to Nov 2026 · By season, wind adjusted');
   assert.equal(S.what(share({ from: '2026-11-01', to: '2026-11-21' })), '100m · Nov 2026 · By season');
   assert.equal(S.what(share({ from: '2026-11-21', to: '2026-11-21' })), '100m · 21 Nov 2026 · By season');
   assert.equal(S.what(share({ from: '2026-11-21', to: '2026-11-21', view: 'pb-card' })), '100m · 21 Nov 2026 · PB card');

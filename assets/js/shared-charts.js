@@ -67,7 +67,7 @@
         : month(s.from) + ' to ' + month(s.to));
     }
     out.push(s.view === 'season-card' ? 'Season card' : s.view === 'pb-card' ? CARDS[s.kind] || 'PB card'
-      : s.view === 'by-season' ? 'By season' : 'Timeline');
+      : (s.view === 'by-season' ? 'By season' : 'Timeline') + (s.wind === 'adjusted' ? ', wind adjusted' : ''));
     return out.join(' · ');
   }
 
