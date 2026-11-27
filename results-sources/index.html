@@ -149,12 +149,12 @@
               </p>
               <p class="records-field records-field--grow">
                 <label for="add-location">Location <span class="src-optional">(optional)</span></label>
-                <input type="text" id="add-location" maxlength="80" autocomplete="off" placeholder="e.g. Ngā Puna Wai"
+                <input type="text" id="add-location" maxlength="80" autocomplete="off" list="src-used-location" placeholder="e.g. Ngā Puna Wai"
                        aria-describedby="add-place-help">
               </p>
               <p class="records-field records-field--grow">
                 <label for="add-city">City and country <span class="src-optional">(optional)</span></label>
-                <input type="text" id="add-city" maxlength="80" autocomplete="off" placeholder="e.g. Christchurch, New Zealand"
+                <input type="text" id="add-city" maxlength="80" autocomplete="off" list="src-used-city" placeholder="e.g. Christchurch, New Zealand"
                        aria-describedby="add-place-help">
               </p>
               <button type="submit" class="btn btn--accent" id="add-go">Add meeting</button>
@@ -690,6 +690,7 @@
           if ((CAN_REMOVE || REFRESH) && all.length) { render(); }
         }, function () { /* not staff after all: nothing to show */ });
 
+        fillCity($('add-location'), $('add-city'));
         $('add-url').addEventListener('input', function () { checked = null; $('add-found').hidden = true; });
         $('add-check').addEventListener('click', function () {
           var url = $('add-url').value.trim();
@@ -723,6 +724,7 @@
           NCAN.send('/sources', { url: checked.url, name: $('add-name').value, type: $('add-type').value,
                                   location: $('add-location').value, city: $('add-city').value }).then(function (r) {
             if (r.status !== 201) { busy(false); $('add-status').textContent = r.body.error || 'Sorry, that didn’t work.'; return; }
+            remember({ location: tidy($('add-location').value), city: tidy($('add-city').value) });
             startCollecting();
             $('add-status').textContent = 'Added “' + r.body.meeting.name + '”. Its results are being collected now: this form unlocks when that’s done.';
             checked = null;
@@ -829,6 +831,15 @@
           });
         });
       }
+      // a location picked from those already saved brings its city and country,
+      // when the city box is still empty
+      function fillCity(locationBox, cityBox, then) {
+        locationBox.addEventListener('change', function () {
+          var v = tidy(locationBox.value);
+          var hit = USED.filter(function (p) { return p.location === v && p.city; });
+          if (hit.length && !tidy(cityBox.value)) { cityBox.value = hit[0].city; if (then) { then(); } }
+        });
+      }
       function remember(place) {
         if (!place.location && !place.city) { return; }
         var same = USED.some(function (p) { return (p.location || '') === place.location && (p.city || '') === place.city; });
@@ -908,12 +919,7 @@
             go.disabled = !changed(); said.textContent = ''; form.classList.remove('is-suggested');
           });
         });
-        // a location picked from those already saved brings its city and country
-        fields[0].addEventListener('change', function () {
-          var v = tidy(fields[0].value);
-          var hit = USED.filter(function (p) { return p.location === v && p.city; });
-          if (hit.length && !tidy(fields[1].value)) { fields[1].value = hit[0].city; go.disabled = !changed(); }
-        });
+        fillCity(fields[0], fields[1], function () { go.disabled = !changed(); });
         // with "No location yet" on, Save & dismiss saves and lets the meeting fade out of
         // the list (Save keeps it open, for its links)
         var dismiss = null, leave = false;
