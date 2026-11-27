@@ -103,6 +103,7 @@ from urllib.request import Request, urlopen
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import page_photos  # noqa: E402
+import page_meta  # noqa: E402
 
 try:
     from PIL import Image
@@ -823,15 +824,17 @@ def write_album(template, folder, title, photos, intro, download):
                       + '\n'.join('          ' + line for line in intro)
                       + '\n        </div>\n')
 
-    page_title = '%s photos — %s' % (title, CLUB)
-    description = '%s from %s, in the %s photo gallery.' % (plural(total), title, CLUB)
+    # the title, description and share image (tools/page-meta.json; a new album gets
+    # "<album title>: club photos" and a card made from its cover, by build-page-meta.py)
+    meta = page_meta.album(page_meta.load(), s, title, total)
     head = ('\n\n<link rel="canonical" href="%s/gallery/%s/">\n\n'
             '<title>%s</title>\n'
             '<meta name="description" content="%s">\n'
             '<meta property="og:title" content="%s">\n'
             '<meta property="og:description" content="%s">\n'
-            % (SITE, s, esc(page_title), esc(description), esc(page_title),
-               esc(description)))
+            '%s\n'
+            % (SITE, s, esc(meta['title']), esc(meta['description']), esc(meta['og_title']),
+               esc(meta['description']), page_meta.image_block(meta)))
 
     main = ('<main id="main">\n'
             '  <span id="top"></span>\n'

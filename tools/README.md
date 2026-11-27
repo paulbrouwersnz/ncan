@@ -89,7 +89,7 @@ browser's console on the Athletics NZ eLearning library (see below).
 | edited anything in `partials/`, including the staff tools list (`staff-tools.json`) | `sync-partials.py` |
 | added a new page (a folder with an `index.html`) | `sync-partials.py`, `build-sitemap.py`, then `indexnow.py <page>` |
 | changed a page's content and want search engines to notice | `indexnow.py <page>` |
-| added photos or albums to the gallery | put the originals in the photo host's `gallery/` folder, then `gallery-photos.py`, upload, `build-gallery.py`, and `build-sitemap.py` if an album was added, renamed or removed (see "Gallery") |
+| added photos or albums to the gallery | put the originals in the photo host's `gallery/` folder, then `gallery-photos.py`, upload, `build-gallery.py`, `build-page-meta.py --images` and upload the photo host's `share/` folder, and `build-sitemap.py` if an album was added, renamed or removed (see "Gallery"; a new album's title and card words go in `tools/page-meta.json`) |
 | added, changed or cancelled a calendar event, or changed a calendar | nothing here: use the calendar editor at `/admin/calendars/` (see "Calendars"); don't edit `assets/calendar/` by hand |
 | added AGM papers to `assets/docs/agm/` | `build-agm-list.py` |
 | a club championships Saturday has finished | add its meeting on the results sources page, then confirm it under "Review results" on the club champs page |
@@ -220,17 +220,50 @@ python tools/build-icons.py
 ```
 
 ### `build-share-image.py`
-Makes `assets/img/share.png`, the picture Facebook, WhatsApp, LinkedIn and
-others show when a page is shared: the header's logo and name on white,
-1200 × 630. The layout is `tools/share-image.html`; the script draws it with
-headless Edge or Chrome. Every page names the picture by its full address
-(`og:image` in `partials/head.html`), because sharing sites ignore a path
-without `https://ncan.nz` and don't show SVG. Run it after the logo or the
-layout changes.
+Makes `assets/img/share.png`, the club's general share picture: the header's
+logo and name on white, 1200 × 630. Pages without a card of their own (see
+`build-page-meta.py`) are shared with it, and the enlarged chart's image
+borrows its lockup. The layout is `tools/share-image.html`; the script draws it
+with headless Edge or Chrome. Run it after the logo or the layout changes.
 
 ```bash
 python tools/build-share-image.py
 ```
+
+### `build-page-meta.py` (page titles and share images)
+Each public page's title, description and share image come from
+`tools/page-meta.json`: under `"pages"`, a page's `title` (the club name is
+added on the end, except on the home page), `description` (about 150
+characters), and the card's `headline` and `line`; under `"albums"`, each
+gallery album's `headline`, `where` ("on day 3 of the 2026 Colgate Games"), and
+`who` or `title_end` when they differ from "club athletes" and "club photos".
+A new album that isn't listed gets "<album title>: club photos".
+
+```bash
+python tools/build-page-meta.py            # write the titles, descriptions and og:image lines
+python tools/build-page-meta.py --images   # ...and draw the cards that are missing or out of date
+python tools/build-page-meta.py --images --only calendar   # draw one again
+python tools/build-page-meta.py --check    # what's out of step (runs on every pull request)
+```
+
+Every page ends its head with its share image lines between
+`<!-- @share-image -->` markers (not in `partials/head.html`): its own card, or
+`share.png` for a page not in the file. Sharing sites need the full address
+(`https://…`) and don't show SVG. The cards are 1200 × 630, drawn from
+`tools/share-card.html` with headless Edge or Chrome:
+
+- **A listed page:** its headline and line on the club's green, in
+  `assets/img/share/<page>.jpg` (`home.jpg` for the home page).
+- **An album:** its cover photo behind the words, written to `share/<album>.jpg`
+  in the local copy of the photo host. Upload that folder with the photos;
+  pages name `https://photos.ncan.nz/share/<album>.jpg`. Album photos are never
+  kept in this repository, so a photo taken down stays down. An album's
+  `"focus"` (e.g. `"50% 30%"`) moves the photo within the card.
+
+`tools/share-images.json` remembers what each card was drawn from, so only
+changed ones are drawn again. `tools/build-gallery.py` writes the album pages'
+heads from the same file; after changing an album's entry, run it, then
+`build-page-meta.py --images`.
 
 ## Checks on pull requests
 
@@ -257,6 +290,9 @@ run's log, when:
   `assets/data/page-photos.json`**: it runs `make-head-photo.py --check` and
   the tests in `tests/py/`. Fix the entry it names, run
   `python tools/make-head-photo.py`, and commit the result.
+- **a page's title, description or share card is out of step with
+  `tools/page-meta.json`**: it runs `build-page-meta.py --check`. Run
+  `python tools/build-page-meta.py --images` and commit the pages and cards.
 
 ### Tests (`tests/js/`, `tests/py/`)
 
@@ -279,7 +315,8 @@ Each `tests/js/<name>.test.js` tests the helpers in `assets/js/<name>.js` (or
 | `chart-image.test.js` | the enlarged chart saved as an image (Download, `assets/js/chart-image.js`): the file name (athlete and event, accents dropped), the dates line, the key wrapping into rows, reading a key swatch's ring from its CSS, the image shapes (Auto, landscape 3:2, portrait 4:5, square 1:1) and the layout leaving the chart room in each, a note (the wind-adjusted caution) wrapped under the key; for Share, the name on a shared image (full, or first name only) and the details sent with it |
 | `shared-charts.test.js` | the shared links lists (`assets/js/shared-charts.js`): what each share shows (event, dates, view, wind adjusted; a season card by its season), who shared it ("you" or someone else for families, the email for admins), the removed wording ("Removed by the club" for families, with who and why for admins) and the admin page's Show and Find; the share usage badges (today and live against the limits, which is full) |
 
-`tests/py/test_page_photos.py` tests the header photo checks
+`tests/py/test_page_photos.py` tests the header photo checks, and
+`tests/py/test_page_meta.py` the page titles, descriptions and share image lines
 (`python -m unittest discover -s tests/py`). Add a test file with any new helper
 file; GitHub runs them all on every pull request.
 
