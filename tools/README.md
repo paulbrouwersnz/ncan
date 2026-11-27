@@ -892,10 +892,16 @@ March axis, one coloured line per season. "Hide empty months" (off by default,
 with a ? tip) squashes out months with no result in any season, each run shown as
 a // break; page charts hide only months empty for every event shown, so they
 still line up. All three choices are remembered on the device.
+The settings that change every chart (the switches, Spread out, a chart per
+weight, Show seasons, Hide empty months) sit together above the page's charts
+(`#ath-chart-controls`); the small charts carry no switches. The enlarged chart
+has the switches on the chart, and copies of Wind-legal only, Spread out, Show
+seasons and Hide empty months above it (`ZOOM_CHECKS`), each shown when the page
+offers it and changed on the page too.
 
 **Wind-adjusted estimates** (`assets/js/wind-adjust.js`): an As run / Wind
-adjusted switch, on each chart with at least one estimate, built like Timeline /
-By season (for every chart and the enlarged one, remembered on the device). In
+adjusted switch, shown when at least one chart has an estimate, built like
+Timeline / By season (for every chart and the enlarged one, remembered on the device). In
 Wind adjusted, the line and points stay on the marks as run; each estimate is a
 faint dotted circle at the end of a faint dotted stalk from its point, and a result beyond its event's
 wind limit is greyed out (`--chart-off`). The key's "Wind-adjusted estimate" and
