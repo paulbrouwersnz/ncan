@@ -514,8 +514,10 @@
     var cap = text('figcaption', 'ath-chart__title');
     cap.appendChild(text('span', 'ath-chart__name', group.name + (adjusted ? ', wind-adjusted estimate' : '')));
     var end = text('span', 'ath-chart__end');
-    if (canSwitch) { end.appendChild(viewToggle(group, bySeason, opts.zoom)); }
-    if (canAdjust) { end.appendChild(windToggle(group, adjusted, opts.zoom)); }
+    // the switches sit on the enlarged chart; the page's are above its charts, one set for them all
+    if (canSwitch && opts.zoom) { end.appendChild(viewToggle(group, bySeason, true)); }
+    if (canAdjust && opts.zoom) { end.appendChild(windToggle(group, adjusted, true)); }
+    card.ncanCan = { season: canSwitch, wind: canAdjust };
     end.appendChild(text('span', 'ath-chart__dir', field ? '↑ further' : '↑ faster'));
     if (!opts.zoom && SEASONS) { end.appendChild(zoomButton(group)); }
     cap.appendChild(end);
@@ -842,7 +844,12 @@
     if ($('ath-wind-help')) { $('ath-wind-help').hidden = true; }
     var all = [];
     groups.forEach(function (g) { all = all.concat(countable(g.results)); });
-    if (!all.length) { out.appendChild(text('p', 'records-status', 'No measured marks to chart for these filters.')); return; }
+    if (!all.length) {
+      out.appendChild(text('p', 'records-status', 'No measured marks to chart for these filters.'));
+      pageSwitches(false, false);
+      windKey(document.querySelector('main .ath-key'), false);
+      return;
+    }
     var dates = all.map(function (r) { return parseDate(r.date); });
     var t0 = new Date(Math.min.apply(null, dates)), t1 = new Date(Math.max.apply(null, dates));
     if (t1 - t0 > 0) {   // a little room either side
@@ -858,12 +865,29 @@
     CHART = { groups: groups, pbOf: pbOf, sbOf: sbOf };
     // Hide empty months: only months with no result for any event shown, so the charts still line up
     var hide = HIDE_EMPTY && SEASONS ? SEASONS.emptyMonths(all.map(function (r) { return r.date; })) : null;
-    groups.forEach(function (g) { out.appendChild(chart(g, t0, t1, pbOf, { sbOf: sbOf, hide: hide })); });
+    var canSeason = false, canAdj = false;
+    groups.forEach(function (g) {
+      var card = chart(g, t0, t1, pbOf, { sbOf: sbOf, hide: hide });
+      canSeason = canSeason || card.ncanCan.season;
+      canAdj = canAdj || card.ncanCan.wind;
+      out.appendChild(card);
+    });
+    // one set of switches for every chart, above them: each only when some chart can use it
+    pageSwitches(canSeason, canAdj);
     // how wind-adjusted estimates are worked out: only when a chart has them
     var help = $('ath-wind-help');
-    var canAdj = !!out.querySelector('.ath-view__btn[data-view="adjusted"]');
     if (help) { help.hidden = !canAdj; }
     windKey(document.querySelector('main .ath-key'), canAdj && WIND_ADJ);
+  }
+  // Timeline / By season and As run / Wind adjusted above the page's charts
+  function pageSwitches(canSeason, canAdj) {
+    var box = $('ath-chart-switches');
+    if (!box) { return; }
+    box.textContent = '';
+    var all = { name: 'every chart' };
+    if (canSeason) { box.appendChild(viewToggle(all, BY_SEASON, false)); }
+    if (canAdj) { box.appendChild(windToggle(all, WIND_ADJ, false)); }
+    box.hidden = !box.children.length;
   }
   // the key's Wind adjusted entries (estimate, no estimate): only while estimates are shown
   function windKey(key, on) {
@@ -882,6 +906,21 @@
      opens straight on that chart. */
 
   var zoom = { slug: '', group: null, kind: 'all', card: null, at: -1, pushed: false, key: '' };
+
+  // the page's chart settings copied into the enlarged chart: [page box, enlarged box, enlarged row]
+  var ZOOM_CHECKS = [['ath-wind', 'ath-zoom-wind', 'ath-zoom-wind-field'],
+                     ['ath-spread', 'ath-zoom-spread', 'ath-zoom-spread-field'],
+                     ['ath-seasons', 'ath-zoom-seasons', 'ath-zoom-seasons-field']];
+  // each shown in the enlarged chart only when it's offered on the page, and ticked the same
+  function zoomChecks() {
+    ZOOM_CHECKS.forEach(function (c) {
+      var page = $(c[0]), box = $(c[1]), row = $(c[2]);
+      if (!page || !box || !row) { return; }
+      var field = page.closest('.ath-check');
+      row.hidden = !field || field.hidden;
+      box.checked = page.checked;
+    });
+  }
 
   /* Timeline / By season, on each chart with more than one season. The choice
      applies to every chart on the page and the enlarged one, and is kept on the
@@ -911,7 +950,7 @@
       var b = text('button', 'ath-view__btn', o[1]);
       b.type = 'button';
       b.dataset.view = o[0];
-      b.dataset.chart = SEASONS ? SEASONS.slug(group.name) : group.name;
+      b.dataset.chart = inZoom ? (SEASONS ? SEASONS.slug(group.name) : group.name) : 'all';
       b.setAttribute('aria-pressed', o[0] === on ? 'true' : 'false');
       b.addEventListener('click', function () {
         if (o[0] === on) { return; }
@@ -920,7 +959,7 @@
         var dlg = $('ath-zoom');
         if (dlg && dlg.open && zoom.group) { zoomDraw(); }
         // back to the same switch, now redrawn
-        var again = document.querySelector((inZoom ? '#ath-zoom-chart' : '#ath-charts') +
+        var again = document.querySelector((inZoom ? '#ath-zoom-chart' : '#ath-chart-switches') +
           ' .ath-view__btn[data-chart="' + b.dataset.chart + '"][data-view="' + o[0] + '"]');
         if (again) { again.focus(); }
       });
@@ -959,6 +998,7 @@
     var sb = $('ath-zoom-share');
     if (sb) { sb.hidden = !shareCan(); }
     zoomChips();
+    zoomChecks();
     if (!dlg.open) { dlg.showModal(); }
     zoomDraw();
     $('ath-zoom-title').focus();
@@ -1003,6 +1043,8 @@
     var dates = pts.map(function (x) { return parseDate(x.date); });
     var t0 = new Date(Math.min.apply(null, dates)), t1 = new Date(Math.max.apply(null, dates));
     if (t1 - t0 > 0) { var padMs = (t1 - t0) * 0.04; t0 = new Date(t0 - padMs); t1 = new Date(+t1 + padMs); }
+    // the key's wind entries first: they can add a row to the key, which takes room from the chart
+    windKey(document.querySelector('#ath-zoom .ath-key'), WIND_ADJ && pts.some(function (p) { return !!windEst(p); }));
     // drawn at the size it shows, so its labels stay the page's size: not a scaled-up copy
     var W = Math.max(320, Math.round(out.clientWidth || 1100));
     // wide screens: the chart fills the height left in the dialog, so there's no gap above the key.
@@ -2521,6 +2563,23 @@
         });
       });
     }
+    // the enlarged chart's copies of the page's settings: a change there is made on the
+    // page (kept and redrawn as usual), then the enlarged chart is drawn again
+    ZOOM_CHECKS.forEach(function (c) {
+      var box = $(c[1]);
+      if (!box) { return; }
+      box.addEventListener('change', function () {
+        $(c[0]).checked = box.checked;
+        $(c[0]).dispatchEvent(new Event('change'));
+        if ($('ath-zoom').open && zoom.group) {
+          // the page's filters may have changed what this chart holds
+          var slug = zoom.slug;
+          zoom.group = CHART.groups.filter(function (x) { return SEASONS.slug(x.name) === slug; })[0] ||
+                       { name: zoom.group.name, results: [] };
+          zoomDraw();
+        }
+      });
+    });
     // help tips: shown on hover and focus by the stylesheet; a tap or click keeps one open
     Array.prototype.forEach.call(document.querySelectorAll('.help-tip__btn'), function (b) {
       b.addEventListener('click', function () {

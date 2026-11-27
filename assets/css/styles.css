@@ -1422,6 +1422,15 @@ table.schedule.champs-table { min-width: 0; }
 .ath-break { stroke: var(--line-strong); stroke-width: 1.5; stroke-linecap: round; }
 .ath-break-mask { fill: var(--surface); }
 .ath-zoom__hide { margin: .25rem 0 0; min-height: 2.25rem; }
+.ath-zoom__checks { flex: none; gap: 0 1.4rem; }
+/* the last setting can sit near the dialog's right edge: its tip opens leftwards */
+.ath-zoom__checks .help-tip__text { left: auto; right: 0; transform: none; }
+/* the settings for every chart, above the page's charts: the switches, then the checkboxes */
+.ath-chart-controls { display: flex; flex-direction: column; gap: .4rem; margin: 0 0 1rem; }
+.ath-chart-switches { display: flex; flex-wrap: wrap; gap: .6rem 1rem; }
+.ath-chart-switches[hidden] { display: none; }
+.ath-chart-controls .ath-checks { flex: none; gap: 0 1.4rem; }
+.ath-chart-controls .ath-check { margin: 0; }
 /* A small "?" beside a setting: its explanation shows on hover or focus, and stays
    open after a tap (assets/js/athlete.js keeps aria-expanded in step). */
 .help-tip { position: relative; display: inline-flex; }
@@ -1448,6 +1457,7 @@ table.schedule.champs-table { min-width: 0; }
 
 /* Timeline / By season on each chart with more than one season */
 .ath-view { display: inline-flex; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); overflow: hidden; }
+.ath-chart-switches .ath-view__btn { font-size: .85rem; padding: .3rem .8rem; }
 .ath-view__btn {
   min-height: 32px; padding: .25rem .6rem;
   font-family: var(--font-sans); font-size: .76rem; font-weight: 700;

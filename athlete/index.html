@@ -200,6 +200,10 @@
           <li data-key="est" hidden><span class="ath-key__mark ath-key__mark--est"></span> Wind-adjusted estimate</li>
           <li data-key="noest" hidden><span class="ath-key__mark ath-key__mark--noest"></span> No estimate (wind beyond the limit)</li>
         </ul>
+        <!-- settings for every chart (assets/js/athlete.js); the enlarged chart has its own copies -->
+        <div class="ath-chart-controls" id="ath-chart-controls">
+        <div class="ath-chart-switches" id="ath-chart-switches" hidden></div>
+        <div class="ath-checks">
         <p class="records-field ath-check" id="ath-spread-field" hidden>
           <input type="checkbox" id="ath-spread">
           <label for="ath-spread">Spread out results from the same day (heats and finals)</label>
@@ -220,6 +224,8 @@
             <span class="help-tip__text" id="ath-hidemonths-tip" role="tooltip">Hides a month only when no result falls in it in any season: for example, no July result ever. A // on the date axis marks where months were left out. The enlarged chart goes by its own event's results.</span>
           </span>
         </p>
+        </div>
+        </div>
         <div class="ath-charts" id="ath-charts"></div>
         <details class="ath-wind-help" id="ath-wind-help" hidden>
           <summary>How wind-adjusted estimates are worked out</summary>
@@ -869,14 +875,29 @@
           <label>To <input type="date" id="ath-zoom-to"></label>
         </span>
       </div>
-      <p class="ath-check ath-zoom__hide">
-        <input type="checkbox" id="ath-zoom-hidemonths" aria-describedby="ath-zoom-hidemonths-tip">
-        <label for="ath-zoom-hidemonths">Hide empty months</label>
-        <span class="help-tip">
-          <button type="button" class="help-tip__btn" aria-label="About hiding empty months" aria-expanded="false" aria-controls="ath-zoom-hidemonths-tip">?</button>
-          <span class="help-tip__text" id="ath-zoom-hidemonths-tip" role="tooltip">Hides a month only when no result falls in it in any season: for example, no July result ever. A // on the date axis marks where months were left out. The enlarged chart goes by its own event's results.</span>
-        </span>
-      </p>
+      <!-- the page's chart settings, kept in step with it (assets/js/athlete.js) -->
+      <div class="ath-checks ath-zoom__checks">
+        <p class="ath-check ath-zoom__hide" id="ath-zoom-wind-field" hidden>
+          <input type="checkbox" id="ath-zoom-wind">
+          <label for="ath-zoom-wind">Wind-legal only</label>
+        </p>
+        <p class="ath-check ath-zoom__hide" id="ath-zoom-spread-field" hidden>
+          <input type="checkbox" id="ath-zoom-spread">
+          <label for="ath-zoom-spread">Spread out results from the same day (heats and finals)</label>
+        </p>
+        <p class="ath-check ath-zoom__hide" id="ath-zoom-seasons-field" hidden>
+          <input type="checkbox" id="ath-zoom-seasons">
+          <label for="ath-zoom-seasons">Show seasons (winter shaded grey)</label>
+        </p>
+        <p class="ath-check ath-zoom__hide">
+          <input type="checkbox" id="ath-zoom-hidemonths" aria-describedby="ath-zoom-hidemonths-tip">
+          <label for="ath-zoom-hidemonths">Hide empty months</label>
+          <span class="help-tip">
+            <button type="button" class="help-tip__btn" aria-label="About hiding empty months" aria-expanded="false" aria-controls="ath-zoom-hidemonths-tip">?</button>
+            <span class="help-tip__text" id="ath-zoom-hidemonths-tip" role="tooltip">Hides a month only when no result falls in it in any season: for example, no July result ever. A // on the date axis marks where months were left out. The enlarged chart goes by its own event's results.</span>
+          </span>
+        </p>
+      </div>
       <div class="ath-zoom__body">
         <div class="ath-zoom__chart" id="ath-zoom-chart"></div>
         <aside class="ath-zoom__details" id="ath-zoom-details" aria-live="polite" aria-label="Result details"></aside>
