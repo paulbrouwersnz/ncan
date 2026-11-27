@@ -18,11 +18,16 @@ SITE = 'https://ncan.nz'
 CLUB = 'North Canterbury Athletic Club'
 SUFFIX = ' — ' + CLUB
 
-# the designed cards (no photo) are kept here; an album's card, made from its
-# cover photo, lives on the photo host beside the photos, never in this repository
+# the pages' cards are kept here. An album's card is put together by the club's
+# API (GET /g/<album>.jpg) from its cover on the photo host and a see-through
+# overlay of the words kept here (ALBUM_OVERLAYS), so no album photo is ever in
+# this repository; ALBUM_LIST tells the API which photo and overlay each album has.
 CARD_DIR = os.path.join(ROOT, 'assets', 'img', 'share')
 CARD_URL = SITE + '/assets/img/share/'
-ALBUM_CARD_URL = 'https://photos.ncan.nz/share/'
+ALBUM_OVERLAYS = os.path.join(CARD_DIR, 'albums')
+ALBUM_OVERLAY_URL = CARD_URL + 'albums/'
+ALBUM_LIST = os.path.join(ROOT, 'assets', 'data', 'album-cards.json')
+ALBUM_CARD_URL = 'https://api.ncan.nz/g/'
 DEFAULT_IMAGE = SITE + '/assets/img/share.png'
 
 # the og:image lines every page ends its head with (written by build-page-meta.py
@@ -56,10 +61,22 @@ def plural(n):
     return '%d photo%s' % (n, '' if n == 1 else 's')
 
 
-def album(data, slug, title, count):
+def album_cards(path=ALBUM_LIST):
+    """{slug: {photo, overlay, focus?, v}} from assets/data/album-cards.json."""
+    try:
+        with io.open(path, encoding='utf-8') as f:
+            return json.load(f).get('albums') or {}
+    except (OSError, ValueError):
+        return {}
+
+
+def album(data, slug, title, count, cards=None):
     """The album page's {title, description, headline, line, image}. An album not in
-    the file yet (a new one) gets "<album title>: club photos" and its cover."""
+    the file yet (a new one) gets "<album title>: club photos". Its image is the
+    API's card when assets/data/album-cards.json lists the album (cards: that
+    file's albums, read when not given), otherwise the club's general picture."""
     a = (data.get('albums') or {}).get(slug) or {}
+    card = (album_cards() if cards is None else cards).get(slug)
     headline = a.get('headline') or title
     who = a.get('who') or 'club athletes'                 # who the photos are of
     where = a.get('where') or 'at the %s' % title         # "on day 3 of the 2026 Colgate Games"
@@ -69,7 +86,8 @@ def album(data, slug, title, count):
             'description': '%s of %s %s, in the %s photo gallery.' % (plural(count), who, where, CLUB),
             'headline': headline,
             'line': '%s of %s' % (plural(count), who),
-            'image': ALBUM_CARD_URL + slug + '.jpg', 'type': 'image/jpeg'}
+            'image': ALBUM_CARD_URL + slug + '.jpg?v=' + card['v'] if card else DEFAULT_IMAGE,
+            'type': 'image/jpeg' if card else 'image/png'}
 
 
 def image_block(meta=None):

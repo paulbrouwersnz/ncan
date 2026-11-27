@@ -1,0 +1,155 @@
+{
+ "about": "Each gallery album's link-preview card, for the club's API (GET https://api.ncan.nz/g/<album>.jpg), which lays the overlay over the photo. Written by tools/build-page-meta.py --images.",
+ "albums": {
+  "2017-canterbury-champs-timaru": {
+   "overlay": "https://ncan.nz/assets/img/share/albums/2017-canterbury-champs-timaru.png",
+   "photo": "https://photos.ncan.nz/gallery/2017/Canterbury%20Champs%20Timaru/20170305_175501.jpg",
+   "v": "837e36649f0b1a84"
+  },
+  "2017-colgate-games-invercargill": {
+   "overlay": "https://ncan.nz/assets/img/share/albums/2017-colgate-games-invercargill.png",
+   "photo": "https://photos.ncan.nz/gallery/2017/Colgate%20Games%20Invercargill/20170112_125143.jpg",
+   "v": "0ac494e4db6f6d0d"
+  },
+  "2017-senior-athletes": {
+   "overlay": "https://ncan.nz/assets/img/share/albums/2017-senior-athletes.png",
+   "photo": "https://photos.ncan.nz/gallery/2017/Senior%20Athletes/cantxc2016.jpg",
+   "v": "f57fd4499ce79dad"
+  },
+  "2018-bottle-lake-relay": {
+   "overlay": "https://ncan.nz/assets/img/share/albums/2018-bottle-lake-relay.png",
+   "photo": "https://photos.ncan.nz/gallery/2018/Bottle%20Lake%20Relay/20180505_141510.jpg",
+   "v": "1c32694624ac27f1"
+  },
+  "2018-canterbury-champs-timaru": {
+   "overlay": "https://ncan.nz/assets/img/share/albums/2018-canterbury-champs-timaru.png",
+   "photo": "https://photos.ncan.nz/gallery/2018/Canterbury%20Champs%20Timaru/DSC_0001.jpg",
+   "v": "f0a5c0456a06feb2"
+  },
+  "2018-colgate-games-timaru": {
+   "overlay": "https://ncan.nz/assets/img/share/albums/2018-colgate-games-timaru.png",
+   "photo": "https://photos.ncan.nz/gallery/2018/Colgate%20Games%20Timaru/DSC_0001.jpg",
+   "v": "16ede91daec7e9e9"
+  },
+  "2018-hagley-relays": {
+   "overlay": "https://ncan.nz/assets/img/share/albums/2018-hagley-relays.png",
+   "photo": "https://photos.ncan.nz/gallery/2018/Hagley%20Relays/20180414_125410.jpg",
+   "v": "f408e12521dd9555"
+  },
+  "2018-jane-patterson-rawhiti-domain": {
+   "overlay": "https://ncan.nz/assets/img/share/albums/2018-jane-patterson-rawhiti-domain.png",
+   "photo": "https://photos.ncan.nz/gallery/2018/Jane%20Patterson%2C%20Rawhiti%20Domain/DSC_0188.jpg",
+   "v": "ed1e4fe543c49c09"
+  },
+  "2019-canterbury-champs": {
+   "overlay": "https://ncan.nz/assets/img/share/albums/2019-canterbury-champs.png",
+   "photo": "https://photos.ncan.nz/gallery/2019/Canterbury%20Champs/DSC_0080.jpg",
+   "v": "cc669d8f17f3b60c"
+  },
+  "2019-colgate-games-dunedin": {
+   "overlay": "https://ncan.nz/assets/img/share/albums/2019-colgate-games-dunedin.png",
+   "photo": "https://photos.ncan.nz/gallery/2019/Colgate%20Games%20Dunedin/20190113_210957.jpg",
+   "v": "78477012a6c3a13e"
+  },
+  "2019-greta-valley-relay": {
+   "overlay": "https://ncan.nz/assets/img/share/albums/2019-greta-valley-relay.png",
+   "photo": "https://photos.ncan.nz/gallery/2019/Greta%20Valley%20Relay/DSC_0015.jpg",
+   "v": "6c670ef22fb2f4e5"
+  },
+  "2020-canterbury-champs": {
+   "overlay": "https://ncan.nz/assets/img/share/albums/2020-canterbury-champs.png",
+   "photo": "https://photos.ncan.nz/gallery/2020/Canterbury%20Champs/DSC_0001.jpg",
+   "v": "422a49eb1d7e8d26"
+  },
+  "2020-colgate-games-caitlin-s-photos": {
+   "overlay": "https://ncan.nz/assets/img/share/albums/2020-colgate-games-caitlin-s-photos.png",
+   "photo": "https://photos.ncan.nz/gallery/2020/Colgate%20Games%20%28Caitlin%27s%20Photos%29/IMG_3341.jpeg",
+   "v": "9368ec302f0d453b"
+  },
+  "2020-colgate-games-christchurch": {
+   "overlay": "https://ncan.nz/assets/img/share/albums/2020-colgate-games-christchurch.png",
+   "photo": "https://photos.ncan.nz/gallery/2020/Colgate%20Games%20Christchurch/DSC_0605.jpg",
+   "v": "2518db4b4698573a"
+  },
+  "2020-colgate-games-mike-s-photos": {
+   "overlay": "https://ncan.nz/assets/img/share/albums/2020-colgate-games-mike-s-photos.png",
+   "photo": "https://photos.ncan.nz/gallery/2020/Colgate%20Games%20%28Mike%27s%20Photos%29/IMG_0062.jpg",
+   "v": "a9d9f8fe969d98f7"
+  },
+  "2021-canterbury-champs": {
+   "overlay": "https://ncan.nz/assets/img/share/albums/2021-canterbury-champs.png",
+   "photo": "https://photos.ncan.nz/gallery/2021/Canterbury%20Champs/DSC_0001.jpg",
+   "v": "e3cadf28b2583121"
+  },
+  "2021-colgate-games-nelson": {
+   "overlay": "https://ncan.nz/assets/img/share/albums/2021-colgate-games-nelson.png",
+   "photo": "https://photos.ncan.nz/gallery/2021/Colgate%20Games%20Nelson/DSC_0138.jpg",
+   "v": "4f38c806202065ff"
+  },
+  "2022-colgate-games-invercargill": {
+   "overlay": "https://ncan.nz/assets/img/share/albums/2022-colgate-games-invercargill.png",
+   "photo": "https://photos.ncan.nz/gallery/2022/Colgate%20Games%20Invercargill/IMG_5665.jpg",
+   "v": "1b646b003df0d61f"
+  },
+  "2023-colgate-games-timaru": {
+   "overlay": "https://ncan.nz/assets/img/share/albums/2023-colgate-games-timaru.png",
+   "photo": "https://photos.ncan.nz/gallery/2023/Colgate%20Games%20Timaru/IMG_6924.jpg",
+   "v": "1e4d7aed3351982c"
+  },
+  "2023-cross-country": {
+   "overlay": "https://ncan.nz/assets/img/share/albums/2023-cross-country.png",
+   "photo": "https://photos.ncan.nz/gallery/2023/Cross%20Country/IMG_3171.jpg",
+   "v": "10c5ae9df1cfca5c"
+  },
+  "2024-canterbury-champs": {
+   "overlay": "https://ncan.nz/assets/img/share/albums/2024-canterbury-champs.png",
+   "photo": "https://photos.ncan.nz/gallery/2024/Canterbury%20Champs/IMG_1112.jpg",
+   "v": "2b3c087f7dff260e"
+  },
+  "2024-colgate-games": {
+   "overlay": "https://ncan.nz/assets/img/share/albums/2024-colgate-games.png",
+   "photo": "https://photos.ncan.nz/gallery/2024/Colgate%20Games/IMG_0002.jpg",
+   "v": "8d70f4431c456bf8"
+  },
+  "2024-international-track-meet": {
+   "overlay": "https://ncan.nz/assets/img/share/albums/2024-international-track-meet.png",
+   "photo": "https://photos.ncan.nz/gallery/2024/International%20Track%20Meet/IMG_1028.jpg",
+   "v": "d427ad7c1c3e496f"
+  },
+  "2024-prizegiving": {
+   "overlay": "https://ncan.nz/assets/img/share/albums/2024-prizegiving.png",
+   "photo": "https://photos.ncan.nz/gallery/2024/Prizegiving/IMG_1795.jpg",
+   "v": "d971afeeee49b700"
+  },
+  "2025-colgate-games-day-1": {
+   "overlay": "https://ncan.nz/assets/img/share/albums/2025-colgate-games-day-1.png",
+   "photo": "https://photos.ncan.nz/gallery/2025/Colgate%20Games/Day%201/IMG_3715.jpg",
+   "v": "5d25bd5c0741be08"
+  },
+  "2025-colgate-games-day-2": {
+   "overlay": "https://ncan.nz/assets/img/share/albums/2025-colgate-games-day-2.png",
+   "photo": "https://photos.ncan.nz/gallery/2025/Colgate%20Games/Day%202/IMG_4335.jpg",
+   "v": "d0e6c876604a0822"
+  },
+  "2025-colgate-games-day-3": {
+   "overlay": "https://ncan.nz/assets/img/share/albums/2025-colgate-games-day-3.png",
+   "photo": "https://photos.ncan.nz/gallery/2025/Colgate%20Games/Day%203/IMG_4349.jpg",
+   "v": "0a7a39a0c41f792b"
+  },
+  "2026-colgate-games-day-1": {
+   "overlay": "https://ncan.nz/assets/img/share/albums/2026-colgate-games-day-1.png",
+   "photo": "https://photos.ncan.nz/gallery/2026/Colgate%20Games/Day%201/IMG_6893.jpg",
+   "v": "98056b6e2e1d3287"
+  },
+  "2026-colgate-games-day-2": {
+   "overlay": "https://ncan.nz/assets/img/share/albums/2026-colgate-games-day-2.png",
+   "photo": "https://photos.ncan.nz/gallery/2026/Colgate%20Games/Day%202/IMG_7408.jpg",
+   "v": "368cc96ec0f803cf"
+  },
+  "2026-colgate-games-day-3": {
+   "overlay": "https://ncan.nz/assets/img/share/albums/2026-colgate-games-day-3.png",
+   "photo": "https://photos.ncan.nz/gallery/2026/Colgate%20Games/Day%203/IMG_7719.jpg",
+   "v": "4a980d64d09aee01"
+  }
+ }
+}

@@ -46,14 +46,17 @@ class PageMeta(unittest.TestCase):
         self.assertIsNone(M.page(DATA, '/nowhere/'))
 
     def test_albums_follow_the_pattern_and_new_albums_still_get_one(self):
-        a = M.album(DATA, '2017-senior-athletes', '2017 Senior Athletes', 4)
+        cards = {'2017-senior-athletes': {'v': 'abc123'}}
+        a = M.album(DATA, '2017-senior-athletes', '2017 Senior Athletes', 4, cards=cards)
         self.assertEqual(a['title'], 'Senior athletes 2017: club photos — North Canterbury Athletic Club')
         self.assertEqual(a['description'], '4 photos of the club’s senior athletes in 2017, '
                                            'in the North Canterbury Athletic Club photo gallery.')
-        self.assertEqual(a['image'], 'https://photos.ncan.nz/share/2017-senior-athletes.jpg')
-        self.assertTrue(M.album(DATA, '2020-x-mike-s-photos', 'x', 1)['title'].startswith('Colgate Games 2020: Mike’s photos'))
-        self.assertEqual(M.album(DATA, '2027-relay', '2027 Relay', 1)['line'], '1 photo of club athletes')
-        self.assertTrue(M.album(DATA, '2027-relay', '2027 Relay', 1)['title'].startswith('2027 Relay: club photos'))
+        self.assertEqual((a['image'], a['type']), ('https://api.ncan.nz/g/2017-senior-athletes.jpg?v=abc123', 'image/jpeg'))
+        self.assertTrue(M.album(DATA, '2020-x-mike-s-photos', 'x', 1, cards)['title'].startswith('Colgate Games 2020: Mike’s photos'))
+        new = M.album(DATA, '2027-relay', '2027 Relay', 1, cards)
+        self.assertEqual(new['line'], '1 photo of club athletes')
+        self.assertTrue(new['title'].startswith('2027 Relay: club photos'))
+        self.assertEqual((new['image'], new['type']), (M.DEFAULT_IMAGE, 'image/png'))   # no card yet
 
     def test_the_share_lines_name_the_card_or_the_club_picture(self):
         self.assertIn('content="https://ncan.nz/assets/img/share/calendar.jpg"', M.image_block(M.page(DATA, '/calendar/')))
@@ -87,6 +90,15 @@ class Heads(unittest.TestCase):
         html = B.set_head(old, None)
         self.assertNotIn('x.png', html)
         self.assertEqual(html.count('og:image"'), 1)
+
+    def test_an_album_page_names_its_card_on_the_api_or_the_club_picture(self):
+        old = B.set_head(PAGE, M.album(DATA, '2027-relay', '2027 Relay', 3, cards={}))
+        html = B.set_album_image(old, {'slug': '2027-relay', 'v': 'f00d'})
+        self.assertIn('<meta property="og:image" content="https://api.ncan.nz/g/2027-relay.jpg?v=f00d">', html)
+        self.assertIn('<meta name="twitter:image" content="https://api.ncan.nz/g/2027-relay.jpg?v=f00d">', html)
+        self.assertIn('<meta property="og:image:type" content="image/jpeg">', html)
+        self.assertIn('og:image:alt" content="2027 Relay — North Canterbury Athletic Club"', html)
+        self.assertEqual(B.set_album_image(html, None), old)
 
     def test_the_partial_is_left_alone(self):
         with self.assertRaises(ValueError):

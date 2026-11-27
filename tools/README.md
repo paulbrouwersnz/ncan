@@ -89,7 +89,7 @@ browser's console on the Athletics NZ eLearning library (see below).
 | edited anything in `partials/`, including the staff tools list (`staff-tools.json`) | `sync-partials.py` |
 | added a new page (a folder with an `index.html`) | `sync-partials.py`, `build-sitemap.py`, then `indexnow.py <page>` |
 | changed a page's content and want search engines to notice | `indexnow.py <page>` |
-| added photos or albums to the gallery | put the originals in the photo host's `gallery/` folder, then `gallery-photos.py`, upload, `build-gallery.py`, `build-page-meta.py --images` and upload the photo host's `share/` folder, and `build-sitemap.py` if an album was added, renamed or removed (see "Gallery"; a new album's title and card words go in `tools/page-meta.json`) |
+| added photos or albums to the gallery | put the originals in the photo host's `gallery/` folder, then `gallery-photos.py`, upload, `build-gallery.py`, `build-page-meta.py --images`, and `build-sitemap.py` if an album was added, renamed or removed (see "Gallery"; a new album's title and card words go in `tools/page-meta.json`) |
 | added, changed or cancelled a calendar event, or changed a calendar | nothing here: use the calendar editor at `/admin/calendars/` (see "Calendars"); don't edit `assets/calendar/` by hand |
 | added AGM papers to `assets/docs/agm/` | `build-agm-list.py` |
 | a club championships Saturday has finished | add its meeting on the results sources page, then confirm it under "Review results" on the club champs page |
@@ -254,16 +254,25 @@ Every page ends its head with its share image lines between
 
 - **A listed page:** its headline and line on the club's green, in
   `assets/img/share/<page>.jpg` (`home.jpg` for the home page).
-- **An album:** its cover photo behind the words, written to `share/<album>.jpg`
-  in the local copy of the photo host. Upload that folder with the photos;
-  pages name `https://photos.ncan.nz/share/<album>.jpg`. Album photos are never
-  kept in this repository, so a photo taken down stays down. An album's
-  `"focus"` (e.g. `"50% 30%"`) moves the photo within the card.
+- **An album:** the club's API puts it together the first time it's asked for
+  (`https://api.ncan.nz/g/<album>.jpg?v=…`, ncan-api's `ncan/albumcards.py`).
+  It fetches the album's cover from photos.ncan.nz, shades it green, and lays
+  over it the album's overlay: the words on a see-through PNG, drawn here to
+  `assets/img/share/albums/<album>.png`. Which cover and overlay each album has
+  is in `assets/data/album-cards.json`, with a version (`v`) that changes when
+  either does, so the API draws the card again and the page names the new one.
+  Nothing to upload, and no album photo is kept in this repository, so a photo
+  taken down stays down. An album's `"focus"` (e.g. `"50% 30%"`) moves the
+  photo within the card. An album not in `album-cards.json` yet shows
+  `share.png`.
 
 `tools/share-images.json` remembers what each card was drawn from, so only
-changed ones are drawn again. `tools/build-gallery.py` writes the album pages'
-heads from the same file; after changing an album's entry, run it, then
-`build-page-meta.py --images`.
+changed ones are drawn again. The albums are found in the local copy of the
+photo host; without it (as in the pull request checks), the album list is
+checked against the overlays instead. `tools/build-gallery.py` writes the album
+pages' heads from the same file; after changing an album's entry, run it, then
+`build-page-meta.py --images`, which also brings the album pages' image lines
+up to date.
 
 ## Checks on pull requests
 
