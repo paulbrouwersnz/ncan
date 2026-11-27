@@ -1311,6 +1311,31 @@
       badge.setAttribute('aria-label', n + ' to look at');
       badge.hidden = false;
     }, function () { /* the list still works without the count */ });
+    NCAN.get('/admin/recaps').then(function (r) {
+      // recaps three seasons old: a badge on the card, and a note at the top of the tools
+      var n = r.review || 0, badge = $('admin-count-recaps');
+      if (!n) { return; }
+      var words = n + (n === 1 ? ' meeting recap needs' : ' meeting recaps need') + ' a look';
+      if (badge) {
+        badge.textContent = String(n);
+        badge.setAttribute('aria-label', words);
+        badge.hidden = false;
+      }
+      var tools = $('admin-tools'), wrap = tools && tools.querySelector('.wrap');
+      if (!wrap || $('admin-recaps-note')) { return; }
+      var note = document.createElement('p');
+      note.id = 'admin-recaps-note';
+      note.className = 'recap-left';
+      note.setAttribute('role', 'status');
+      note.appendChild(document.createTextNode(words + ': ' + (n === 1 ? 'it was' : 'they were') +
+        ' published three seasons ago. '));
+      var a = document.createElement('a');
+      a.href = '/admin/recaps/';
+      a.textContent = 'Keep each up or take it down';
+      note.appendChild(a);
+      note.appendChild(document.createTextNode('.'));
+      wrap.insertBefore(note, wrap.firstChild);
+    }, function () { /* the card still works without the count */ });
     NCAN.get('/admin/shares').then(function (r) {
       var n = r.live || 0, badge = $('admin-count-shares');
       if (!badge || !n) { return; }

@@ -97,7 +97,7 @@
     if (!r || !(r.place >= 1)) { return ''; }
     return ordinal(r.place) + (r.of ? ' of ' + r.of : '');
   }
-  var STATES = { draft: 'Draft', 'public': 'Public', removed: 'Taken down', expired: 'Expired' };
+  var STATES = { draft: 'Draft', 'public': 'Public', removed: 'Taken down' };
   function stateLabel(state) { return STATES[state] || 'Draft'; }
 
   /* Results by event ----------------------------------------------------------- */
@@ -224,10 +224,25 @@
   function cardTone(why) { return why[0] === 'record' || why[0] === 'medal' ? 'yellow' : 'green'; }
 
   /* Names check -------------------------------------------------------------------
-     Each athlete in the recap once: { name (full, as staff see it), shown (what the
-     public will see), longer (more than an initial is shown, because two athletes in
-     the recap would otherwise read the same) }, sorted by the name shown. */
-  function namesCheck(results) {
+     How the public sees athletes' names, as the recap's maker chooses (the API
+     applies it): first names (the default), initial and surname, or full names. */
+  var NAME_STYLES = [
+    { id: 'first', label: 'First name', example: 'Sam', words: 'their first name',
+      longer: 'with the surname’s initial or full name, to tell two athletes apart' },
+    { id: 'initial', label: 'Initial and surname', example: 'S Brown', words: 'an initial and surname',
+      longer: 'more of the first name, to tell two athletes apart' },
+    { id: 'full', label: 'Full name', example: 'Sam Brown', words: 'full names', longer: '' }
+  ];
+  function nameStyle(id) {
+    for (var i = 0; i < NAME_STYLES.length; i++) { if (NAME_STYLES[i].id === id) { return NAME_STYLES[i]; } }
+    return NAME_STYLES[0];
+  }
+  /* Each athlete in the recap once: { name (full, as staff see it), shown (what the
+     public will see), longer (more is shown than the style usually shows, because
+     two athletes in the recap would otherwise read the same) }, sorted by the name
+     shown. style: the recap's names ('first' when not given). */
+  function namesCheck(results, style) {
+    style = nameStyle(style).id;
     var out = [], seen = {};
     (results || []).forEach(function (r) {
       if (!r) { return; }
@@ -235,10 +250,13 @@
       var k = name + '|' + shown;
       if (!name || seen[k]) { return; }
       seen[k] = true;
-      var first = shown.split(/\s+/)[0] || '';
-      out.push({ name: name, shown: shown, longer: first.length > 1 && shown !== name });
+      var words = shown.split(/\s+/);
+      var longer = style === 'first' ? words.length > 1
+        : style === 'initial' ? (words[0] || '').length > 1 && shown !== name : false;
+      out.push({ name: name, shown: shown, longer: longer });
     });
     out.sort(function (a, b) {
+      if (style !== 'initial') { return a.shown.localeCompare(b.shown) || a.name.localeCompare(b.name); }
       var sa = a.shown.split(/\s+/), sb = b.shown.split(/\s+/);
       var la = sa.slice(1).join(' '), lb = sb.slice(1).join(' ');
       return la.localeCompare(lb) || a.shown.localeCompare(b.shown) || a.name.localeCompare(b.name);
@@ -295,14 +313,16 @@
     return /^#[0-9a-f]{6}$/i.test(hex || '') ? hex.toUpperCase() : LANE;
   }
 
-  /* Admin page filter: 'live' (drafts and public), 'gone' (taken down or expired) or
-     'all', and words to find (title, meeting, who made it). */
+  /* Admin page filter: 'live' (drafts and public), 'review' (public, three seasons
+     old: needs a look), 'gone' (taken down) or 'all', and words to find (title,
+     meeting, who made it). */
   function adminPick(list, show, words) {
     var q = String(words || '').trim().toLowerCase();
     return (list || []).filter(function (s) {
       var live = s.state === 'draft' || s.state === 'public';
       if (show === 'live' && !live) { return false; }
       if (show === 'gone' && live) { return false; }
+      if (show === 'review' && !s.needs_review) { return false; }
       if (!q) { return true; }
       return [s.title, s.meeting && s.meeting.name, s.by].some(function (x) {
         return x && String(x).toLowerCase().indexOf(q) !== -1;
@@ -396,7 +416,7 @@
     eventLabel: eventLabel, groupLabel: groupLabel, placeWords: placeWords, stateLabel: stateLabel,
     groupByEvent: groupByEvent, meetOf: meetOf, recordKeys: recordKeys, isClubRecord: isClubRecord,
     reasons: reasons, chipWords: chipWords, suggest: suggest, toggle: toggle, cardTone: cardTone,
-    namesCheck: namesCheck, excludedWords: excludedWords, recapFor: recapFor, startBody: startBody,
+    namesCheck: namesCheck, NAME_STYLES: NAME_STYLES, nameStyle: nameStyle, excludedWords: excludedWords, recapFor: recapFor, startBody: startBody,
     paragraphs: paragraphs, checkHeadline: checkHeadline, laneColour: laneColour, adminPick: adminPick,
     wrap: wrap, cardFacts: cardFacts, cardLayout: cardLayout
   };

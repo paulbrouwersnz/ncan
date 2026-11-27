@@ -48,7 +48,6 @@ test('dates, place and wind in words', () => {
   assert.equal(R.eventLabel(res({ event: 'Shot Put', implement: '3kg' })), 'Shot Put (3kg)');
   assert.equal(R.eventLabel(res({ event: 'Shot Put 3kg', implement: '3kg' })), 'Shot Put 3kg');
   assert.equal(R.stateLabel('removed'), 'Taken down');
-  assert.equal(R.stateLabel('expired'), 'Expired');
   assert.equal(R.stateLabel('public'), 'Public');
 });
 
@@ -132,11 +131,22 @@ test('names check: each athlete once, and who was left out', () => {
     res({ athlete: 'Jo Smith', public_name: 'J Smith' }),
     res({ athlete: 'Alex Allan', public_name: 'A Allan' })
   ];
-  const names = R.namesCheck(list);
+  const names = R.namesCheck(list, 'initial');
   assert.deepEqual(names.map((x) => x.shown), ['A Allan', 'Sa Brown', 'Sar Brown', 'J Smith']);
   assert.equal(names[1].name, 'Sam Brown');
   assert.equal(names[1].longer, true);
   assert.equal(names[3].longer, false);
+  // first names (the default): more than the first name only where two share it
+  const firsts = R.namesCheck([
+    res({ athlete: 'Sam Brown', public_name: 'Sam B' }),
+    res({ athlete: 'Sam Tait', public_name: 'Sam T' }),
+    res({ athlete: 'Alex Allan', public_name: 'Alex' })
+  ]);
+  assert.deepEqual(firsts.map((x) => [x.shown, x.longer]), [['Alex', false], ['Sam B', true], ['Sam T', true]]);
+  assert.equal(R.namesCheck([res({ athlete: 'Jo Smith', public_name: 'Jo Smith' })], 'full')[0].longer, false);
+  assert.equal(R.nameStyle().id, 'first');
+  assert.equal(R.nameStyle('initial').words, 'an initial and surname');
+  assert.deepEqual(R.NAME_STYLES.map((x) => x.id), ['first', 'initial', 'full']);
   assert.equal(R.excludedWords(0), '');
   assert.equal(R.excludedWords(1), '1 athlete isn’t shown because their family opted out.');
   assert.equal(R.excludedWords(3), '3 athletes aren’t shown because their families opted out.');
@@ -171,11 +181,13 @@ test('headline: tidied, and too long is refused', () => {
 test('admin filter', () => {
   const list = [
     { title: 'Twilight 1', state: 'public', meeting: { name: 'AC Twilight 1' }, by: 'coach@example.nz' },
+    { title: 'Old one', state: 'public', needs_review: true, meeting: { name: 'Old one' } },
     { title: 'Champs', state: 'removed', meeting: { name: 'Champs' }, by: 'other@example.nz' },
-    { title: 'Relays', state: 'expired', meeting: { name: 'Relays' } },
+    { title: 'Relays', state: 'removed', meeting: { name: 'Relays' } },
     { title: 'Draft one', state: 'draft', meeting: { name: 'Interclub 2' } }
   ];
-  assert.deepEqual(R.adminPick(list, 'live').map((s) => s.title), ['Twilight 1', 'Draft one']);
+  assert.deepEqual(R.adminPick(list, 'live').map((s) => s.title), ['Twilight 1', 'Old one', 'Draft one']);
+  assert.deepEqual(R.adminPick(list, 'review').map((s) => s.title), ['Old one']);
   assert.deepEqual(R.adminPick(list, 'gone').map((s) => s.title), ['Champs', 'Relays']);
   assert.deepEqual(R.adminPick(list, 'all', 'OTHER@').map((s) => s.title), ['Champs']);
   assert.deepEqual(R.adminPick(list, 'all', 'interclub').map((s) => s.title), ['Draft one']);

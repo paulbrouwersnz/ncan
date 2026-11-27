@@ -5,16 +5,17 @@
     /recaps/               the published recaps, newest first (GET /v1/recaps); club
                            staff signed in see the drafts too, marked Draft.
     /recaps/#/<id>         a recap (GET /v1/recaps/<id>): anyone, once it's public;
-                           a draft only for staff. Taken down or expired: 410.
+                           a draft only for staff. Taken down: 410.
     /recaps/#/<id>/edit    the recap maker, for coaches, the committee and
                            administrators: Headline, Highlights, Links, Names check,
                            then Preview and publish (POST /v1/recaps/<id>, and
                            /publish?confirm=1 with the 1200 x 630 card drawn here).
 
   A recap is started from Results sources (the Share results button on each meeting).
-  The API decides every name (initial and surname for the public, full names for
-  staff signed in) and leaves out athletes whose families opted out; this page only
-  shows what it gets. The pure parts are in recap-data.js (tests/js/recap-data.test.js).
+  The API decides every name (for the public, the style the recap's maker chose in
+  the Names step: first names by default, or initial and surname, or full names;
+  full names for staff signed in) and leaves out athletes whose families opted out;
+  this page only shows what it gets. The pure parts are in recap-data.js (tests/js/recap-data.test.js).
   No athlete data is in this file.
 */
 (function () {
@@ -266,7 +267,7 @@
         }
         if (data.full_names) {
           staff.appendChild(el('p', null, 'You’re signed in as club staff, so you see full names here. ' +
-            'Everyone else sees an initial and surname.'));
+            'Everyone else sees ' + D.nameStyle(recap.names).words + '.'));
         }
         if (data.can_edit) {
           var p = el('p');
@@ -422,7 +423,8 @@
   function editor(id, data, recordList) {
     var out = $('recap-edit-out');
     var keys = D.recordKeys(recordList, (data.meeting || {}).meet);
-    var S = { step: 0, picked: (data.recap.highlights || []).slice(), title: data.recap.title || '', intro: data.recap.intro || '' };
+    var S = { step: 0, picked: (data.recap.highlights || []).slice(), title: data.recap.title || '', intro: data.recap.intro || '',
+              names: data.recap.names || 'first' };
     var said = status('access-status recap-edit__said');
     var down = null;
     var stateLine = el('p', 'recap-edit__state');
@@ -435,7 +437,6 @@
       var bits = [];
       if (data.recap.by) { bits.push('Made by ' + data.recap.by); }
       if (data.recap.published_at) { bits.push('Published ' + D.shortDate(data.recap.published_at) + ' ' + data.recap.published_at.slice(11, 16)); }
-      if (data.recap.expires) { bits.push('Comes down ' + D.shortDate(data.recap.expires)); }
       stateLine.appendChild(document.createTextNode(' ' + bits.join(' · ')));
       stateLine.appendChild(document.createTextNode(' '));
       stateLine.appendChild(link('See the page', D.pageHref(id)));
@@ -444,7 +445,7 @@
     function dirty() {
       var h = D.checkHeadline(S.title, S.intro);
       return h.title !== (data.recap.title || '') || h.intro !== (data.recap.intro || '') ||
-        S.picked.join('\n') !== (data.recap.highlights || []).join('\n');
+        S.picked.join('\n') !== (data.recap.highlights || []).join('\n') || S.names !== (data.recap.names || 'first');
     }
     // POST /v1/recaps/<id>: resolves true when saved (or nothing to save), false if not
     function save() {
@@ -453,12 +454,13 @@
       if (h.error) { said.textContent = h.error; return Promise.resolve(false); }
       FormLock.lock(out, true);
       said.textContent = 'Saving…';
-      return NCAN.send('/recaps/' + encodeURIComponent(id), { title: h.title, intro: h.intro, highlights: S.picked,
+      return NCAN.send('/recaps/' + encodeURIComponent(id), { title: h.title, intro: h.intro, highlights: S.picked, names: S.names,
                                                               since: data.recap.updated }).then(function (r) {
         FormLock.lock(out, false);
         if (r.status === 200) {
           data = r.body;
           S.title = data.recap.title || ''; S.intro = data.recap.intro || ''; S.picked = (data.recap.highlights || []).slice();
+          S.names = data.recap.names || 'first';
           said.textContent = 'Saved.';
           heading();
           return true;
@@ -701,13 +703,42 @@
 
     /* 4. Names check */
     var namesBox = el('div');
-    panes[3].appendChild(el('p', 'mem-help', 'How each athlete will be named on the public page: an initial and surname, ' +
-      'with more of the first name where two athletes would otherwise read the same. ' +
-      'Signed-in club staff see full names.'));
+    panes[3].appendChild(el('p', 'mem-help', 'Choose how athletes are named on the public page. First names suit most ' +
+      'meetings; where two athletes would read the same, more of the name is shown. Signed-in club staff always see full names.'));
+    var styleSet = el('fieldset', 'recap-namestyle');
+    styleSet.appendChild(el('legend', null, 'Names on the public page'));
+    var styleSaid = status('recap-namestyle__said');
+    D.NAME_STYLES.forEach(function (st) {
+      var lab = el('label', 'recap-namestyle__opt');
+      var r = el('input');
+      r.type = 'radio'; r.name = 'recap-names'; r.value = st.id;
+      r.checked = st.id === S.names;
+      r.addEventListener('change', function () {
+        if (!r.checked) { return; }
+        S.names = st.id;
+        styleSaid.textContent = '';
+        save().then(function (ok) {
+          if (ok) { styleSaid.textContent = 'Saved: the public sees ' + D.nameStyle(S.names).words + '.'; }
+          else { S.names = data.recap.names || 'first'; }     // not saved: back to the style it has
+          syncStyle();
+          fillNames();
+        });
+      });
+      lab.appendChild(r);
+      lab.appendChild(document.createTextNode(' ' + st.label + ' '));
+      lab.appendChild(el('span', 'recap-namestyle__eg', '(' + st.example + ')'));
+      styleSet.appendChild(lab);
+    });
+    function syncStyle() {
+      Array.prototype.forEach.call(styleSet.querySelectorAll('input'), function (r) { r.checked = r.value === S.names; });
+    }
+    panes[3].appendChild(styleSet);
+    panes[3].appendChild(styleSaid);
     panes[3].appendChild(namesBox);
     function fillNames() {
       namesBox.textContent = '';
-      var names = D.namesCheck(data.results);
+      var style = D.nameStyle(data.recap.names);
+      var names = D.namesCheck(data.results, style.id);
       var left = D.excludedWords(data.excluded);
       if (left) { namesBox.appendChild(el('p', 'recap-left', left)); }
       if (!names.length) { namesBox.appendChild(el('p', 'mem-help', 'No athletes to show.')); return; }
@@ -724,7 +755,7 @@
         var row = el('tr');
         row.appendChild(el('td', null, n.name));
         var td = el('td', null, n.shown);
-        if (n.longer) { td.appendChild(el('span', 'recap-names__why', ' (more of the first name, to tell two athletes apart)')); }
+        if (n.longer && style.longer) { td.appendChild(el('span', 'recap-names__why', ' (' + style.longer + ')')); }
         row.appendChild(td);
         tb.appendChild(row);
       });

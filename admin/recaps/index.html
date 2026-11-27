@@ -92,7 +92,7 @@
         </nav>
         <p class="eyebrow eyebrow--light">The website</p>
         <h1 id="page-heading">Meeting recaps</h1>
-        <p class="lede">Every meeting recap, newest first: drafts, public ones, and those taken down or expired. Taking one down stops its page and its link at once, for everyone; the reason is kept here. Recaps are made from Results sources, with Share results on a meeting.</p>
+        <p class="lede">Every meeting recap, newest first: drafts, public ones, and those taken down. None comes down on its own: three seasons after a recap was published, it&rsquo;s flagged here for a look, to keep it up or take it down. Taking one down stops its page and its link at once, for everyone; the reason is kept here. Recaps are made from Results sources, with Share results on a meeting.</p>
         <p class="account-line" id="account" hidden></p>
       </div>
     </section>
@@ -106,12 +106,14 @@
     <section class="section" id="recaps-admin" aria-labelledby="page-heading" hidden>
       <div class="wrap">
         <p class="recap-left" id="recaps-paused" hidden></p>
+        <p class="recap-left" id="recaps-review" role="status" hidden></p>
         <form class="shares-filter" id="recaps-filter" novalidate autocomplete="off" onsubmit="return false">
           <p class="records-field">
             <label for="recaps-show">Show</label>
             <select id="recaps-show">
               <option value="live">Drafts and public</option>
-              <option value="gone">Taken down and expired</option>
+              <option value="review">Needs a look</option>
+              <option value="gone">Taken down</option>
               <option value="all">All</option>
             </select>
           </p>

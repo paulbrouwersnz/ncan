@@ -4980,6 +4980,12 @@ table.schedule.manage-mem { min-width: 640px; }
 .recap-links-form { max-width: 46rem; }
 table.schedule.recap-names { min-width: 0; }
 .recap-names__why { font-size: .82rem; color: var(--text-soft); }
+/* the Names step: how the public sees names (first name, initial and surname, full name) */
+.recap-namestyle { border: 0; margin: .4rem 0 .6rem; padding: 0; display: flex; flex-wrap: wrap; gap: .4rem 1.2rem; }
+.recap-namestyle legend { font-weight: 600; color: var(--heading); margin-bottom: .3rem; padding: 0; width: 100%; }
+.recap-namestyle__opt { display: inline-flex; align-items: center; gap: .35rem; min-height: 2.75rem; cursor: pointer; }
+.recap-namestyle__eg { color: var(--text-soft); font-size: .9rem; }
+.recap-review-tag { background: var(--surface-warm); color: var(--heading); }
 .recap-left {
   margin: .6rem 0 1rem; padding: .6rem .9rem; border-radius: var(--radius-sm);
   background: var(--surface-warm); font-weight: 600; color: var(--heading); max-width: 46rem;
