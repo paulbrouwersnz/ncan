@@ -712,6 +712,18 @@
         }
         s.appendChild(svg('polyline', line));
       }
+      // Wind adjusted: the same progression through the estimates, hidden until the
+      // enlarged chart's "Wind-adjusted estimate" key entry is picked (then the as-run line fades)
+      var ests = adjusted ? r.filter(function (p) { return !!windEst(p); }) : [];
+      if (ests.length > 1) {
+        var eline = { 'class': 'ath-line ath-line--est',
+          points: ests.map(function (p) { return px(p) + ',' + y(windEst(p).value); }).join(' ') };
+        if (bySeason) {
+          eline['class'] += ' ath-line--season';
+          eline.style = '--season: ' + SEASONS.seasonColour(seasonOf(ests[0]));
+        }
+        s.appendChild(svg('polyline', eline));
+      }
       // a label where each grade's (or weight's) line starts, unless it would overlap
       // the last one; a line starting with unrecorded results takes the first it has
       var named = null;
@@ -807,7 +819,8 @@
       var wn = text('p', 'ath-chart__note ath-chart__note--wind',
         'Wind-adjusted estimates are a guide, not official marks. The line joins the marks as run; dotted circles on dotted stalks: estimates. ' +
         'Greyed out: no estimate (wind beyond ±' + lim.limit + ' m/s).' +
-        (lim.rough < lim.limit ? ' Rough over ±' + lim.rough + ' m/s.' : '') + ' ');
+        (lim.rough < lim.limit ? ' Rough over ±' + lim.rough + ' m/s.' : '') +
+        (opts.zoom ? ' Pick Wind-adjusted estimate in the key for a dashed line through the estimates.' : '') + ' ');
       if (!opts.zoom) {
         var hb = text('button', 'ath-chart__help', 'How they are worked out');
         hb.type = 'button';
@@ -1082,7 +1095,10 @@
   function keyMatch(g, key) { return (' ' + (g.getAttribute('data-key') || '') + ' ').indexOf(' ' + key + ' ') !== -1; }
   function keyShow(key) {
     var links = zoom.card ? zoom.card.ncanLinks : [];
-    if (links.length && links[0].ownerSVGElement) { links[0].ownerSVGElement.classList.toggle('is-keying', !!key); }
+    if (links.length && links[0].ownerSVGElement) {
+      links[0].ownerSVGElement.classList.toggle('is-keying', !!key);
+      links[0].ownerSVGElement.classList.toggle('is-keying--est', key === 'est');
+    }
     links.forEach(function (g) { g.classList.toggle('is-lit', !!key && keyMatch(g, key)); });
   }
   function keyPin(key) {
@@ -1189,6 +1205,7 @@
       var s = card.querySelector('svg.ath-chart__svg');
       if (zoom.key && s) {
         s.classList.add('is-keying');
+        s.classList.toggle('is-keying--est', zoom.key === 'est');
         links.forEach(function (g) { g.classList.toggle('is-lit', keyMatch(g, zoom.key)); });
       }
       return s;
