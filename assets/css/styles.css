@@ -1475,6 +1475,9 @@ table.schedule.champs-table { min-width: 0; }
 .ath-chart--seasons .ath-point--wind { fill: var(--surface); stroke: var(--season); }
 .ath-chart--seasons .ath-point--pb { fill: var(--yellow-500); stroke: var(--heading); }
 .ath-chart--seasons .ath-point--newpb { stroke: var(--yellow-500); }
+/* Wind adjusted: each estimate's stalk and dotted circle a faint version of its season's line */
+.ath-chart--seasons .ath-shift,
+.ath-chart--seasons .ath-est { stroke: var(--season); }
 .ath-chart__key { display: flex; flex-wrap: wrap; gap: .15rem .85rem; margin: 0 0 .35rem; padding: 0; list-style: none; font-size: .78rem; color: var(--text-soft); }
 .ath-chart__key li { display: inline-flex; align-items: center; gap: .35rem; }
 .ath-chart__key .ath-key__swatch { width: 16px; height: 4px; border-radius: 2px; background: var(--season); }
