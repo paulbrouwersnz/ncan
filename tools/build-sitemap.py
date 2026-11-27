@@ -51,9 +51,10 @@ ROBOTS = os.path.join(ROOT, 'robots.txt')
 # committee and administrators) and results-sources/ is for staff, signed in
 # (both noindex too). sign-in/ is for signing in, and me/ (My athletes) and my/
 # (Shared links) for families signed in (all noindex).
+# recaps/ (meeting recaps) carry noindex and are left out in phase 1 (issue #300).
 # junior-athletics: left out while the coaches and committee review it (November 2026)
 SKIP = {'admin', 'athlete', 'athletes', 'junior-athletics',
-        'me', 'my', 'results-sources', 'sign-in'}
+        'me', 'my', 'recaps', 'results-sources', 'sign-in'}
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from pages import pages as site_pages  # noqa: E402

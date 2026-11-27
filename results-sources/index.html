@@ -397,6 +397,7 @@
   <script src="/assets/js/ncan-account.js"></script>
   <script src="/assets/js/form-lock.js"></script>
   <script src="/assets/js/meeting-links.js"></script>
+  <script src="/assets/js/recap-data.js"></script>
   <script>
     (function () {
       'use strict';
@@ -537,6 +538,12 @@
         if (facts.children.length > 2) { facts.insertBefore(otherDd, facts.children[2]); facts.insertBefore(otherDt, otherDd); }
         else { facts.appendChild(otherDt); facts.appendChild(otherDd); }
         body.appendChild(facts);
+        // anyone on staff can share a meeting with our athletes in it as a public recap
+        if (m.results) {
+          var share = text('div', 'src-manage src-recap');
+          share.appendChild(recapControl(m));
+          body.appendChild(share);
+        }
         // anyone on staff can have an AthleticLIVE meeting read again (a corrected result)
         if (REFRESH && m.from === 'AthleticLIVE' && meetNumber(m)) {
           var again = text('div', 'src-manage');
@@ -1055,6 +1062,55 @@
         return form;
       }
 
+      /* Meeting recaps (assets/js/recaps.js) -----------------------------------
+         Share results starts a recap of the meeting: POST /v1/recaps {meet} (or
+         {meeting: name} for one entered by hand) makes a draft, and the recap maker
+         opens (/recaps/#/<id>/edit). A meeting that already has a draft or public
+         recap (GET /v1/recaps, which gives staff the drafts too) shows it instead. */
+      var RECAPS = [];
+      var recapsReady = null;   // GET /v1/recaps, started with the meetings
+
+      function loadRecaps() {
+        return NCAN.get('/recaps').then(function (r) {
+          RECAPS = (r && r.recaps) || [];
+        }, function () { RECAPS = []; });   // the button still works without the list
+      }
+
+      function recapControl(m) {
+        var R = window.NCANRecapData;
+        var box = text('div', 'src-recap__row');
+        var have = R.recapFor(RECAPS, m);
+        if (have) {
+          box.appendChild(text('span', 'champs-tag' + (have.state === 'public' ? ' champs-tag--next' : ''),
+            'Recap: ' + R.stateLabel(have.state)));
+          var open = text('a', 'btn btn--ghost btn--sm', 'Open recap');
+          open.href = R.pageHref(have.id, have.state === 'draft');
+          box.appendChild(open);
+          return box;
+        }
+        var go = text('button', 'btn btn--ghost btn--sm', 'Share results');
+        go.type = 'button';
+        var said = text('span', 'src-type-form__said lock-keep');
+        said.setAttribute('role', 'status');
+        box.appendChild(go);
+        box.appendChild(text('span', 'src-xlinks__hint', 'Make a public recap of our athletes’ results, to post on Facebook.'));
+        box.appendChild(said);
+        go.addEventListener('click', function () {
+          lockMeeting(box, true);
+          said.textContent = 'Starting a recap…';
+          NCAN.send('/recaps', R.startBody(m)).then(function (r) {
+            var b = r.body || {};
+            // 201: the new draft ({recap: ...} as GET /v1/recaps/<id> gives it); 409: the one there already
+            var id = r.status === 201 ? (b.recap && (b.recap.id || (b.recap.recap && b.recap.recap.id)))
+              : r.status === 409 ? b.id : null;
+            if (id) { location.href = R.pageHref(id, true); return; }
+            lockMeeting(box, false);
+            said.textContent = b.error || 'Sorry, that didn’t work (' + r.status + ').';
+          }, function (err) { lockMeeting(box, false); said.textContent = err.message; });
+        });
+        return box;
+      }
+
       /* Refreshing a meeting (POST /v1/sources/refresh) -----------------------
          A collect keeps what it downloads from AthleticLIVE, so a result corrected
          after the meeting isn't seen. Refreshing deletes this meeting's downloads and
@@ -1306,7 +1362,8 @@
           $('src-open-all').addEventListener('click', function () { foldAll(true); });
           $('src-fold-all').addEventListener('click', function () { foldAll(false); });
           if (json.updated) { $('src-updated').textContent = 'Last updated ' + longDate(json.updated) + '.'; }
-          render();
+          // drawn once the recaps are in too, so each meeting shows its recap
+          return (recapsReady || Promise.resolve()).then(render);
         });
       }
 
@@ -1325,6 +1382,7 @@
           $('src-gate').textContent = 'This page is for club administrators, coaches and the committee only.';
           return;
         }
+        recapsReady = loadRecaps();
         loadMeetings().then(function () {
           $('src-gate').hidden = true;
           $('src-jump').hidden = false;

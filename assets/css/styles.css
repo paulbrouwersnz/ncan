@@ -4853,3 +4853,168 @@ table.schedule.manage-mem { min-width: 640px; }
   .cal-form__actions .btn { flex: 1 1 auto; }
   .cal-actions__gap { display: none; }
 }
+
+/* =========================================================
+   Meeting recaps (/recaps/, assets/js/recaps.js; the Share results
+   button on Results sources; /admin/recaps/). Phone first.
+   ========================================================= */
+.recap-head:not(.page-head--photo) {
+  background: linear-gradient(160deg, var(--green-900) 0%, var(--green-800) 55%, var(--green-700) 100%);
+}
+/* the lane stripe, in the venue's track colour (--lane), with its white lane lines */
+.recap-lane {
+  height: 18px;
+  background:
+    linear-gradient(#fff, #fff) 0 0 / 100% 2px no-repeat,
+    linear-gradient(#fff, #fff) 0 50% / 100% 2px no-repeat,
+    linear-gradient(#fff, #fff) 0 100% / 100% 2px no-repeat,
+    var(--lane, #B5452B);
+}
+.recap-lane[hidden] { display: none; }
+.recap-section { padding-top: clamp(1.5rem, 4vw, 2.5rem); }
+.recap-staff {
+  margin-bottom: 1.5rem; padding: .8rem 1rem; border-radius: var(--radius-sm);
+  background: var(--surface-warm); font-size: .92rem;
+}
+.recap-staff p { margin: 0 0 .5rem; }
+.recap-staff p:last-child { margin-bottom: 0; }
+
+.recap-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-block: 0 clamp(1.5rem, 4vw, 2.5rem); }
+.recap-stats .stat { padding: clamp(.9rem, 2.5vw, 1.6rem); text-align: center; }
+.recap-intro { max-width: 62ch; font-size: clamp(1.02rem, .4vw + .95rem, 1.15rem); margin-bottom: clamp(1.5rem, 4vw, 2.5rem); }
+.recap-block { margin-top: clamp(1.8rem, 5vw, 3rem); }
+.recap-block__head { font-size: clamp(1.5rem, 3vw, 2.1rem); }
+
+/* the chips: Club record, 1st, 2nd, 3rd, PB, First time */
+.recap-chips { display: inline-flex; flex-wrap: wrap; gap: .3rem; vertical-align: middle; }
+.recap-chip {
+  display: inline-block; padding: .1rem .45rem; border-radius: 5px;
+  font-family: var(--font-display); font-size: .68rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+  background: var(--surface-strong); color: var(--link);
+}
+.recap-chip--pb { background: var(--green-600); color: #fff; }
+.recap-chip--record { background: var(--yellow-500); color: var(--green-900); }
+.recap-chip--medal1 { background: #F2C230; color: #3D2C00; }
+.recap-chip--medal2 { background: #C9D0D6; color: #26303A; }
+.recap-chip--medal3 { background: #C58A4B; color: #2E1C08; }
+
+/* highlight cards: yellow for a club record or a medal, green for a PB or a first time */
+.recap-hls { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr)); gap: 1rem; }
+.recap-hl { border-radius: var(--radius); padding: 1.1rem 1.2rem 1.2rem; box-shadow: var(--shadow-sm); }
+.recap-hl p { margin: 0; }
+.recap-hl--green { background: var(--green-800); color: rgba(255, 255, 255, .85); }
+.recap-hl--yellow { background: var(--yellow-500); color: var(--green-900); }
+.recap-hl--green .recap-chip--pb { background: var(--yellow-500); color: var(--green-900); }
+.recap-hl--green .recap-chip--first { background: rgba(255, 255, 255, .16); color: #fff; }
+.recap-hl--yellow .recap-chip--record,
+.recap-hl--yellow .recap-chip--pb { background: var(--green-800); color: #fff; }
+.recap-hl--yellow .recap-chip--first { background: rgba(6, 42, 32, .12); color: var(--green-900); }
+.recap-hl--yellow [class*="recap-chip--medal"] { box-shadow: inset 0 0 0 1px rgba(6, 42, 32, .35); }
+.recap-hl .recap-hl__chips { margin-bottom: .6rem; }
+.recap-hl .recap-hl__name { font-family: var(--font-display); font-weight: 800; font-size: 1.2rem; line-height: 1.2; }
+.recap-hl--green .recap-hl__name { color: #fff; }
+.recap-hl .recap-hl__event { font-size: .9rem; }
+.recap-hl .recap-hl__mark { font-family: var(--font-display); font-weight: 800; font-size: 2.1rem; line-height: 1.1; margin-top: .4rem; font-variant-numeric: tabular-nums; }
+.recap-hl--green .recap-hl__mark { color: var(--yellow-500); }
+.recap-hl .recap-hl__more { font-size: .85rem; margin-top: .3rem; }
+
+/* results by event */
+.recap-event { margin-top: 1.6rem; }
+.recap-event__head { font-size: 1.2rem; margin-bottom: .3rem; }
+.recap-results { max-width: 46rem; }
+.recap-results__group {
+  margin-top: .8rem; padding-bottom: .2rem; border-bottom: 1px solid var(--line-strong);
+  font-size: .78rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--accent);
+}
+.recap-row {
+  display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: .2rem 1rem;
+  padding: .5rem 0; border-bottom: 1px solid var(--line);
+}
+.recap-row__who { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 .6rem; min-width: 0; }
+.recap-row__name { font-weight: 600; color: var(--heading); overflow-wrap: anywhere; }
+.recap-row__place { font-size: .85rem; color: var(--text-soft); }
+.recap-row__what { display: flex; flex-wrap: wrap; align-items: center; gap: .3rem .5rem; margin-left: auto; }
+.recap-row__mark { font-family: var(--font-display); font-weight: 700; font-variant-numeric: tabular-nums; color: var(--heading); }
+.recap-row__wind { font-size: .8rem; color: var(--text-soft); }
+.recap-row__wind--over { color: var(--warn); }
+.recap-links { list-style: disc; padding-left: 1.2rem; }
+.recap-links li + li { margin-top: .35rem; }
+
+.recap-join__box { max-width: 46rem; }
+.recap-join__box h2 { font-size: clamp(1.6rem, 3vw, 2.2rem); }
+
+/* the list of recaps */
+.recap-card__media img { width: 100%; height: auto; aspect-ratio: 1200 / 630; object-fit: cover; }
+.recap-card__line, .recap-card__counts { margin: 0; font-size: .9rem; color: var(--text-soft); }
+.recap-card__counts { margin-top: .3rem; font-weight: 600; color: var(--accent); }
+
+/* the recap maker */
+.recap-edit__state { display: flex; flex-wrap: wrap; align-items: center; gap: .3rem .5rem; font-size: .9rem; color: var(--text-soft); }
+.recap-steps { display: flex; flex-wrap: wrap; gap: .4rem; margin: 1rem 0 0; padding: 0; list-style: none; }
+.recap-steps__b {
+  font: inherit; font-size: .88rem; font-weight: 600; padding: .35rem .85rem; cursor: pointer;
+  border: 1px solid var(--line-strong); border-radius: 999px; background: var(--surface); color: var(--heading);
+}
+.recap-steps__b:hover { border-color: var(--solid); }
+.recap-steps__b[aria-current="step"] { background: var(--solid); border-color: var(--solid); color: #fff; }
+.recap-step { margin-top: 1.6rem; }
+.recap-step[hidden] { display: none; }
+.recap-step__head { font-size: clamp(1.4rem, 2.6vw, 1.8rem); }
+.recap-step__head:focus { outline: none; }
+.recap-step__sub { font-size: 1.15rem; margin-top: 1.8rem; }
+.recap-facts { margin-bottom: 1.2rem; }
+.recap-field { max-width: 40rem; margin-top: 1rem; }
+.recap-field textarea {
+  font: inherit; font-size: .95rem; padding: .6rem .75rem; width: 100%; min-height: 7rem; resize: vertical;
+  border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); color: inherit;
+}
+.recap-help, .recap-count { font-size: .85rem; color: var(--text-soft); }
+.recap-count { margin: .6rem 0; }
+.recap-picks { max-width: 46rem; }
+.recap-pick { display: flex; align-items: flex-start; gap: .7rem; padding: .6rem 0; border-bottom: 1px solid var(--line); }
+.recap-pick input { width: 1.2rem; height: 1.2rem; margin-top: .25rem; flex: 0 0 auto; accent-color: var(--green-700); }
+.recap-pick label { display: flex; flex-wrap: wrap; align-items: center; gap: .2rem .6rem; cursor: pointer; }
+.recap-pick__name { font-weight: 600; color: var(--heading); }
+.recap-pick__what { font-size: .9rem; color: var(--text-soft); }
+.recap-always { font-size: .95rem; }
+.recap-links-form { max-width: 46rem; }
+table.schedule.recap-names { min-width: 0; }
+.recap-names__why { font-size: .82rem; color: var(--text-soft); }
+.recap-left {
+  margin: .6rem 0 1rem; padding: .6rem .9rem; border-radius: var(--radius-sm);
+  background: var(--surface-warm); font-weight: 600; color: var(--heading); max-width: 46rem;
+}
+.recap-left[hidden] { display: none; }
+/* the page as the public will see it, inside a frame */
+.recap-preview {
+  border: 1px dashed var(--line-strong); border-radius: var(--radius); overflow: hidden;
+  padding: 0 clamp(.8rem, 3vw, 1.5rem) clamp(1rem, 3vw, 1.5rem);
+}
+.recap-hero {
+  margin: 0 calc(-1 * clamp(.8rem, 3vw, 1.5rem)) 1.5rem; padding: 1.6rem clamp(.8rem, 3vw, 1.5rem) 0;
+  background: linear-gradient(160deg, var(--green-900) 0%, var(--green-800) 55%, var(--green-700) 100%);
+  color: var(--text-on-dark);
+}
+.recap-hero .recap-hero__title { color: #fff; font-size: clamp(1.6rem, 4vw, 2.4rem); margin-bottom: .3rem; }
+.recap-hero .recap-hero__line { margin: 0 0 1.2rem; }
+.recap-hero .recap-lane { margin: 0 calc(-1 * clamp(.8rem, 3vw, 1.5rem)); }
+.recap-cardpv { margin: 0; }
+.recap-cardpv__canvas { display: block; width: 100%; max-width: 600px; height: auto; border-radius: 8px; box-shadow: var(--shadow-sm); }
+.recap-publish { margin-top: 1.5rem; }
+.recap-confirm { margin: 0 0 .8rem; }
+.recap-confirm input { width: 1.2rem; height: 1.2rem; accent-color: var(--green-700); }
+.recap-publish .btn:disabled { opacity: .5; cursor: not-allowed; }
+.recap-share { margin-top: 1rem; }
+.recap-share__row { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; max-width: 40rem; }
+.recap-share__url {
+  flex: 1 1 16rem; min-width: 0; font: inherit; font-size: .95rem; padding: .55rem .75rem;
+  border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); color: inherit;
+}
+.recap-edit__bar { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--line); }
+.recap-edit__bar [hidden] { display: none; }
+.recap-down-box { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--line); }
+.recap-down-box .recap-step__head { font-size: 1.2rem; }
+
+/* Results sources: Share results, or the meeting's recap */
+.src-recap__row { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem .8rem; }
+.src-recap__row .src-xlinks__hint { margin: 0; }

@@ -386,7 +386,7 @@ python tools/check-planner-help.py
 Writes `sitemap.xml` and `robots.txt`, listing every page (the home page as
 `https://ncan.nz/`, the others as `https://ncan.nz/calendar/` and so on). Add a
 page's folder name to `SKIP` in the script to leave it out; `athlete`, `athletes`,
-`admin` (and its tool pages under it) and `results-sources` are skipped, as they show nothing until someone signs in (and carry a noindex tag).
+`admin` (and its tool pages under it) and `results-sources` are skipped, as they show nothing until someone signs in (and carry a noindex tag). `recaps` (meeting recaps) is skipped too in phase 1: the pages carry a noindex tag.
 `junior-athletics` is skipped while the coaches and committee review it. Folders
 that only redirect (`tuesday-training/`) are never listed. The sitemap was submitted once in Google Search
 Console; Google re-reads it by itself.
