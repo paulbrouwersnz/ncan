@@ -4,7 +4,7 @@
   for club administrators only, each admin tool's own page (/admin/review/, /admin/members-list/, /admin/membership/,
   /admin/merges/, /admin/corrections/, /admin/addresses/, /admin/blocked/; track colours,
   /admin/track-colours/, are admin-tracks.js; header photos,
-  /admin/header-photos/, are admin-photos.js). Old /admin/#section links go to the tool's page.
+  /admin/header-photos/, are admin-photos.js; meeting recaps, /admin/recaps/, are recaps-admin.js). Old /admin/#section links go to the tool's page.
 
   Everything comes from the club's API (see assets/js/ncan-account.js), which
   answers only an administrator; anyone else sees a sign-in box or a note.
@@ -1311,6 +1311,31 @@
       badge.setAttribute('aria-label', n + ' to look at');
       badge.hidden = false;
     }, function () { /* the list still works without the count */ });
+    NCAN.get('/admin/recaps').then(function (r) {
+      // recaps three seasons old: a badge on the card, and a note at the top of the tools
+      var n = r.review || 0, badge = $('admin-count-recaps');
+      if (!n) { return; }
+      var words = n + (n === 1 ? ' meeting recap needs' : ' meeting recaps need') + ' a look';
+      if (badge) {
+        badge.textContent = String(n);
+        badge.setAttribute('aria-label', words);
+        badge.hidden = false;
+      }
+      var tools = $('admin-tools'), wrap = tools && tools.querySelector('.wrap');
+      if (!wrap || $('admin-recaps-note')) { return; }
+      var note = document.createElement('p');
+      note.id = 'admin-recaps-note';
+      note.className = 'recap-left';
+      note.setAttribute('role', 'status');
+      note.appendChild(document.createTextNode(words + ': ' + (n === 1 ? 'it was' : 'they were') +
+        ' published three seasons ago. '));
+      var a = document.createElement('a');
+      a.href = '/admin/recaps/';
+      a.textContent = 'Keep each up or take it down';
+      note.appendChild(a);
+      note.appendChild(document.createTextNode('.'));
+      wrap.insertBefore(note, wrap.firstChild);
+    }, function () { /* the card still works without the count */ });
     NCAN.get('/admin/shares').then(function (r) {
       var n = r.live || 0, badge = $('admin-count-shares');
       if (!badge || !n) { return; }
@@ -1369,6 +1394,7 @@
       if (window.AdminTracks && has('tracks')) { AdminTracks.start(); }
       if (window.AdminPhotos) { AdminPhotos.start(); }
       if (window.NCANSharedCharts && has('shares-admin')) { NCANSharedCharts.startAdmin(); }
+      if (window.NCANRecapsAdmin && has('recaps-admin')) { NCANRecapsAdmin.start(); }
     }, function (err) { $('admin-status').textContent = err.message || 'Sorry, this page could not be loaded.'; });
   }, function () { $('admin-status').textContent = 'The club’s results service could not be reached.'; });
 }());

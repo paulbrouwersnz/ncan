@@ -29,6 +29,8 @@
      "blurb": "The track colours for Event share cards, and the colour each meeting location starts on."},
     {"title": "Shared cards and charts", "href": "/admin/shared/", "lowest": "admin", "group": "Sign-in and the website", "count": "shares",
      "blurb": "Charts shared publicly from athlete pages: removing one, and pausing sharing."},
+    {"title": "Meeting recaps", "href": "/admin/recaps/", "lowest": "admin", "group": "Sign-in and the website", "count": "recaps",
+     "blurb": "Every meeting recap, who made it and whether it’s public, keeping up those three seasons old, and taking one down."},
     {"title": "Club committee", "href": "/committee/", "lowest": "committee", "group": "Committee tools",
      "blurb": "The committee page: who’s on it, documents and links, and the annual general meetings."},
     {"title": "Training plans", "href": "/junior-athletics/#training", "lowest": "coach", "group": "Coaches’ tools",
