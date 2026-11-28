@@ -1,0 +1,223 @@
+{
+  "about": "Each page's title, description and share image words. tools/build-page-meta.py writes them into the pages and makes the share images; tools/build-gallery.py uses the album entries. See tools/README.md (\"Page titles and share images\").",
+  "pages": {
+    "/": {
+      "title": "North Canterbury Athletic Club — Run. Jump. Throw. Walk. Belong.",
+      "og_title": "North Canterbury Athletic Club",
+      "description": "A community athletics club in Rangiora for all ages and abilities: track and field, cross country, road running and coaching, from age 7 to masters.",
+      "headline": "Run. Jump. Throw. Walk. Belong.",
+      "line": "A Rangiora based athletics club for every age, from 7 to masters."
+    },
+    "/calendar/": {
+      "title": "Club calendar: training, interclub and events",
+      "description": "Upcoming club training, interclub, and regional and national events for North Canterbury Athletic Club, with a calendar feed you can subscribe to.",
+      "headline": "Club calendar",
+      "line": "Training, interclub, and regional and national events. Subscribe and it stays up to date."
+    },
+    "/monday-training/": {
+      "title": "Monday running, sprint and walks training in Rangiora",
+      "description": "Monday running, sprint and walking sessions at Ashgrove Park, Kingsbury Ave, Rangiora. Everyone is welcome to come along and give it a try.",
+      "headline": "Monday training",
+      "line": "Running, sprints and walks at Ashgrove Park, Rangiora. Everyone welcome."
+    },
+    "/open-day/": {
+      "title": "Open Day: try athletics with us",
+      "description": "Come and try athletics with North Canterbury Athletic Club in Rangiora: sessions for children aged 7 to 14, and for high school, senior and masters athletes.",
+      "headline": "Open Day",
+      "line": "Come and try athletics with us, from age 7 to masters."
+    },
+    "/club-champs/": {
+      "title": "Children’s club championships: points and results",
+      "description": "How the children’s club championships work for grades 7 to 14 at North Canterbury Athletic Club: the programme, the points, and the standings and results.",
+      "headline": "Children’s club championships",
+      "line": "Grades 7 to 14: the programme, the points, and the standings and results."
+    },
+    "/records/": {
+      "title": "Children’s club records, grades 7 to 14",
+      "description": "The club’s best mark in every track, field and race walking event for grades 7 to 14, linked to the official results. Filter by grade, gender and event.",
+      "headline": "Children’s club records",
+      "line": "The club’s best mark in every event, grades 7 to 14."
+    },
+    "/gallery/": {
+      "title": "Photo gallery: club athletes in action since 2017",
+      "description": "Photos of North Canterbury Athletic Club athletes at club nights, competitions, cross country and prizegivings since 2017, album by album.",
+      "headline": "Photo gallery",
+      "line": "Club athletes in action since 2017, album by album."
+    },
+    "/history/": {
+      "title": "Club history since 1978",
+      "description": "The story of North Canterbury Athletic Club since it was founded in Rangiora in 1978: our affiliations, club colours and notable performances.",
+      "headline": "Club history",
+      "line": "Founded in Rangiora in 1978: our affiliations, colours and notable performances."
+    },
+    "/coaches-officials-volunteers/": {
+      "title": "Help out: coach, officiate or volunteer",
+      "description": "The club is run by its members. How families and members can help as coaches, officials and volunteers, in roles that mostly need no experience.",
+      "headline": "Help out",
+      "line": "Coach, officiate or volunteer. Most roles need no experience."
+    },
+    "/committee/": {
+      "title": "Club committee and annual general meeting",
+      "description": "Meet the club’s volunteer committee, elected each year at the annual general meeting, and find out how to stand, nominate someone or have your say.",
+      "headline": "Club committee",
+      "line": "Run by volunteers, elected each year at the annual general meeting."
+    },
+    "/resources/": {
+      "title": "Coaching and officiating resources",
+      "description": "Free guides for coaches, officials and parents: planning a session, learning an event, officiating for the first time and how things are meant to be run.",
+      "headline": "Resources",
+      "line": "Free guides for coaches, officials and parents."
+    },
+    "/athletics-nz-library-inventory/": {
+      "title": "Athletics NZ eLearning library, indexed",
+      "description": "An index of every folder and file in the Athletics New Zealand eLearning library: club toolkit, coaching, officials, safeguarding and newsletters.",
+      "headline": "Athletics NZ eLearning library",
+      "line": "Every folder and file, indexed, with a link straight to it."
+    },
+    "/safeguarding/": {
+      "title": "Safeguarding: keeping young athletes safe",
+      "description": "How North Canterbury Athletic Club keeps young athletes safe: our committee’s safeguarding training, how to raise a concern, and the guidance we follow.",
+      "headline": "Safeguarding",
+      "line": "Keeping young athletes safe, and how to raise a concern."
+    },
+    "/privacy/": {
+      "title": "Privacy: what we hold and why",
+      "description": "What North Canterbury Athletic Club holds about its members, why, who sees it, how long it is kept, and how to ask to see, correct or remove it.",
+      "headline": "Privacy",
+      "line": "What we hold about members, why, and how to ask about it."
+    },
+    "/junior-athletics/": {
+      "title": "Junior Athletics: Tuesday club night training plans",
+      "description": "Tuesday junior club night for ages 7 to 14: each session’s training plan, group by group, to read or print.",
+      "headline": "Junior Athletics",
+      "line": "Tuesday club night training plans for ages 7 to 14."
+    }
+  },
+  "albums": {
+    "2026-colgate-games-day-3": {
+      "headline": "Colgate Games 2026, day 3",
+      "where": "on day 3 of the 2026 Colgate Games"
+    },
+    "2026-colgate-games-day-2": {
+      "headline": "Colgate Games 2026, day 2",
+      "where": "on day 2 of the 2026 Colgate Games"
+    },
+    "2026-colgate-games-day-1": {
+      "headline": "Colgate Games 2026, day 1",
+      "where": "on day 1 of the 2026 Colgate Games"
+    },
+    "2025-colgate-games-day-3": {
+      "headline": "Colgate Games 2025, day 3",
+      "where": "on day 3 of the 2025 Colgate Games"
+    },
+    "2025-colgate-games-day-2": {
+      "headline": "Colgate Games 2025, day 2",
+      "where": "on day 2 of the 2025 Colgate Games"
+    },
+    "2025-colgate-games-day-1": {
+      "headline": "Colgate Games 2025, day 1",
+      "where": "on day 1 of the 2025 Colgate Games"
+    },
+    "2024-prizegiving": {
+      "headline": "Club prizegiving 2024",
+      "where": "at the club’s 2024 prizegiving"
+    },
+    "2024-international-track-meet": {
+      "headline": "International Track Meet 2024",
+      "where": "at the 2024 International Track Meet"
+    },
+    "2024-colgate-games": {
+      "headline": "Colgate Games 2024",
+      "where": "at the 2024 Colgate Games"
+    },
+    "2024-canterbury-champs": {
+      "headline": "Canterbury Champs 2024",
+      "where": "at the 2024 Canterbury Championships"
+    },
+    "2023-cross-country": {
+      "headline": "Cross country 2023",
+      "where": "at 2023 cross country races"
+    },
+    "2023-colgate-games-timaru": {
+      "headline": "Colgate Games in Timaru, 2023",
+      "where": "at the 2023 Colgate Games in Timaru"
+    },
+    "2022-colgate-games-invercargill": {
+      "headline": "Colgate Games in Invercargill, 2022",
+      "where": "at the 2022 Colgate Games in Invercargill"
+    },
+    "2021-colgate-games-nelson": {
+      "headline": "Colgate Games in Nelson, 2021",
+      "where": "at the 2021 Colgate Games in Nelson"
+    },
+    "2021-canterbury-champs": {
+      "headline": "Canterbury Champs 2021",
+      "where": "at the 2021 Canterbury Championships"
+    },
+    "2020-colgate-games-mike-s-photos": {
+      "headline": "Colgate Games 2020",
+      "where": "at the 2020 Colgate Games",
+      "title_end": "Mike’s photos",
+      "who": "club athletes"
+    },
+    "2020-colgate-games-christchurch": {
+      "headline": "Colgate Games in Christchurch, 2020",
+      "where": "at the 2020 Colgate Games in Christchurch"
+    },
+    "2020-colgate-games-caitlin-s-photos": {
+      "headline": "Colgate Games 2020",
+      "where": "at the 2020 Colgate Games",
+      "title_end": "Caitlin’s photos",
+      "who": "club athletes"
+    },
+    "2020-canterbury-champs": {
+      "headline": "Canterbury Champs 2020",
+      "where": "at the 2020 Canterbury Championships"
+    },
+    "2019-greta-valley-relay": {
+      "headline": "Greta Valley Relay 2019",
+      "where": "at the 2019 Greta Valley road relay"
+    },
+    "2019-colgate-games-dunedin": {
+      "headline": "Colgate Games in Dunedin, 2019",
+      "where": "at the 2019 Colgate Games in Dunedin"
+    },
+    "2019-canterbury-champs": {
+      "headline": "Canterbury Champs 2019",
+      "where": "at the 2019 Canterbury Championships"
+    },
+    "2018-jane-patterson-rawhiti-domain": {
+      "headline": "Jane Patterson at Rawhiti Domain, 2018",
+      "where": "at the 2018 Jane Patterson race at Rawhiti Domain"
+    },
+    "2018-hagley-relays": {
+      "headline": "Hagley Relays 2018",
+      "where": "at the 2018 Hagley Relays"
+    },
+    "2018-colgate-games-timaru": {
+      "headline": "Colgate Games in Timaru, 2018",
+      "where": "at the 2018 Colgate Games in Timaru"
+    },
+    "2018-canterbury-champs-timaru": {
+      "headline": "Canterbury Champs in Timaru, 2018",
+      "where": "at the 2018 Canterbury Championships in Timaru"
+    },
+    "2018-bottle-lake-relay": {
+      "headline": "Bottle Lake Relay 2018",
+      "where": "at the 2018 Bottle Lake relay"
+    },
+    "2017-senior-athletes": {
+      "headline": "Senior athletes 2017",
+      "where": "in 2017",
+      "who": "the club’s senior athletes"
+    },
+    "2017-colgate-games-invercargill": {
+      "headline": "Colgate Games in Invercargill, 2017",
+      "where": "at the 2017 Colgate Games in Invercargill"
+    },
+    "2017-canterbury-champs-timaru": {
+      "headline": "Canterbury Champs in Timaru, 2017",
+      "where": "at the 2017 Canterbury Championships in Timaru"
+    }
+  }
+}
