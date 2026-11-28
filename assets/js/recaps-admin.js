@@ -73,7 +73,7 @@
     body.appendChild(el('p', 'share-row__meta', made.join(', ')));
     var c = s.counts || {};
     body.appendChild(el('p', 'share-row__meta', [D.plural(c.athletes || 0, 'athlete', 'athletes'),
-      D.plural(c.pbs || 0, 'PB', 'PBs'), D.plural(c.medals || 0, 'medal', 'medals')].join(' · ')));
+      D.plural(c.pbs || 0, 'PB', 'PBs'), D.plural(c.medals || 0, 'podium', 'podiums')].join(' · ')));
     if (s.removed) {
       var r = s.removed;
       body.appendChild(el('p', 'share-row__meta share-row__gone', (r.by_club ? 'Taken down by the club' : 'Taken down') +

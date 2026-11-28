@@ -358,9 +358,9 @@
       line: meetingLine(meeting),
       lane: laneColour(meeting),
       counts: [
+        { n: c.athletes || 0, words: c.athletes === 1 ? 'Athlete' : 'Athletes' },
         { n: c.pbs || 0, words: c.pbs === 1 ? 'PB' : 'PBs' },
-        { n: c.medals || 0, words: c.medals === 1 ? 'Medal' : 'Medals' },
-        { n: c.athletes || 0, words: c.athletes === 1 ? 'Athlete' : 'Athletes' }
+        { n: c.medals || 0, words: c.medals === 1 ? 'Podium' : 'Podiums' }
       ]
     };
   }

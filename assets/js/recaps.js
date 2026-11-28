@@ -114,7 +114,7 @@
 
   function stats(counts) {
     var dl = el('dl', 'stats__grid recap-stats');
-    [[counts.pbs, 'PB', 'PBs'], [counts.medals, 'Medal', 'Medals'], [counts.athletes, 'Athlete', 'Athletes']].forEach(function (x) {
+    [[counts.athletes, 'Athlete', 'Athletes'], [counts.pbs, 'PB', 'PBs'], [counts.medals, 'Podium', 'Podiums']].forEach(function (x) {
       var n = x[0] || 0, div = el('div', 'stat');
       div.appendChild(el('dt', null, String(n)));
       div.appendChild(el('dd', null, n === 1 ? x[1] : x[2]));
@@ -287,7 +287,7 @@
 
   /* /recaps/ -------------------------------------------------------------------------- */
   function showList() {
-    head({ title: 'Meeting recaps', lede: 'Our athletes’ results from recent meetings: personal bests, medals and highlights.' });
+    head({ title: 'Meeting recaps', lede: 'Our athletes’ results from recent meetings: personal bests, podiums and highlights.' });
     NCAN.get('/recaps').then(function (r) {
       say('');
       var list = (r && r.recaps) || [], out = $('recap-list-out');
@@ -312,7 +312,7 @@
         body.appendChild(h);
         body.appendChild(el('p', 'recap-card__line', D.meetingLine(m)));
         body.appendChild(el('p', 'recap-card__counts', [D.plural(c.athletes || 0, 'athlete', 'athletes'),
-          D.plural(c.pbs || 0, 'PB', 'PBs'), D.plural(c.medals || 0, 'medal', 'medals')].join(' · ')));
+          D.plural(c.pbs || 0, 'PB', 'PBs'), D.plural(c.medals || 0, 'podium', 'podiums')].join(' · ')));
         card.appendChild(body);
         grid.appendChild(card);
       });
