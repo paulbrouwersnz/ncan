@@ -5035,6 +5035,9 @@ table.schedule.recap-names { min-width: 0; }
 .recap-confirm input { width: 1.2rem; height: 1.2rem; accent-color: var(--green-700); }
 .recap-publish .btn:disabled { opacity: .5; cursor: not-allowed; }
 .recap-share { margin-top: 1rem; }
+.recap-share--page { margin: 0 0 1.5rem; }
+.recap-share--page .mem-help { margin: .3rem 0 0; }
+.recap-share__label { font-weight: 600; color: var(--heading); margin-right: .3rem; }
 .recap-share__row { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; max-width: 40rem; }
 .recap-share__url {
   flex: 1 1 16rem; min-width: 0; font: inherit; font-size: .95rem; padding: .55rem .75rem;
