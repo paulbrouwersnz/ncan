@@ -4919,6 +4919,8 @@ table.schedule.manage-mem { min-width: 640px; }
 .recap-hls { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr)); gap: 1rem; }
 .recap-hl { border-radius: var(--radius); padding: 1.1rem 1.2rem 1.2rem; box-shadow: var(--shadow-sm); }
 .recap-hl p { margin: 0; }
+.recap-hl--medal { position: relative; padding-right: 3.4rem; }
+.recap-hl__medal { position: absolute; top: .75rem; right: .9rem; font-size: 2rem; line-height: 1; }
 .recap-hl--green { background: var(--green-800); color: rgba(255, 255, 255, .85); }
 .recap-hl--yellow { background: var(--surface-warm); color: var(--text); box-shadow: inset 0 4px 0 var(--yellow-500), var(--shadow-sm); }
 .recap-hl--green .recap-chip--pb { background: var(--yellow-500); color: var(--green-900); }
