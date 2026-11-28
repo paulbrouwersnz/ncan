@@ -115,7 +115,10 @@ test('a photo goes under the theme\'s colour; the scoreboard has its own backgro
   const items = L.build({ title: 'A', counts: [] }, look).items;
   const kinds = items.map((i) => i.kind);
   assert.ok(kinds.indexOf('photo') < kinds.indexOf('shade'));
-  assert.equal(items.find((i) => i.kind === 'photo').focus, 30);
+  assert.deepEqual(items.find((i) => i.kind === 'photo'), { kind: 'photo', url: 'https://photos.ncan.nz/gallery/2024/a.jpg', x: 50, y: 30, zoom: 1 });
+  // an uploaded photo, moved and zoomed
+  const up = L.build({ title: 'A', counts: [] }, Object.assign(L.resolve({}, {}, {}), { photo: 'blob:x', focusX: 20, focus: 70, zoom: 1.8 }));
+  assert.deepEqual(up.items.find((i) => i.kind === 'photo'), { kind: 'photo', url: 'blob:x', x: 20, y: 70, zoom: 1.8 });
   const board = L.build({ title: 'A', counts: [] }, L.resolve({ layout: 'scoreboard', photo: 'https://photos.ncan.nz/a.jpg' }, {}, {}));
   assert.ok(!board.items.some((i) => i.kind === 'photo'));
 });

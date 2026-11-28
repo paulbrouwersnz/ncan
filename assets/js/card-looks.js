@@ -13,7 +13,7 @@
     rect   { x, y, w, h, colour, round }
     svg    { svg }                    SVG drawn over the whole card (viewBox 0 0 600 315)
     strip  { x, y, w, h, course, colour }   the meeting's track or course (course-strip.js)
-    photo  { url, focus }             a gallery photo, covering the card, cut at focus %
+    photo  { url, x, y, zoom }        a photo covering the card: x and y (0 to 100) where it's cut, zoom 1 or more
     shade  { colour, mode }           the theme's colour over the photo: 'side' or 'all'
     logo   { x, y, w, h, dark }       the club's crest (dark: the one for dark backgrounds)
     badge  { src, x, y, w, h }        an event's own logo, on a white disc (the Colgate Games')
@@ -877,7 +877,8 @@
     if (layout !== 'scoreboard') {
       bg.push({ kind: 'rect', x: 0, y: 0, w: W, h: H, colour: t.bg });
       if (chosen.photo) {
-        bg.push({ kind: 'photo', url: chosen.photo, focus: chosen.focus == null ? 50 : chosen.focus });
+        bg.push({ kind: 'photo', url: chosen.photo, x: chosen.focusX == null ? 50 : chosen.focusX,
+                  y: chosen.focus == null ? 50 : chosen.focus, zoom: chosen.zoom > 1 ? chosen.zoom : 1 });
         bg.push({ kind: 'shade', colour: t.bg, mode: layout === 'race-bib' || layout === 'ticket' ? 'all' : 'side' });
       }
       var pt = pattern(chosen.pattern, t.text);
