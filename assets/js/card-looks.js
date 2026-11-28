@@ -16,6 +16,7 @@
     photo  { url, x, y, zoom }        a photo covering the card: x and y (0 to 100) where it's cut, zoom 1 or more
     shade  { colour, mode }           the theme's colour over the photo: 'side' or 'all'
     logo   { x, y, w, h, dark }       the club's crest (dark: the one for dark backgrounds)
+    badge  { src, x, y, w, h }        an event's own logo, on a white disc (the Colgate Games')
     text   { words, x, y, size, weight, font ('display' or 'sans'), colour, align, max,
              spacing, italic, squeeze (narrower, 0 to 1), dots (as lit dots), rotate }
 
@@ -205,8 +206,7 @@
       eyebrow: 'INTERNATIONAL MEET', art: [256, 276, 296, 316].map(function (x) { return C(x, 14, 3, '#fff'); }).join('') + R(250, 18, 72, 2, '#3DD6F5') },
 
     { id: 'colgate', name: 'Colgate Games', group: 'Special events', bg: '#E4002B', band: '#C70026', accent: '#FFFFFF', soft: '#FFD9DF', text: '#FFFFFF',
-      eyebrow: 'COLGATE GAMES', art: '<path d="M292 50 q-10 -16 0 -34 q4 12 10 14 q4 -10 0 -20 q16 14 6 40 z" fill="#FFD34D"/>' +
-        '<path d="M294 50 q-4 -10 2 -20 q4 10 6 20 z" fill="#fff"/>' + R(286, 50, 16, 6, '#fff') },
+      eyebrow: 'COLGATE GAMES', art: '', badge: '/assets/img/colgate-games.png' },     // the event's logo, used with its organisers' OK
     { id: 'childrens', name: 'Children’s', group: 'Special events', bg: '#FFD84D', band: '#FFE57F', accent: '#1F3A93', soft: '#3B4A7A', text: '#14234F', light: true,
       eyebrow: 'GAME ON', art: confettiBits([[256, 12, '#E8443A'], [282, 30, '#1F3A93'], [308, 14, '#2F8F4E'], [266, 40, '#FF7AB6'], [300, 44, '#E8443A']]) },
     { id: 'combined', name: 'Combined events', group: 'Special events', bg: '#232A5C', band: '#2E3672', accent: '#FFB547', soft: '#CBD0F0', text: '#FFFFFF',
@@ -649,8 +649,8 @@
     return (nx - cx) * (nx - cx) + (ny - cy) * (ny - cy) < r * r;
   }
   function placeSticker(items, own) {
-    var blocks = items.filter(function (i) { return (i.kind === 'text' && !i.sticker) || i.kind === 'logo'; });
-    var boxOf = function (i) { return i.kind === 'logo' ? { x: i.x, y: i.y, w: i.w, h: i.h } : textBox(i); };
+    var blocks = items.filter(function (i) { return (i.kind === 'text' && !i.sticker) || i.kind === 'logo' || i.kind === 'badge'; });
+    var boxOf = function (i) { return i.kind === 'text' ? textBox(i) : { x: i.x, y: i.y, w: i.w, h: i.h }; };
     var clear = function (cx, cy, r) { return blocks.every(function (i) { return !hitsCircle(boxOf(i), cx, cy, r); }); };
     var tries = [own].concat(SPOTS);
     var sizes = [1.3, 1.15, 1, 0.8];             // as big as there's room for
@@ -850,6 +850,8 @@
     }
   };
 
+  // where an event's logo goes in each layout that shows the theme's picture: [x, y, radius]
+  var BADGE_AT = { classic: [522, 82, 58], 'big-number': [544, 58, 44], poster: [522, 72, 60], podium: [524, 76, 54] };
   // the layouts that show the theme's picture
   var ART_LAYOUTS = ['classic', 'big-number', 'poster', 'podium'];
 
@@ -883,6 +885,17 @@
       if (pt) { bg.push({ kind: 'svg', svg: pt }); }
     }
     var spot = LAYOUT[layout](items, add, t, f, o);
+    // an event's logo in the top right, on a white disc; the words beside it narrowed to clear it
+    if (t.badge && ART_LAYOUTS.indexOf(layout) >= 0) {
+      var bd = BADGE_AT[layout], br = bd[2];
+      items.forEach(function (i) {
+        if (i.kind !== 'text' || !hitsCircle(textBox(i), bd[0], bd[1], br + 6)) { return; }
+        var edge = bd[0] - br - 10;
+        if (!i.align || i.align === 'left') { i.max = Math.max(60, Math.min(i.max, edge - i.x - (i.rotate ? 20 : 0))); }
+        else if (i.align === 'center') { i.max = Math.max(60, Math.min(i.max, 2 * (edge - i.x))); }
+      });
+      items.push({ kind: 'badge', src: t.badge, x: bd[0] - br, y: bd[1] - br, w: 2 * br, h: 2 * br, drop: true });
+    }
     var front = [], placed = null;
     if (o.sticker) {
       placed = placeSticker(items, spot.sticker);
