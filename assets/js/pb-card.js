@@ -302,9 +302,9 @@
       ? { head: 84, headSize: 22, name: 140, nameSize: 44, group: 174, bib: [50, 256, 440, 452], top: 78, event: 307, eventSize: 32,
           ncan: 20, mark: 506, markSize: 144, rib: [540, 240, 56, 29], meet: 650, meetSize: 20, date: 682, dateSize: 17,
           pins: [[78, 362], [462, 362], [78, 682], [462, 682]], lines: 768, step: 34, size: 20, logo: 60 }
-      : { head: 70, headSize: 18, name: 106, nameSize: 32, group: 130, bib: [60, 146, 420, 258], top: 48, event: 178, eventSize: 22,
-          ncan: 16, mark: 282, markSize: 88, rib: [298, 176, 32, 18], meet: 356, meetSize: 14, date: 377, dateSize: 13,
-          pins: [[78, 212], [462, 212], [78, 386], [462, 386]], lines: 428, step: 19, size: 14, logo: 46 };
+      : { head: 70, headSize: 18, name: 106, nameSize: 32, group: 130, bib: [60, 142, 420, 244], top: 46, event: 172, eventSize: 22,
+          ncan: 16, mark: 270, markSize: 84, rib: [284, 170, 30, 17], meet: 338, meetSize: 14, date: 358, dateSize: 13,
+          pins: [[78, 204], [462, 204], [78, 370], [462, 370]], lines: 432, step: 19, size: 14, logo: 46 };
     items.push({ kind: 'rect', x: 0, y: 0, w: W, h: H, colour: SINGLET.green });
     items.push({ kind: 'singlet', w: W, h: H });
     var md = f.medal ? medalItem(f.medal, W, pad, story) : null, narrow = W - 2 * pad - (md ? 2 * md.r + 16 : 0);
@@ -347,8 +347,8 @@
     return { w: W, h: H, items: items };
   }
 
-  // the club singlet, filling the card: the white panel down the right, its sweep up
-  // across the chest edged with gold pinstripes, white hatching above, gold trim at the top
+  // the club singlet, filling the card: the white sweep up across the chest, edged with
+  // gold pinstripes, white hatching above, gold trim at the top
   function drawSinglet(c, i) {
     var W = i.w, H = i.h;
     var poly = function (col, pts) {
@@ -360,7 +360,6 @@
       c.save(); c.strokeStyle = col; c.lineWidth = wd; if (dash) { c.setLineDash(dash); }
       c.beginPath(); c.moveTo(a[0], a[1]); c.lineTo(b[0], b[1]); c.stroke(); c.restore();
     };
-    poly(SINGLET.white, [[W * 0.9, 0], [W, 0], [W, H], [W * 0.87, H]]);
     poly(SINGLET.white, [[W * 0.56, H], [W * 0.74, H], [W, H * 0.5], [W, H * 0.22]]);
     line('rgba(255,255,255,.85)', 10, [W * 0.52, H], [W, H * 0.14], [3, 5]);
     line(SINGLET.gold, 4, [W * 0.545, H], [W, H * 0.19]);
