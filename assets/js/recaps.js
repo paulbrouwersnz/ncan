@@ -16,12 +16,14 @@
   the Names step: first names by default, or initial and surname, or full names;
   full names for staff signed in) and leaves out athletes whose families opted out;
   this page only shows what it gets. The pure parts are in recap-data.js (tests/js/recap-data.test.js).
+  The preview card's looks (themes, layouts, stickers, photos and the suggestion for
+  each meeting) are in card-looks.js (tests/js/card-looks.test.js); it's drawn here.
   No athlete data is in this file.
 */
 (function () {
   'use strict';
 
-  var D = window.NCANRecapData, L = window.NCANMeetingLinks, S = window.NCANCourseStrip;
+  var D = window.NCANRecapData, L = window.NCANMeetingLinks, S = window.NCANCourseStrip, Looks = window.NCANCardLooks;
   var $ = function (id) { return document.getElementById(id); };
   var FONTS = { display: '"Archivo", "Inter", system-ui, sans-serif', sans: '"Inter", system-ui, sans-serif' };
   var SITE = 'North Canterbury Athletic Club';
@@ -393,51 +395,114 @@
   }
 
   /* The preview card: drawn here, uploaded when publishing ------------------------- */
-  function drawCard(data) {
-    var Lay = D.cardLayout(D.cardFacts(data)), scale = Lay.scale;
-    var css = function (i, size) { return i.weight + ' ' + size + 'px ' + (i.font === 'display' ? FONTS.display : FONTS.sans); };
+  // chosen: the card's look (card-looks.js resolve). Resolves the canvas; canvas.photoFailed
+  // if the photo couldn't be loaded (the card is drawn without it).
+  function drawCard(data, chosen) {
+    var Lay = Looks.build(D.cardFacts(data), chosen), scale = Lay.scale, W = Lay.w, H = Lay.h;
+    var css = function (i, size) {
+      return (i.italic ? 'italic ' : '') + i.weight + ' ' + size + 'px ' + (i.font === 'display' ? FONTS.display : FONTS.sans);
+    };
     var wait = document.fonts && document.fonts.load ? Promise.all(Lay.items.filter(function (i) { return i.kind === 'text'; })
       .map(function (i) { return document.fonts.load(css(i, i.size), i.words).catch(function () {}); })) : Promise.resolve();
-    var logo = new Promise(function (ok) {
-      var img = new Image();
-      img.onload = function () { ok(img); };
-      img.onerror = function () { ok(null); };
-      img.src = '/assets/img/logo-dark.svg';
-    });
-    // the strip, drawn sharp at the card's scale, as a picture to put on the canvas
-    var bands = Lay.items.filter(function (i) { return i.kind === 'strip'; }).map(function (i) {
+    var load = function (src, cors) {
       return new Promise(function (ok) {
         var img = new Image();
+        if (cors) { img.crossOrigin = 'anonymous'; }      // photos.ncan.nz allows ncan.nz, so the canvas can still be saved
         img.onload = function () { ok(img); };
         img.onerror = function () { ok(null); };
-        img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(S.svg(i.course, i.colour, i.w, i.h, { scale: scale }));
+        img.src = src;
       });
+    };
+    var svgSrc = function (svg, w, h) {
+      return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="' + w * scale +
+        '" height="' + h * scale + '" viewBox="0 0 ' + w + ' ' + h + '">' + svg + '</svg>');
+    };
+    var pics = Lay.items.map(function (i) {
+      if (i.kind === 'strip') {
+        return load('data:image/svg+xml;charset=utf-8,' + encodeURIComponent(S.svg(i.course, i.colour, i.w, i.h, { scale: scale })));
+      }
+      if (i.kind === 'svg') { return i.svg ? load(svgSrc(i.svg, W, H)) : Promise.resolve(null); }
+      if (i.kind === 'photo') { return load(i.url, true); }
+      if (i.kind === 'logo') { return load(i.dark ? '/assets/img/logo-dark.svg' : '/assets/img/logo.svg'); }
+      return Promise.resolve(null);
     });
-    return Promise.all([wait, logo, Promise.all(bands)]).then(function (got) {
+    var rgba = function (hex, a) {
+      var n = parseInt(hex.slice(1), 16);
+      return 'rgba(' + (n >> 16) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')';
+    };
+    // words as lit dots, like a scoreboard: drawn on their own, then sampled on a grid
+    function dotted(c, i, size) {
+      var off = document.createElement('canvas'), o = off.getContext('2d');
+      o.font = css(i, size);
+      var w = Math.min(o.measureText(i.words).width, i.max) + 4, h = size * 1.3;
+      off.width = Math.ceil(w * scale); off.height = Math.ceil(h * scale);
+      o = off.getContext('2d');
+      o.scale(scale, scale);
+      o.font = css(i, size);
+      o.fillStyle = '#000';
+      o.fillText(i.words, 2, size, i.max);
+      var px = o.getImageData(0, 0, off.width, off.height).data, step = Math.max(2.4, size / 13);
+      var left = i.align === 'center' ? i.x - w / 2 : i.align === 'right' ? i.x - w : i.x, top = i.y - size;
+      c.fillStyle = i.colour;
+      for (var y = step / 2; y < h; y += step) {
+        for (var x = step / 2; x < w; x += step) {
+          var at = (Math.floor(y * scale) * off.width + Math.floor(x * scale)) * 4 + 3;
+          if (px[at] > 110) { c.beginPath(); c.arc(left + x - 2, top + y, step * 0.4, 0, Math.PI * 2); c.fill(); }
+        }
+      }
+    }
+    return Promise.all([wait, Promise.all(pics)]).then(function (got) {
+      var pic = got[1];
       var canvas = document.createElement('canvas');
-      canvas.width = Lay.w * scale; canvas.height = Lay.h * scale;
+      canvas.width = W * scale; canvas.height = H * scale;
       var c = canvas.getContext('2d');
       c.scale(scale, scale);
       c.textBaseline = 'alphabetic';
-      Lay.items.forEach(function (i) {
+      Lay.items.forEach(function (i, n) {
+        var img = pic[n];
         if (i.kind === 'rect') {
           c.fillStyle = i.colour;
           if (i.round && c.roundRect) { c.beginPath(); c.roundRect(i.x, i.y, i.w, i.h, i.round); c.fill(); }
           else { c.fillRect(i.x, i.y, i.w, i.h); }
+        } else if (i.kind === 'svg') {
+          if (img) { c.drawImage(img, 0, 0, W, H); }
         } else if (i.kind === 'strip') {
-          var pic = got[2].shift();
           c.fillStyle = i.colour;
-          if (pic) { c.drawImage(pic, i.x, i.y, i.w, i.h); } else { c.fillRect(i.x, i.y, i.w, i.h); }
+          if (img) { c.drawImage(img, i.x, i.y, i.w, i.h); } else { c.fillRect(i.x, i.y, i.w, i.h); }
+        } else if (i.kind === 'photo') {
+          if (!img) { canvas.photoFailed = true; return; }
+          // covering the card, cut at the focus (0 the top of the photo, 100 the bottom)
+          var k = Math.max(W / img.naturalWidth, H / img.naturalHeight), dw = img.naturalWidth * k, dh = img.naturalHeight * k;
+          c.drawImage(img, (W - dw) / 2, (H - dh) * (i.focus / 100), dw, dh);
+        } else if (i.kind === 'shade') {
+          if (canvas.photoFailed) { return; }
+          if (i.mode === 'side') {
+            var g = c.createLinearGradient(0, 0, W, 0);
+            g.addColorStop(0, rgba(i.colour, 0.96)); g.addColorStop(0.55, rgba(i.colour, 0.8)); g.addColorStop(1, rgba(i.colour, 0.2));
+            c.fillStyle = g;
+          } else {
+            c.fillStyle = rgba(i.colour, 0.66);
+          }
+          c.fillRect(0, 0, W, H);
         } else if (i.kind === 'logo') {
-          if (got[1]) { c.drawImage(got[1], i.x, i.y, i.w, i.h); }
+          if (img) { c.drawImage(img, i.x, i.y, i.w, i.h); }
         } else if (i.kind === 'text') {
           // too wide: smaller, down to two-thirds, then squeezed
-          var size = i.size;
+          var size = i.size, sq = i.squeeze || 1;
           c.font = css(i, size);
           if ('letterSpacing' in c) { c.letterSpacing = i.spacing + 'px'; }
-          while (c.measureText(i.words).width > i.max && size > i.size * 0.67) { size -= 1; c.font = css(i, size); }
+          while (c.measureText(i.words).width * sq > i.max && size > i.size * 0.67) { size -= 1; c.font = css(i, size); }
           c.fillStyle = i.colour; c.textAlign = i.align;
-          c.fillText(i.words, i.x, i.y, i.max);
+          if (i.dots) {
+            dotted(c, i, size);
+          } else {
+            c.save();
+            c.translate(i.x, i.y);
+            if (i.rotate) { c.rotate(i.rotate * Math.PI / 180); }
+            if (sq !== 1) { c.scale(sq, 1); }
+            c.fillText(i.words, 0, 0, i.max / sq);
+            c.restore();
+          }
           if ('letterSpacing' in c) { c.letterSpacing = '0px'; }
         }
       });
@@ -507,7 +572,11 @@
     var out = $('recap-edit-out');
     var keys = D.recordKeys(recordList, (data.meeting || {}).meet);
     var S = { step: 0, picked: (data.recap.highlights || []).slice(), title: data.recap.title || '', intro: data.recap.intro || '',
-              names: data.recap.names || 'first', include: (data.recap.include || []).slice() };
+              names: data.recap.names || 'first', include: (data.recap.include || []).slice(),
+              chosen: Looks.resolve(data.recap.look, data.meeting, data.counts) };
+    // the look as saved: only what differs from the suggestion, in a set order
+    var lookKey = function (look) { return JSON.stringify(Object.keys(look || {}).sort().map(function (k) { return [k, look[k]]; })); };
+    var lookToSave = function () { return Looks.toSave(S.chosen, data.meeting, data.counts); };
     var said = status('access-status recap-edit__said');
     var down = null;
     var stateLine = el('p', 'recap-edit__state');
@@ -529,7 +598,7 @@
       var h = D.checkHeadline(S.title, S.intro);
       return h.title !== (data.recap.title || '') || h.intro !== (data.recap.intro || '') ||
         S.picked.join('\n') !== (data.recap.highlights || []).join('\n') || S.names !== (data.recap.names || 'first') ||
-        S.include.join(' ') !== (data.recap.include || []).join(' ');
+        S.include.join(' ') !== (data.recap.include || []).join(' ') || lookKey(lookToSave()) !== lookKey(data.recap.look);
     }
     // POST /v1/recaps/<id>: resolves true when saved (or nothing to save), false if not
     function save() {
@@ -539,12 +608,13 @@
       FormLock.lock(out, true);
       said.textContent = 'Saving…';
       return NCAN.send('/recaps/' + encodeURIComponent(id), { title: h.title, intro: h.intro, highlights: S.picked, include: S.include, names: S.names,
-                                                              since: data.recap.updated }).then(function (r) {
+                                                              look: lookToSave(), since: data.recap.updated }).then(function (r) {
         FormLock.lock(out, false);
         if (r.status === 200) {
           data = r.body;
           S.title = data.recap.title || ''; S.intro = data.recap.intro || ''; S.picked = (data.recap.highlights || []).slice();
           S.names = data.recap.names || 'first'; S.include = (data.recap.include || []).slice();
+          S.chosen = Looks.resolve(data.recap.look, data.meeting, data.counts);
           said.textContent = 'Saved.';
           heading();
           return true;
@@ -893,17 +963,22 @@
       'and the card that shows when the link is posted.'));
     panes[4].appendChild(pv);
     panes[4].appendChild(el('h3', 'recap-step__sub', 'The link’s preview card'));
+    var lookBox = el('div', 'recap-look');
+    var cardSaid = status('recap-look__said');
     panes[4].appendChild(cardBox);
+    panes[4].appendChild(cardSaid);
+    panes[4].appendChild(lookBox);
     panes[4].appendChild(shareBox);
     panes[4].appendChild(pubForm);
     var canvas = null;
 
-    function fillPreview() {
-      drawRecap(pv, data, { preview: true, keys: keys });
-      cardBox.textContent = '';
-      cardBox.appendChild(el('p', 'mem-help', 'Drawing the card…'));
+    var drawn = 0, redrawAt = null;
+    function redraw() {
+      var n = ++drawn;
       canvas = null;
-      drawCard(data).then(function (cv) {
+      drawPublish();
+      drawCard(data, S.chosen).then(function (cv) {
+        if (n !== drawn) { return; }               // a newer look is being drawn
         canvas = cv;
         cardBox.textContent = '';
         cv.className = 'recap-cardpv__canvas';
@@ -912,10 +987,217 @@
           D.cardFacts(data).counts.map(function (c) { return c.n + ' ' + c.words; }).join(', '));
         cardBox.appendChild(cv);
         cardBox.appendChild(el('figcaption', 'mem-help', '1200 × 630, for Facebook, Messenger and WhatsApp.'));
+        cardSaid.textContent = cv.photoFailed ? 'The photo couldn’t be loaded, so the card is drawn without it.' : '';
         drawPublish();
       });
-      drawPublish();
+    }
+    function changed() {
+      said.textContent = '';
+      fillLook();
+      clearTimeout(redrawAt);
+      redrawAt = setTimeout(redraw, 120);
+    }
+
+    function fillPreview() {
+      drawRecap(pv, data, { preview: true, keys: keys });
+      cardBox.textContent = '';
+      cardBox.appendChild(el('p', 'mem-help', 'Drawing the card…'));
+      fillLook();
+      redraw();
       drawShare();
+    }
+
+    /* the card's look: the suggestion for the meeting, and every part of it to change */
+    var look = {};
+    (function () {
+      var intro = el('p', 'recap-look__why');
+      var use = button('Use the suggestion');
+      var shuffle = button('Surprise me');
+      var top = el('div', 'recap-look__top');
+      top.appendChild(intro);
+      var acts = el('p', 'recap-look__acts');
+      acts.appendChild(use); acts.appendChild(shuffle);
+      top.appendChild(acts);
+      lookBox.appendChild(top);
+      var grid = el('div', 'recap-look__grid');
+      lookBox.appendChild(grid);
+      function field(id, words, control) {
+        var p = el('p', 'records-field recap-look__field');
+        var lab = el('label', null, words);
+        lab.htmlFor = 'recap-look-' + id;
+        control.id = 'recap-look-' + id;
+        p.appendChild(lab); p.appendChild(control);
+        grid.appendChild(p);
+        return p;
+      }
+      function select(id, words, list, groups) {
+        var sel = el('select');
+        if (groups) {
+          groups.forEach(function (g) {
+            var og = el('optgroup');
+            og.label = g;
+            list.filter(function (x) { return x.group === g; }).forEach(function (x) {
+              var o = el('option', null, x.name);
+              o.value = x.id;
+              og.appendChild(o);
+            });
+            sel.appendChild(og);
+          });
+        } else {
+          list.forEach(function (x) { var o = el('option', null, x.name); o.value = x.id; sel.appendChild(o); });
+        }
+        sel.addEventListener('change', function () {
+          S.chosen[id] = sel.value;
+          if (id === 'theme') { S.chosen.accent = ''; }       // a new theme: its own accent colour
+          changed();
+        });
+        field(id, words, sel);
+        look[id] = sel;
+        return sel;
+      }
+      select('theme', 'Theme', Looks.THEMES, Looks.GROUPS);
+      select('layout', 'Layout', Looks.LAYOUTS);
+      select('feature', 'Count to feature', Looks.FEATURES);
+      select('font', 'Font', Looks.FONTS);
+      select('pattern', 'Pattern', Looks.PATTERNS);
+      select('sticker', 'Sticker', Looks.STICKERS);
+
+      var colourWrap = el('span', 'recap-look__colour');
+      var colour = el('input');
+      colour.type = 'color';
+      colour.addEventListener('input', function () { S.chosen.accent = colour.value.toLowerCase(); changed(); });
+      var reset = button('Theme’s colour', 'btn btn--ghost btn--sm');
+      reset.addEventListener('click', function () { S.chosen.accent = ''; changed(); });
+      colourWrap.appendChild(colour);
+      colourWrap.appendChild(reset);
+      var cf = field('accent', 'Accent colour', colour);
+      cf.appendChild(colourWrap);
+      colourWrap.insertBefore(colour, reset);
+      look.accent = colour; look.reset = reset;
+      look.warn = el('span', 'recap-look__warn');
+      cf.appendChild(look.warn);
+
+      var head = el('input');
+      head.type = 'text'; head.maxLength = Looks.HEADLINE_MAX; head.autocomplete = 'off';
+      head.addEventListener('input', function () { S.chosen.headline = head.value; changed(); });
+      field('headline', 'Line at the top', head);
+      look.headline = head;
+
+      // a photo from the club's gallery, faded into the theme
+      var ph = el('div', 'recap-look__photo');
+      ph.appendChild(el('h4', 'recap-look__sub', 'A photo behind it (optional)'));
+      ph.appendChild(el('p', 'mem-help', 'Pick an album from the club’s gallery, then a photo. It’s faded into the theme’s colour.'));
+      var albumP = el('p', 'records-field recap-look__field');
+      var albumLab = el('label', null, 'Album');
+      var album = el('select');
+      album.id = 'recap-look-album';
+      albumLab.htmlFor = album.id;
+      var none = el('option', null, 'Choose an album');
+      none.value = '';
+      album.appendChild(none);
+      albumP.appendChild(albumLab); albumP.appendChild(album);
+      ph.appendChild(albumP);
+      var thumbs = el('ul', 'recap-look__thumbs');
+      var more = button('More photos');
+      more.hidden = true;
+      var chosenP = el('div', 'recap-look__chosen');
+      var focusP = el('p', 'records-field recap-look__field');
+      var focusLab = el('label', null, 'Photo position (top to bottom)');
+      var focus = el('input');
+      focus.type = 'range'; focus.min = '0'; focus.max = '100'; focus.step = '5'; focus.id = 'recap-look-focus';
+      focusLab.htmlFor = focus.id;
+      focus.addEventListener('input', function () { S.chosen.focus = +focus.value; changed(); });
+      focusP.appendChild(focusLab); focusP.appendChild(focus);
+      var drop = button('Remove the photo', 'btn btn--ghost btn--sm');
+      drop.addEventListener('click', function () { S.chosen.photo = ''; S.chosen.focus = 50; changed(); });
+      ph.appendChild(thumbs); ph.appendChild(more); ph.appendChild(chosenP); ph.appendChild(focusP); ph.appendChild(drop);
+      lookBox.appendChild(ph);
+      look.focus = focus; look.focusP = focusP; look.drop = drop; look.chosenP = chosenP;
+
+      var photos = [], shown = 0, PAGE = 24;
+      function showThumbs() {
+        photos.slice(shown, shown + PAGE).forEach(function (url) {
+          var li = el('li');
+          var b = el('button', 'recap-look__thumb');
+          b.type = 'button';
+          b.setAttribute('aria-label', 'Use this photo');
+          var img = el('img');
+          img.alt = ''; img.loading = 'lazy'; img.decoding = 'async';
+          img.src = url.replace('/gallery/', '/thumbs/');
+          b.appendChild(img);
+          b.addEventListener('click', function () { S.chosen.photo = url; S.chosen.focus = 50; changed(); });
+          b.dataset.url = url;
+          li.appendChild(b);
+          thumbs.appendChild(li);
+        });
+        shown = Math.min(photos.length, shown + PAGE);
+        more.hidden = shown >= photos.length;
+        fillLook();
+      }
+      more.addEventListener('click', showThumbs);
+      album.addEventListener('change', function () {
+        thumbs.textContent = ''; photos = []; shown = 0; more.hidden = true;
+        if (!album.value) { return; }
+        thumbs.appendChild(el('li', 'mem-help', 'Loading the album…'));
+        fetch('/gallery/' + encodeURIComponent(album.value) + '/').then(function (r) {
+          if (!r.ok) { throw new Error(r.status); }
+          return r.text();
+        }).then(function (html) {
+          var seen = {};
+          (html.match(/https:\/\/photos\.ncan\.nz\/gallery\/[^"'()\s]+?\.jpg/gi) || []).forEach(function (u) {
+            if (!seen[u]) { seen[u] = true; photos.push(u); }
+          });
+          thumbs.textContent = '';
+          if (!photos.length) { thumbs.appendChild(el('li', 'mem-help', 'No photos found in that album.')); return; }
+          showThumbs();
+        }).then(null, function () {
+          thumbs.textContent = '';
+          thumbs.appendChild(el('li', 'mem-help', 'Sorry, that album couldn’t be loaded.'));
+        });
+      });
+      fetch('/assets/data/album-cards.json').then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
+        Object.keys((j && j.albums) || {}).sort().reverse().forEach(function (slug) {
+          var o = el('option', null, slug.replace(/-/g, ' ').replace(/\b[a-z]/g, function (c) { return c.toUpperCase(); }));
+          o.value = slug;
+          album.appendChild(o);
+        });
+      }).then(null, function () {});
+
+      use.addEventListener('click', function () { S.chosen = Looks.resolve({}, data.meeting, data.counts); changed(); });
+      shuffle.addEventListener('click', function () {
+        var any = function (list) { return list[Math.floor(Math.random() * list.length)].id; };
+        S.chosen.theme = any(Looks.THEMES); S.chosen.layout = any(Looks.LAYOUTS); S.chosen.pattern = any(Looks.PATTERNS);
+        S.chosen.sticker = any(Looks.STICKERS); S.chosen.font = any(Looks.FONTS); S.chosen.accent = '';
+        changed();
+      });
+      look.intro = intro;
+    }());
+
+    // the controls, as the look now is
+    function fillLook() {
+      var ch = S.chosen, sg = ch.suggested, theme = Looks.theme(ch.theme);
+      look.intro.textContent = 'Suggested for this meeting: ' + Looks.theme(sg.theme).name + ', ' +
+        Looks.find(Looks.LAYOUTS, sg.layout).name.toLowerCase() + ' layout (' + sg.why + '). Change anything you like.';
+      ['theme', 'layout', 'feature', 'font', 'pattern', 'sticker'].forEach(function (k) { look[k].value = ch[k]; });
+      var accent = ch.accent || theme.accent;
+      look.accent.value = accent.length === 7 ? accent.toLowerCase() : '#ffffff';
+      look.reset.hidden = !ch.accent;
+      var bg = ch.layout === 'scoreboard' ? '#0B0B0B' : theme.bg;
+      look.warn.textContent = Looks.accentReads(accent, bg) ? '' : 'This colour is hard to read on the theme’s background.';
+      if (document.activeElement !== look.headline) { look.headline.value = ch.headline; }
+      look.headline.placeholder = theme.eyebrow.charAt(0) + theme.eyebrow.slice(1).toLowerCase();
+      look.focusP.hidden = look.drop.hidden = !ch.photo;
+      look.focus.value = String(ch.focus);
+      look.chosenP.textContent = '';
+      if (ch.photo) {
+        var img = el('img', 'recap-look__chosen-img');
+        img.alt = ''; img.src = ch.photo.replace('/gallery/', '/thumbs/');
+        look.chosenP.appendChild(img);
+        look.chosenP.appendChild(el('span', 'mem-help', 'The photo behind the card.'));
+      }
+      Array.prototype.forEach.call(lookBox.querySelectorAll('.recap-look__thumb'), function (b) {
+        b.setAttribute('aria-pressed', b.dataset.url === ch.photo ? 'true' : 'false');
+      });
     }
 
     function drawPublish() {
