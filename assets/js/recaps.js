@@ -127,6 +127,13 @@
   function highlightCard(r, opts) {
     var why = D.reasons(r, opts.keys);
     var li = el('li', 'recap-hl recap-hl--' + D.cardTone(why.length ? why : ['pb']));
+    // a podium finish: its medal in the top right corner, as on the athlete pages
+    if (r.medal >= 1 && r.medal <= 3) {
+      li.classList.add('recap-hl--medal');
+      var medal = el('span', 'recap-hl__medal', ['🥇', '🥈', '🥉'][r.medal - 1]);
+      medal.setAttribute('aria-hidden', 'true');
+      li.appendChild(medal);
+    }
     var c = chips(r, opts.keys, 'recap-chips recap-hl__chips');
     if (c) { li.appendChild(c); }
     li.appendChild(el('p', 'recap-hl__name', nameOf(r, opts)));
