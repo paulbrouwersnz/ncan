@@ -261,8 +261,14 @@
   ];
   var STICKERS = [
     { id: 'none', name: 'None' }, { id: 'pb', name: 'New PBs stamp' }, { id: 'burst', name: 'Starburst' }, { id: 'medal', name: 'Medal' },
-    { id: 'trophy', name: 'Trophy' }, { id: 'star', name: 'Star' }, { id: 'bolt', name: 'Lightning' }, { id: 'flame', name: 'Flame' }
+    { id: 'trophy', name: 'Trophy' }, { id: 'star', name: 'Star' }, { id: 'bolt', name: 'Lightning' }, { id: 'flame', name: 'Flame' },
+    { id: 'win', name: 'Race win stamp' }, { id: 'top10', name: 'Top 10 stamp' }, { id: 'finisher', name: 'Finisher medal' }
   ];
+  // the stickers a meeting offers: no New PBs stamp out of the stadium, and its own stamps there
+  function stickersFor(out) {
+    var skip = out ? ['pb'] : ['win', 'top10', 'finisher'];
+    return STICKERS.filter(function (s) { return skip.indexOf(s.id) < 0; });
+  }
   // how a sticker is drawn; saved as part of its name ("flame-realistic"), the default left off
   var STICKER_STYLES = [
     { id: 'gradient', name: 'Glossy' }, { id: 'clipart', name: 'Clipart' }, { id: 'translucent', name: 'Translucent' },
@@ -282,7 +288,16 @@
     { id: 'condensed', name: 'Condensed', weight: 900, squeeze: 0.72, grow: 1.12 }, { id: 'light', name: 'Light', weight: 300 },
     { id: 'dots', name: 'Scoreboard lights', weight: 800, dots: true }
   ];
-  var FEATURES = [{ id: 'pbs', name: 'PBs' }, { id: 'athletes', name: 'Athletes' }, { id: 'podiums', name: 'Podiums' }];
+  var FEATURES = [{ id: 'pbs', name: 'PBs' }, { id: 'athletes', name: 'Athletes' }, { id: 'podiums', name: 'Podiums' },
+                  { id: 'km', name: 'Kilometres raced' }, { id: 'wins', name: 'Race wins' }, { id: 'top10', name: 'Top 10s' }];
+  // the counts a meeting can feature: out of the stadium there are no PBs, and the
+  // kilometres raced, race wins and top 10s instead
+  function featuresFor(out) {
+    var ids = out ? ['athletes', 'km', 'podiums', 'wins', 'top10'] : ['pbs', 'athletes', 'podiums'];
+    return FEATURES.filter(function (f) { return ids.indexOf(f.id) >= 0; }).map(function (f) {
+      return out && f.id === 'athletes' ? { id: f.id, name: 'Runners' } : f;
+    });
+  }
   var HEADLINE_MAX = 28;
   function find(list, id) { for (var i = 0; i < list.length; i++) { if (list[i].id === id) { return list[i]; } } return null; }
 
@@ -407,6 +422,7 @@
   };
   function featureFor(counts) {
     counts = counts || {};
+    if (counts.out) { return counts.km ? 'km' : counts.medals ? 'podiums' : 'athletes'; }
     return counts.pbs ? 'pbs' : counts.medals ? 'podiums' : 'athletes';
   }
   // the whole suggested look for a meeting (counts: the recap's, to pick what to feature)
@@ -553,6 +569,21 @@
               { el: 'rect', a: { x: -24, y: 30, width: 48, height: 16, rx: 3 }, c: '#5B3A1A' }];
     },
     star: function () { return [{ el: 'polygon', a: { points: starPoints(54, 5, 0.46) }, c: '#FFC629', metal: true }]; },
+    win: function () {
+      return [{ el: 'polygon', a: { points: starPoints(52, 16, 0.86) }, c: GOLD, metal: true },
+              { el: 'circle', a: { cx: 0, cy: 0, r: 36 }, detail: 'fill="none" stroke="#FFF3C4" stroke-width="2" stroke-dasharray="4 3"' }];
+    },
+    top10: function () {
+      return [{ el: 'path', a: { d: 'M0 -50 L42 -34 V4 C42 28 22 44 0 52 C-22 44 -42 28 -42 4 V-34 Z' }, c: '#2F8F4E' },
+              { el: 'path', a: { d: 'M0 -40 L33 -27 V4 C33 22 18 35 0 42 C-18 35 -33 22 -33 4 V-27 Z' },
+                detail: 'fill="none" stroke="#FFFFFF" stroke-width="2" opacity=".8"' }];
+    },
+    finisher: function () {
+      return [{ el: 'polygon', a: { points: '-22,-60 -4,-60 10,-14 -8,-14' }, c: '#2F8F4E' },
+              { el: 'polygon', a: { points: '22,-60 4,-60 -10,-14 8,-14' }, c: '#FFC629' },
+              { el: 'circle', a: { cx: 0, cy: 8, r: 32 }, c: '#C9D0D6', metal: true },
+              { el: 'circle', a: { cx: 0, cy: 8, r: 25 }, detail: 'fill="none" stroke="#FFFFFF" stroke-width="2" opacity=".8"' }];
+    },
     bolt: function () { return [{ el: 'polygon', a: { points: '8,-56 -26,6 -2,6 -12,56 26,-10 2,-10 14,-56' }, c: '#FFD34D' }]; },
     flame: function () {
       return [{ el: 'path', a: { d: 'M0 50 C-34 40 -36 4 -14 -22 C-12 -6 -4 0 0 2 C2 -18 -2 -34 10 -52 C14 -30 36 -14 32 16 C30 38 16 48 0 50 Z' }, c: '#FF6A13' },
@@ -629,6 +660,9 @@
     else if (id === 'burst') { t(String(feat.n), 8, 34, 900, '#FFFFFF'); t(feat.words.toUpperCase(), 26, 12, 800, '#FFFFFF', 1); }
     else if (id === 'medal') { t('1', 20, 32, 900, '#5A4300'); }
     else if (id === 'trophy') { t(String(feat.n), -12, 24, 900, '#5A4300'); }
+    else if (id === 'win') { t('RACE', -6, 13, 900, '#5A4300', 2); t('WIN!', 18, 24, 900, '#5A4300'); }
+    else if (id === 'top10') { t('TOP', -10, 13, 900, '#FFFFFF', 2); t('10', 18, 30, 900, '#FFFFFF'); }
+    else if (id === 'finisher') { t('FINISHER', 13, 10, 900, '#26303A', 1); }
   }
 
   /* Where a sticker goes: the layout's own spot, or the first of the others that's clear
@@ -795,9 +829,9 @@
         R(20, 20, 560, 275, 'url(#ld)', 1, 'rx="10"') });
       add(o.headline, W / 2, 62, 22, { font: 'display', colour: t.soft, align: 'center', max: 480, spacing: 2 });
       add(f.title, W / 2, 106, 40, { font: 'display', colour: t.accent, align: 'center', max: 520 });
-      ['athletes', 'pbs', 'podiums'].forEach(function (k, i) {
-        var c = f.counts[i], x = 120 + i * 180;
-        add(String(c.n), x, 196, 76, { font: 'display', colour: k === o.featureId ? t.accent : '#FFFFFF', align: 'center', max: 160 });
+      f.counts.forEach(function (c, i) {
+        var x = 120 + i * 180;
+        add(String(c.n), x, 196, 76, { font: 'display', colour: c.id === o.featureId ? t.accent : '#FFFFFF', align: 'center', max: 160 });
         add(c.words, x, 228, 20, { font: 'display', colour: t.soft, align: 'center', max: 160 });
       });
       logoAt(items, { light: false }, 40, 248, 30);
@@ -842,10 +876,10 @@
       add(o.headline, 36, 50, 15, { weight: 800, colour: t.accent, spacing: 2, max: room });
       add(f.title, 36, 88, 32, { font: 'display', colour: t.text, max: room });
       add(f.line, 36, 114, 14, { colour: t.soft, max: room });
-      var ids = ['athletes', 'pbs', 'podiums'], rest = ids.filter(function (k) { return k !== o.featureId; });
-      var order = [rest[0], o.featureId, rest[1]], hs = [96, 128, 74], cs = [t.soft, t.accent, t.band];
-      order.forEach(function (k, i) {
-        var c = f.counts[ids.indexOf(k)], x = 56 + i * 128, h = hs[i], y = H - LANE - 4 - h, ink = onColour(cs[i]);
+      var rest = f.counts.filter(function (c) { return c.id !== o.featureId; });
+      var order = [rest[0], o.feature, rest[1]], hs = [96, 128, 74], cs = [t.soft, t.accent, t.band];
+      order.forEach(function (c, i) {
+        var x = 56 + i * 128, h = hs[i], y = H - LANE - 4 - h, ink = onColour(cs[i]);
         items.push({ kind: 'rect', x: x, y: y, w: 120, h: h, colour: cs[i] });
         add(String(c.n), x + 60, y + 44, 36, { font: 'display', colour: ink, align: 'center', max: 108 });
         add(c.words, x + 60, y + 64, 13, { weight: 700, colour: ink, align: 'center', max: 108 });
@@ -899,11 +933,19 @@
     if (ART_LAYOUTS.indexOf(layout) < 0) { delete t.far; }     // no picture in the corner, so no light edge
     var font = find(FONTS, chosen.font) || FONTS[0];
     var items = [], add = adder(items, font, t);
-    var ids = ['athletes', 'pbs', 'podiums'], fi = Math.max(0, ids.indexOf(chosen.feature === 'pbs' ? 'pbs' : chosen.feature));
-    var counts = (facts.counts || []).slice(0, 3);
-    while (counts.length < 3) { counts.push({ n: 0, words: ['Athletes', 'PBs', 'Podiums'][counts.length] }); }
+    // the three counts shown, each with its id; the featured one among them (in place of
+    // the last if it isn't one of the three)
+    var IDS = ['athletes', 'pbs', 'podiums'];
+    var counts = (facts.counts || []).slice(0, 3).map(function (c, i) {
+      return { id: c.id || IDS[i], n: c.n, words: c.words };
+    });
+    while (counts.length < 3) { counts.push({ id: IDS[counts.length], n: 0, words: ['Athletes', 'PBs', 'Podiums'][counts.length] }); }
+    var all = facts.all || {}, fi = -1;
+    counts.forEach(function (c, i) { if (c.id === chosen.feature) { fi = i; } });
+    if (fi < 0 && all[chosen.feature]) { counts[2] = all[chosen.feature]; fi = 2; }
+    if (fi < 0) { fi = 1; }
     var f = { title: facts.title || 'Meeting results', line: facts.line || '', lane: facts.lane, course: facts.course, counts: counts };
-    var o = { headline: (chosen.headline || theme.eyebrow || '').toUpperCase(), feature: counts[fi], featureId: ids[fi],
+    var o = { headline: (chosen.headline || theme.eyebrow || '').toUpperCase(), feature: counts[fi], featureId: counts[fi].id,
               sticker: !!(stickerOf(chosen.sticker) && stickerOf(chosen.sticker).id !== 'none') };
     // the background, a photo faded into it, and a pattern
     var bg = [];
@@ -943,7 +985,7 @@
   return {
     W: W, H: H, SCALE: SCALE, GROUPS: GROUPS, THEMES: THEMES, LAYOUTS: LAYOUTS, PATTERNS: PATTERNS, STICKERS: STICKERS,
     STICKER_STYLES: STICKER_STYLES, stickerOf: stickerOf, stickerValue: stickerValue, textBox: textBox, hitsCircle: hitsCircle,
-    FONTS: FONTS, FEATURES: FEATURES, HEADLINE_MAX: HEADLINE_MAX, ACCENT_MIN: ACCENT_MIN, MATARIKI: MATARIKI,
+    FONTS: FONTS, FEATURES: FEATURES, featuresFor: featuresFor, stickersFor: stickersFor, HEADLINE_MAX: HEADLINE_MAX, ACCENT_MIN: ACCENT_MIN, MATARIKI: MATARIKI,
     theme: function (id) { return BY_ID[id] || null; }, find: find,
     easter: easter, showDay: showDay, occasion: occasion, season: season, suggestTheme: suggestTheme,
     suggest: suggest, resolve: resolve, toSave: toSave, contrast: contrast, onColour: onColour, accentReads: accentReads,

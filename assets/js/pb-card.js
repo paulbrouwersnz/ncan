@@ -22,12 +22,19 @@
   with a grade, ages 7-14) the surname is off unless the sharer turns it on; the
   place is in the words only when it's 1st, 2nd or 3rd, and any other place only on
   the medal, when the sharer chooses Show place.
+
+  Out of the stadium (cross country, road, trail: a.out), no PBs: the heading is the
+  race win (or, with Show place, a top 10 finish), the race bib's ribbon gives the
+  pace per km, and the card can say the athlete beat last year's race on the same
+  course (the same distance, faster, or a faster pace; lastYear) and how many km
+  they've raced this season.
 */
 (function (root, factory) {
-  var api = factory();
-  if (typeof module === 'object' && module.exports) { module.exports = api; }
+  var node = typeof module === 'object' && module.exports;
+  var api = factory(node ? require('./event-names.js') : root.NCANEventNames);
+  if (node) { module.exports = api; }
   else { root.NCANPbCard = api; }
-}(this, function () {
+}(this, function (E) {
   'use strict';
 
   var MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -100,6 +107,13 @@
     var k = a.kind || (a.prev ? 'newpb' : 'pb');
     return k === 'newpb' && !a.prev ? 'pb' : k;
   }
+  // out of the stadium: a race win; with Show place, a top 10 finish too (the place is on
+  // the medal); otherwise as any result
+  function outHeadline(r, showPlace, place) {
+    if (!r.relay && r.place === 1) { return 'RACE WIN'; }
+    if (showPlace && r.place >= 4 && r.place <= 10) { return 'TOP 10 FINISH'; }
+    return headlineFor('result', place);
+  }
   function headlineFor(kind, place) {
     if (kind === 'newpb') { return 'NEW PERSONAL BEST'; }
     if (kind === 'pb') { return 'PERSONAL BEST'; }
@@ -125,9 +139,51 @@
     var hide = (p.hide || []).filter(function (m) { return m >= 1 && m <= 12; });
     return { points: pts, field: !!r.field, span: p.span || '', note: note, hide: hide.length < 12 ? hide : [] };
   }
+  /* Last year's edition of the same race (its name without the year, 300 to 430 days
+     before) beaten: { by: 'time', faster, mark } over the same distance, or { by: 'pace',
+     pace, was } at another distance; null if not faster or not run. history: the
+     athlete's results out of the stadium. */
+  function edition(meeting) {
+    var s = String(meeting || '').toLowerCase().replace(/\b(19|20)\d\d\b|\bno\.?\s*\d+\b|\bday\s*\d+\b/g, ' ');
+    return s.replace(/[^a-z0-9]+/g, ' ').trim();
+  }
+  function daysBetween(a, b) {
+    var d = function (iso) { var p = String(iso).split('-'); return Date.UTC(+p[0], +p[1] - 1, +p[2]) / 864e5; };
+    return d(a) - d(b);
+  }
+  function lastYear(r, history) {
+    if (!r || typeof r.value !== 'number' || !r.date) { return null; }
+    var same = edition(r.meeting);
+    var before = (history || []).filter(function (p) {
+      var gap = p && p.date ? daysBetween(r.date, p.date) : 0;
+      return p !== r && typeof p.value === 'number' && gap >= 300 && gap <= 430 && edition(p.meeting) === same;
+    });
+    if (!before.length) { return null; }
+    var match = before.filter(function (p) { return p.event === r.event; });
+    if (match.length) {
+      var best = match.reduce(function (a, b) { return b.value < a.value ? b : a; });
+      return r.value < best.value ? { by: 'time', faster: Math.round((best.value - r.value) * 10) / 10, mark: best.mark || '' } : null;
+    }
+    var d = E.distance(r.event);
+    var sized = before.filter(function (p) { return E.distance(p.event); });
+    if (!d || !sized.length) { return null; }
+    var paceOf = function (p) { return p.value / (E.distance(p.event) / 1000); };
+    var was = Math.min.apply(null, sized.map(paceOf)), now = r.value / (d / 1000);
+    return now < was ? { by: 'pace', pace: Math.round(now * 10) / 10, was: Math.round(was * 10) / 10 } : null;
+  }
+  // km raced this season, up to and including this race
+  function kmThisSeason(r, history) {
+    var m = 0;
+    (history || []).forEach(function (p) {
+      if (p && p.season === r.season && p.date <= r.date && p.mark) { m += E.distance(p.event) || 0; }
+    });
+    return m / 1000;
+  }
+
   function facts(a) {
     var r = a.result || {}, kind = kindOf(a), place = r.relay ? '' : placeWord(r.place);
     var newpb = kind === 'newpb';
+    var out = !!a.out;
     // showPlace: the place on a medal in the corner, any place (a relay's: the team's place)
     var medal = a.showPlace ? medalFor(r.place) : null;
     if (medal) { place = ''; }     // said on the medal, so not in the words too
@@ -139,7 +195,7 @@
       kind: kind,
       medal: medal,
       untitled: untitled,
-      headline: untitled ? (place ? place.toUpperCase() + ' PLACE' : '') : headlineFor(kind, place),
+      headline: untitled ? (place ? place.toUpperCase() + ' PLACE' : '') : out ? outHeadline(r, a.showPlace, place) : headlineFor(kind, place),
       // Then and now: the earlier mark it's set against, what it was, and the gap
       then: then ? { mark: then.mark || '', date: day(then.date), label: then.label || 'Previous best' } : null,
       gap: then ? improvement(r, then) : '',
@@ -157,7 +213,11 @@
       // a podium place already in the headline isn't said twice
       place: kind === 'result' || untitled ? '' : place,
       group: a.group || '',
-      season: newpb ? seasonWords(a.pbsThisSeason || 0) : ''
+      // out of the stadium: beating last year in the gold line, the pace, km this season
+      season: newpb ? seasonWords(a.pbsThisSeason || 0) : out && a.lastYear ? E.lastYearWords(a.lastYear) : '',
+      out: out,
+      pace: out && a.pace > 0 ? E.pace(a.pace) : '',
+      km: out && a.km > 0 ? E.km(a.km * 1000) + ' km raced this season' : ''
     };
   }
 
@@ -322,10 +382,10 @@
     t(f.event, bx + 24, P.event, P.eventSize, { weight: 800, font: 'display', colour: SINGLET.ink, max: bw - 60 - P.ncan * 4.2 });
     t('ncan.nz', bx + bw - 24, P.event, P.ncan, { weight: 800, font: 'display', colour: SINGLET.ink, align: 'right', max: P.ncan * 4.2 });
     t(f.mark, cx, P.mark, P.markSize, { weight: 800, font: 'display', colour: SINGLET.ink, align: 'center', max: bw - 60 });
-    if (f.better) {
+    if (f.better || f.pace) {
       var rw = P.rib[1], rh = P.rib[2];
       items.push({ kind: 'rect', x: cx - rw / 2, y: P.rib[0], w: rw, h: rh, colour: SINGLET.gold, round: rh / 2 });
-      t('PB ' + f.better, cx, P.rib[0] + rh * 0.7, P.rib[3], { weight: 800, font: 'display', colour: SINGLET.ink, align: 'center' });
+      t(f.better ? 'PB ' + f.better : f.pace, cx, P.rib[0] + rh * 0.7, P.rib[3], { weight: 800, font: 'display', colour: SINGLET.ink, align: 'center' });
     }
     t(f.meeting, cx, P.meet, P.meetSize, { weight: 700, colour: SINGLET.ink, align: 'center', max: bw - 120 });
     t([f.date, f.where].filter(Boolean).join(' · '), cx, P.date, P.dateSize, { colour: SINGLET.inkSoft, align: 'center', max: bw - 120 });
@@ -333,10 +393,12 @@
     items.slice(from).forEach(function (i) { i.tilt = [cx, by + bh / 2, BIB_TILT]; });
 
     // under the bib, left of the singlet's sweep: the earlier best, place and wind, the season
+    // and km raced (out of the stadium); a line only while its baseline is above the crest
     var y = P.lines;
     [[[f.was ? 'Previous best ' + f.was : '', f.place, f.wind].filter(Boolean).join(' · '), { weight: 600 }],
-     [f.season, { colour: COLOURS.goldSoft, weight: 600 }]].forEach(function (l) {
-      if (l[0]) { t(l[0], pad, y, P.size, { weight: l[1].weight, colour: l[1].colour, max: W * 0.5 }); y += P.step; }
+     [f.season, { colour: COLOURS.goldSoft, weight: 600 }],
+     [f.km, { colour: COLOURS.soft, weight: 600 }]].forEach(function (l) {
+      if (l[0] && y <= H - pad - P.logo) { t(l[0], pad, y, P.size, { weight: l[1].weight, colour: l[1].colour, max: W * 0.5 }); y += P.step; }
     });
 
     // the club's crest and name (ncan.nz is on the bib)
@@ -1069,7 +1131,7 @@
 
   var api = { SIZES: SIZES, COLOURS: COLOURS, day: day, placeWord: placeWord, medalFor: medalFor, improvement: improvement,
            cardName: cardName, surnameByDefault: surnameByDefault, seasonWords: seasonWords, facts: facts, whereWords: whereWords,
-           caption: caption, fileName: fileName, headlineFor: headlineFor, cover: cover, parseFocus: parseFocus, move: move, ZOOM_MAX: ZOOM_MAX, STYLES: ['podium', 'photo', 'event', 'thennow', 'progress', 'bib'], chartPoints: chartPoints,
+           caption: caption, fileName: fileName, headlineFor: headlineFor, lastYear: lastYear, kmThisSeason: kmThisSeason, cover: cover, parseFocus: parseFocus, move: move, ZOOM_MAX: ZOOM_MAX, STYLES: ['podium', 'photo', 'event', 'thennow', 'progress', 'bib'], chartPoints: chartPoints,
            SURFACES: Object.keys(SURFACES), setTracks: setTracks, sceneFor: sceneFor, sceneHasTrack: sceneHasTrack, layout: layout, overlaps: overlaps, render: render };
   return api;
 }));

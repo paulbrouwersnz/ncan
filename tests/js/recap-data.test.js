@@ -196,11 +196,27 @@ test('admin filter', () => {
 test('showing every first place, podium place, new PB or first time', () => {
   const rs = [res({ key: 'w', medal: 1, place: 1, pb: 'new' }), res({ key: 's', medal: 2, place: 2 }),
     res({ key: 'p', pb: 'new' }), res({ key: 'f', pb: 'first' }), res({ key: 'n' })];
-  assert.deepEqual(rs.map((r) => R.includeKinds(r).join('+')), ['win+podium+pb', 'podium', 'pb', 'first', '']);
-  assert.deepEqual(R.includeCounts(rs), { win: 1, podium: 2, pb: 2, first: 1 });
+  assert.deepEqual(rs.map((r) => R.includeKinds(r).join('+')), ['win+podium+top10+pb', 'podium+top10', 'pb', 'first', '']);
+  assert.deepEqual(R.includeCounts(rs), { win: 1, podium: 2, top10: 2, pb: 2, first: 1, faster: 0 });
   assert.deepEqual(rs.filter((r) => R.included(r, ['win', 'first'])).map((r) => r.key), ['w', 'f']);
   assert.equal(R.included(rs[4], ['win', 'podium', 'pb', 'first']), false);
-  assert.deepEqual(R.INCLUDE.map((k) => k.label), ['Personal bests', 'First time competing', 'Podium finishes', 'First places']);
+  assert.deepEqual(R.includeFor(false).map((k) => k.label), ['Personal bests', 'First time competing', 'Podium finishes', 'First places']);
+  // out of the stadium: no PBs or first times; race wins, top 10s, faster than last year
+  assert.deepEqual(R.includeFor(true).map((k) => k.label), ['Race wins', 'Podium finishes', 'Top 10 finishes', 'Faster than last year']);
+});
+
+test('out of the stadium: km, pace, top 10s, faster than last year, and the card counts', () => {
+  const r = res({ key: 'x', event: 'Cross country 4000m', out: true, place: 7, of: 64, pace: 250,
+    lastyear: { by: 'pace', pace: 250, was: 260 } });
+  assert.equal(R.eventLabel(r), '4 km cross country');
+  assert.equal(R.paceWords(r), '4:10 /km');
+  assert.equal(R.lastYearWords(r), 'Faster pace than last year: 4:10 /km (was 4:20 /km)');
+  assert.deepEqual(R.reasons(r, new Set()), ['top10', 'faster']);
+  assert.deepEqual(R.reasons(r, new Set()).map((w) => R.chipWords(w, r)), ['Top 10', 'Faster than last year']);
+  assert.equal(R.paceWords(res({ event: '1500m', pace: 250 })), '');
+  const f = R.cardFacts({ recap: { title: 'XC' }, meeting: {}, counts: { out: true, athletes: 24, km: 118.4, medals: 5, wins: 3, top10: 9 } });
+  assert.deepEqual(f.counts.map((c) => c.n + ' ' + c.words), ['24 Runners', '118 Kilometres', '5 Podiums']);
+  assert.deepEqual([f.all.wins.n, f.all.top10.words], [3, 'Top 10s']);
 });
 
 test('preview card: 1200 x 630, counts, the track strip in its colour, all on the card', () => {

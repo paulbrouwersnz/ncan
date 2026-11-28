@@ -1488,9 +1488,14 @@
     var r = card.r;
     // cross country, road and relay legs: no PBs (courses differ), their own race name and grade
     if (card.oos) {
-      return window.NCANPbCard.facts({ kind: 'result', name: NCAN.athlete && NCAN.athlete.name, surname: card.surname, result: r,
+      // the pace per km, last year's race beaten (when the sharer shows it), km this season
+      var PB = window.NCANPbCard, history = (athlete && athlete.offTrack) || [];
+      var d = window.NCANEventNames.distance(r.event);
+      return PB.facts({ kind: 'result', name: NCAN.athlete && NCAN.athlete.name, surname: card.surname, result: r,
         showPlace: card.place, where: card.where ? cardWhere(r) : null,
-        mark: r.mark, event: card.oos.event, group: r.oos_grade || '' });
+        mark: r.mark, event: card.oos.event, group: r.oos_grade || '', out: true,
+        pace: d && typeof r.value === 'number' ? r.value / (d / 1000) : 0,
+        lastYear: card.faster ? PB.lastYear(r, history) : null, km: PB.kmThisSeason(r, history) });
     }
     var prev = pbBefore(r), then = card.thens[card.then], span = card.spans[card.span];
     return window.NCANPbCard.facts({ kind: card.kind, name: NCAN.athlete && NCAN.athlete.name, surname: card.surname, showPlace: card.place, result: r, prev: prev,
@@ -1678,6 +1683,11 @@
     card.where = where;
     $('ath-card-where-row').hidden = !where;
     $('ath-card-where').checked = where;
+    // out of the stadium: "faster than last year", offered (and on at first) when they were
+    var faster = !!(card.oos && window.NCANPbCard.lastYear(r, (athlete && athlete.offTrack) || []));
+    card.faster = faster;
+    $('ath-card-faster-row').hidden = !faster;
+    $('ath-card-faster').checked = faster;
     card.surface = cardTrackFor(r);
     $('ath-card-surface').value = card.surface;
     $('ath-card-ok').checked = false;
@@ -1908,6 +1918,7 @@
     $('ath-card-surname').addEventListener('change', function () { card.surname = this.checked; cardDraw(); });
     $('ath-card-place').addEventListener('change', function () { card.place = this.checked; cardDraw(); });
     $('ath-card-where').addEventListener('change', function () { card.where = this.checked; cardDraw(); });
+    $('ath-card-faster').addEventListener('change', function () { card.faster = this.checked; cardDraw(); });
     $('ath-card-ok').addEventListener('change', cardButtons);
     $('ath-card-save').addEventListener('click', cardSave);
     cardAdjustSetUp();
