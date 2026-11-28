@@ -141,9 +141,10 @@
     li.appendChild(el('p', 'recap-hl__name', nameOf(r, opts)));
     li.appendChild(el('p', 'recap-hl__event', [D.eventLabel(r), D.groupLabel(r)].filter(Boolean).join(' · ')));
     li.appendChild(el('p', 'recap-hl__mark', r.mark));
-    var more = [r.pb === 'new' && r.prev ? 'Previous best ' + r.prev : '', D.placeWords(r),
+    var more = [r.pb === 'new' && r.prev ? 'Previous best ' + r.prev : '', D.placeWords(r), D.paceWords(r),
                 D.windWords(r) ? (r.windy ? 'Wind-assisted ' : 'Wind ') + D.windWords(r) : ''].filter(Boolean);
     if (more.length) { li.appendChild(el('p', 'recap-hl__more', more.join(' · '))); }
+    if (r.lastyear) { li.appendChild(el('p', 'recap-hl__more recap-hl__faster', D.lastYearWords(r))); }
     return li;
   }
 
@@ -157,6 +158,12 @@
     what.appendChild(el('span', 'recap-row__mark', r.mark));
     var c = chips(r, opts.keys);
     if (c) { what.appendChild(c); }
+    if (D.paceWords(r)) { what.appendChild(el('span', 'recap-row__wind', D.paceWords(r))); }
+    if (r.lastyear) {
+      var ly = el('span', 'recap-row__wind recap-row__faster', r.lastyear.by === 'time' ? D.lastYearWords(r).replace(/ \(.*\)$/, '') : 'Faster pace than last year');
+      ly.title = D.lastYearWords(r);
+      what.appendChild(ly);
+    }
     if (D.windWords(r)) {
       var w = el('span', 'recap-row__wind' + (r.windy ? ' recap-row__wind--over' : ''), D.windWords(r));
       if (r.windy) { w.title = 'Wind-assisted: over 2.0 m/s, so not a legal mark'; }
@@ -228,7 +235,26 @@
     }, 150);
   });
 
+  // "faster than last year" hidden by the recap's maker: drawn without it (the API leaves
+  // it out for the public; staff still get it, to see what showing it would add)
+  function withoutFaster(data) {
+    var strip = function (list) {
+      return (list || []).map(function (r) {
+        if (!r || !r.lastyear) { return r; }
+        var c = {};
+        Object.keys(r).forEach(function (k) { if (k !== 'lastyear') { c[k] = r[k]; } });
+        return c;
+      });
+    };
+    var out = {};
+    Object.keys(data).forEach(function (k) { out[k] = data[k]; });
+    out.results = strip(data.results);
+    out.highlights = strip(data.highlights);
+    return out;
+  }
+
   function drawRecap(box, data, opts) {
+    if (data.recap && data.recap.faster === false) { data = withoutFaster(data); }
     var p = opts.preview ? 'pv-' : '';
     box.textContent = '';
     var recap = data.recap || {}, meeting = data.meeting || {};
@@ -580,7 +606,8 @@
     var keys = D.recordKeys(recordList, (data.meeting || {}).meet);
     var S = { step: 0, picked: (data.recap.highlights || []).slice(), title: data.recap.title || '', intro: data.recap.intro || '',
               names: data.recap.names || 'first', include: (data.recap.include || []).slice(),
-              chosen: Looks.resolve(data.recap.look, data.meeting, data.counts) };
+              chosen: Looks.resolve(data.recap.look, data.meeting, data.counts), faster: data.recap.faster !== false };
+    var outside = !!(data.counts && data.counts.out);   // a meeting out of the stadium
     // the look as saved: only what differs from the suggestion, in a set order
     var lookKey = function (look) { return JSON.stringify(Object.keys(look || {}).sort().map(function (k) { return [k, look[k]]; })); };
     var lookToSave = function () { return Looks.toSave(S.chosen, data.meeting, data.counts); };
@@ -605,7 +632,8 @@
       var h = D.checkHeadline(S.title, S.intro);
       return h.title !== (data.recap.title || '') || h.intro !== (data.recap.intro || '') ||
         S.picked.join('\n') !== (data.recap.highlights || []).join('\n') || S.names !== (data.recap.names || 'first') ||
-        S.include.join(' ') !== (data.recap.include || []).join(' ') || lookKey(lookToSave()) !== lookKey(data.recap.look);
+        S.include.join(' ') !== (data.recap.include || []).join(' ') || lookKey(lookToSave()) !== lookKey(data.recap.look) ||
+        S.faster !== (data.recap.faster !== false);
     }
     // POST /v1/recaps/<id>: resolves true when saved (or nothing to save), false if not
     function save() {
@@ -615,13 +643,14 @@
       FormLock.lock(out, true);
       said.textContent = 'Saving…';
       return NCAN.send('/recaps/' + encodeURIComponent(id), { title: h.title, intro: h.intro, highlights: S.picked, include: S.include, names: S.names,
-                                                              look: lookToSave(), since: data.recap.updated }).then(function (r) {
+                                                              look: lookToSave(), faster: S.faster, since: data.recap.updated }).then(function (r) {
         FormLock.lock(out, false);
         if (r.status === 200) {
           data = r.body;
           S.title = data.recap.title || ''; S.intro = data.recap.intro || ''; S.picked = (data.recap.highlights || []).slice();
           S.names = data.recap.names || 'first'; S.include = (data.recap.include || []).slice();
           S.chosen = Looks.resolve(data.recap.look, data.meeting, data.counts);
+          S.faster = data.recap.faster !== false;
           said.textContent = 'Saved.';
           heading();
           return true;
@@ -741,7 +770,7 @@
     var handOpt = el('option', null, 'Handpicked (up to ' + D.HIGHLIGHTS_MAX + ')');
     handOpt.value = '';
     hlSel.appendChild(handOpt);
-    D.INCLUDE.forEach(function (k) {
+    D.includeFor(outside).forEach(function (k) {
       var o = el('option', null, k.label + ' (' + allCounts[k.id] + ')');
       o.value = k.id;
       o.disabled = !allCounts[k.id] && S.include[0] !== k.id;
@@ -755,6 +784,23 @@
     hlPick.appendChild(hlLab);
     hlPick.appendChild(hlSel);
     panes[1].appendChild(hlPick);
+    // out of the stadium: "faster than last year" on the results, or not
+    if (outside && ((data.counts && data.counts.faster) || !S.faster)) {
+      var fp = el('p', 'ath-check recap-faster');
+      var fb = el('input');
+      fb.type = 'checkbox'; fb.id = 'recap-faster'; fb.checked = S.faster;
+      var fl = el('label', null, 'Show “faster than last year” (' + ((data.counts && data.counts.faster) || 0) +
+        '): when someone beat their time in last year’s race over the same distance, or ran a faster pace per km');
+      fl.htmlFor = fb.id;
+      fb.addEventListener('change', function () {
+        S.faster = fb.checked;
+        if (!S.faster && S.include[0] === 'faster') { S.include = []; }      // nothing left to show in that group
+        said.textContent = '';
+        fillHighlights();
+      });
+      fp.appendChild(fb); fp.appendChild(fl);
+      panes[1].appendChild(fp);
+    }
     panes[1].appendChild(hlCount);
     panes[1].appendChild(hlList);
     function fillHighlights() {
@@ -1068,10 +1114,10 @@
       }
       select('theme', 'Theme', Looks.THEMES, Looks.GROUPS);
       select('layout', 'Layout', Looks.LAYOUTS);
-      select('feature', 'Count to feature', Looks.FEATURES);
+      select('feature', 'Count to feature', Looks.featuresFor(outside));
       select('font', 'Font', Looks.FONTS);
       select('pattern', 'Pattern', Looks.PATTERNS);
-      select('sticker', 'Sticker', Looks.STICKERS);
+      select('sticker', 'Sticker', Looks.stickersFor(outside));
       select('stickerStyle', 'Sticker style', Looks.STICKER_STYLES);
 
       var colourWrap = el('span', 'recap-look__colour');
@@ -1171,7 +1217,7 @@
       shuffle.addEventListener('click', function () {
         var any = function (list) { return list[Math.floor(Math.random() * list.length)].id; };
         S.chosen.theme = any(Looks.THEMES); S.chosen.layout = any(Looks.LAYOUTS); S.chosen.pattern = any(Looks.PATTERNS);
-        S.chosen.sticker = Looks.stickerValue(any(Looks.STICKERS), any(Looks.STICKER_STYLES));
+        S.chosen.sticker = Looks.stickerValue(any(Looks.stickersFor(outside)), any(Looks.STICKER_STYLES));
         S.chosen.font = any(Looks.FONTS); S.chosen.accent = '';
         changed();
       });

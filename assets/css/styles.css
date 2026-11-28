@@ -4967,6 +4967,8 @@ table.schedule.manage-mem { min-width: 640px; }
 .recap-row__mark { font-family: var(--font-display); font-weight: 700; font-variant-numeric: tabular-nums; color: var(--heading); }
 .recap-row__wind { font-size: .8rem; color: var(--text-soft); }
 .recap-row__wind--over { color: var(--warn); }
+.recap-row__faster, .recap-hl__faster { color: var(--green-600, #1F6B45); font-weight: 600; }
+.recap-faster { margin: .6rem 0 0; max-width: 46rem; }
 .recap-links { list-style: disc; padding-left: 1.2rem; }
 .recap-links li + li { margin-top: .35rem; }
 

@@ -156,3 +156,22 @@ test('a sticker never covers the words or the crest, in any layout', () => {
     }
   }
 });
+
+test('out of the stadium: no PBs; kilometres, race wins and top 10s to feature, and its own stamps', () => {
+  assert.deepEqual(L.featuresFor(true).map((f) => f.id), ['athletes', 'podiums', 'km', 'wins', 'top10']);
+  assert.deepEqual(L.featuresFor(false).map((f) => f.id), ['pbs', 'athletes', 'podiums']);
+  assert.ok(!L.stickersFor(true).some((s) => s.id === 'pb'));
+  assert.ok(L.stickersFor(true).some((s) => s.id === 'finisher'));
+  assert.ok(!L.stickersFor(false).some((s) => s.id === 'top10'));
+  assert.equal(L.suggest({ name: 'NZ Cross Country Championships', type: 'Cross country' }, { out: true, km: 118, medals: 5 }).feature, 'km');
+  const all = { athletes: { id: 'athletes', n: 24, words: 'Runners' }, km: { id: 'km', n: 118, words: 'Kilometres' },
+                podiums: { id: 'podiums', n: 5, words: 'Podiums' }, wins: { id: 'wins', n: 3, words: 'Race wins' },
+                top10: { id: 'top10', n: 9, words: 'Top 10s' } };
+  const facts = { title: 'XC', counts: [all.athletes, all.km, all.podiums], all };
+  const words = (look) => L.build(facts, L.resolve(look, {}, {})).items.filter((i) => i.kind === 'text').map((i) => i.words);
+  assert.ok(words({ layout: 'big-number', feature: 'km' }).includes('KILOMETRES'));
+  // a count that isn't one of the three takes the last one's place
+  const w = words({ layout: 'classic', feature: 'wins' });
+  assert.ok(w.includes('Race wins') && !w.includes('Podiums') && w.includes('Kilometres'));
+  assert.ok(words({ layout: 'podium', feature: 'top10' }).includes('Top 10s'));
+});

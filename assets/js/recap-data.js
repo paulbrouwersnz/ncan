@@ -12,10 +12,11 @@
   only lays out what it's given. No athlete data is in this file.
 */
 (function (root, factory) {
-  var api = factory();
-  if (typeof module === 'object' && module.exports) { module.exports = api; }
+  var node = typeof module === 'object' && module.exports;
+  var api = factory(node ? require('./event-names.js') : root.NCANEventNames);
+  if (node) { module.exports = api; }
   else { root.NCANRecapData = api; }
-}(this, function () {
+}(this, function (E) {
   'use strict';
 
   var TITLE_MAX = 100, INTRO_MAX = 600, HIGHLIGHTS_MAX = 12;
@@ -84,11 +85,15 @@
     return (w > 0 ? '+' : w < 0 ? MINUS : '') + Math.abs(w).toFixed(1) + ' m/s';
   }
   // "60m", "Shot Put (3kg)": the implement unless the event already names it
+  // out of the stadium, the distance in km ("4 km cross country"; event-names.js)
   function eventLabel(r) {
     var e = String((r && r.event) || '').trim(), imp = String((r && r.implement) || '').trim();
     if (imp && squash(e).indexOf(squash(imp)) === -1) { return e + ' (' + imp + ')'; }
-    return e;
+    return E.label(e);
   }
+  // out of the stadium: the pace per km, and "faster than last year" (when it's shown)
+  function paceWords(r) { return r && r.out && r.pace ? E.pace(r.pace) : ''; }
+  function lastYearWords(r) { return r && r.lastyear ? E.lastYearWords(r.lastyear) : ''; }
   // "Grade 11 girls", "U18 boys", "Grade 8"
   function groupLabel(r) {
     if (!r) { return ''; }
@@ -176,24 +181,30 @@
 
   /* Highlights ------------------------------------------------------------------ */
 
-  // why a result stands out, most important first: ['record', 'medal', 'pb', 'first']
+  /* why a result stands out, most important first: ['record', 'medal', 'pb', 'first'];
+     out of the stadium, a top 10 finish (4th to 10th) and a race run faster than last
+     year too */
   function reasons(r, keys) {
     var out = [];
     if (isClubRecord(r, keys)) { out.push('record'); }
     if (r.medal >= 1 && r.medal <= 3) { out.push('medal'); }
+    if (r.out && r.place >= 4 && r.place <= 10) { out.push('top10'); }
     if (r.pb === 'new') { out.push('pb'); }
     if (r.pb === 'first') { out.push('first'); }
+    if (r.lastyear) { out.push('faster'); }
     return out;
   }
-  // the words on a chip: "Club record", "1st", "PB", "First time"
+  // the words on a chip: "Club record", "1st", "Top 10", "PB", "First time", "Faster than last year"
   function chipWords(reason, r) {
     if (reason === 'record') { return 'Club record'; }
     if (reason === 'medal') { return ordinal(r.medal); }
+    if (reason === 'top10') { return 'Top 10'; }
     if (reason === 'pb') { return 'PB'; }
     if (reason === 'first') { return 'First time'; }
+    if (reason === 'faster') { return 'Faster than last year'; }
     return '';
   }
-  var RANK = { record: 0, medal: 1, pb: 2, first: 3 };
+  var RANK = { record: 0, medal: 1, top10: 2, pb: 3, first: 4, faster: 5 };
 
   /* The results worth a highlight, best first: club records, then medals (gold
      first), then new PBs, then first times; otherwise in the API's order.
@@ -229,14 +240,29 @@
     { id: 'pb', label: 'Personal bests' },
     { id: 'first', label: 'First time competing' },
     { id: 'podium', label: 'Podium finishes' },
-    { id: 'win', label: 'First places' }
+    { id: 'win', label: 'First places' },
+    { id: 'top10', label: 'Top 10 finishes' },
+    { id: 'faster', label: 'Faster than last year' }
   ];
+  /* the groups a meeting offers: out of the stadium there are no PBs or first times,
+     first places are race wins, and top 10s and faster-than-last-year count; at the
+     track, the first four */
+  var OUT_GROUPS = ['win', 'podium', 'top10', 'faster'], TRACK_GROUPS = ['pb', 'first', 'podium', 'win'];
+  function includeFor(out) {
+    var ids = out ? OUT_GROUPS : TRACK_GROUPS;
+    return ids.map(function (id) {
+      var k = INCLUDE.filter(function (x) { return x.id === id; })[0];
+      return { id: id, label: out && id === 'win' ? 'Race wins' : k.label };
+    });
+  }
   function includeKinds(r) {
     var out = [];
     if (r && r.medal === 1) { out.push('win'); }
     if (r && r.medal >= 1 && r.medal <= 3) { out.push('podium'); }
+    if (r && r.place >= 1 && r.place <= 10) { out.push('top10'); }
     if (r && r.pb === 'new') { out.push('pb'); }
     if (r && r.pb === 'first') { out.push('first'); }
+    if (r && r.lastyear) { out.push('faster'); }
     return out;
   }
   // is a result shown by the kinds switched on?
@@ -245,7 +271,7 @@
   }
   // how many results each kind would add: {win: 4, podium: 9, ...}
   function includeCounts(results) {
-    var out = { win: 0, podium: 0, pb: 0, first: 0 };
+    var out = { win: 0, podium: 0, top10: 0, pb: 0, first: 0, faster: 0 };
     (results || []).forEach(function (r) { includeKinds(r).forEach(function (k) { out[k]++; }); });
     return out;
   }
@@ -387,19 +413,30 @@
     return out;
   }
 
+  /* The card's facts. counts: the three it shows - athletes, PBs and podiums, or out of
+     the stadium (no PBs there) runners, kilometres raced and podiums. all: every count a
+     card can feature, by id. */
   function cardFacts(data) {
     data = data || {};
-    var recap = data.recap || {}, meeting = data.meeting || {}, c = data.counts || {};
+    var recap = data.recap || {}, meeting = data.meeting || {}, c = data.counts || {}, out = !!c.out;
+    var one = function (id, n, single, many) { return { id: id, n: n || 0, words: n === 1 ? single : many }; };
+    var kms = c.km || 0;
+    var all = {
+      athletes: one('athletes', c.athletes, out ? 'Runner' : 'Athlete', out ? 'Runners' : 'Athletes'),
+      pbs: one('pbs', c.pbs, 'PB', 'PBs'),
+      podiums: one('podiums', c.medals, 'Podium', 'Podiums'),
+      km: { id: 'km', n: kms >= 10 ? Math.round(kms) : kms, words: 'Kilometres' },
+      wins: one('wins', c.wins, 'Race win', 'Race wins'),
+      top10: one('top10', c.top10, 'Top 10', 'Top 10s')
+    };
     return {
       title: recap.title || meeting.name || 'Meeting results',
       line: meetingLine(meeting),
       lane: laneColour(meeting),
       course: courseKind(meeting),
-      counts: [
-        { n: c.athletes || 0, words: c.athletes === 1 ? 'Athlete' : 'Athletes' },
-        { n: c.pbs || 0, words: c.pbs === 1 ? 'PB' : 'PBs' },
-        { n: c.medals || 0, words: c.medals === 1 ? 'Podium' : 'Podiums' }
-      ]
+      out: out,
+      counts: out ? [all.athletes, all.km, all.podiums] : [all.athletes, all.pbs, all.podiums],
+      all: all
     };
   }
 
@@ -449,11 +486,11 @@
     TITLE_MAX: TITLE_MAX, INTRO_MAX: INTRO_MAX, HIGHLIGHTS_MAX: HIGHLIGHTS_MAX, CARD: CARD, COLOURS: COLOURS,
     parseHash: parseHash, pageHref: pageHref, plural: plural, ordinal: ordinal, longDate: longDate,
     shortDate: shortDate, dates: dates, where: where, meetingLine: meetingLine, windWords: windWords,
-    eventLabel: eventLabel, groupLabel: groupLabel, placeWords: placeWords, stateLabel: stateLabel,
+    eventLabel: eventLabel, paceWords: paceWords, lastYearWords: lastYearWords, groupLabel: groupLabel, placeWords: placeWords, stateLabel: stateLabel,
     groupByEvent: groupByEvent, meetOf: meetOf, recordKeys: recordKeys, isClubRecord: isClubRecord,
     reasons: reasons, chipWords: chipWords, suggest: suggest, toggle: toggle, cardTone: cardTone,
     namesCheck: namesCheck, NAME_STYLES: NAME_STYLES, nameStyle: nameStyle, excludedWords: excludedWords, recapFor: recapFor, startBody: startBody,
-    INCLUDE: INCLUDE, includeKinds: includeKinds, included: included, includeCounts: includeCounts,
+    INCLUDE: INCLUDE, includeFor: includeFor, includeKinds: includeKinds, included: included, includeCounts: includeCounts,
     paragraphs: paragraphs, checkHeadline: checkHeadline, laneColour: laneColour, courseKind: courseKind,
     COURSE_COLOURS: COURSE_COLOURS, adminPick: adminPick,
     wrap: wrap, cardFacts: cardFacts, cardLayout: cardLayout

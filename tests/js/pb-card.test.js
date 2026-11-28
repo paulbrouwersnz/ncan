@@ -356,3 +356,36 @@ test('race bib: the mark on a bib pinned to the club singlet, the crest and ncan
   assert.ok(!r.items.some((i) => i.kind === 'text' && /^PB /.test(i.words)));
   assert.ok(PB.STYLES.includes('bib'));
 });
+
+test('out of the stadium: race win, pace on the bib, last year beaten, km this season', () => {
+  const xc = (o) => Object.assign({ event: 'Cross country 3000m', mark: '11:30', value: 690, date: '2026-07-04', season: '2026',
+    meeting: 'Canterbury XC Champs 2026' }, o);
+  const history = [
+    xc({ date: '2025-07-05', season: '2025', mark: '12:00', value: 720, meeting: 'Canterbury XC Champs 2025' }),
+    xc({ date: '2026-05-09', event: 'Cross country 4000m', mark: '16:00', value: 960, meeting: 'Bottle Lake Hill Assault' }),
+    xc({ place: 1, of: 40 })];
+  const r = history[2];
+  assert.deepEqual(PB.lastYear(r, history), { by: 'time', faster: 30, mark: '12:00' });
+  // moved up a distance: a faster pace counts
+  const up = xc({ event: 'Cross country 4000m', value: 920, mark: '15:20' });
+  assert.deepEqual(PB.lastYear(up, [history[0], up]), { by: 'pace', pace: 230, was: 240 });
+  assert.equal(PB.lastYear(xc({ event: 'Cross country 4000m', value: 1000 }), [history[0]]), null);   // a slower pace: nothing
+  assert.equal(PB.lastYear(xc({ value: 730 }), history), null);                 // slower: nothing
+  assert.equal(PB.kmThisSeason(r, history), 7);
+  const f = PB.facts({ kind: 'result', name: 'Sam', result: r, out: true, pace: 230, lastYear: PB.lastYear(r, history), km: 7 });
+  assert.equal(f.headline, 'RACE WIN');
+  assert.equal(f.pace, '3:50 /km');
+  assert.equal(f.season, '30s faster than last year (12:00)');
+  assert.equal(f.km, '7 km raced this season');
+  // a top 10 finish is said only with Show place
+  const eighth = xc({ place: 8, of: 64 });
+  assert.equal(PB.facts({ kind: 'result', name: 'Sam', result: eighth, out: true }).headline, 'RESULT');
+  assert.equal(PB.facts({ kind: 'result', name: 'Sam', result: eighth, out: true, showPlace: true }).headline, 'TOP 10 FINISH');
+  for (const shape of ['square', 'story']) {
+    const L = PB.layout(f, shape, 'bib');
+    const words = L.items.filter((i) => i.kind === 'text').map((i) => i.words);
+    assert.ok(words.includes('3:50 /km') && !words.some((w) => /^PB /.test(w)), shape);
+    assert.ok(words.includes('7 km raced this season'), shape);
+    assert.deepEqual(PB.overlaps(L), [], shape);
+  }
+});
