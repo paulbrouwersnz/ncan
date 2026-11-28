@@ -62,6 +62,7 @@
 
   /* The page head --------------------------------------------------------------- */
   function head(o) {
+    canonical(null);                          // a recap sets its own after this
     $('recap-eyebrow').textContent = o.eyebrow || 'Meeting results';
     $('page-heading').textContent = o.title || 'Meeting recaps';
     $('recap-lede').textContent = o.lede || '';
@@ -301,9 +302,12 @@
         }
         out.appendChild(staff);
       }
-      // the link to share: the API's /r/ page, which carries the recap's card. This
-      // page's own address can't: sharing sites never see the part after #.
-      if (recap.state === 'public' && recap.share_url) { out.appendChild(shareRow(recap)); }
+      var staffShare = staff || out;
+      // the link to share is the API's /r/ page, which carries the recap's card (this
+      // page's address can't: sharing sites never see the part after #). It's this
+      // page's canonical link, which a phone's Share uses; staff see it to copy.
+      canonical(recap.state === 'public' && recap.share_url);
+      if (data.can_edit && recap.state === 'public' && recap.share_url) { staffShare.appendChild(shareRow(recap)); }
       var body = el('div', 'recap');
       out.appendChild(body);
       drawRecap(body, data, { keys: keys });
@@ -312,7 +316,13 @@
     }, function (err) { failed(err, 'this recap'); });
   }
 
-  // Share this recap: the phone's own share sheet where there is one, and the link to copy
+  // the page's canonical link: a recap's share link, or the recaps page's own address
+  function canonical(url) {
+    var tag = document.querySelector('link[rel="canonical"]');
+    if (tag) { tag.href = url || 'https://ncan.nz/recaps/'; }
+  }
+
+  // Share this recap (staff): the phone's own share sheet where there is one, and the link to copy
   function shareRow(recap) {
     var box = el('div', 'recap-share recap-share--page');
     var row = el('p', 'recap-share__row');
@@ -333,8 +343,8 @@
       row.appendChild(sh);
     }
     box.appendChild(row);
-    box.appendChild(el('p', 'mem-help', 'Use this link, not the address bar’s: it shows the recap’s card on Facebook, ' +
-      'Messenger and WhatsApp, and opens this page.'));
+    box.appendChild(el('p', null, 'Post this link, not the address bar’s: it shows the recap’s card on Facebook, ' +
+      'Messenger and WhatsApp, and opens this page. Only club staff see this.'));
     return box;
   }
 

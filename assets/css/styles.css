@@ -5036,7 +5036,8 @@ table.schedule.recap-names { min-width: 0; }
 .recap-publish .btn:disabled { opacity: .5; cursor: not-allowed; }
 .recap-share { margin-top: 1rem; }
 .recap-share--page { margin: 0 0 1.5rem; }
-.recap-share--page .mem-help { margin: .3rem 0 0; }
+.recap-share--page p:last-child { margin: .3rem 0 0; }
+.recap-staff .recap-share--page { margin: .8rem 0 0; padding-top: .8rem; border-top: 1px solid var(--line); }
 .recap-share__label { font-weight: 600; color: var(--heading); margin-right: .3rem; }
 .recap-share__row { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; max-width: 40rem; }
 .recap-share__url {
