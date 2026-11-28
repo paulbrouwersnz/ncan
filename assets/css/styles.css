@@ -4446,7 +4446,15 @@ html:has(.plan-editor:not([hidden])) { scroll-padding-bottom: 5rem; }
 .track-filter label { display: inline-flex; gap: .5rem; align-items: center; font-weight: 400; }
 .track-location--edit { flex-wrap: wrap; }
 .track-location--edit .access-add { flex: 1 1 100%; max-width: none; }
-@media (max-width: 540px) { .track-location { flex-wrap: wrap; } .track-location select { flex-basis: 100%; } }
+.track-kinds { display: flex; flex-wrap: wrap; gap: .5rem 1rem; flex: 0 1 auto; justify-content: flex-end; }
+.track-kind { display: grid; gap: .15rem; min-width: 0; }
+.track-kind__name { font-size: .8rem; color: var(--text-soft); font-weight: 400; }
+.track-kind__pick { display: flex; gap: .5rem; align-items: center; }
+.track-kind select { flex: 0 1 13rem; }
+@media (max-width: 540px) {
+  .track-location { flex-wrap: wrap; } .track-location select { flex-basis: 100%; }
+  .track-kinds { flex-basis: 100%; justify-content: flex-start; } .track-kind { flex: 1 1 100%; }
+}
 
 /* Charts shared publicly: Shared charts (athlete page), Your shared charts
    (/athletes/) and /admin/shared/ (shared-charts.js) */
@@ -4874,15 +4882,11 @@ table.schedule.manage-mem { min-width: 640px; }
 .recap-head:not(.page-head--photo) {
   background: linear-gradient(160deg, var(--green-900) 0%, var(--green-800) 55%, var(--green-700) 100%);
 }
-/* the lane stripe, in the venue's track colour (--lane), with its white lane lines */
-.recap-lane {
-  height: 18px;
-  background:
-    linear-gradient(#fff, #fff) 0 0 / 100% 2px no-repeat,
-    linear-gradient(#fff, #fff) 0 50% / 100% 2px no-repeat,
-    linear-gradient(#fff, #fff) 0 100% / 100% 2px no-repeat,
-    var(--lane, #B5452B);
-}
+/* the meeting's track or course seen from above (assets/js/course-strip.js draws it
+   to this size): a track, a cross country course, a road or a trail */
+.recap-lane { height: 64px; overflow: hidden; background: #2F6B3A; }
+.recap-lane svg { display: block; width: 100%; height: 100%; }
+@media (max-width: 640px) { .recap-lane { height: 40px; } }
 .recap-lane[hidden] { display: none; }
 .recap-section { padding-top: clamp(1.5rem, 4vw, 2.5rem); }
 .recap-staff {

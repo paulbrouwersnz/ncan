@@ -21,6 +21,8 @@ test('removing a location says what comes off and that its colour goes', () => {
   assert.equal(T.removeWords({ location: 'QEII', meetings: 1, colour: null }),
     'Remove “QEII”? It comes off 1 meeting. Share cards from that meeting won’t show a location.');
   assert.equal(T.removeWords({ location: 'Old', meetings: 0, colour: 'red' }), 'Remove “Old”? Its colour (Red) goes.');
+  assert.equal(T.removeWords({ location: 'Park', meetings: 0, colour: null, courses: { 'cross-country': 'blue', road: 'red' } }),
+    'Remove “Park”? Its colours (Blue, Red) go.');
 });
 
 test('a rename says where it went and the colour it kept', () => {

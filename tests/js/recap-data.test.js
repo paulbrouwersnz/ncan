@@ -193,13 +193,14 @@ test('admin filter', () => {
   assert.deepEqual(R.adminPick(list, 'all', 'interclub').map((s) => s.title), ['Draft one']);
 });
 
-test('preview card: 1200 x 630, counts, lane stripe in the track colour, all on the card', () => {
+test('preview card: 1200 x 630, counts, the track strip in its colour, all on the card', () => {
   const data = { recap: { title: 'Canterbury Children’s Interclub, Programme 4' },
     meeting: { first: '2026-11-07', last: '2026-11-07', location: 'Ngā Puna Wai', city: 'Christchurch, New Zealand',
                track: { name: 'Blue', hex: '#1f5fa8' } },
     counts: { athletes: 23, results: 61, pbs: 1, medals: 9 } };
   const f = R.cardFacts(data);
   assert.equal(f.lane, '#1F5FA8');
+  assert.equal(f.course, 'track');
   assert.deepEqual(f.counts.map((c) => c.n + ' ' + c.words), ['23 Athletes', '1 PB', '9 Podiums']);
   const L = R.cardLayout(f);
   assert.equal(L.w * L.scale, 1200);
@@ -210,9 +211,9 @@ test('preview card: 1200 x 630, counts, lane stripe in the track colour, all on 
   assert.ok(texts.includes('23') && texts.includes('Athletes'));
   assert.deepEqual(texts.filter((w) => /Canterbury Children|Programme/.test(w)), ['Canterbury Children’s', 'Interclub, Programme 4']);   // a long name: two lines
   assert.ok(L.items.some((i) => i.kind === 'logo'));
-  assert.ok(L.items.some((i) => i.kind === 'rect' && i.colour === '#1F5FA8'));
-  // everything inside the card, and nothing written over the lane stripe
-  const lane = L.items.find((i) => i.colour === '#1F5FA8');
+  assert.ok(L.items.some((i) => i.kind === 'strip' && i.colour === '#1F5FA8' && i.course === 'track'));
+  // everything inside the card, and nothing written over (or laid on) the strip
+  const lane = L.items.find((i) => i.kind === 'strip');
   L.items.forEach((i) => {
     if (i.kind === 'text') {
       assert.ok(i.y > i.size * 0.7 && i.y < lane.y, i.words + ' sits on the card above the stripe');
@@ -220,6 +221,7 @@ test('preview card: 1200 x 630, counts, lane stripe in the track colour, all on 
       assert.ok(left >= 0 && left + i.max <= L.w + 0.01, i.words + ' fits across');
     } else {
       assert.ok(i.x >= 0 && i.y >= 0 && i.x + i.w <= L.w + 0.01 && i.y + i.h <= L.h + 0.01, i.kind + ' fits');
+      if (i.kind === 'logo') { assert.ok(i.y + i.h <= lane.y, 'the logo sits above the strip'); }
     }
   });
   // no track colour: the default stripe; a short name: one line

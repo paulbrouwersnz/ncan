@@ -21,7 +21,7 @@
 (function () {
   'use strict';
 
-  var D = window.NCANRecapData, L = window.NCANMeetingLinks;
+  var D = window.NCANRecapData, L = window.NCANMeetingLinks, S = window.NCANCourseStrip;
   var $ = function (id) { return document.getElementById(id); };
   var FONTS = { display: '"Archivo", "Inter", system-ui, sans-serif', sans: '"Inter", system-ui, sans-serif' };
   var SITE = 'North Canterbury Athletic Club';
@@ -70,8 +70,8 @@
     crumb.hidden = !o.crumb;
     here.textContent = o.crumb || 'Meeting recaps';
     var lane = $('recap-lane');
-    lane.hidden = !o.lane;
-    if (o.lane) { lane.style.setProperty('--lane', o.lane); }
+    lane.hidden = !o.meeting;
+    if (o.meeting) { strip(lane, o.meeting); }
     document.title = (o.title && o.title !== 'Meeting recaps' ? o.title + ' — Meeting recaps' : 'Meeting recaps') + ' — ' + SITE;
   }
   function say(words, then) {
@@ -188,11 +188,35 @@
     box.appendChild(el('h2', 'recap-hero__title', data.recap.title || data.meeting.name));
     box.appendChild(el('p', 'recap-hero__line', D.meetingLine(data.meeting)));
     var lane = el('div', 'recap-lane');
-    lane.style.setProperty('--lane', D.laneColour(data.meeting));
     lane.setAttribute('aria-hidden', 'true');
     box.appendChild(lane);
+    strip(lane, data.meeting);
     return box;
   }
+
+  /* The strip under a heading: the meeting's track or course (course-strip.js),
+     drawn to the strip's own size, and again when that changes */
+  var strips = [];
+  function paintStrip(s) {
+    var w = s.box.clientWidth, h = s.box.clientHeight;
+    if (!w || !h || (w === s.w && h === s.h)) { return; }
+    s.w = w; s.h = h;
+    s.box.innerHTML = S.svg(D.courseKind(s.meeting), D.laneColour(s.meeting), w, h);
+  }
+  function strip(box, meeting) {
+    var s = strips.filter(function (x) { return x.box === box; })[0];
+    if (!s) { s = { box: box }; strips.push(s); }
+    s.meeting = meeting; s.w = s.h = 0;
+    requestAnimationFrame(function () { paintStrip(s); });
+  }
+  var resized;
+  window.addEventListener('resize', function () {
+    clearTimeout(resized);
+    resized = setTimeout(function () {
+      strips = strips.filter(function (s) { return document.body.contains(s.box); });
+      strips.forEach(paintStrip);
+    }, 150);
+  });
 
   function drawRecap(box, data, opts) {
     var p = opts.preview ? 'pv-' : '';
@@ -257,7 +281,7 @@
       var data = got[0], recap = data.recap || {}, meeting = data.meeting || {};
       var keys = D.recordKeys(got[1], meeting.meet);
       head({ eyebrow: recap.state === 'draft' ? 'Draft meeting recap' : 'Meeting results', title: recap.title || meeting.name,
-             lede: D.meetingLine(meeting), crumb: recap.title || meeting.name, lane: D.laneColour(meeting) });
+             lede: D.meetingLine(meeting), crumb: recap.title || meeting.name, meeting: meeting });
       say('');
       var out = $('recap-view-out');
       if (data.can_edit || data.full_names) {
@@ -334,7 +358,16 @@
       img.onerror = function () { ok(null); };
       img.src = '/assets/img/logo-dark.svg';
     });
-    return Promise.all([wait, logo]).then(function (got) {
+    // the strip, drawn sharp at the card's scale, as a picture to put on the canvas
+    var bands = Lay.items.filter(function (i) { return i.kind === 'strip'; }).map(function (i) {
+      return new Promise(function (ok) {
+        var img = new Image();
+        img.onload = function () { ok(img); };
+        img.onerror = function () { ok(null); };
+        img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(S.svg(i.course, i.colour, i.w, i.h, { scale: scale }));
+      });
+    });
+    return Promise.all([wait, logo, Promise.all(bands)]).then(function (got) {
       var canvas = document.createElement('canvas');
       canvas.width = Lay.w * scale; canvas.height = Lay.h * scale;
       var c = canvas.getContext('2d');
@@ -345,6 +378,10 @@
           c.fillStyle = i.colour;
           if (i.round && c.roundRect) { c.beginPath(); c.roundRect(i.x, i.y, i.w, i.h, i.round); c.fill(); }
           else { c.fillRect(i.x, i.y, i.w, i.h); }
+        } else if (i.kind === 'strip') {
+          var pic = got[2].shift();
+          c.fillStyle = i.colour;
+          if (pic) { c.drawImage(pic, i.x, i.y, i.w, i.h); } else { c.fillRect(i.x, i.y, i.w, i.h); }
         } else if (i.kind === 'logo') {
           if (got[1]) { c.drawImage(got[1], i.x, i.y, i.w, i.h); }
         } else if (i.kind === 'text') {
@@ -431,7 +468,7 @@
 
     function heading() {
       head({ eyebrow: 'Meeting recap · ' + D.stateLabel(data.recap.state), title: data.recap.title || data.meeting.name,
-             lede: D.meetingLine(data.meeting), crumb: 'Make a recap', lane: D.laneColour(data.meeting) });
+             lede: D.meetingLine(data.meeting), crumb: 'Make a recap', meeting: data.meeting });
       stateLine.textContent = '';
       stateLine.appendChild(el('span', 'champs-tag' + (data.recap.state === 'public' ? ' champs-tag--next' : ''), D.stateLabel(data.recap.state)));
       var bits = [];

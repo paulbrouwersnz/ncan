@@ -23,7 +23,9 @@
                 'August', 'September', 'October', 'November', 'December'];
   var SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   var MINUS = '−';
-  var LANE = '#B5452B';    // the lane stripe when the venue has no track colour: a red-brown track
+  // each kind of event's colour when the API gives none (as its defaults: /admin/track-colours/)
+  var COURSE_COLOURS = { track: '#0072B5', 'cross-country': '#62A84C', road: '#3A3D40', trail: '#C9A46A' };
+  var COURSE_KINDS = { 'Cross country': 'cross-country', Road: 'road', Trail: 'trail' };
 
   /* The page's address ------------------------------------------------------ */
 
@@ -307,10 +309,17 @@
     return { title: t, intro: i, error: error };
   }
 
-  // a track colour as #RRGGBB, or the default
+  // the kind of event the heading strip draws (course-strip.js): the meeting's track
+  // or course, from the API, or from the meeting's type
+  function courseKind(meeting) {
+    var k = meeting && meeting.track && meeting.track.kind;
+    return COURSE_COLOURS[k] ? k : COURSE_KINDS[(meeting && meeting.type) || ''] || 'track';
+  }
+
+  // its colour as #RRGGBB: the venue's, or the kind's default
   function laneColour(meeting) {
     var hex = meeting && meeting.track && meeting.track.hex;
-    return /^#[0-9a-f]{6}$/i.test(hex || '') ? hex.toUpperCase() : LANE;
+    return /^#[0-9a-f]{6}$/i.test(hex || '') ? hex.toUpperCase() : COURSE_COLOURS[courseKind(meeting)];
   }
 
   /* Admin page filter: 'live' (drafts and public), 'review' (public, three seasons
@@ -357,6 +366,7 @@
       title: recap.title || meeting.name || 'Meeting results',
       line: meetingLine(meeting),
       lane: laneColour(meeting),
+      course: courseKind(meeting),
       counts: [
         { n: c.athletes || 0, words: c.athletes === 1 ? 'Athlete' : 'Athletes' },
         { n: c.pbs || 0, words: c.pbs === 1 ? 'PB' : 'PBs' },
@@ -369,7 +379,7 @@
      x, y (the baseline), size, weight, font ('display' or 'sans'), colour, align and
      max (the widest it may be). */
   function cardLayout(f) {
-    var W = CARD.w, H = CARD.h, pad = 36, lane = 30, items = [];
+    var W = CARD.w, H = CARD.h, pad = 36, lane = 40, items = [];
     var t = function (words, x, y, size, o) {
       if (words === '' || words == null) { return; }
       o = o || {};
@@ -378,12 +388,10 @@
                    max: o.max || W - 2 * pad, spacing: o.spacing || 0 });
     };
     items.push({ kind: 'rect', x: 0, y: 0, w: W, h: H, colour: COLOURS.bg });
-    // the lane stripe along the bottom, in the venue's track colour, with its lane lines
+    // the strip along the bottom: the meeting's track or course (course-strip.js), in its colour
     var ly = H - lane;
-    items.push({ kind: 'rect', x: 0, y: ly, w: W, h: lane, colour: f.lane || LANE });
-    [0, lane / 2, lane - 1.5].forEach(function (y) {
-      items.push({ kind: 'rect', x: 0, y: ly + y, w: W, h: 1.5, colour: COLOURS.line });
-    });
+    items.push({ kind: 'strip', x: 0, y: ly, w: W, h: lane, course: f.course || 'track',
+                 colour: f.lane || COURSE_COLOURS.track });
 
     t('MEETING RESULTS', pad, 50, 15, { weight: 800, font: 'display', colour: COLOURS.gold, spacing: 2 });
     var lines = wrap(f.title, 30, 2), size = lines.length > 1 ? 30 : 36, y = lines.length > 1 ? 88 : 94;
@@ -401,7 +409,7 @@
     });
 
     // the club's crest and name, and ncan.nz
-    var lh = 36, cy = ly - 14 - lh;
+    var lh = 36, cy = ly - 10 - lh;
     items.push({ kind: 'logo', x: pad, y: cy, h: lh, w: lh * 888 / 508 });
     t('North Canterbury', pad + lh * 888 / 508 + 10, cy + lh * 0.48, 13, { weight: 700, font: 'display', max: 200 });
     t('Athletic Club', pad + lh * 888 / 508 + 10, cy + lh * 0.88, 13, { weight: 700, font: 'display', max: 200 });
@@ -417,7 +425,8 @@
     groupByEvent: groupByEvent, meetOf: meetOf, recordKeys: recordKeys, isClubRecord: isClubRecord,
     reasons: reasons, chipWords: chipWords, suggest: suggest, toggle: toggle, cardTone: cardTone,
     namesCheck: namesCheck, NAME_STYLES: NAME_STYLES, nameStyle: nameStyle, excludedWords: excludedWords, recapFor: recapFor, startBody: startBody,
-    paragraphs: paragraphs, checkHeadline: checkHeadline, laneColour: laneColour, adminPick: adminPick,
+    paragraphs: paragraphs, checkHeadline: checkHeadline, laneColour: laneColour, courseKind: courseKind,
+    COURSE_COLOURS: COURSE_COLOURS, adminPick: adminPick,
     wrap: wrap, cardFacts: cardFacts, cardLayout: cardLayout
   };
 }));
