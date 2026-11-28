@@ -1135,6 +1135,18 @@
       var reset = button('Theme’s colour', 'btn btn--ghost btn--sm');
       reset.addEventListener('click', function () { S.chosen.accent = ''; changed(); });
       colourWrap.appendChild(colour);
+      // quick picks: the club's own colours
+      look.swatches = [['NCAN Green', '#0b3b2e'], ['NCAN Yellow', '#ffc629']].map(function (c) {
+        var b = el('button', 'recap-look__swatch');
+        b.type = 'button';
+        b.title = c[0];
+        b.setAttribute('aria-label', c[0]);
+        b.style.background = c[1];
+        b.dataset.colour = c[1];
+        b.addEventListener('click', function () { S.chosen.accent = c[1]; changed(); });
+        colourWrap.appendChild(b);
+        return b;
+      });
       colourWrap.appendChild(reset);
       var cf = field('accent', 'Accent colour', colour);
       cf.appendChild(colourWrap);
@@ -1234,6 +1246,7 @@
 
     // the controls, as the look now is
     function fillLook() {
+      Looks.fitTheme(S.chosen);         // "with the track" needs a layout that shows the track
       var ch = S.chosen, sg = ch.suggested, theme = Looks.theme(ch.theme);
       look.intro.textContent = 'Suggested for this meeting: ' + Looks.theme(sg.theme).name + ', ' +
         Looks.find(Looks.LAYOUTS, sg.layout).name.toLowerCase() + ' layout (' + sg.why + '). Change anything you like.';
@@ -1241,10 +1254,26 @@
       var st = Looks.stickerOf(ch.sticker) || { id: 'none', style: 'gradient' };
       look.sticker.value = st.id;
       look.stickerStyle.value = st.style;
-      look.stickerStyle.parentNode.hidden = st.id === 'none';
+      look.stickerStyle.parentNode.hidden = st.id === 'none' || st.id === 'teddy';    // Teddy has one look
+      // the Teddy sticker: not where the full-size Teddy already stands
+      var bear = Looks.teddyShows(ch);
+      Array.prototype.forEach.call(look.sticker.options, function (o) {
+        if (o.value !== 'teddy') { return; }
+        o.disabled = bear;
+        o.textContent = 'Teddy' + (bear ? ' (Teddy’s already on the card)' : '');
+      });
       var accent = ch.accent || theme.accent;
       look.accent.value = accent.length === 7 ? accent.toLowerCase() : '#ffffff';
       look.reset.hidden = !ch.accent;
+      // themes that only add the track: offered in the layouts that show it
+      var strip = Looks.STRIP_LAYOUTS.indexOf(ch.layout) >= 0;
+      Array.prototype.forEach.call(look.theme.options, function (o) {
+        var th = Looks.theme(o.value);
+        if (!th || !th.plain) { return; }
+        o.disabled = !strip;
+        o.textContent = th.name + (strip ? '' : ' (Classic, Big number or Podium)');
+      });
+      look.swatches.forEach(function (b) { b.setAttribute('aria-pressed', String(look.accent.value === b.dataset.colour)); });
       var bg = ch.layout === 'scoreboard' ? '#0B0B0B' : theme.bg;
       look.warn.textContent = Looks.accentReads(accent, bg) ? '' : 'This colour is hard to read on the theme’s background.';
       if (document.activeElement !== look.headline) { look.headline.value = ch.headline; }
