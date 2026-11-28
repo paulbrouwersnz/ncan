@@ -94,9 +94,9 @@
           <a href="/admin/">Club admin</a> <span aria-hidden="true">/</span>
           <span>Track colours</span>
         </nav>
-        <p class="eyebrow eyebrow--light">Share cards</p>
+        <p class="eyebrow eyebrow--light">Share cards and recaps</p>
         <h1 id="page-heading">Track colours</h1>
-        <p class="lede">The colours Event share cards can draw the track in, and the colour each meeting location&rsquo;s cards start on. Whoever shares a card can still pick another colour.</p>
+        <p class="lede">The colours a track or course is drawn in, on Event share cards and under a meeting recap&rsquo;s heading: a track&rsquo;s surface, or a cross country course, a road or a trail. Each location can have its own colour for each kind of event held there. Whoever shares an Event card can still pick another colour.</p>
         <p class="account-line" id="account" hidden></p>
       </div>
     </section>
@@ -125,8 +125,13 @@
         </form>
         <p class="access-status" id="tracks-colour-said" role="status"></p>
 
+        <h2 class="track-heading">Default for each kind of event</h2>
+        <p>The colour used where a meeting&rsquo;s location has none of its own for that kind of event.</p>
+        <ul class="access-list" id="tracks-defaults"></ul>
+        <p class="access-status" id="tracks-default-said" role="status"></p>
+
         <h2 class="track-heading">Locations</h2>
-        <p>Every different location saved on the results sources page. Pick the colour that location&rsquo;s Event cards start on. Edit fixes a location&rsquo;s name or city on every meeting at it; Remove takes it off them all.</p>
+        <p>Every different location saved on the results sources page, with a colour for each kind of event held there. Edit fixes a location&rsquo;s name or city on every meeting at it; Remove takes it off them all.</p>
         <p class="track-filter"><label><input type="checkbox" id="tracks-unset"> Only locations with no colour</label></p>
         <ul class="access-list" id="tracks-locations"></ul>
         <p class="access-status" id="tracks-location-said" role="status"></p>

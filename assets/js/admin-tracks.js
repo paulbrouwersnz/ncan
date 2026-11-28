@@ -1,11 +1,13 @@
 /*
-  admin-tracks.js - /admin/track-colours/ (club administrators only): the track colours
-  Event share cards can be drawn in, and the colour each meeting location's cards start
-  on. The sharer can still pick another colour in the card dialog.
-    GET  /v1/admin/track-colours                 colours, the default, each location
+  admin-tracks.js - /admin/track-colours/ (club administrators only): the colours a
+  track or course is drawn in (Event share cards, and the strip under a meeting recap's
+  heading), each kind of event's default, and each meeting location's colour for the
+  kinds of event held there. On an Event card the sharer can still pick another.
+    GET  /v1/admin/track-colours                 colours, the defaults, the kinds, each location
     POST /v1/admin/track-colours/colour          {name, hex} adds; {id, name, hex} changes
     POST /v1/admin/track-colours/colour/remove   {id}
-    POST /v1/admin/track-colours/location        {location, colour} (colour '' clears)
+    POST /v1/admin/track-colours/default         {kind, colour}
+    POST /v1/admin/track-colours/location        {location, colour, kind} (colour '' clears)
     POST /v1/admin/locations/change              {location, new_location, city}: renames it on
                                                  every meeting at it; new_location '' removes it
   admin.js signs the admin in, then calls AdminTracks.start().
@@ -14,7 +16,8 @@
   'use strict';
 
   var $ = function (x) { return document.getElementById(x); };
-  var state = { colours: [], locations: [], dflt: 'blue' };
+  var KINDS = [{ id: 'track', name: 'Track' }];
+  var state = { colours: [], locations: [], defaults: { track: 'blue' }, kinds: KINDS };
 
   function el(tag, cls, words) {
     var e = document.createElement(tag);
@@ -28,13 +31,37 @@
     var c = state.colours.filter(function (x) { return x.id === id; })[0];
     return c ? c.name : id;
   }
+  function kindName(id) {
+    var k = state.kinds.filter(function (x) { return x.id === id; })[0];
+    return k ? k.name : id;
+  }
+  // the kinds of event a colour is the default for, as words: "track and road"
+  function defaultFor(cid) {
+    var ks = state.kinds.filter(function (k) { return state.defaults[k.id] === cid; })
+      .map(function (k) { return k.name.toLowerCase(); });
+    return ks.length > 1 ? ks.slice(0, -1).join(', ') + ' and ' + ks[ks.length - 1] : ks[0] || '';
+  }
+  // a location's colours: [{kind, colour}] for each kind of event held there
+  function kindsAt(l) {
+    return (l.kinds && l.kinds.length ? l.kinds : ['track']).map(function (k) {
+      return { kind: k, colour: k === 'track' ? l.colour || null : (l.courses || {})[k] || null };
+    });
+  }
+  function coloursAt(l) {
+    var out = [];
+    if (l.colour) { out.push(l.colour); }
+    Object.keys(l.courses || {}).forEach(function (k) { if (out.indexOf(l.courses[k]) < 0) { out.push(l.courses[k]); } });
+    return out;
+  }
 
   function load() {
     return NCAN.get('/admin/track-colours').then(function (r) {
       state.colours = r.colours || [];
       state.locations = r.locations || [];
-      state.dflt = r['default'] || 'blue';
+      state.defaults = r.defaults || { track: r['default'] || 'blue' };
+      state.kinds = r.kinds && r.kinds.length ? r.kinds : KINDS;
       drawColours();
+      drawDefaults();
       drawLocations();
     });
   }
@@ -82,15 +109,16 @@
       li.appendChild(pick);
       li.appendChild(name);
       li.appendChild(save);
-      if (c.id === state.dflt) {
-        li.appendChild(el('span', 'access-how', 'Cards start on this when their location has no colour.'));
+      var dflt = defaultFor(c.id);
+      if (dflt) {
+        li.appendChild(el('span', 'access-how', 'The default for ' + dflt + '.'));
       } else {
-        var used = state.locations.filter(function (l) { return l.colour === c.id; }).length;
+        var used = state.locations.filter(function (l) { return coloursAt(l).indexOf(c.id) >= 0; }).length;
         var rm = el('button', 'btn btn--ghost btn--sm', 'Remove');
         rm.type = 'button';
         rm.addEventListener('click', function () {
           var sure = used ? 'Remove “' + c.name + '”? ' + used + (used === 1 ? ' location goes' : ' locations go') +
-            ' back to ' + nameOf(state.dflt) + '.' : 'Remove “' + c.name + '”?';
+            ' back to the default.' : 'Remove “' + c.name + '”?';
           if (!window.confirm(sure)) { return; }
           rm.disabled = true;
           send('/admin/track-colours/colour/remove', { id: c.id }, 'tracks-colour-said', '“' + c.name + '” removed.');
@@ -102,11 +130,58 @@
     });
   }
 
+  // a drop-down of the colours, its first choice `none`
+  function colourSelect(id, value, none) {
+    var sel = el('select');
+    sel.id = id;
+    if (none) {
+      var o = el('option', null, none);
+      o.value = '';
+      sel.appendChild(o);
+    }
+    state.colours.forEach(function (c) {
+      var opt = el('option', null, c.name);
+      opt.value = c.id;
+      sel.appendChild(opt);
+    });
+    sel.value = value || '';
+    return sel;
+  }
+
+  // ---------------------------------------------------------------- each kind's default
+  function drawDefaults() {
+    var ul = $('tracks-defaults');
+    ul.textContent = '';
+    state.kinds.forEach(function (k) {
+      var li = el('li', 'track-location');
+      var what = el('div', 'track-location__what');
+      var label = el('label', null, k.name);
+      label.htmlFor = 'tracks-default-' + k.id;
+      what.appendChild(label);
+      what.appendChild(el('span', 'access-how', k.id === 'track' ? 'Interclubs, championships and every other meeting on a track'
+        : 'Where a ' + k.name.toLowerCase() + ' meeting’s location has no colour of its own'));
+      var sel = colourSelect('tracks-default-' + k.id, state.defaults[k.id]);
+      var sw = swatch(colourHex(state.defaults[k.id]));
+      sel.addEventListener('change', function () {
+        sel.disabled = true;
+        sw.style.background = colourHex(sel.value);
+        send('/admin/track-colours/default', { kind: k.id, colour: sel.value }, 'tracks-default-said',
+             k.name + ' starts on ' + nameOf(sel.value) + '.').then(function () { sel.disabled = false; });
+      });
+      li.appendChild(sw);
+      li.appendChild(what);
+      li.appendChild(sel);
+      ul.appendChild(li);
+    });
+  }
+
   // ---------------------------------------------------------------- the locations
   function drawLocations() {
     var ul = $('tracks-locations');
     ul.textContent = '';
-    var shown = state.locations.filter(function (l) { return !$('tracks-unset').checked || !l.colour; });
+    var shown = state.locations.filter(function (l) {
+      return !$('tracks-unset').checked || kindsAt(l).some(function (k) { return !k.colour; });
+    });
     if (!state.locations.length) {
       ul.appendChild(el('li', null, 'No meeting has a location yet. Add them on the results sources page.'));
       return;
@@ -117,28 +192,34 @@
       var what = el('div', 'track-location__what');
       var id = 'tracks-loc-' + n;
       var label = el('label', null, l.location);
-      label.htmlFor = id;
+      label.htmlFor = id + '-' + kindsAt(l)[0].kind;
       what.appendChild(label);
       what.appendChild(el('span', 'access-how', [l.city, l.meetings ? (l.meetings === 1 ? '1 meeting' : l.meetings + ' meetings')
         : 'No meeting has this location now'].filter(Boolean).join(' · ')));
-      var sel = el('select');
-      sel.id = id;
-      var none = el('option', null, 'No colour set (' + nameOf(state.dflt) + ')');
-      none.value = '';
-      sel.appendChild(none);
-      state.colours.forEach(function (c) {
-        var o = el('option', null, c.name);
-        o.value = c.id;
-        sel.appendChild(o);
-      });
-      sel.value = l.colour || '';
-      var sw = swatch(colourHex(l.colour));
-      sel.addEventListener('change', function () {
-        sel.disabled = true;
-        sw.style.background = colourHex(sel.value);
-        send('/admin/track-colours/location', { location: l.location, colour: sel.value }, 'tracks-location-said',
-             sel.value ? l.location + ' starts on ' + nameOf(sel.value) + '.' : l.location + ' has no colour now.')
-          .then(function () { sel.disabled = false; });
+      // a colour for each kind of event held there
+      var picks = el('div', 'track-kinds');
+      kindsAt(l).forEach(function (k) {
+        var box = el('div', 'track-kind');
+        var sid = id + '-' + k.kind;
+        var lab = el('label', 'track-kind__name', kindName(k.kind));
+        lab.htmlFor = sid;
+        var sel = colourSelect(sid, k.colour, 'No colour set (' + nameOf(state.defaults[k.kind]) + ')');
+        sel.setAttribute('aria-label', l.location + ': ' + kindName(k.kind).toLowerCase() + ' colour');
+        var sw = swatch(colourHex(k.colour, k.kind));
+        sel.addEventListener('change', function () {
+          sel.disabled = true;
+          sw.style.background = colourHex(sel.value, k.kind);
+          var what = l.location + (k.kind === 'track' ? '' : ' (' + kindName(k.kind).toLowerCase() + ')');
+          send('/admin/track-colours/location', { location: l.location, colour: sel.value, kind: k.kind },
+               'tracks-location-said', sel.value ? what + ' starts on ' + nameOf(sel.value) + '.' : what + ' has no colour now.')
+            .then(function () { sel.disabled = false; });
+        });
+        var row = el('div', 'track-kind__pick');
+        row.appendChild(sw);
+        row.appendChild(sel);
+        box.appendChild(lab);
+        box.appendChild(row);
+        picks.appendChild(box);
       });
       var edit = el('button', 'btn btn--ghost btn--sm', 'Edit');
       edit.type = 'button';
@@ -153,9 +234,8 @@
         send('/admin/locations/change', { location: l.location, new_location: '' }, 'tracks-location-said',
              function (b) { return removedWords(l, b); });
       });
-      li.appendChild(sw);
       li.appendChild(what);
-      li.appendChild(sel);
+      li.appendChild(picks);
       li.appendChild(edit);
       li.appendChild(rm);
       ul.appendChild(li);
@@ -165,7 +245,8 @@
   // "Remove “QEII”? It comes off 3 meetings and its colour (Red) goes. This can't be undone."
   function removeWords(l) {
     var on = l.meetings ? 'It comes off ' + (l.meetings === 1 ? '1 meeting' : l.meetings + ' meetings') : '';
-    var col = l.colour ? 'its colour (' + nameOf(l.colour) + ') goes' : '';
+    var cols = coloursAt(l).map(nameOf);
+    var col = cols.length ? (cols.length > 1 ? 'its colours (' + cols.join(', ') + ') go' : 'its colour (' + cols[0] + ') goes') : '';
     var what = on && col ? on + ' and ' + col : on || (col && col.charAt(0).toUpperCase() + col.slice(1));
     return 'Remove “' + l.location + '”? ' + (what ? what + '.' : '') + (l.meetings
       ? ' Share cards from ' + (l.meetings === 1 ? 'that meeting' : 'those meetings') + ' won’t show a location.' : '');
@@ -211,7 +292,7 @@
     li.appendChild(form);
     li.appendChild(el('span', 'access-how', l.meetings
       ? 'Changes ' + (l.meetings === 1 ? 'the 1 meeting' : 'all ' + l.meetings + ' meetings') + ' at “' + l.location + '”.' +
-        (l.colour ? ' Its colour moves with it.' : '')
+        (coloursAt(l).length ? ' Its colours move with it.' : '')
       : 'No meeting has this location now: only its colour moves.'));
     form.addEventListener('submit', function (e) {
       e.preventDefault();
@@ -224,8 +305,8 @@
     setTimeout(function () { name.focus(); }, 0);
     return li;
   }
-  function colourHex(id) {
-    var c = state.colours.filter(function (x) { return x.id === (id || state.dflt); })[0];
+  function colourHex(id, kind) {
+    var c = state.colours.filter(function (x) { return x.id === (id || state.defaults[kind || 'track']); })[0];
     return c ? c.hex : 'transparent';
   }
 
