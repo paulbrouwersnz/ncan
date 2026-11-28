@@ -459,7 +459,14 @@
       c.scale(scale, scale);
       c.textBaseline = 'alphabetic';
       Lay.items.forEach(function (i, n) {
-        var img = pic[n];
+        // tilted (the race bib): turned about [x, y] by its angle; drop: a soft shadow under it
+        if (i.tilt) { c.save(); c.translate(i.tilt[0], i.tilt[1]); c.rotate(i.tilt[2] * Math.PI / 180); c.translate(-i.tilt[0], -i.tilt[1]); }
+        if (i.drop) { c.save(); c.shadowColor = 'rgba(0,0,0,.42)'; c.shadowBlur = 22; c.shadowOffsetX = 5; c.shadowOffsetY = 10; }
+        draw(i, pic[n]);
+        if (i.drop) { c.restore(); }
+        if (i.tilt) { c.restore(); }
+      });
+      function draw(i, img) {
         if (i.kind === 'rect') {
           c.fillStyle = i.colour;
           if (i.round && c.roundRect) { c.beginPath(); c.roundRect(i.x, i.y, i.w, i.h, i.round); c.fill(); }
@@ -505,7 +512,7 @@
           }
           if ('letterSpacing' in c) { c.letterSpacing = '0px'; }
         }
-      });
+      }
       return canvas;
     });
   }
@@ -1048,7 +1055,10 @@
           list.forEach(function (x) { var o = el('option', null, x.name); o.value = x.id; sel.appendChild(o); });
         }
         sel.addEventListener('change', function () {
-          S.chosen[id] = sel.value;
+          var st = Looks.stickerOf(S.chosen.sticker) || { id: 'none', style: '' };
+          if (id === 'sticker') { S.chosen.sticker = Looks.stickerValue(sel.value, st.style); }        // keeps its style
+          else if (id === 'stickerStyle') { S.chosen.sticker = Looks.stickerValue(st.id, sel.value); }
+          else { S.chosen[id] = sel.value; }
           if (id === 'theme') { S.chosen.accent = ''; }       // a new theme: its own accent colour
           changed();
         });
@@ -1062,6 +1072,7 @@
       select('font', 'Font', Looks.FONTS);
       select('pattern', 'Pattern', Looks.PATTERNS);
       select('sticker', 'Sticker', Looks.STICKERS);
+      select('stickerStyle', 'Sticker style', Looks.STICKER_STYLES);
 
       var colourWrap = el('span', 'recap-look__colour');
       var colour = el('input');
@@ -1160,7 +1171,8 @@
       shuffle.addEventListener('click', function () {
         var any = function (list) { return list[Math.floor(Math.random() * list.length)].id; };
         S.chosen.theme = any(Looks.THEMES); S.chosen.layout = any(Looks.LAYOUTS); S.chosen.pattern = any(Looks.PATTERNS);
-        S.chosen.sticker = any(Looks.STICKERS); S.chosen.font = any(Looks.FONTS); S.chosen.accent = '';
+        S.chosen.sticker = Looks.stickerValue(any(Looks.STICKERS), any(Looks.STICKER_STYLES));
+        S.chosen.font = any(Looks.FONTS); S.chosen.accent = '';
         changed();
       });
       look.intro = intro;
@@ -1171,7 +1183,11 @@
       var ch = S.chosen, sg = ch.suggested, theme = Looks.theme(ch.theme);
       look.intro.textContent = 'Suggested for this meeting: ' + Looks.theme(sg.theme).name + ', ' +
         Looks.find(Looks.LAYOUTS, sg.layout).name.toLowerCase() + ' layout (' + sg.why + '). Change anything you like.';
-      ['theme', 'layout', 'feature', 'font', 'pattern', 'sticker'].forEach(function (k) { look[k].value = ch[k]; });
+      ['theme', 'layout', 'feature', 'font', 'pattern'].forEach(function (k) { look[k].value = ch[k]; });
+      var st = Looks.stickerOf(ch.sticker) || { id: 'none', style: 'gradient' };
+      look.sticker.value = st.id;
+      look.stickerStyle.value = st.style;
+      look.stickerStyle.parentNode.hidden = st.id === 'none';
       var accent = ch.accent || theme.accent;
       look.accent.value = accent.length === 7 ? accent.toLowerCase() : '#ffffff';
       look.reset.hidden = !ch.accent;

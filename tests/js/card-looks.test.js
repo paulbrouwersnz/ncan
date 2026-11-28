@@ -122,3 +122,37 @@ test('a photo goes under the theme\'s colour; the scoreboard has its own backgro
   const board = L.build({ title: 'A', counts: [] }, L.resolve({ layout: 'scoreboard', photo: 'https://photos.ncan.nz/a.jpg' }, {}, {}));
   assert.ok(!board.items.some((i) => i.kind === 'photo'));
 });
+
+test('sticker names carry their style; the default style is left off', () => {
+  assert.deepEqual(L.stickerOf('flame'), { id: 'flame', style: 'gradient' });
+  assert.deepEqual(L.stickerOf('trophy-realistic'), { id: 'trophy', style: 'realistic' });
+  assert.equal(L.stickerOf('banana'), null);
+  assert.equal(L.stickerValue('flame', 'clipart'), 'flame-clipart');
+  assert.equal(L.stickerValue('flame', 'gradient'), 'flame');
+  assert.equal(L.stickerValue('none', 'clipart'), 'none');
+  assert.equal(L.resolve({ sticker: 'star-translucent' }, {}, {}).sticker, 'star-translucent');
+  assert.equal(L.resolve({ sticker: 'star-shiny' }, {}, {}).sticker, 'none');
+});
+
+test('a sticker never covers the words or the crest, in any layout', () => {
+  const long = { title: 'Canterbury Childrens Interclub Programme 2', line: '28 November 2026 · Ngā Puna Wai, Christchurch',
+                 lane: '#0072B5', course: 'track', counts: [{ n: 19, words: 'Athletes' }, { n: 15, words: 'PBs' }, { n: 11, words: 'Podiums' }] };
+  const short = Object.assign({}, long, { title: 'Twilight 2' });
+  for (const facts of [long, short]) {
+    for (const ly of L.LAYOUTS) {
+      for (const st of L.STICKERS.filter((x) => x.id !== 'none')) {
+        for (const font of ['bold', 'condensed']) {
+          const style = L.STICKER_STYLES[(ly.id.length + st.id.length) % 4].id;
+          const card = L.build(facts, L.resolve({ theme: 'childrens', layout: ly.id, font, sticker: L.stickerValue(st.id, style) }, {}, {}));
+          const s = card.sticker;
+          assert.ok(s, ly.id + ' ' + st.id);
+          assert.ok(card.items.some((i) => i.kind === 'svg' && i.svg.includes('rotate(-12)')), ly.id + ' ' + st.id);
+          card.items.filter((i) => (i.kind === 'text' && !i.sticker) || i.kind === 'logo').forEach((i) => {
+            const b = i.kind === 'logo' ? { x: i.x, y: i.y, w: i.w, h: i.h } : L.textBox(i);
+            assert.ok(!L.hitsCircle(b, s.x, s.y, s.r), ly.id + ' ' + st.id + ' ' + font + ': covers "' + (i.words || 'the crest') + '"');
+          });
+        }
+      }
+    }
+  }
+});

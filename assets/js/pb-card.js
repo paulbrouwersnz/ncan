@@ -286,6 +286,7 @@
   /* Race bib: the club singlet behind, the headline, name and group at the top, then a
      white bib pinned on: the event on its gold top, the mark as its number, the gap on a
      gold ribbon, the meeting and date. The other lines under it, the crest at the foot. */
+  var BIB_TILT = -2.5;          // degrees
   var SINGLET = { green: '#0E4634', white: '#F7F7F2', gold: '#E2BD2F', ink: '#141414', inkSoft: '#4A4A4A' };
   function bibLayout(f, shape) {
     var S = SIZES[shape] || SIZES.square, W = S.w, H = S.h, pad = 40, story = shape === 'story';
@@ -313,8 +314,8 @@
     if (md) { items.push(md); }
 
     // the bib
-    var bx = P.bib[0], by = P.bib[1], bw = P.bib[2], bh = P.bib[3], cx = bx + bw / 2;
-    items.push({ kind: 'rect', x: bx, y: by, w: bw, h: bh, colour: '#FBFAF5', round: 14 });
+    var bx = P.bib[0], by = P.bib[1], bw = P.bib[2], bh = P.bib[3], cx = bx + bw / 2, from = items.length;
+    items.push({ kind: 'rect', x: bx, y: by, w: bw, h: bh, colour: '#FBFAF5', round: 14, drop: true });
     items.push({ kind: 'rect', x: bx, y: by, w: bw, h: P.top, colour: SINGLET.gold, round: 14 });
     items.push({ kind: 'rect', x: bx, y: by + P.top - 16, w: bw, h: 16, colour: SINGLET.gold });
     items.push({ kind: 'pins', pts: P.pins, r: story ? 8 : 6.5 });
@@ -328,6 +329,8 @@
     }
     t(f.meeting, cx, P.meet, P.meetSize, { weight: 700, colour: SINGLET.ink, align: 'center', max: bw - 120 });
     t([f.date, f.where].filter(Boolean).join(' · '), cx, P.date, P.dateSize, { colour: SINGLET.inkSoft, align: 'center', max: bw - 120 });
+    // the bib pinned on a little crooked, as they always are
+    items.slice(from).forEach(function (i) { i.tilt = [cx, by + bh / 2, BIB_TILT]; });
 
     // under the bib, left of the singlet's sweep: the earlier best, place and wind, the season
     var y = P.lines;
@@ -1009,6 +1012,14 @@
       c.scale(scale, scale);
       c.textBaseline = 'alphabetic';
       L.items.forEach(function (i) {
+        // tilted (the race bib): turned about [x, y] by its angle; drop: a soft shadow under it
+        if (i.tilt) { c.save(); c.translate(i.tilt[0], i.tilt[1]); c.rotate(i.tilt[2] * Math.PI / 180); c.translate(-i.tilt[0], -i.tilt[1]); }
+        if (i.drop) { c.save(); c.shadowColor = 'rgba(0,0,0,.42)'; c.shadowBlur = 22; c.shadowOffsetX = 5; c.shadowOffsetY = 10; }
+        draw(i);
+        if (i.drop) { c.restore(); }
+        if (i.tilt) { c.restore(); }
+      });
+      function draw(i) {
         if (i.kind === 'rect') {
           c.fillStyle = i.colour;
           if (i.round && c.roundRect) { c.beginPath(); c.roundRect(i.x, i.y, i.w, i.h, i.round); c.fill(); }
@@ -1052,7 +1063,7 @@
           c.shadowColor = 'transparent'; c.shadowBlur = 0; c.shadowOffsetY = 0;
           if ('letterSpacing' in c) { c.letterSpacing = '0px'; }
         }
-      });
+      }
       return canvas;
     });
   }
