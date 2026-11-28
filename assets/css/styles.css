@@ -5032,6 +5032,27 @@ table.schedule.recap-names { min-width: 0; }
 .recap-hero .recap-lane { margin: 0 calc(-1 * clamp(.8rem, 3vw, 1.5rem)); }
 .recap-cardpv { margin: 0; }
 .recap-cardpv__canvas { display: block; width: 100%; max-width: 600px; height: auto; border-radius: 8px; box-shadow: var(--shadow-sm); }
+/* the card's look: the suggestion, then every part of it to change */
+.recap-look { max-width: 760px; margin: 1rem 0 1.5rem; padding: 1rem 1.1rem; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+.recap-look__top { display: flex; flex-wrap: wrap; gap: .5rem 1rem; align-items: center; justify-content: space-between; }
+.recap-look__why { margin: 0; flex: 1 1 18rem; }
+.recap-look__acts { display: flex; gap: .5rem; margin: 0; }
+.recap-look__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); gap: .4rem 1rem; margin-top: .8rem; }
+.recap-look__field { margin: .3rem 0; }
+.recap-look__field select, .recap-look__field input[type="text"] { width: 100%; padding: .45rem .55rem; border: 1px solid var(--line-strong); border-radius: 6px; font: inherit; background: var(--surface); color: inherit; }
+.recap-look__colour { display: flex; gap: .5rem; align-items: center; }
+.recap-look__colour input[type="color"] { width: 3rem; height: 2.2rem; padding: 0; border: 1px solid var(--line-strong); border-radius: 6px; background: none; }
+.recap-look__warn { display: block; font-size: .85rem; color: var(--danger, #B42318); }
+.recap-look__warn:empty { display: none; }
+.recap-look__sub { margin: 1rem 0 .2rem; font-size: 1rem; }
+.recap-look__photo { border-top: 1px solid var(--line); margin-top: 1rem; }
+.recap-look__thumbs { list-style: none; margin: .5rem 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: .4rem; }
+.recap-look__thumb { display: block; width: 100%; aspect-ratio: 4 / 3; padding: 0; border: 2px solid transparent; border-radius: 6px; overflow: hidden; cursor: pointer; background: var(--surface-warm); }
+.recap-look__thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.recap-look__thumb[aria-pressed="true"] { border-color: var(--accent, #0B3B2E); box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--accent, #0B3B2E); }
+.recap-look__chosen { display: flex; gap: .6rem; align-items: center; margin: .4rem 0; }
+.recap-look__chosen:empty { display: none; }
+.recap-look__chosen-img { width: 96px; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 6px; }
 .recap-publish { margin-top: 1.5rem; }
 .recap-confirm { margin: 0 0 .8rem; }
 .recap-confirm input { width: 1.2rem; height: 1.2rem; accent-color: var(--green-700); }
