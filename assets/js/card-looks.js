@@ -255,8 +255,22 @@
   ];
   var STICKERS = [
     { id: 'none', name: 'None' }, { id: 'pb', name: 'New PBs stamp' }, { id: 'burst', name: 'Starburst' }, { id: 'medal', name: 'Medal' },
-    { id: 'bolt', name: 'Lightning' }, { id: 'flame', name: 'Flame' }
+    { id: 'trophy', name: 'Trophy' }, { id: 'star', name: 'Star' }, { id: 'bolt', name: 'Lightning' }, { id: 'flame', name: 'Flame' }
   ];
+  // how a sticker is drawn; saved as part of its name ("flame-realistic"), the default left off
+  var STICKER_STYLES = [
+    { id: 'gradient', name: 'Glossy' }, { id: 'clipart', name: 'Clipart' }, { id: 'translucent', name: 'Translucent' },
+    { id: 'realistic', name: 'Realistic' }
+  ];
+  var STICKER_STYLE = 'gradient';
+  function stickerOf(value) {
+    var v = String(value || ''), m = /^(.*)-(gradient|clipart|translucent|realistic)$/.exec(v);
+    var id = m ? m[1] : v;
+    return find(STICKERS, id) ? { id: id, style: id === 'none' ? STICKER_STYLE : m ? m[2] : STICKER_STYLE } : null;
+  }
+  function stickerValue(id, style) {
+    return !id || id === 'none' ? 'none' : style && style !== STICKER_STYLE ? id + '-' + style : id;
+  }
   var FONTS = [
     { id: 'bold', name: 'Bold', weight: 800 }, { id: 'heavy', name: 'Heavy italic', weight: 900, italic: true },
     { id: 'condensed', name: 'Condensed', weight: 900, squeeze: 0.72, grow: 1.12 }, { id: 'light', name: 'Light', weight: 300 },
@@ -400,8 +414,9 @@
   function resolve(look, meeting, counts) {
     look = look || {};
     var s = suggest(meeting, counts), out = {};
-    [['theme', THEMES], ['layout', LAYOUTS], ['pattern', PATTERNS], ['sticker', STICKERS], ['font', FONTS], ['feature', FEATURES]]
+    [['theme', THEMES], ['layout', LAYOUTS], ['pattern', PATTERNS], ['font', FONTS], ['feature', FEATURES]]
       .forEach(function (k) { out[k[0]] = look[k[0]] && find(k[1], look[k[0]]) ? look[k[0]] : s[k[0]]; });
+    out.sticker = look.sticker && stickerOf(look.sticker) ? look.sticker : s.sticker;
     out.accent = /^#[0-9a-f]{6}$/i.test(look.accent || '') ? look.accent.toLowerCase() : '';
     out.headline = String(look.headline || '').slice(0, HEADLINE_MAX);
     out.photo = /^https:\/\/photos\.ncan\.nz\//.test(look.photo || '') ? look.photo : '';
@@ -491,32 +506,180 @@
     return s;
   }
 
-  function stickerArt(id, cx, cy, look) {
-    var g = function (inner) { return '<g transform="translate(' + cx + ' ' + cy + ') rotate(-12)">' + inner + '</g>'; };
-    if (id === 'pb') { return g(C(0, 0, 46, '#E8443A') + C(0, 0, 39, 'none', 1, 'stroke="#fff" stroke-width="2" stroke-dasharray="4 3"')); }
-    if (id === 'burst') { return g(star(0, 0, 54, '#FF4FA3', 14, 0.78)); }
-    if (id === 'medal') {
-      return g(P('-22,-60 -4,-60 10,-14 -8,-14', '#1F6FD1') + P('22,-60 4,-60 -10,-14 8,-14', '#E8443A') +
-        C(0, 8, 30, '#D4AF37') + C(0, 8, 23, 'none', 1, 'stroke="#FFF3C4" stroke-width="2"'));
-    }
-    if (id === 'bolt') {
-      return g(P('8,-56 -26,6 -2,6 -12,56 26,-10 2,-10 14,-56', '#FFD34D', 'stroke="#141414" stroke-width="3" stroke-linejoin="round"'));
-    }
-    if (id === 'flame') {
-      return g('<path d="M0 50 C-34 40 -36 4 -14 -22 C-12 -6 -4 0 0 2 C2 -18 -2 -34 10 -52 C14 -30 36 -14 32 16 C30 38 16 48 0 50 Z" fill="#FF7A1A"/>' +
-        '<path d="M0 46 C-16 40 -16 20 -4 8 C-2 18 4 20 6 22 C8 12 8 2 14 -6 C22 10 24 24 18 34 C14 42 8 46 0 46 Z" fill="#FFD34D"/>');
-    }
-    return '';
+  /* Stickers: each a few parts in a box about 100 across, centred on 0,0 (main parts
+     filled, details drawn as they are), drawn in a style: glossy (a gradient, a shine and
+     a soft shadow), clipart (flat, bold outline, a white die-cut border), translucent
+     (see-through, a white rim) or realistic (shaded and lit, metal for medals and
+     trophies, a drop shadow). */
+  function mix(hex, f) {
+    var n = parseInt(String(hex).slice(1), 16);
+    return '#' + [n >> 16, (n >> 8) & 255, n & 255].map(function (c) {
+      var v = Math.round(f < 1 ? c * f : c + (255 - c) * Math.min(1, f - 1));
+      return ('0' + Math.max(0, Math.min(255, v)).toString(16)).slice(-2);
+    }).join('');
   }
-  function stickerWords(id, cx, cy, feat, items) {
+  function starPoints(r, n, q) {
+    var pts = [];
+    for (var i = 0; i < n * 2; i++) {
+      var a = -Math.PI / 2 + i * Math.PI / n, d = i % 2 ? r * q : r;
+      pts.push(r1(Math.cos(a) * d) + ',' + r1(Math.sin(a) * d));
+    }
+    return pts.join(' ');
+  }
+  var GOLD = '#E2B23A';
+  var SHAPES = {
+    pb: function () {
+      return [{ el: 'circle', a: { cx: 0, cy: 0, r: 46 }, c: '#E8443A' },
+              { el: 'circle', a: { cx: 0, cy: 0, r: 39 }, detail: 'fill="none" stroke="#FFFFFF" stroke-width="2" stroke-dasharray="4 3"' }];
+    },
+    burst: function () { return [{ el: 'polygon', a: { points: starPoints(54, 14, 0.78) }, c: '#FF4FA3' }]; },
+    medal: function () {
+      return [{ el: 'polygon', a: { points: '-22,-60 -4,-60 10,-14 -8,-14' }, c: '#1F6FD1' },
+              { el: 'polygon', a: { points: '22,-60 4,-60 -10,-14 8,-14' }, c: '#E8443A' },
+              { el: 'circle', a: { cx: 0, cy: 8, r: 31 }, c: GOLD, metal: true },
+              { el: 'circle', a: { cx: 0, cy: 8, r: 24 }, detail: 'fill="none" stroke="#FFF3C4" stroke-width="2" opacity=".8"' }];
+    },
+    trophy: function () {
+      return [{ el: 'path', a: { d: 'M-26 -40 C-50 -40 -50 0 -18 2 L-18 -6 C-38 -8 -38 -32 -26 -32 Z' }, c: GOLD, metal: true },
+              { el: 'path', a: { d: 'M26 -40 C50 -40 50 0 18 2 L18 -6 C38 -8 38 -32 26 -32 Z' }, c: GOLD, metal: true },
+              { el: 'path', a: { d: 'M-28 -46 H28 V-16 C28 6 14 18 0 20 C-14 18 -28 6 -28 -16 Z' }, c: GOLD, metal: true },
+              { el: 'rect', a: { x: -6, y: 18, width: 12, height: 14 }, c: GOLD, metal: true },
+              { el: 'rect', a: { x: -24, y: 30, width: 48, height: 16, rx: 3 }, c: '#5B3A1A' }];
+    },
+    star: function () { return [{ el: 'polygon', a: { points: starPoints(54, 5, 0.46) }, c: '#FFC629', metal: true }]; },
+    bolt: function () { return [{ el: 'polygon', a: { points: '8,-56 -26,6 -2,6 -12,56 26,-10 2,-10 14,-56' }, c: '#FFD34D' }]; },
+    flame: function () {
+      return [{ el: 'path', a: { d: 'M0 50 C-34 40 -36 4 -14 -22 C-12 -6 -4 0 0 2 C2 -18 -2 -34 10 -52 C14 -30 36 -14 32 16 C30 38 16 48 0 50 Z' }, c: '#FF6A13' },
+              { el: 'path', a: { d: 'M0 46 C-16 40 -16 20 -4 8 C-2 18 4 20 6 22 C8 12 8 2 14 -6 C22 10 24 24 18 34 C14 42 8 46 0 46 Z' }, c: '#FFD34D' }];
+    }
+  };
+  var STICKER_R = 56;          // how far a sticker reaches from its centre, at full size
+  function shapeEl(p, fill, extra) {
+    return '<' + p.el + ' ' + Object.keys(p.a).map(function (k) { return k + '="' + p.a[k] + '"'; }).join(' ') +
+      ' fill="' + fill + '"' + (extra ? ' ' + extra : '') + '/>';
+  }
+  function stickerArt(value, cx, cy, k) {
+    var st = stickerOf(value);
+    if (!st || st.id === 'none') { return ''; }
+    var parts = SHAPES[st.id](), style = st.style, defs = '', body = '', grads = {}, n = 0;
+    var main = parts.filter(function (p) { return !p.detail; });
+    var gradFor = function (c, metal) {
+      var key = c + (metal ? 'm' : '');
+      if (grads[key]) { return grads[key]; }
+      var id = 'sg' + (n++);
+      grads[key] = id;
+      if (style === 'realistic') {
+        defs += '<radialGradient id="' + id + '" cx=".34" cy=".28" r=".85">' + (metal
+          ? '<stop offset="0" stop-color="' + mix(c, 1.85) + '"/><stop offset=".28" stop-color="' + mix(c, 1.25) + '"/>' +
+            '<stop offset=".6" stop-color="' + c + '"/><stop offset=".86" stop-color="' + mix(c, 0.55) + '"/><stop offset="1" stop-color="' + mix(c, 0.8) + '"/>'
+          : '<stop offset="0" stop-color="' + mix(c, 1.6) + '"/><stop offset=".5" stop-color="' + c + '"/><stop offset="1" stop-color="' + mix(c, 0.55) + '"/>') +
+          '</radialGradient>';
+      } else {
+        defs += '<linearGradient id="' + id + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + mix(c, 1.45) + '"/>' +
+          '<stop offset=".55" stop-color="' + c + '"/><stop offset="1" stop-color="' + mix(c, 0.66) + '"/></linearGradient>';
+      }
+      return id;
+    };
+    var each = function (fn) { return main.map(fn).join(''); };
+    var shine = function (top) {
+      defs += '<linearGradient id="gl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF" stop-opacity="' + top + '"/>' +
+        '<stop offset=".5" stop-color="#FFFFFF" stop-opacity="0"/></linearGradient>';
+      return each(function (p) { return shapeEl(p, 'url(#gl)'); });
+    };
+    var shadow = function (dy, blur, op) {
+      defs += '<filter id="ds" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx="0" dy="' + dy + '" stdDeviation="' + blur +
+        '" flood-color="#000000" flood-opacity="' + op + '"/></filter>';
+    };
+    if (style === 'clipart') {
+      body += each(function (p) { return shapeEl(p, '#FFFFFF', 'stroke="#FFFFFF" stroke-width="14" stroke-linejoin="round"'); });
+      body += each(function (p) { return shapeEl(p, p.c, 'stroke="#141414" stroke-width="3.5" stroke-linejoin="round"'); });
+    } else if (style === 'translucent') {
+      body += each(function (p) { return shapeEl(p, p.c, 'fill-opacity=".5" stroke="#FFFFFF" stroke-opacity=".9" stroke-width="2.5" stroke-linejoin="round"'); });
+      body += shine(0.45);
+    } else if (style === 'realistic') {
+      shadow(5, 4, 0.5);
+      body += '<g filter="url(#ds)">' + each(function (p) {
+        return shapeEl(p, 'url(#' + gradFor(p.c, p.metal) + ')', 'stroke="' + mix(p.c, 0.5) + '" stroke-width="1.5" stroke-linejoin="round"');
+      }) + '</g>';
+      body += shine(0.35);
+    } else {
+      shadow(3, 3, 0.3);
+      body += '<g filter="url(#ds)">' + each(function (p) { return shapeEl(p, 'url(#' + gradFor(p.c) + ')'); }) + '</g>';
+      body += shine(0.6);
+    }
+    body += parts.filter(function (p) { return p.detail; }).map(function (p) {
+      return '<' + p.el + ' ' + Object.keys(p.a).map(function (q) { return q + '="' + p.a[q] + '"'; }).join(' ') + ' ' + p.detail + '/>';
+    }).join('');
+    return '<defs>' + defs + '</defs><g transform="translate(' + r1(cx) + ' ' + r1(cy) + ') rotate(-12) scale(' + k + ')">' + body + '</g>';
+  }
+  function stickerWords(value, cx, cy, k, feat, items) {
+    var st = stickerOf(value), id = st && st.id;
     var t = function (words, dy, size, weight, colour, spacing) {
-      var p = rot(cx, cy, 0, dy, -12);
-      items.push({ kind: 'text', words: words, x: r1(p.x), y: r1(p.y), size: size, weight: weight, font: 'sans', colour: colour,
-                   align: 'center', max: 80, spacing: spacing || 0, rotate: -12 });
+      var p = rot(cx, cy, 0, dy * k, -12);
+      items.push({ kind: 'text', words: words, x: r1(p.x), y: r1(p.y), size: r1(size * k), weight: weight, font: 'sans', colour: colour,
+                   align: 'center', max: r1(80 * k), spacing: spacing || 0, rotate: -12, sticker: true });
     };
     if (id === 'pb') { t('NEW', -8, 13, 800, '#FFFFFF', 2); t('PBs!', 20, 28, 900, '#FFFFFF'); }
     else if (id === 'burst') { t(String(feat.n), 8, 34, 900, '#FFFFFF'); t(feat.words.toUpperCase(), 26, 12, 800, '#FFFFFF', 1); }
-    else if (id === 'medal') { t('1', 22, 34, 900, '#7A5A00'); }
+    else if (id === 'medal') { t('1', 20, 32, 900, '#5A4300'); }
+    else if (id === 'trophy') { t(String(feat.n), -12, 24, 900, '#5A4300'); }
+  }
+
+  /* Where a sticker goes: the layout's own spot, or the first of the others that's clear
+     of every word and the crest; if none is, its own spot, smaller, with the words next
+     to it narrowed to make room (the canvas squeezes words to their width). */
+  var SPOTS = [[532, 62], [540, 150], [544, 236], [300, 46], [420, 250], [64, 252]];
+  function textBox(i) {
+    var k = i.font === 'display' ? 0.6 : 0.56;
+    if (!/[a-z]/.test(i.words)) { k += 0.06; }                  // capitals are wider
+    var w = Math.min(i.max, i.words.length * (i.size * k * (i.squeeze || 1) + (i.spacing || 0)));
+    var x0 = i.align === 'center' ? i.x - w / 2 : i.align === 'right' ? i.x - w : i.x;
+    var y0 = i.y - i.size * 0.8, y1 = i.y + i.size * 0.22;
+    if (!i.rotate) { return { x: x0, y: y0, w: w, h: y1 - y0 }; }
+    var xs = [], ys = [];
+    [[x0, y0], [x0 + w, y0], [x0, y1], [x0 + w, y1]].forEach(function (c) {
+      var p = rot(i.x, i.y, c[0] - i.x, c[1] - i.y, i.rotate);
+      xs.push(p.x); ys.push(p.y);
+    });
+    var lx = Math.min.apply(null, xs), ly = Math.min.apply(null, ys);
+    return { x: lx, y: ly, w: Math.max.apply(null, xs) - lx, h: Math.max.apply(null, ys) - ly };
+  }
+  function hitsCircle(b, cx, cy, r) {
+    var nx = Math.max(b.x, Math.min(cx, b.x + b.w)), ny = Math.max(b.y, Math.min(cy, b.y + b.h));
+    return (nx - cx) * (nx - cx) + (ny - cy) * (ny - cy) < r * r;
+  }
+  function placeSticker(items, own) {
+    var blocks = items.filter(function (i) { return (i.kind === 'text' && !i.sticker) || i.kind === 'logo'; });
+    var boxOf = function (i) { return i.kind === 'logo' ? { x: i.x, y: i.y, w: i.w, h: i.h } : textBox(i); };
+    var clear = function (cx, cy, r) { return blocks.every(function (i) { return !hitsCircle(boxOf(i), cx, cy, r); }); };
+    var tries = [own].concat(SPOTS);
+    var sizes = [1.3, 1.15, 1, 0.8];             // as big as there's room for
+    for (var s = 0; s < sizes.length; s++) {
+      var k = sizes[s];
+      for (var j = 0; j < tries.length; j++) {
+        if (clear(tries[j][0], tries[j][1], STICKER_R * k)) { return { x: tries[j][0], y: tries[j][1], k: k }; }
+      }
+    }
+    // no clear spot: the first where narrowing the words to its left makes room (only
+    // words that start well to its left can be narrowed; the crest can't move)
+    var gap = 8;
+    var fix = function (cx, cy, r, go) {
+      var edge = cx - r - gap, ok = true;
+      blocks.forEach(function (i) {
+        if (!hitsCircle(boxOf(i), cx, cy, r)) { return; }
+        var room = i.kind !== 'text' ? 0 : (!i.align || i.align === 'left') ? edge - i.x - (i.rotate ? 20 : 0)
+          : i.align === 'center' ? 2 * (edge - i.x) : 0;
+        if (room < 60) { ok = false; return; }
+        if (go) { i.max = Math.min(i.max, room); }
+      });
+      return ok;
+    };
+    var last = [[W - 30, 30, 0.6]];
+    var all = tries.map(function (t) { return [t[0], t[1], 0.85]; }).concat(last);
+    for (var q = 0; q < all.length; q++) {
+      var c = all[q], r = STICKER_R * c[2];
+      if (fix(c[0], c[1], r, false) || q === all.length - 1) { fix(c[0], c[1], r, true); return { x: c[0], y: c[1], k: c[2] }; }
+    }
   }
 
   /* The layouts: each adds its items to `it`. f: the card's facts; t: the colours;
@@ -575,7 +738,7 @@
     classic: function (items, add, t, f, o) {
       items.push({ kind: 'svg', svg: art(t) });
       stripItem(items, t, f);
-      var room = o.sticker ? 420 : W - 72;
+      var room = W - 72;
       add(o.headline, 36, 50, 15, { weight: 800, colour: t.accent, spacing: 2, max: room });
       var lines = wrap(f.title, 30, 2), size = lines.length > 1 ? 30 : 36, y = lines.length > 1 ? 88 : 94;
       lines.forEach(function (l, i) { add(l, 36, y + i * (size + 4), size, { font: 'display', colour: t.text, max: room }); });
@@ -599,7 +762,8 @@
     },
     'race-bib': function (items, add, t, f, o) {
       var band = t.accent, ink = '#141414';
-      items.push({ kind: 'rect', x: 60, y: 22, w: 480, h: 232, colour: '#FBFAF5', round: 14 });
+      var from = items.length;
+      items.push({ kind: 'rect', x: 60, y: 22, w: 480, h: 232, colour: '#FBFAF5', round: 14, drop: true });
       items.push({ kind: 'svg', svg: R(60, 22, 480, 58, band, 1, 'rx="14"') + R(60, 58, 480, 22, band) +
         [[78, 96], [522, 96], [78, 238], [522, 238]].map(function (p) {
           return C(p[0], p[1], 6.5, '#D9D9D9', 1, 'stroke="#8A8A8A" stroke-width="1.5"') + L(p[0] - 9, p[1], p[0] + 9, p[1], '#8A8A8A', 1.5);
@@ -609,6 +773,8 @@
       add(String(o.feature.n), W / 2, 200, 124, { font: 'display', colour: ink, align: 'center', max: 360 });
       add(o.feature.words.toUpperCase() + (o.headline ? ' · ' + o.headline : ''), W / 2, 236, 14,
           { weight: 800, colour: ink, align: 'center', spacing: 3, max: 400 });
+      // pinned on a little crooked, as bibs always are
+      items.slice(from).forEach(function (i) { i.tilt = [W / 2, 138, -2.5]; });
       logoAt(items, t, 36, 266, 32);
       add(f.line, W - 36, 288, 13, { colour: t.soft, align: 'right', max: 400 });
       add('ncan.nz', W - 36, 305, 12, { weight: 600, colour: t.text, align: 'right', max: 120 });
@@ -664,7 +830,7 @@
     podium: function (items, add, t, f, o) {
       items.push({ kind: 'svg', svg: art(t) });
       stripItem(items, t, f);
-      var room = o.sticker ? 430 : W - 72;
+      var room = W - 72;
       add(o.headline, 36, 50, 15, { weight: 800, colour: t.accent, spacing: 2, max: room });
       add(f.title, 36, 88, 32, { font: 'display', colour: t.text, max: room });
       add(f.line, 36, 114, 14, { colour: t.soft, max: room });
@@ -703,7 +869,7 @@
     while (counts.length < 3) { counts.push({ n: 0, words: ['Athletes', 'PBs', 'Podiums'][counts.length] }); }
     var f = { title: facts.title || 'Meeting results', line: facts.line || '', lane: facts.lane, course: facts.course, counts: counts };
     var o = { headline: (chosen.headline || theme.eyebrow || '').toUpperCase(), feature: counts[fi], featureId: ids[fi],
-              sticker: chosen.sticker && chosen.sticker !== 'none' };
+              sticker: !!(stickerOf(chosen.sticker) && stickerOf(chosen.sticker).id !== 'none') };
     // the background, a photo faded into it, and a pattern
     var bg = [];
     if (layout !== 'scoreboard') {
@@ -716,16 +882,19 @@
       if (pt) { bg.push({ kind: 'svg', svg: pt }); }
     }
     var spot = LAYOUT[layout](items, add, t, f, o);
-    var front = [];
+    var front = [], placed = null;
     if (o.sticker) {
-      front.push({ kind: 'svg', svg: stickerArt(chosen.sticker, spot.sticker[0], spot.sticker[1], t) });
-      stickerWords(chosen.sticker, spot.sticker[0], spot.sticker[1], o.feature, front);
+      placed = placeSticker(items, spot.sticker);
+      front.push({ kind: 'svg', svg: stickerArt(chosen.sticker, placed.x, placed.y, placed.k) });
+      stickerWords(chosen.sticker, placed.x, placed.y, placed.k, o.feature, front);
     }
-    return { w: W, h: H, scale: SCALE, theme: t, items: bg.concat(items, front) };
+    return { w: W, h: H, scale: SCALE, theme: t, items: bg.concat(items, front),
+             sticker: placed ? { x: placed.x, y: placed.y, r: STICKER_R * placed.k } : null };
   }
 
   return {
     W: W, H: H, SCALE: SCALE, GROUPS: GROUPS, THEMES: THEMES, LAYOUTS: LAYOUTS, PATTERNS: PATTERNS, STICKERS: STICKERS,
+    STICKER_STYLES: STICKER_STYLES, stickerOf: stickerOf, stickerValue: stickerValue, textBox: textBox, hitsCircle: hitsCircle,
     FONTS: FONTS, FEATURES: FEATURES, HEADLINE_MAX: HEADLINE_MAX, ACCENT_MIN: ACCENT_MIN, MATARIKI: MATARIKI,
     theme: function (id) { return BY_ID[id] || null; }, find: find,
     easter: easter, showDay: showDay, occasion: occasion, season: season, suggestTheme: suggestTheme,
