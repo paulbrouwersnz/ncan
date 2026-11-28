@@ -193,6 +193,265 @@
       '<rect width="1200" height="630" fill="url(#pe-calm)"/></g>';
     return PEONY;
   }
+  /* Shared by the spring scenes: a circle as a path, on the 1200 x 630 grid. */
+  var spCirc = function (x, y, r) {
+    return 'M' + r1(x - r) + ' ' + r1(y) + 'a' + r1(r) + ' ' + r1(r) + ' 0 1 0 ' + r1(2 * r) + ' 0a' + r1(r) + ' ' + r1(r) + ' 0 1 0 ' + r1(-2 * r) + ' 0Z';
+  };
+  var spPath = function (d, fill, extra) { return d ? '<path d="' + d + '" fill="' + fill + '"' + (extra ? ' ' + extra : '') + '/>' : ''; };
+
+  /* Spring (Daffodils): a field of daffodils in NCAN yellow on club green, in three
+     depths (small and soft at the back, big and lit at the front right), each with
+     six petals, an orange trumpet with a frilled rim, a papery spathe and leaves, and
+     warm bokeh behind. From the Daffodil field design; the left side is darkened so the
+     words stay clear. Seeded, so every card gets the same field. */
+  var DAFFODILS = null;
+  function daffodils() {
+    if (DAFFODILS) { return DAFFODILS; }
+    var f = r1, circ = spCirc, BASE = 640;
+    var P2 = function (p) { return f(p[0]) + ' ' + f(p[1]); };
+    // local (lx, ly) to the card: spin in the flower's plane, squash for the tilt away, then turn
+    var X = function (cx, cy, spin, sq, turn) {
+      var cs = Math.cos(spin), ss = Math.sin(spin), ct = Math.cos(turn), st = Math.sin(turn);
+      return function (lx, ly) {
+        var x = lx * cs - ly * ss, y = (lx * ss + ly * cs) * sq;
+        return [cx + x * ct - y * st, cy + x * st + y * ct];
+      };
+    };
+    var ring = function (T, r, ruff, n, s) {
+      var d = '';
+      n = Math.max(10, Math.round(n * Math.min(1, s / 40)));     // fewer points on the small flowers at the back
+      for (var i = 0; i < n; i++) {
+        var a = (i / n) * Math.PI * 2, rr = r * (1 + ruff * (0.6 * Math.sin(a * 11) + 0.4 * Math.sin(a * 23 + 1)) * (i % 2 ? 1 : 0.55));
+        d += (i ? 'L' : 'M') + P2(T(rr * Math.cos(a), rr * Math.sin(a)));
+      }
+      return d + 'Z';
+    };
+    var blade = function (x, y, h, lean, w) {
+      var tx = x + lean, ty = y - h;
+      return {
+        full: 'M' + f(x - w) + ' ' + f(y) + 'Q' + f(x - w * 0.6 + lean * 0.4) + ' ' + f(y - h * 0.6) + ' ' + f(tx) + ' ' + f(ty) +
+          'Q' + f(x + w * 0.9 + lean * 0.5) + ' ' + f(y - h * 0.55) + ' ' + f(x + w) + ' ' + f(y) + 'Z',
+        hi: 'M' + f(x - w * 0.15) + ' ' + f(y) + 'Q' + f(x + lean * 0.45) + ' ' + f(y - h * 0.6) + ' ' + f(tx) + ' ' + f(ty) +
+          'Q' + f(x + w * 0.2 + lean * 0.45) + ' ' + f(y - h * 0.55) + ' ' + f(x + w * 0.25) + ' ' + f(y) + 'Z'
+      };
+    };
+    var KEYS = ['leavesDark', 'leaves', 'leafHi', 'stems', 'stemHi', 'spathe', 'glow', 'petals', 'base', 'shade', 'streak', 'hi', 'vein',
+                'trumpet', 'trumpetShade', 'rim', 'rimHi', 'throat', 'core', 'stamen'];
+    var tier = function (seed, n, xs, ys, size) {
+      var r = fwRng(seed), o = {}, heads = [], i, j, p, q;
+      KEYS.forEach(function (k) { o[k] = ''; });
+      for (i = 0; i < n; i++) {
+        var u = r();
+        heads.push({ x: xs[0] + (xs[1] - xs[0]) * Math.pow(u, xs[2]), y: ys[0] + (ys[1] - ys[0]) * r(),
+                     s: size[0] + (size[1] - size[0]) * r(), r: r(), r2: r(), r3: r(), r4: r() });
+      }
+      heads.sort(function (a, b) { return a.y - b.y; });
+      heads.forEach(function (h) {
+        var s = h.s;
+        for (j = 0; j < 3; j++) {     // leaves from the ground around the stem
+          var lean = (r() - 0.5) * s * 2.2, bx = h.x + (r() - 0.5) * s * 1.2;
+          var b = blade(bx, BASE, (BASE - h.y) * (0.55 + 0.5 * r()), lean, s * (0.1 + 0.05 * r()));
+          if (j === 0) { o.leavesDark += b.full; } else { o.leaves += b.full; o.leafHi += b.hi; }
+        }
+        // the stem, its neck bending over just below the head
+        var sw = Math.max(1.2, s * 0.075), bend = (h.r - 0.5) * s * 0.8, top = [h.x + bend * 0.4, h.y + s * 0.15], mid = f((BASE + top[1]) / 2);
+        o.stems += 'M' + f(h.x - sw) + ' ' + BASE + 'Q' + f(h.x - sw + bend) + ' ' + mid + ' ' + f(top[0] - sw * 0.8) + ' ' + f(top[1]) +
+          'L' + f(top[0] + sw * 0.8) + ' ' + f(top[1]) + 'Q' + f(h.x + sw + bend) + ' ' + mid + ' ' + f(h.x + sw) + ' ' + BASE + 'Z';
+        o.stemHi += 'M' + f(h.x - sw * 0.2) + ' ' + BASE + 'Q' + f(h.x + bend) + ' ' + mid + ' ' + f(top[0]) + ' ' + f(top[1]) +
+          'L' + f(top[0] + sw * 0.4) + ' ' + f(top[1]) + 'Q' + f(h.x + sw * 0.5 + bend) + ' ' + mid + ' ' + f(h.x + sw * 0.5) + ' ' + BASE + 'Z';
+        o.spathe += 'M' + P2([top[0] - sw, top[1]]) + 'Q' + P2([top[0] + s * 0.25, top[1] - s * 0.05]) + ' ' + P2([top[0] + s * 0.32, top[1] + s * 0.22]) +
+          'Q' + P2([top[0] + s * 0.05, top[1] + s * 0.12]) + ' ' + P2([top[0] + sw, top[1] + s * 0.18]) + 'Z';
+        // the head: most nod sideways towards the light, a few face out
+        var sq = 0.62 + 0.36 * h.r2, turn = (h.r3 < 0.7 ? -0.22 : 0.22) + (h.r4 - 0.5) * 0.6, spin = h.r * Math.PI;
+        var T = X(h.x + bend * 0.4, h.y, spin, sq, turn);
+        o.glow += circ(h.x, h.y, s * 0.7);
+        var L = s, W2 = s * 0.6;
+        for (p = 0; p < 6; p++) {
+          var a = (p / 6) * Math.PI * 2 + (r() - 0.5) * 0.12, l = L * (p % 2 ? 0.94 : 1) * (0.95 + 0.1 * r()), w = W2 * (p % 2 ? 0.9 : 1) * (0.92 + 0.16 * r());
+          var pt = (function (Tp) { return function (lx, ly) { var z = Tp(lx, ly); return P2(T(z[0], z[1])); }; })(X(0, 0, a, 1, 0));
+          var curl = (r() - 0.5) * w * 0.25;
+          var outline = 'M' + pt(0.05 * l, 0) + 'C' + pt(0.25 * l, w * 0.95) + ' ' + pt(0.98 * l, w * 0.75) + ' ' + pt(l, curl);
+          o.petals += outline + 'C' + pt(0.98 * l, -w * 0.75) + ' ' + pt(0.25 * l, -w * 0.95) + ' ' + pt(0.05 * l, 0) + 'Z';
+          o.shade += outline + 'Q' + pt(0.55 * l, w * 0.25) + ' ' + pt(0.05 * l, 0) + 'Z';
+          if (s < 16) { r(); r(); r(); continue; }     // too small for veins and streaks to show
+          o.vein += 'M' + pt(0.3 * l, 0) + 'L' + pt(0.85 * l, curl * 0.8) + 'M' + pt(0.35 * l, w * 0.12) + 'Q' + pt(0.6 * l, w * 0.35) + ' ' + pt(0.8 * l, w * 0.4) +
+            'M' + pt(0.35 * l, -w * 0.12) + 'Q' + pt(0.6 * l, -w * 0.35) + ' ' + pt(0.8 * l, -w * 0.4);
+          [-0.32, 0.05, 0.38].forEach(function (sd) {
+            var so = sd * w + (r() - 0.5) * w * 0.1;
+            o.streak += 'M' + pt(0.28 * l, so * 0.5) + 'Q' + pt(0.6 * l, so + w * 0.05) + ' ' + pt(0.9 * l, so * 0.7 + curl * 0.5) +
+              'Q' + pt(0.6 * l, so - w * 0.04) + ' ' + pt(0.28 * l, so * 0.5) + 'Z';
+          });
+          o.hi += 'M' + pt(0.22 * l, 0) + 'Q' + pt(0.55 * l, -w * 0.22) + ' ' + pt(0.92 * l, curl * 0.8) + 'Q' + pt(0.55 * l, -w * 0.02) + ' ' + pt(0.22 * l, 0) + 'Z';
+        }
+        // the trumpet comes out of the flower towards the viewer
+        var depth = s * 0.34 * Math.sqrt(Math.max(0, 1 - sq * sq)) + s * 0.05;
+        var ox = -Math.sin(turn) * depth, oy = Math.cos(turn) * depth * 0.15 - depth * 0.05;
+        var c0 = T(0, 0), rc = s * 0.46, rb = s * 0.34, sqr = Math.max(0.35, sq);
+        var Tbase = X(c0[0], c0[1], 0, sq, turn), ax = Math.cos(turn), ay = Math.sin(turn);
+        var at = function (k) { return X(c0[0] + ox * k, c0[1] + oy * k, 0, sqr, turn); };
+        var e1 = [c0[0] + ax * rb, c0[1] + ay * rb], e2 = [c0[0] - ax * rb, c0[1] - ay * rb];
+        var q1 = [c0[0] + ox + ax * rc, c0[1] + oy + ay * rc], q2 = [c0[0] + ox - ax * rc, c0[1] + oy - ay * rc];
+        o.base += ring(Tbase, s * 0.5, 0, 24, s);
+        o.core += ring(at(0.55), rc * 0.36, 0, 18, s);
+        o.trumpet += ring(Tbase, rb, 0, 20, s) + 'M' + P2(e1) + 'L' + P2(q1) + 'L' + P2(q2) + 'L' + P2(e2) + 'Z';
+        o.trumpetShade += 'M' + P2(e1) + 'L' + P2(q1) + 'L' + P2([(q1[0] + q2[0]) / 2, (q1[1] + q2[1]) / 2]) + 'L' + P2(c0) + 'Z';
+        o.rim += ring(at(1), rc, 0.11, 72, s);
+        o.rimHi += ring(at(0.95), rc * 0.86, 0.06, 60, s);
+        o.throat += ring(at(0.85), rc * 0.74, 0.03, 36, s);
+        for (q = 0; q < 4; q++) {
+          var qa = q * 1.7 + h.r * 3;
+          o.stamen += circ(c0[0] + ox * 0.75 + Math.cos(qa) * s * 0.06, c0[1] + oy * 0.75 + Math.sin(qa) * s * 0.06 * sq, Math.max(0.7, s * 0.035));
+        }
+      });
+      return o;
+    };
+    var layer = function (o, filter, op, lit) {
+      var p = spPath;
+      return '<g' + (filter ? ' filter="url(#' + filter + ')"' : '') + ' opacity="' + op + '">' +
+        p(o.leavesDark, '#174F2A') + p(o.leaves, '#2E7A3A') + p(o.leafHi, '#5FA34E', 'opacity=".55"') +
+        p(o.stems, '#3C8A3A') + p(o.stemHi, '#8CC264', 'opacity=".6"') +
+        p(o.spathe, '#B8976A') + p(o.spathe, 'none', 'stroke="#7E6440" stroke-width=".7" opacity=".7"') +
+        p(o.glow, '#FFC629', 'opacity=".3" filter="url(#sd-glow)"') +
+        '<g' + (lit ? ' filter="url(#sd-lit)"' : '') + '>' +
+        p(o.petals, '#FFC629') + p(o.base, '#E2A200', 'opacity=".45"') + p(o.shade, '#D99A00', 'opacity=".5"') +
+        p(o.petals, '#FFF4C2', 'opacity=".18" filter="url(#sd-grain)"') + p(o.streak, '#FFF7CF', 'opacity=".22"') + p(o.hi, '#FFF0B0', 'opacity=".6"') +
+        p(o.vein, 'none', 'stroke="#E3AC00" stroke-width=".7" opacity=".4"') +
+        p(o.trumpet, '#F79A35') + p(o.trumpetShade, '#D9700F', 'opacity=".55"') + p(o.rim, '#E95E12') + p(o.rimHi, '#F7862A') +
+        p(o.throat, '#C9580A') + p(o.core, '#6E3A08', 'opacity=".85"') + p(o.stamen, '#FFD86A') + '</g></g>';
+    };
+    var rb2 = fwRng(77), bokeh = '', bokehGreen = '', i;
+    for (i = 0; i < 46; i++) { var bx = 380 + 820 * Math.pow(rb2(), 0.6), by = 250 + 240 * rb2(); bokeh += circ(bx, by, 6 + 14 * rb2()); }
+    for (i = 0; i < 26; i++) { var gx = 1200 * rb2(), gy = 300 + 260 * rb2(); bokehGreen += circ(gx, gy, 20 + 40 * rb2()); }
+    var box = 'filterUnits="userSpaceOnUse" x="0" y="0" width="1200" height="630"';
+    var blur = function (id, sd) { return '<filter id="' + id + '" ' + box + '><feGaussianBlur stdDeviation="' + sd + '"/></filter>'; };
+    DAFFODILS = '<g transform="scale(.5)"><defs>' +
+      '<linearGradient id="sd-ground" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0B3B2E"/><stop offset=".55" stop-color="#0F4C39"/>' +
+        '<stop offset=".8" stop-color="#12684D"/><stop offset="1" stop-color="#0B3B2E"/></linearGradient>' +
+      '<radialGradient id="sd-sun" cx=".82" cy=".18" r=".6"><stop offset="0" stop-color="#FFE27A" stop-opacity=".32"/>' +
+        '<stop offset=".4" stop-color="#FFC629" stop-opacity=".08"/><stop offset="1" stop-color="#FFC629" stop-opacity="0"/></radialGradient>' +
+      '<linearGradient id="sd-calm" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#06241B" stop-opacity=".85"/>' +
+        '<stop offset=".5" stop-color="#06241B" stop-opacity=".45"/><stop offset=".76" stop-color="#06241B" stop-opacity="0"/></linearGradient>' +
+      blur('sd-bokeh', 9) + blur('sd-far', 1.8) + blur('sd-mid', 0.6) + blur('sd-glow', 14) +
+      '<filter id="sd-lit" ' + box + ' color-interpolation-filters="sRGB">' +
+        '<feColorMatrix in="SourceGraphic" type="luminanceToAlpha" result="lum"/>' +
+        '<feTurbulence type="fractalNoise" baseFrequency=".11" numOctaves="2" seed="9" result="tx"/>' +
+        '<feComposite in="tx" in2="lum" operator="arithmetic" k2=".08" k3="1" result="hraw"/>' +
+        '<feComposite in="hraw" in2="SourceAlpha" operator="in" result="h0"/><feGaussianBlur in="h0" stdDeviation="2.6" result="h"/>' +
+        '<feDiffuseLighting in="h" surfaceScale="2.6" diffuseConstant="1.18" lighting-color="#FFFFFF" result="d"><feDistantLight azimuth="315" elevation="58"/></feDiffuseLighting>' +
+        '<feSpecularLighting in="h" surfaceScale="2.6" specularConstant=".35" specularExponent="30" lighting-color="#FFF8DC" result="s"><feDistantLight azimuth="315" elevation="58"/></feSpecularLighting>' +
+        '<feComposite in="SourceGraphic" in2="d" operator="arithmetic" k1="1" result="m"/><feComposite in="s" in2="SourceAlpha" operator="in" result="s2"/>' +
+        '<feComposite in="m" in2="s2" operator="arithmetic" k2="1" k3=".4" result="o"/>' +
+        '<feGaussianBlur in="SourceAlpha" stdDeviation="6" result="sb"/><feOffset in="sb" dx="-6" dy="9" result="so"/>' +
+        '<feFlood flood-color="#03170F" flood-opacity=".5"/><feComposite in2="so" operator="in" result="sh"/>' +
+        '<feMerge><feMergeNode in="sh"/><feMergeNode in="o"/></feMerge></filter>' +
+      '<filter id="sd-grain" ' + box + '><feTurbulence type="fractalNoise" baseFrequency=".8" numOctaves="2" seed="4" result="n"/>' +
+        '<feColorMatrix in="n" type="matrix" values="0 0 0 0 .45  0 0 0 0 .3  0 0 0 0 0  0 0 0 .55 -.12" result="m"/>' +
+        '<feComposite in="m" in2="SourceGraphic" operator="in"/></filter>' +
+      '</defs>' +
+      '<rect width="1200" height="630" fill="url(#sd-ground)"/><rect width="1200" height="630" fill="url(#sd-sun)"/>' +
+      spPath(bokeh, '#FFC629', 'opacity=".35" filter="url(#sd-bokeh)"') + spPath(bokehGreen, '#2E8B57', 'opacity=".4" filter="url(#sd-bokeh)"') +
+      layer(tier(11, 70, [120, 1200, 0.55], [372, 420], [9, 15]), 'sd-far', 0.75, false) +
+      layer(tier(23, 34, [480, 1200, 0.7], [400, 470], [18, 27]), 'sd-mid', 0.95, true) +
+      layer(tier(37, 11, [800, 1180, 0.9], [150, 520], [38, 58]), '', 1, true) +
+      '<rect width="1200" height="630" fill="url(#sd-calm)"/></g>';
+    return DAFFODILS;
+  }
+
+  /* Spring (Blossoms): cherry blossom in the Japanese style. A seigaiha wave pattern in
+     club green, a gold sun disc, a dark ink branch with pink five-petalled blossoms,
+     buds, and petals drifting across the card. From the Sakura pattern design; the left
+     side is darkened so the words stay clear. Seeded, so every card gets the same tree. */
+  var SAKURA = null;
+  function sakura() {
+    if (SAKURA) { return SAKURA; }
+    var f = r1, circ = spCirc, i, j, x;
+    // the waves, rows drawn top to bottom so each overlaps the one above
+    var WR = 34, waves = '';
+    for (j = 0; j < 42; j++) {
+      var y = j * WR / 2 - WR, off = j % 2 ? WR : 0, fill = '', rings = '';
+      for (x = -WR + off; x < 1200 + WR; x += 2 * WR) {
+        fill += circ(x, y, WR);
+        [1, 0.78, 0.56, 0.34].forEach(function (q) {
+          rings += 'M' + f(x - WR * q) + ' ' + f(y) + 'a' + f(WR * q) + ' ' + f(WR * q) + ' 0 0 1 ' + f(2 * WR * q) + ' 0';
+        });
+      }
+      waves += spPath(fill, '#0B3B2E') + spPath(rings, 'none', 'stroke="#1C5C48" stroke-width="2.4"');
+    }
+    // the ink branch: quadratic curves, thick to thin
+    var Q = function (a, c, b) { return { a: a, c: c, b: b, d: 'M' + a.join(' ') + 'Q' + c.join(' ') + ' ' + b.join(' ') }; };
+    var segs = [
+      [Q([1230, 30], [1080, 40], [980, 110]), 22], [Q([980, 110], [880, 170], [760, 150]), 15], [Q([760, 150], [690, 140], [612, 92]), 9],
+      [Q([980, 110], [1060, 190], [1034, 300]), 12], [Q([1034, 300], [1016, 360], [1060, 420]), 6], [Q([870, 158], [850, 90], [880, 40]), 6],
+      [Q([1100, 52], [1150, 120], [1170, 210]), 7], [Q([700, 132], [660, 190], [600, 210]), 4], [Q([1040, 250], [1110, 270], [1150, 330]), 5],
+      [Q([930, 140], [960, 200], [920, 250]), 4]
+    ];
+    var at = function (q, t) {
+      return [(1 - t) * (1 - t) * q.a[0] + 2 * (1 - t) * t * q.c[0] + t * t * q.b[0], (1 - t) * (1 - t) * q.a[1] + 2 * (1 - t) * t * q.c[1] + t * t * q.b[1]];
+    };
+    var branches = segs.map(function (s) {
+      return '<path d="' + s[0].d + '" fill="none" stroke="#24150F" stroke-width="' + s[1] + '" stroke-linecap="round" stroke-linejoin="round"/>' +
+        '<path d="' + s[0].d + '" fill="none" stroke="#5A3A2C" stroke-width="' + f(Math.max(1, s[1] * 0.22)) + '" stroke-linecap="round" transform="translate(0,-1.5)"/>';
+    }).join('');
+    var knots = '';
+    segs.slice(0, 4).forEach(function (s) { var p = at(s[0], 0.5); knots += circ(p[0], p[1] + 2, s[1] * 0.32); });
+    // the blossoms: five notched petals around a deep pink eye and stamens
+    var r = fwRng(4021);
+    var flower = function (o, cx, cy, s, rot, veins) {
+      for (var k = 0; k < 5; k++) {
+        var a = rot + (k * 2 * Math.PI) / 5, ca = Math.cos(a), sa = Math.sin(a), w = s * 0.46;
+        var T = (function (ca, sa) { return function (lx, ly) { return f(cx + lx * ca - ly * sa) + ' ' + f(cy + lx * sa + ly * ca); }; })(ca, sa);
+        o.petals += 'M' + T(s * 0.08, 0) + 'C' + T(s * 0.35, w * 1.05) + ' ' + T(s * 0.9, w) + ' ' + T(s, w * 0.34) + 'L' + T(s * 0.86, 0) +
+          'L' + T(s, -w * 0.34) + 'C' + T(s * 0.9, -w) + ' ' + T(s * 0.35, -w * 1.05) + ' ' + T(s * 0.08, 0) + 'Z';
+        if (veins) {
+          o.veins += 'M' + T(s * 0.3, 0) + 'L' + T(s * 0.74, 0) + 'M' + T(s * 0.36, w * 0.1) + 'L' + T(s * 0.7, w * 0.4) +
+            'M' + T(s * 0.36, -w * 0.1) + 'L' + T(s * 0.7, -w * 0.4);
+        }
+      }
+      o.eye += circ(cx, cy, s * 0.3);
+      for (k = 0; k < 9; k++) {
+        var sa2 = rot + k * 0.7 + r() * 0.3, l = s * (0.38 + 0.14 * r()), ex = cx + Math.cos(sa2) * l, ey = cy + Math.sin(sa2) * l;
+        o.stamens += 'M' + f(cx) + ' ' + f(cy) + 'L' + f(ex) + ' ' + f(ey);
+        o.dots += circ(ex, ey, Math.max(1.2, s * 0.06));
+      }
+    };
+    var back = { petals: '', eye: '', stamens: '', dots: '', veins: '' }, front = { petals: '', eye: '', stamens: '', dots: '', veins: '' };
+    var buds = '', budCups = '', spots = [];
+    segs.forEach(function (s, si) { for (var k = 0; k < (si < 3 ? 5 : 3); k++) { spots.push(at(s[0], 0.15 + 0.8 * r())); } });
+    spots.forEach(function (p, k) {
+      var px = p[0] + (r() - 0.5) * 30, py = p[1] + (r() - 0.5) * 26;
+      if (k % 3 === 2) { flower(back, px + 14, py - 12, 13 + 6 * r(), r() * 6.3, false); }
+      if (r() < 0.25) {
+        var bx = px + (r() - 0.5) * 40, by = py + 10 + r() * 18;
+        buds += 'M' + f(bx) + ' ' + f(by - 9) + 'C' + f(bx + 7) + ' ' + f(by - 5) + ' ' + f(bx + 6) + ' ' + f(by + 4) + ' ' + f(bx) + ' ' + f(by + 5) +
+          'C' + f(bx - 6) + ' ' + f(by + 4) + ' ' + f(bx - 7) + ' ' + f(by - 5) + ' ' + f(bx) + ' ' + f(by - 9) + 'Z';
+        budCups += circ(bx, by + 5, 3.4);
+      } else { flower(front, px, py, 19 + 10 * r(), r() * 6.3, true); }
+    });
+    // petals drifting down and left across the card
+    var rf = fwRng(99), falling = '';
+    for (i = 0; i < 39; i++) {
+      var fx = 380 + 800 * rf(), fy = 60 + 470 * rf(), s = 9 + 6 * rf(), a = rf() * 6.3, sq = 0.45 + 0.5 * rf(), ca = Math.cos(a), sa = Math.sin(a), w = s * 0.5;
+      var T = function (lx, ly) { return f(fx + lx * ca - ly * sq * sa) + ' ' + f(fy + lx * sa + ly * sq * ca); };
+      falling += 'M' + T(0, 0) + 'C' + T(s * 0.3, w) + ' ' + T(s * 0.9, w) + ' ' + T(s, w * 0.35) + 'L' + T(s * 0.85, 0) + 'L' + T(s, -w * 0.35) +
+        'C' + T(s * 0.9, -w) + ' ' + T(s * 0.3, -w) + ' ' + T(0, 0) + 'Z';
+    }
+    var line = 'stroke="#8E2E4C" stroke-linejoin="round"';
+    SAKURA = '<g transform="scale(.5)"><defs><linearGradient id="sk-calm" x1="0" y1="0" x2="1" y2="0">' +
+        '<stop offset="0" stop-color="#0B3B2E" stop-opacity=".92"/><stop offset=".5" stop-color="#0B3B2E" stop-opacity=".6"/>' +
+        '<stop offset=".78" stop-color="#0B3B2E" stop-opacity="0"/></linearGradient></defs>' +
+      '<rect width="1200" height="630" fill="#0B3B2E"/>' + waves +
+      '<circle cx="930" cy="230" r="158" fill="#FFC629" opacity=".16"/><circle cx="930" cy="230" r="158" fill="none" stroke="#FFC629" stroke-width="2" opacity=".35"/>' +
+      branches + spPath(knots, '#24150F') +
+      spPath(buds, '#E86F92', 'stroke="#8E2E4C" stroke-width="1.2"') + spPath(budCups, '#3E6B2E') +
+      spPath(back.petals, '#F2A2BB', line + ' stroke-width="1.4"') + spPath(back.eye, '#D8476E', 'opacity=".75"') +
+      spPath(back.stamens, 'none', 'stroke="#8E2E4C" stroke-width="1.1" stroke-linecap="round"') + spPath(back.dots, '#FFC629') +
+      spPath(front.petals, '#F9C6D6', line + ' stroke-width="1.6"') +
+      spPath(front.veins, 'none', 'stroke="#E07A99" stroke-width="1" stroke-linecap="round" opacity=".7"') + spPath(front.eye, '#E0587D') +
+      spPath(front.stamens, 'none', 'stroke="#8E2E4C" stroke-width="1.2" stroke-linecap="round"') + spPath(front.dots, '#FFC629') +
+      spPath(falling, '#F9C6D6', line + ' stroke-width="1.2" opacity=".9"') + '<rect width="1200" height="630" fill="url(#sk-calm)"/></g>';
+    return SAKURA;
+  }
+
   /* Teddy: the club's teddy bear in the club singlet, waving, for children's meetings.
      The sky behind him is the theme's scene (sun, clouds, confetti, grass along the
      bottom); he stands on the counts or the band in the layouts with room for him
@@ -366,8 +625,10 @@
 
     { id: 'season-opener', name: 'Season opener', group: 'Seasons', bg: '#1F5E3A', band: '#2A7348', accent: '#FFB7D0', soft: '#CDE8D4', text: '#FFFFFF',
       eyebrow: 'SEASON OPENER', art: [[262, 14], [290, 24], [306, 10], [276, 34], [314, 36]].map(function (p) { return C(p[0], p[1], 5, '#FFB7D0', 0.85); }).join('') },
-    { id: 'spring', name: 'Spring', group: 'Seasons', bg: '#2F6B4F', band: '#3B7E5E', accent: '#FFE27A', soft: '#D4EBDD', text: '#FFFFFF',
-      eyebrow: 'MEETING RESULTS', art: [0, 1, 2].map(function (i) { return C(270 + i * 20, 26 - i * 4, 6, '#FFE27A') + C(270 + i * 20, 26 - i * 4, 2.5, '#E8A317'); }).join('') },
+    { id: 'spring', name: 'Spring (Daffodils)', group: 'Seasons', bg: '#0B3B2E', band: '#0F4C39', accent: '#FFC629', soft: '#DCEBE3', text: '#FFFFFF',
+      eyebrow: 'MEETING RESULTS', art: '', scene: daffodils },
+    { id: 'spring-blossom', name: 'Spring (Blossoms)', group: 'Seasons', bg: '#0B3B2E', band: '#0F4C39', accent: '#FFC629', soft: '#DCEBE3', text: '#FFFFFF',
+      eyebrow: 'MEETING RESULTS', art: '', scene: sakura },
     { id: 'summer', name: 'Summer', group: 'Seasons', bg: '#0A8FA8', band: '#13A3BD', accent: '#FFE15C', soft: '#D9F6FB', text: '#FFFFFF',
       eyebrow: 'SUMMER SERIES', strip: 'sand', art: C(296, 26, 18, '#FFE15C') + waves(60, '#fff', 3) + waves(50, '#fff', 2, 0.6) },
     { id: 'autumn', name: 'Autumn', group: 'Seasons', bg: '#5A2E14', band: '#6E3A1C', accent: '#F2A93B', soft: '#F1DCCB', text: '#FFFFFF',

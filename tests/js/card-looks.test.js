@@ -289,3 +289,21 @@ test('the Teddy sticker: drawn in any theme, but not where the full-size Teddy s
     }
   }
 });
+
+test('Spring comes as Daffodils and Blossoms, each its own scene across the card, and spring meetings suggest the daffodils', () => {
+  const facts = { title: 'Meeting', counts: [{ n: 1, words: 'Athletes' }] };
+  const daff = L.theme('spring'), blos = L.theme('spring-blossom');
+  assert.equal(daff.name, 'Spring (Daffodils)');
+  assert.equal(blos.name, 'Spring (Blossoms)');
+  assert.equal(daff.art, '');
+  assert.equal(blos.art, '');
+  const d = daff.scene(), b = blos.scene();
+  assert.equal(d, daff.scene());
+  assert.ok(d.indexOf('sd-ground') > 0 && d.indexOf('sd-calm') > 0 && !/NaN|undefined/.test(d));
+  assert.ok(b.indexOf('sk-calm') > 0 && !/NaN|undefined/.test(b));
+  assert.notEqual(d, b);
+  const svgs = (look) => L.build(facts, look).items.filter((i) => i.kind === 'svg').map((i) => i.svg);
+  assert.ok(svgs({ theme: 'spring', layout: 'classic' }).indexOf(d) >= 0);
+  assert.ok(svgs({ theme: 'spring-blossom', layout: 'poster' }).indexOf(b) >= 0);
+  assert.equal(svgs({ theme: 'spring-blossom', layout: 'poster', photo: 'https://photos.ncan.nz/x.jpg' }).indexOf(b), -1);
+});
