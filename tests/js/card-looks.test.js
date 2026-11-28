@@ -189,3 +189,103 @@ test('the Colgate Games theme shows the event logo, clear of the words', () => {
   // not on the layouts without the corner picture
   assert.ok(!L.build(facts, L.resolve({ theme: 'colgate', layout: 'race-bib' }, {}, {})).items.some((i) => i.kind === 'badge'));
 });
+
+test('the Children’s theme has no squares in the corner', () => {
+  assert.equal(L.theme('childrens').art, '');
+});
+
+test('“with the track” falls back to the plain singlet in layouts with no track', () => {
+  assert.equal(L.fitTheme({ theme: 'singlet-track', layout: 'poster' }).theme, 'singlet');
+  assert.equal(L.fitTheme({ theme: 'singlet-track', layout: 'ticket' }).theme, 'singlet');
+  assert.equal(L.fitTheme({ theme: 'singlet-track', layout: 'classic' }).theme, 'singlet-track');
+  assert.equal(L.fitTheme({ theme: 'club', layout: 'poster' }).theme, 'club');
+  const facts = { title: 'Childrens Interclub Programme 2', line: '28 November 2026 · Ngā Puna Wai, Christchurch',
+    counts: [{ n: 19, words: 'Athletes' }, { n: 15, words: 'PBs' }, { n: 11, words: 'Podiums' }] };
+  const strip = (c) => c.items.some((i) => i.kind === 'strip');
+  assert.ok(strip(L.build(facts, { theme: 'singlet-track', layout: 'classic' })));
+  assert.ok(!strip(L.build(facts, { theme: 'singlet', layout: 'classic' })));
+});
+
+test('on the singlet poster, ncan.nz stays clear of the date and place', () => {
+  const facts = { title: 'Childrens Interclub Programme 2', line: '28 November 2026 · Ngā Puna Wai, Christchurch',
+    counts: [{ n: 19, words: 'Athletes' }, { n: 15, words: 'PBs' }, { n: 11, words: 'Podiums' }] };
+  const card = L.build(facts, { theme: 'singlet', layout: 'poster', font: 'condensed' });
+  const texts = card.items.filter((i) => i.kind === 'text');
+  const site = L.textBox(texts.find((i) => i.words === 'ncan.nz'));
+  const line = L.textBox(texts.find((i) => i.words === facts.line));
+  assert.ok(site.x >= line.x + line.w || site.y >= line.y + line.h, 'ncan.nz overlaps the line');
+});
+
+test('New Year draws its fireworks across the whole card, the same every time, but not over a photo', () => {
+  const facts = { title: 'Meeting', counts: [{ n: 1, words: 'Athletes' }, { n: 2, words: 'PBs' }, { n: 3, words: 'Podiums' }] };
+  const t = L.theme('new-year');
+  assert.equal(t.art, '');
+  const scene = t.scene();
+  assert.equal(scene, t.scene());
+  assert.ok(scene.indexOf('fw-sky') > 0 && scene.indexOf('fw-calm') > 0);
+  const svgs = (look) => L.build(facts, look).items.filter((i) => i.kind === 'svg').map((i) => i.svg);
+  assert.ok(svgs({ theme: 'new-year', layout: 'poster' }).indexOf(scene) >= 0);
+  assert.ok(svgs({ theme: 'new-year', layout: 'ticket' }).indexOf(scene) >= 0);
+  assert.equal(svgs({ theme: 'new-year', layout: 'poster', photo: 'https://photos.ncan.nz/x.jpg' }).indexOf(scene), -1);
+  assert.equal(svgs({ theme: 'club', layout: 'poster' }).indexOf(scene), -1);
+  // dimmed where the words sit over the right of it
+  assert.equal(svgs({ theme: 'new-year', layout: 'big-number' }).filter((s) => /^<rect[^>]*opacity="0\.55"/.test(s)).length, 1);
+  assert.equal(svgs({ theme: 'new-year', layout: 'classic' }).filter((s) => /^<rect[^>]*opacity="0\.55"/.test(s)).length, 0);
+});
+
+test('Guy Fawkes draws its own gold peony scene, not the New Year one', () => {
+  const facts = { title: 'Meeting', counts: [{ n: 1, words: 'Athletes' }] };
+  const t = L.theme('guy-fawkes');
+  assert.equal(t.art, '');
+  const scene = t.scene();
+  assert.equal(scene, t.scene());
+  assert.ok(scene.indexOf('pe-sky') > 0 && scene.indexOf('pe-calm') > 0);
+  assert.notEqual(scene, L.theme('new-year').scene());
+  const svgs = L.build(facts, { theme: 'guy-fawkes', layout: 'poster' }).items.filter((i) => i.kind === 'svg').map((i) => i.svg);
+  assert.ok(svgs.indexOf(scene) >= 0);
+});
+
+test('Teddy stands on the sunny scene in Classic, Poster and Podium, with the words ending before him', () => {
+  const facts = { title: 'Canterbury Childrens Interclub Programme 2', line: '28 November 2026 · Ngā Puna Wai, Christchurch',
+                  counts: [{ n: 19, words: 'Athletes' }, { n: 15, words: 'PBs' }, { n: 11, words: 'Podiums' }] };
+  const t = L.theme('teddy');
+  assert.equal(t.group, 'Special events');
+  assert.ok(t.light && t.scene().indexOf('ts-sky') > 0);
+  Object.keys(L.TEDDY_AT).forEach((layout) => {
+    const card = L.build(facts, { theme: 'teddy', layout, font: 'bold' });
+    const bear = card.items.filter((i) => i.block);
+    assert.equal(bear.length, 1, layout);
+    assert.ok(bear[0].svg.indexOf('NORTH') > 0 && bear[0].svg.indexOf('td-vest') > 0, layout);
+    card.items.filter((i) => i.kind === 'text' && (!i.align || i.align === 'left')).forEach((i) => {
+      const b = L.textBox(i);
+      const overlaps = b.y < bear[0].y + bear[0].h && b.y + b.h > bear[0].y;
+      if (overlaps && !i.rotate) { assert.ok(b.x + b.w <= bear[0].x, layout + ': ' + i.words); }
+    });
+  });
+  ['big-number', 'race-bib', 'ticket', 'scoreboard'].forEach((layout) => {
+    assert.equal(L.build(facts, { theme: 'teddy', layout }).items.filter((i) => i.block).length, 0, layout);
+  });
+  // a sticker keeps clear of him
+  const card = L.build(facts, { theme: 'teddy', layout: 'classic', sticker: 'pb' });
+  const bear = card.items.find((i) => i.block), s = card.sticker;
+  assert.ok(!L.hitsCircle({ x: bear.x, y: bear.y, w: bear.w, h: bear.h }, s.x, s.y, s.r));
+});
+
+test('the Teddy sticker: drawn in any theme, but not where the full-size Teddy stands', () => {
+  const facts = { title: 'Canterbury Childrens Interclub Programme 2', line: '28 November 2026 · Ngā Puna Wai, Christchurch',
+                  lane: '#0072B5', course: 'track', counts: [{ n: 19, words: 'Athletes' }, { n: 15, words: 'PBs' }, { n: 11, words: 'Podiums' }] };
+  assert.ok(L.STICKERS.some((s) => s.id === 'teddy'));
+  assert.ok(L.stickersFor(true).some((s) => s.id === 'teddy') && L.stickersFor(false).some((s) => s.id === 'teddy'));
+  for (const ly of L.LAYOUTS) {
+    for (const theme of ['childrens', 'teddy']) {
+      const chosen = L.resolve({ theme, layout: ly.id, sticker: 'teddy' }, {}, {});
+      const card = L.build(facts, chosen);
+      const shows = theme === 'teddy' && !!L.TEDDY_AT[ly.id];
+      assert.equal(L.teddyShows({ theme, layout: ly.id }), shows, ly.id + ' ' + theme);
+      assert.equal(!!card.sticker, !shows, ly.id + ' ' + theme);
+      assert.equal(card.items.some((i) => i.kind === 'svg' && i.svg.includes('tk-sky')), !shows, ly.id + ' ' + theme);
+      const fitted = L.fitTheme(Object.assign({}, chosen));
+      assert.equal(fitted.sticker, shows ? 'none' : 'teddy', ly.id + ' ' + theme);
+    }
+  }
+});

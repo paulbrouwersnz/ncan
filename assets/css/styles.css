@@ -5053,6 +5053,9 @@ table.schedule.recap-names { min-width: 0; }
 .recap-look__field select, .recap-look__field input[type="text"] { width: 100%; padding: .45rem .55rem; border: 1px solid var(--line-strong); border-radius: 6px; font: inherit; background: var(--surface); color: inherit; }
 .recap-look__colour { display: flex; gap: .5rem; align-items: center; }
 .recap-look__colour input[type="color"] { width: 3rem; height: 2.2rem; padding: 0; border: 1px solid var(--line-strong); border-radius: 6px; background: none; }
+.recap-look__swatch { width: 2.2rem; height: 2.2rem; padding: 0; border: 1px solid var(--line-strong); border-radius: 50%; cursor: pointer; }
+.recap-look__swatch[aria-pressed="true"] { outline: 2px solid var(--text, #1A1A1A); outline-offset: 2px; }
+.recap-look__swatch:focus-visible { outline: 3px solid var(--focus, #1F6FEB); outline-offset: 2px; }
 .recap-look__warn { display: block; font-size: .85rem; color: var(--danger, #B42318); }
 .recap-look__warn:empty { display: none; }
 .recap-look__sub { margin: 1rem 0 .2rem; font-size: 1rem; }

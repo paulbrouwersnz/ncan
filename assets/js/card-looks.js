@@ -58,13 +58,195 @@
     }
     return P(pts.join(' '), c, extra);
   }
-  function burst(x, y, r, c) {
-    var s = '';
-    for (var i = 0; i < 12; i++) {
-      var a = i * Math.PI / 6;
-      s += L(x + Math.cos(a) * r * 0.3, y + Math.sin(a) * r * 0.3, x + Math.cos(a) * r, y + Math.sin(a) * r, c, 1.6);
+
+  /* Shared by the firework scenes: a seeded random number, a tapering streak, a shell of
+     streaks on a sphere (front, back, bright tips and the pale centre stars) and a wiggly
+     launch trail. All on a 1200 x 630 grid. */
+  var fwRng = function (seed) {
+    var a = seed >>> 0;
+    return function () {
+      a = (a + 0x6D2B79F5) | 0;
+      var t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  };
+  var fwStreak = function (x0, y0, x1, y1, w) {
+    var len = Math.hypot(x1 - x0, y1 - y0);
+    if (len < 1.5) { return ''; }
+    var ux = (x1 - x0) / len, uy = (y1 - y0) / len;
+    return 'M' + r1(x0) + ' ' + r1(y0) + 'L' + r1(x1 - uy * w) + ' ' + r1(y1 + ux * w) + 'L' + r1(x1 + ux * w * 1.6) + ' ' +
+      r1(y1 + uy * w * 1.6) + 'L' + r1(x1 + uy * w) + ' ' + r1(y1 - ux * w) + 'Z';
+  };
+  var fwShell = function (cx, cy, R, n, pistils, seed) {
+    var r = fwRng(seed), sc = Math.max(R / 300, 0.6), g = 0.06 * R, o = { front: '', back: '', tips: '', pist: '' }, i;
+    for (i = 0; i < n; i++) {
+      var z = 2 * r() - 1, ph = 2 * Math.PI * r(), s = Math.sqrt(1 - z * z), dx = s * Math.cos(ph), dy = s * Math.sin(ph);
+      var t0 = 0.36 + 0.24 * r(), t1 = 0.84 + 0.16 * r();
+      var x1 = cx + R * t1 * dx, y1 = cy + R * t1 * dy + g * t1 * t1;
+      var d = fwStreak(cx + R * t0 * dx, cy + R * t0 * dy + g * t0 * t0, x1, y1, (0.8 + 0.9 * r()) * sc);
+      if (z >= 0) { o.front += d; } else { o.back += d; }
+      if (z > -0.3 && r() < 0.8) {
+        var tr = r1((0.9 + 0.9 * r()) * sc);
+        o.tips += 'M' + r1(x1 - tr) + ' ' + r1(y1) + 'a' + tr + ' ' + tr + ' 0 1 0 ' + r1(2 * tr) + ' 0a' + tr + ' ' + tr + ' 0 1 0 ' + r1(-2 * tr) + ' 0';
+      }
     }
-    return s;
+    for (i = 0; i < pistils; i++) {
+      var pz = 2 * r() - 1, pp = 2 * Math.PI * r(), ps = Math.sqrt(1 - pz * pz), px = ps * Math.cos(pp), py = ps * Math.sin(pp);
+      var pt = 0.24 + 0.14 * r(), ex = cx + R * pt * px, ey = cy + R * pt * py, k = 0.035 * R * ps;
+      o.pist += fwStreak(ex - px * k, ey - py * k, ex, ey, 1.3 * R / 300);
+    }
+    return o;
+  };
+  var fwTrail = function (cx, fromY, toY, amp) {
+    var d = 'M' + cx + ' ' + fromY;
+    for (var y = fromY; y > toY; y -= 10) { d += 'L' + r1(cx + amp * Math.sin(y / 9) + amp * 0.5 * Math.sin(y / 23)) + ' ' + y; }
+    return d;
+  };
+  /* New Year's fireworks: a big gold shell, a red one top right and a fading silver one
+     further back, each hundreds of tapering streaks on a sphere (the near side bright,
+     the far side dim, all drooping a little), with sparkle, glow and launch trails.
+     Drawn on a 1200 x 630 grid and halved to fit the card; the left side is darkened
+     so the words stay clear. Seeded, so every card gets the same sky. */
+  var FIREWORKS = null;
+  function fireworks() {
+    if (FIREWORKS) { return FIREWORKS; }
+    var shell = fwShell, trail = fwTrail;
+    var g = shell(860, 230, 250, 340, 90, 20261231), red = shell(1100, 120, 135, 153, 0, 1225), sil = shell(640, 110, 100, 119, 0, 1105);
+    var def = function (id, d) { return '<path id="' + id + '" d="' + d + '"/>'; };
+    var use = function (id, attrs) { return '<use href="#' + id + '" ' + attrs + '/>'; };
+    var stops = function (list) {
+      return list.map(function (s) { return '<stop offset="' + s[0] + '" stop-color="' + s[1] + '" stop-opacity="' + s[2] + '"/>'; }).join('');
+    };
+    var box = 'filterUnits="userSpaceOnUse" x="0" y="0" width="1200" height="630"';
+    FIREWORKS = '<g transform="scale(.5)"><defs>' +
+      '<radialGradient id="fw-sky" cx=".72" cy=".38" r=".8">' + stops([[0, '#1C130C', 1], [0.55, '#0B0807', 1], [1, '#050404', 1]]) + '</radialGradient>' +
+      '<radialGradient id="fw-cg" cx=".5" cy=".5" r=".5">' + stops([[0, '#FFE7B0', 0.45], [0.35, '#FF9F2E', 0.1], [1, '#FF9F2E', 0]]) + '</radialGradient>' +
+      '<radialGradient id="fw-cr" cx=".5" cy=".5" r=".5">' + stops([[0, '#FFB3A6', 0.4], [0.4, '#FF3B3B', 0.08], [1, '#FF3B3B', 0]]) + '</radialGradient>' +
+      '<linearGradient id="fw-calm" x1="0" y1="0" x2="1" y2="0">' + stops([[0, '#050404', 0.9], [0.42, '#050404', 0.45], [0.6, '#050404', 0]]) + '</linearGradient>' +
+      '<filter id="fw-bloom" ' + box + '><feGaussianBlur stdDeviation="3.5"/></filter>' +
+      '<filter id="fw-haze" ' + box + '><feGaussianBlur stdDeviation="24"/></filter>' +
+      '<filter id="fw-spark" ' + box + '><feTurbulence type="fractalNoise" baseFrequency=".95" numOctaves="1" seed="7" result="t"/>' +
+        '<feColorMatrix in="t" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 2.6 -0.7" result="m"/>' +
+        '<feComposite in="SourceGraphic" in2="m" operator="in"/></filter>' +
+      def('fw-gf', g.front) + def('fw-gb', g.back) + def('fw-rf', red.front) + def('fw-rb', red.back) + def('fw-sf', sil.front) +
+      '</defs>' +
+      '<rect width="1200" height="630" fill="url(#fw-sky)"/>' +
+      '<g filter="url(#fw-haze)" opacity=".4"><ellipse cx="700" cy="200" rx="90" ry="50" fill="#5E5048"/>' +
+        '<ellipse cx="620" cy="300" rx="60" ry="70" fill="#4A3F38"/><ellipse cx="980" cy="360" rx="110" ry="46" fill="#7A5E40"/>' +
+        '<ellipse cx="1160" cy="240" rx="70" ry="60" fill="#6A3C36"/></g>' +
+      '<g opacity=".6"><path d="' + sil.back + '" fill="#9AA3B8" opacity=".5"/>' +
+        '<g filter="url(#fw-spark)">' + use('fw-sf', 'fill="#E9EEFF"') + '</g>' + use('fw-sf', 'fill="#C9D0E6" opacity=".35"') + '</g>' +
+      '<path d="' + trail(860, 640, 245, 4) + '" fill="none" stroke="#E8A04A" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="1.5 3" opacity=".6"/>' +
+      '<path d="' + trail(1100, 640, 140, 3) + '" fill="none" stroke="#E87A5A" stroke-width="2" stroke-linecap="round" stroke-dasharray="1.5 3" opacity=".45"/>' +
+      '<circle cx="1100" cy="120" r="80" fill="url(#fw-cr)"/>' +
+      '<g filter="url(#fw-bloom)" opacity=".7">' + use('fw-rb', 'fill="#FF2E3A"') + use('fw-rf', 'fill="#FF4A4A"') + '</g>' +
+      use('fw-rb', 'fill="#C8303A" opacity=".55"') + use('fw-rf', 'fill="#FF6A5E" opacity=".5"') +
+      '<g filter="url(#fw-spark)">' + use('fw-rf', 'fill="#FFB0A0"') + '</g>' +
+      '<path d="' + red.tips + '" fill="#FFE6DF"/>' +
+      '<circle cx="860" cy="230" r="150" fill="url(#fw-cg)"/>' +
+      '<g filter="url(#fw-bloom)" opacity=".7">' + use('fw-gb', 'fill="#FF8A1E"') + use('fw-gf', 'fill="#FF9F2E"') + '</g>' +
+      use('fw-gb', 'fill="#C9822F" opacity=".5"') + use('fw-gf', 'fill="#FFC46A" opacity=".55"') +
+      '<g filter="url(#fw-spark)">' + use('fw-gb', 'fill="#F0B060" opacity=".7"') + use('fw-gf', 'fill="#FFE2A6"') + '</g>' +
+      '<path d="' + g.tips + '" fill="#FFF6DE"/>' +
+      '<path d="' + g.pist + '" fill="#6F7CFF" opacity=".6" filter="url(#fw-bloom)"/><path d="' + g.pist + '" fill="#D9DEFF"/>' +
+      '<circle cx="860" cy="230" r="3.5" fill="#FFF6DE"/>' +
+      '<rect width="1200" height="630" fill="url(#fw-calm)"/></g>';
+    return FIREWORKS;
+  }
+
+  /* Guy Fawkes: one big gold peony like a real shell over the park, its pale blue centre
+     stars and launch trail, in a deep navy sky with drifting smoke. Same grid, halving
+     and dark left side as the New Year scene. */
+  var PEONY = null;
+  function peony() {
+    if (PEONY) { return PEONY; }
+    var cx = 870, cy = 300, R = 330, b = fwShell(cx, cy, R, 460, 130, 20261105), i;
+    var stops = function (list) {
+      return list.map(function (s) { return '<stop offset="' + s[0] + '" stop-color="' + s[1] + '" stop-opacity="' + s[2] + '"/>'; }).join('');
+    };
+    var box = 'filterUnits="userSpaceOnUse" x="0" y="0" width="1200" height="630"';
+    var trail = fwTrail(cx, 640, cy + 12, 4);
+    PEONY = '<g transform="scale(.5)"><defs>' +
+      '<radialGradient id="pe-sky" cx=".72" cy=".48" r=".75">' + stops([[0, '#1E2244', 1], [0.55, '#0E1230', 1], [1, '#080A1E', 1]]) + '</radialGradient>' +
+      '<radialGradient id="pe-core" cx=".5" cy=".5" r=".5">' + stops([[0, '#FFE7B0', 0.5], [0.35, '#FF9F2E', 0.12], [1, '#FF9F2E', 0]]) + '</radialGradient>' +
+      '<linearGradient id="pe-calm" x1="0" y1="0" x2="1" y2="0">' + stops([[0, '#080A1E', 0.9], [0.42, '#080A1E', 0.45], [0.62, '#080A1E', 0]]) + '</linearGradient>' +
+      '<filter id="pe-bloom" ' + box + '><feGaussianBlur stdDeviation="3.5"/></filter>' +
+      '<filter id="pe-haze" ' + box + '><feGaussianBlur stdDeviation="22"/></filter>' +
+      '<filter id="pe-spark" ' + box + '><feTurbulence type="fractalNoise" baseFrequency=".95" numOctaves="1" seed="7" result="t"/>' +
+        '<feColorMatrix in="t" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 2.6 -0.7" result="m"/>' +
+        '<feComposite in="SourceGraphic" in2="m" operator="in"/></filter>' +
+      '<path id="pe-f" d="' + b.front + '"/><path id="pe-b" d="' + b.back + '"/>' +
+      '</defs>' +
+      '<rect width="1200" height="630" fill="url(#pe-sky)"/>' +
+      '<g filter="url(#pe-haze)" opacity=".35"><ellipse cx="640" cy="320" rx="70" ry="40" fill="#6A6A80"/>' +
+        '<ellipse cx="610" cy="390" rx="50" ry="60" fill="#55566E"/><ellipse cx="1080" cy="520" rx="120" ry="50" fill="#3E4058"/></g>' +
+      '<path d="' + trail + '" fill="none" stroke="#E8A04A" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="1.5 3" opacity=".65"/>' +
+      '<path d="' + trail + '" fill="none" stroke="#FF9F2E" stroke-width="6" opacity=".18" filter="url(#pe-bloom)"/>' +
+      '<circle cx="' + cx + '" cy="' + cy + '" r="' + (R * 0.55) + '" fill="url(#pe-core)"/>' +
+      '<g filter="url(#pe-bloom)" opacity=".7"><use href="#pe-b" fill="#FF8A1E"/><use href="#pe-f" fill="#FF9F2E"/></g>' +
+      '<use href="#pe-b" fill="#C9822F" opacity=".5"/><use href="#pe-f" fill="#FFC46A" opacity=".55"/>' +
+      '<g filter="url(#pe-spark)"><use href="#pe-b" fill="#F0B060" opacity=".7"/><use href="#pe-f" fill="#FFE2A6"/></g>' +
+      '<path d="' + b.tips + '" fill="#FFF6DE"/>' +
+      '<path d="' + b.pist + '" fill="#6F7CFF" opacity=".6" filter="url(#pe-bloom)"/><path d="' + b.pist + '" fill="#D9DEFF"/>' +
+      '<circle cx="' + cx + '" cy="' + cy + '" r="4" fill="#FFF6DE"/>' +
+      '<rect width="1200" height="630" fill="url(#pe-calm)"/></g>';
+    return PEONY;
+  }
+  /* Teddy: the club's teddy bear in the club singlet, waving, for children's meetings.
+     The sky behind him is the theme's scene (sun, clouds, confetti, grass along the
+     bottom); he stands on the counts or the band in the layouts with room for him
+     (TEDDY_AT), drawn from the Teddy on the podium design. */
+  var TEDDY_SKY = null;
+  function teddySky() {
+    if (TEDDY_SKY) { return TEDDY_SKY; }
+    var bits = [[380, 20, '#F2B705', 25], [420, 60, '#0E5A38', -30], [545, 125, '#FFFFFF', 50], [350, 105, '#F2B705', -15],
+                [575, 165, '#0E5A38', 35], [450, 15, '#FF7A59', 60], [370, 165, '#FF7A59', -40], [530, 70, '#F2B705', 10],
+                [300, 150, '#FFFFFF', 20], [420, 205, '#F2B705', -55]];
+    TEDDY_SKY = '<defs><linearGradient id="ts-sky" x1="0" y1="0" x2="0" y2="1">' +
+        '<stop offset="0" stop-color="#7CC8F7"/><stop offset=".8" stop-color="#D8F0FF"/></linearGradient>' +
+        '<radialGradient id="ts-sun" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#FFE27A" stop-opacity=".7"/>' +
+        '<stop offset="1" stop-color="#FFE27A" stop-opacity="0"/></radialGradient></defs>' +
+      R(0, 0, W, H, 'url(#ts-sky)') +
+      C(586, 22, 70, 'url(#ts-sun)') + C(586, 22, 26, '#FFD94A') +
+      '<g fill="#FFFFFF" opacity=".9">' + C(320, 46, 15, '#FFFFFF') + C(338, 39, 19, '#FFFFFF') + C(358, 48, 14, '#FFFFFF') + R(306, 48, 66, 13, '#FFFFFF', 1, 'rx="6.5"') +
+        C(250, 120, 10, '#FFFFFF') + C(263, 115, 13, '#FFFFFF') + C(277, 122, 9, '#FFFFFF') + R(241, 122, 45, 9, '#FFFFFF', 1, 'rx="4.5"') + '</g>' +
+      bits.map(function (b) { return R(b[0], b[1], 7, 4, b[2], 1, 'rx="1" transform="rotate(' + b[3] + ' ' + (b[0] + 3.5) + ' ' + (b[1] + 2) + ')"'); }).join('') +
+      C(400, 130, 2.5, '#F2B705') + C(585, 100, 2, '#FF7A59') + C(480, 45, 2.5, '#FFFFFF') +
+      '<path d="M0 258 Q300 240 600 254 L600 315 L0 315 Z" fill="#7CC876"/>' +
+      '<path d="M0 272 Q300 258 600 268 L600 315 L0 315 Z" fill="#5DB65A"/>';
+    return TEDDY_SKY;
+  }
+  // Teddy, waving, on a 442 x 580 grid from (-22, 20); teddy(x, y, h): his box's top left and height
+  var TEDDY_ART = '<defs><filter id="td-fluff" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" seed="3" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="7" xChannelSelector="R" yChannelSelector="G"/></filter><clipPath id="td-vest"><path d="M118 262 L156 256 Q210 302 264 256 L302 262 C302 312 318 346 340 358 C346 400 348 446 352 490 Q306 502 262 495 Q210 506 158 495 Q114 502 68 490 C72 446 74 400 80 358 C102 346 118 312 118 262 Z"/></clipPath><clipPath id="td-vside"><path d="M348 356 C326 370 318 400 330 436 L366 436 L366 356 Z"/></clipPath><clipPath id="td-vcorner"><path d="M56 440 C64 474 72 496 84 516 L56 516 Z"/></clipPath><radialGradient id="td-vshade" cx="0.46" cy="0.52" r="0.62"><stop offset="0" stop-color="#FFFFFF" stop-opacity="0.12"/><stop offset="0.55" stop-color="#FFFFFF" stop-opacity="0"/><stop offset="1" stop-color="#000000" stop-opacity="0.32"/></radialGradient></defs><g filter="url(#td-fluff)"><circle cx="108" cy="70" r="48" fill="#DCC29A"/><circle cx="312" cy="70" r="48" fill="#DCC29A"/></g><circle cx="112" cy="76" r="26" fill="#F2E2C6"/><circle cx="308" cy="76" r="26" fill="#F2E2C6"/><g filter="url(#td-fluff)"><ellipse cx="150" cy="548" rx="58" ry="50" fill="#DCC29A"/><ellipse cx="270" cy="548" rx="58" ry="50" fill="#DCC29A"/><ellipse cx="210" cy="385" rx="132" ry="130" fill="#E3CBA3"/></g><path d="M80 468 L340 468 L352 550 L226 558 L210 522 L194 558 L68 550 Z" fill="#1C1C1C"/><rect x="96" y="530" width="30" height="6" rx="2" fill="#C9A227"/><g filter="url(#td-fluff)"><path d="M64.8 303.8 L10.2 438.8 A30 30 0 0 0 64.4 464.2 L133.5 336.0 A38 38 0 1 0 64.8 303.8 Z" fill="#DCC29A"/><path d="M353.6 335.7 L416.6 216.0 A30 30 0 0 0 365.3 185.0 L288.7 296.5 A38 38 0 1 0 353.6 335.7 Z" fill="#DCC29A"/></g><path d="M118 262 L156 256 Q210 302 264 256 L302 262 C302 312 318 346 340 358 C346 400 348 446 352 490 Q306 502 262 495 Q210 506 158 495 Q114 502 68 490 C72 446 74 400 80 358 C102 346 118 312 118 262 Z" fill="#0E5A38"/><g clip-path="url(#td-vest)"><path d="M50 230 L320 230 L314 296 C232 302 160 312 138 340 C120 370 124 440 158 520 L50 520 Z" fill="#ECEEEE"/><path d="M314 296 C232 302 160 312 138 340 C120 370 124 440 158 520" stroke="#0E5A38" stroke-width="4" fill="none"/><path d="M316 302 C236 308 168 318 146 344 C129 372 133 440 167 520" stroke="#F2B705" stroke-width="5.5" fill="none"/><g stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round" opacity="0.95"><path d="M316.0 309.0 l-6.3 13.5"/><path d="M304.1 310.0 l-6.1 13.0"/><path d="M292.5 311.0 l-5.8 12.5"/><path d="M281.3 312.1 l-5.6 12.0"/><path d="M270.3 313.3 l-5.4 11.5"/><path d="M259.6 314.6 l-5.1 11.0"/><path d="M249.3 316.0 l-4.9 10.5"/><path d="M239.4 317.5 l-4.6 10.0"/><path d="M229.9 319.2 l-4.4 9.5"/><path d="M220.8 320.9 l-4.2 8.9"/><path d="M212.2 322.9 l-3.9 8.4"/><path d="M204.0 324.9 l-3.7 7.9"/><path d="M196.3 327.2 l-3.5 7.4"/><path d="M189.1 329.6 l-3.2 6.9"/><path d="M182.4 332.2 l-3.0 6.4"/><path d="M176.3 334.9 l-2.8 5.9"/><path d="M170.7 337.9 l-2.5 5.4"/></g><g clip-path="url(#td-vside)" stroke="#FFFFFF" stroke-width="2.6"><path d="M314 354 L362 354"/><path d="M314 360 L362 360"/><path d="M314 366 L362 366"/><path d="M314 372 L362 372"/><path d="M314 378 L362 378"/><path d="M314 384 L362 384"/><path d="M314 390 L362 390"/><path d="M314 396 L362 396"/><path d="M314 402 L362 402"/><path d="M314 408 L362 408"/><path d="M314 414 L362 414"/><path d="M314 420 L362 420"/></g><path d="M70 380 C76 440 88 482 104 520" stroke="#0E5A38" stroke-width="22" fill="none"/><path d="M78 392 C84 446 95 484 110 520" stroke="#F2B705" stroke-width="5" fill="none"/><path d="M68 392 C72 444 82 484 96 520" stroke="#F2B705" stroke-width="3" fill="none"/><g clip-path="url(#td-vcorner)" stroke="#FFFFFF" stroke-width="2.4"><path d="M58 452 L100 452"/><path d="M58 457 L100 457"/><path d="M58 462 L100 462"/><path d="M58 467 L100 467"/><path d="M58 472 L100 472"/><path d="M58 477 L100 477"/><path d="M58 482 L100 482"/><path d="M58 487 L100 487"/><path d="M58 492 L100 492"/><path d="M58 497 L100 497"/><path d="M58 502 L100 502"/><path d="M58 507 L100 507"/><path d="M58 512 L100 512"/></g><path d="M116 274 L156 262 M114 280 L156 268" stroke="#0E5A38" stroke-width="3" fill="none"/><path d="M116 286 L156 274" stroke="#F2B705" stroke-width="5" fill="none"/><path d="M264 262 L306 274" stroke="#0E5A38" stroke-width="3" fill="none"/><path d="M264 270 L308 282" stroke="#F2B705" stroke-width="5" fill="none"/><path d="M92 374 C104 412 108 452 112 494 M328 374 C316 412 312 452 308 494 M176 498 C182 470 186 446 186 420 M248 498 C242 474 240 452 242 430" stroke="#062E1B" stroke-width="3.5" stroke-linecap="round" fill="none" opacity="0.28"/><path d="M98 372 C110 410 114 450 118 492 M322 372 C310 410 306 450 302 492" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.12"/><path d="M68 490 Q114 502 158 495 Q210 506 262 495 Q306 502 352 490" stroke="#062E1B" stroke-width="7" fill="none" opacity="0.3"/><rect x="60" y="240" width="300" height="280" fill="url(#td-vshade)"/></g><path d="M302 262 C302 312 318 346 340 358 M80 358 C102 346 118 312 118 262 M156 256 Q210 302 264 256" stroke="#0A4A2E" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M118 262 L156 256 Q210 302 264 256 L302 262 C302 312 318 346 340 358 C346 400 348 446 352 490 Q306 502 262 495 Q210 506 158 495 Q114 502 68 490 C72 446 74 400 80 358 C102 346 118 312 118 262 Z" stroke="#08361F" stroke-width="2" stroke-opacity="0.5" fill="none"/><text x="236" y="386" text-anchor="middle" font-family="Georgia, serif" font-weight="700" font-size="25" textLength="70" lengthAdjust="spacingAndGlyphs" fill="#F2B705">NORTH</text><text x="236" y="413" text-anchor="middle" font-family="Georgia, serif" font-weight="700" font-size="25" textLength="140" lengthAdjust="spacingAndGlyphs" fill="#F2B705">CANTERBURY</text><g filter="url(#td-fluff)"><circle cx="210" cy="170" r="122" fill="#E8D3B0"/></g><ellipse cx="33.7" cy="459.1" rx="18" ry="14" fill="#F2E2C6"/><ellipse cx="395.2" cy="193.4" rx="18" ry="16" fill="#F2E2C6"/><ellipse cx="210" cy="220" rx="68" ry="54" fill="#F3E6CF"/><ellipse cx="210" cy="196" rx="28" ry="20" fill="#5A2E1E"/><ellipse cx="201" cy="189" rx="9" ry="4" fill="#8A5240"/><path d="M176 228 Q210 270 244 228 Q210 242 176 228 Z" fill="#6B2F22"/><circle cx="166" cy="148" r="12" fill="#1F1A17"/><circle cx="254" cy="148" r="12" fill="#1F1A17"/><circle cx="170" cy="144" r="4" fill="#FFFFFF"/><circle cx="258" cy="144" r="4" fill="#FFFFFF"/><ellipse cx="140" cy="202" rx="16" ry="9" fill="#F0B8A0" opacity="0.5"/><ellipse cx="280" cy="202" rx="16" ry="9" fill="#F0B8A0" opacity="0.5"/>';
+  var TEDDY_RATIO = 442 / 580;
+  function teddy(x, y, h) {
+    var k = h / 580;
+    return '<g transform="translate(' + r1(x + 22 * k) + ' ' + r1(y - 20 * k) + ') scale(' + Math.round(k * 10000) / 10000 + ')">' + TEDDY_ART + '</g>';
+  }
+  // where Teddy stands in each layout with room for him: [x, y, height] (his feet on the counts,
+  // the poster's band or above the club's column)
+  var TEDDY_AT = { classic: [452, 10, 150], poster: [452, 4, 146], podium: [460, 8, 144] };
+  // whether the full-size Teddy is on this card (the Teddy theme, in a layout with room for him)
+  function teddyShows(chosen) {
+    var th = BY_ID[chosen.theme];
+    return !!(th && th.mascot && TEDDY_AT[chosen.layout]);
+  }
+  /* The Teddy sticker: his head and singlet in a round sky badge with a gold ring, from the
+     Teddy sticker design; at full size it reaches STICKER_R from its centre. */
+  function teddySticker(cx, cy, k) {
+    var s = 0.25;
+    return '<defs><linearGradient id="tk-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7CC8F7"/>' +
+        '<stop offset="1" stop-color="#D8F0FF"/></linearGradient><clipPath id="tk-in"><circle cx="0" cy="0" r="45"/></clipPath>' +
+        '<filter id="tk-ds" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#000000" flood-opacity="0.3"/></filter></defs>' +
+      '<g transform="translate(' + r1(cx) + ' ' + r1(cy) + ') rotate(-12) scale(' + k + ')">' +
+        '<g filter="url(#tk-ds)"><circle cx="0" cy="0" r="54" fill="#FFFFFF"/></g>' +
+        '<circle cx="0" cy="0" r="51" fill="#F2B705"/><circle cx="0" cy="0" r="46.5" fill="#0E5A38"/>' +
+        '<circle cx="0" cy="0" r="45" fill="url(#tk-sky)"/>' +
+        '<g clip-path="url(#tk-in)"><path d="M-46 30 Q0 22 46 28 L46 50 L-46 50 Z" fill="#7CC876"/>' +
+          '<g transform="translate(' + r1(-210 * s) + ' ' + r1(-232 * s) + ') scale(' + s + ')">' + TEDDY_ART + '</g></g>' +
+        '<circle cx="0" cy="0" r="45" fill="none" stroke="#FFFFFF" stroke-opacity=".5" stroke-width="1.5"/>' +
+      '</g>';
   }
   function poppy(x, y, s) {
     return [[-1, -1], [1, -1], [-1, 1], [1, 1]].map(function (p) {
@@ -133,9 +315,6 @@
     for (var r = 0; r < 4; r++) { for (var c = 0; c < 6; c++) { if ((r + c) % 2) { s += R(x + c * 9, y + r * 9, 9, 9, '#fff'); } } }
     return s;
   }
-  function confettiBits(spots) {
-    return spots.map(function (p) { return R(p[0], p[1], 9, 9, p[2], 1, 'rx="2" transform="rotate(20 ' + p[0] + ' ' + p[1] + ')"'); }).join('');
-  }
 
   // the club singlet: bottle green, the white sweep up across the chest to the bottom
   // right, edged in gold pinstripes, with a band of white hatching above it
@@ -159,10 +338,10 @@
     { id: 'singlet', name: 'Club singlet', group: 'Club', bg: '#0E4634', band: '#0A3727', accent: '#E2BD2F', soft: '#CFE3D8', text: '#FFFFFF',
       eyebrow: 'NORTH CANTERBURY', strip: 'none', far: '#0E4634', sweep: true, art: SINGLET },
     { id: 'singlet-track', name: 'Club singlet, with the track', group: 'Club', bg: '#0E4634', band: '#0A3727', accent: '#E2BD2F', soft: '#CFE3D8',
-      text: '#FFFFFF', eyebrow: 'NORTH CANTERBURY', far: '#0E4634', sweep: true, art: SINGLET },
+      text: '#FFFFFF', eyebrow: 'NORTH CANTERBURY', far: '#0E4634', sweep: true, art: SINGLET, plain: 'singlet' },   // plain: the same theme without the track
 
-    { id: 'new-year', name: 'New Year', group: 'Occasions', bg: '#0D0B2E', band: '#1A1747', accent: '#FFD34D', soft: '#C9C6F2', text: '#FFFFFF',
-      eyebrow: 'HAPPY NEW YEAR', art: burst(268, 22, 16, '#FFD34D') + burst(306, 36, 13, '#FF6FB5') + burst(296, 10, 8, '#5BE0F0') },
+    { id: 'new-year', name: 'New Year', group: 'Occasions', bg: '#070505', band: '#1C130C', accent: '#FFD34D', soft: '#D8CDBE', text: '#FFFFFF',
+      eyebrow: 'HAPPY NEW YEAR', art: '', scene: fireworks },    // scene: a picture across the whole card, behind everything
     { id: 'waitangi', name: 'Waitangi Day', group: 'Occasions', bg: '#012169', band: '#0B2E80', accent: '#FFFFFF', soft: '#C9D3EE', text: '#FFFFFF',
       eyebrow: 'WAITANGI DAY', art: southernCross() + pohutukawa(252, 24, 11) + pohutukawa(262, 52, 8) },
     { id: 'easter', name: 'Easter', group: 'Occasions', bg: '#5B4B8A', band: '#6C5C9E', accent: '#FFE27A', soft: '#E4DDF7', text: '#FFFFFF',
@@ -178,7 +357,7 @@
     { id: 'halloween', name: 'Halloween', group: 'Occasions', bg: '#1E1430', band: '#2C1F45', accent: '#FF8C1A', soft: '#D7CDEB', text: '#FFFFFF',
       eyebrow: 'SPOOKY RESULTS', art: pumpkin(278, 34, 11) + pumpkin(308, 40, 8) + C(306, 14, 9, '#F4E9C1') },
     { id: 'guy-fawkes', name: 'Guy Fawkes', group: 'Occasions', bg: '#141B3D', band: '#1F2856', accent: '#FF5E5E', soft: '#C8CEEE', text: '#FFFFFF',
-      eyebrow: 'FIREWORKS', art: burst(270, 30, 15, '#FF5E5E') + burst(305, 18, 12, '#FFD34D') + burst(312, 46, 7, '#7CF29C') },
+      eyebrow: 'FIREWORKS', art: '', scene: peony },
     { id: 'canterbury-anniversary', name: 'Canterbury Anniversary', group: 'Occasions', bg: '#111111', band: '#232323', accent: '#E4002B', soft: '#D6D6D6', text: '#FFFFFF',
       eyebrow: 'CANTERBURY ANNIVERSARY', art: [0, 1, 2, 3, 4, 5, 6].map(function (i) { return R(236, i * 24 - 6, 94, 12, '#C8102E'); }).join('') +
         R(236, 0, 94, 152, '#000', 0.25) + rosette() },
@@ -214,7 +393,9 @@
     { id: 'colgate', name: 'Colgate Games', group: 'Special events', bg: '#E4002B', band: '#C70026', accent: '#FFFFFF', soft: '#FFD9DF', text: '#FFFFFF',
       eyebrow: 'COLGATE GAMES', art: '', badge: '/assets/img/colgate-games.png' },     // the event's logo, used with its organisers' OK
     { id: 'childrens', name: 'Children’s', group: 'Special events', bg: '#FFD84D', band: '#FFE57F', accent: '#1F3A93', soft: '#3B4A7A', text: '#14234F', light: true,
-      eyebrow: 'GAME ON', art: confettiBits([[256, 12, '#E8443A'], [282, 30, '#1F3A93'], [308, 14, '#2F8F4E'], [266, 40, '#FF7AB6'], [300, 44, '#E8443A']]) },
+      eyebrow: 'GAME ON', art: '' },
+    { id: 'teddy', name: 'Teddy', group: 'Special events', bg: '#D8F0FF', band: '#FFFFFF', accent: '#0E7A45', soft: '#2D5A45', text: '#0B3B2E', light: true,
+      eyebrow: 'CONGRATULATIONS EVERYONE!', art: '', scene: teddySky, mascot: true },   // Teddy in the layouts in TEDDY_AT
     { id: 'combined', name: 'Combined events', group: 'Special events', bg: '#232A5C', band: '#2E3672', accent: '#FFB547', soft: '#CBD0F0', text: '#FFFFFF',
       eyebrow: 'COMBINED EVENTS', art: combined('#FFB547') },
     { id: 'everyone', name: 'Athletics for everyone', group: 'Special events', bg: '#00695C', band: '#0B7D6E', accent: '#FFE27A', soft: '#CDEDE7', text: '#FFFFFF',
@@ -262,7 +443,8 @@
   var STICKERS = [
     { id: 'none', name: 'None' }, { id: 'pb', name: 'New PBs stamp' }, { id: 'burst', name: 'Starburst' }, { id: 'medal', name: 'Medal' },
     { id: 'trophy', name: 'Trophy' }, { id: 'star', name: 'Star' }, { id: 'bolt', name: 'Lightning' }, { id: 'flame', name: 'Flame' },
-    { id: 'win', name: 'Race win stamp' }, { id: 'top10', name: 'Top 10 stamp' }, { id: 'finisher', name: 'Finisher medal' }
+    { id: 'win', name: 'Race win stamp' }, { id: 'top10', name: 'Top 10 stamp' }, { id: 'finisher', name: 'Finisher medal' },
+    { id: 'teddy', name: 'Teddy' }
   ];
   // the stickers a meeting offers: no New PBs stamp out of the stadium, and its own stamps there
   function stickersFor(out) {
@@ -415,7 +597,7 @@
   var LAYOUT_FOR = {
     twilight: 'scoreboard', international: 'scoreboard', indoor: 'scoreboard', 'guy-fawkes': 'scoreboard',
     'new-year': 'ticket', christmas: 'ticket', 'canterbury-anniversary': 'ticket',
-    colgate: 'poster', childrens: 'poster', 'season-opener': 'poster', 'season-finale': 'poster', summer: 'poster',
+    colgate: 'poster', childrens: 'poster', teddy: 'poster', 'season-opener': 'poster', 'season-finale': 'poster', summer: 'poster',
     halloween: 'big-number', combined: 'big-number', throws: 'big-number',
     'cross-country': 'race-bib', road: 'race-bib', trail: 'race-bib', relays: 'race-bib', steeplechase: 'race-bib',
     'club-champs': 'podium', champs: 'podium', 'south-island': 'podium', national: 'podium', oceania: 'podium'
@@ -598,6 +780,7 @@
   function stickerArt(value, cx, cy, k) {
     var st = stickerOf(value);
     if (!st || st.id === 'none') { return ''; }
+    if (st.id === 'teddy') { return teddySticker(cx, cy, k); }     // his own look, whatever the style
     var parts = SHAPES[st.id](), style = st.style, defs = '', body = '', grads = {}, n = 0;
     var main = parts.filter(function (p) { return !p.detail; });
     var gradFor = function (c, metal) {
@@ -689,7 +872,7 @@
     return (nx - cx) * (nx - cx) + (ny - cy) * (ny - cy) < r * r;
   }
   function placeSticker(items, own) {
-    var blocks = items.filter(function (i) { return (i.kind === 'text' && !i.sticker) || i.kind === 'logo' || i.kind === 'badge'; });
+    var blocks = items.filter(function (i) { return (i.kind === 'text' && !i.sticker) || i.kind === 'logo' || i.kind === 'badge' || i.block; });
     var boxOf = function (i) { return i.kind === 'text' ? textBox(i) : { x: i.x, y: i.y, w: i.w, h: i.h }; };
     var clear = function (cx, cy, r) { return blocks.every(function (i) { return !hitsCircle(boxOf(i), cx, cy, r); }); };
     var tries = [own].concat(SPOTS);
@@ -912,24 +1095,47 @@
       var room = up - 8 - b.x;
       if ((!i.align || i.align === 'left') && room >= 70) { i.max = Math.min(i.max, room - (i.rotate ? 16 : 0)); return; }
       if (i.align === 'center' && 2 * (up - 8 - i.x) >= 70) { i.max = Math.min(i.max, 2 * (up - 8 - i.x)); return; }
-      if (i.align === 'right' && up - 8 - b.w > 230) { i.x = r1(up - 8); return; }
+      if (i.align === 'right' && up - 8 - b.w > 230) {
+        // words already on that line, left-aligned, are narrowed to end before them (a little, at most)
+        var moved = { x: up - 8 - b.w, y: b.y, w: b.w, h: b.h }, ok = true;
+        items.forEach(function (o) {
+          if (o === i || o.kind !== 'text') { return; }
+          var ob = textBox(o);
+          if (!(ob.x < moved.x + moved.w + 8 && moved.x < ob.x + ob.w + 8 && ob.y < moved.y + moved.h && moved.y < ob.y + ob.h)) { return; }
+          var fit = moved.x - 12 - ob.x;
+          if ((o.align && o.align !== 'left') || o.rotate || fit < ob.w * 0.75) { ok = false; return; }
+          o.max = Math.min(o.max, fit);
+        });
+        if (ok) { i.x = r1(up - 8); return; }
+      }
       if (t.far) { i.colour = t.far; }
     });
   }
 
   // where an event's logo goes in each layout that shows the theme's picture: [x, y, radius]
   var BADGE_AT = { classic: [522, 82, 58], 'big-number': [544, 58, 44], poster: [522, 72, 60], podium: [524, 76, 54] };
-  // the layouts that show the theme's picture
+  // the layouts that show the theme's picture, and those with the track or course along the bottom
   var ART_LAYOUTS = ['classic', 'big-number', 'poster', 'podium'];
+  var SCENE_DIM = ['big-number', 'podium'];      // layouts with words over the right of a theme's scene
+  var STRIP_LAYOUTS = ['classic', 'big-number', 'podium'];
+  // a theme that is only its plain twin plus the track, in a layout with no track: the twin
+  function fitTheme(chosen) {
+    var th = BY_ID[chosen.theme];
+    if (th && th.plain && STRIP_LAYOUTS.indexOf(chosen.layout) < 0) { chosen.theme = th.plain; }
+    // no Teddy sticker where the full-size Teddy already stands
+    var st = stickerOf(chosen.sticker);
+    if (st && st.id === 'teddy' && teddyShows(chosen)) { chosen.sticker = 'none'; }
+    return chosen;
+  }
 
   // facts: recap-data.js cardFacts (title, line, lane, course, counts [athletes, PBs, podiums]);
   // chosen: resolve()'s look
   function build(facts, chosen) {
-    var theme = BY_ID[chosen.theme] || BY_ID.club;
+    var layout = LAYOUT[chosen.layout] ? chosen.layout : 'classic';
+    var theme = BY_ID[fitTheme({ theme: (BY_ID[chosen.theme] || BY_ID.club).id, layout: layout }).theme];
     var t = {};
     Object.keys(theme).forEach(function (k) { t[k] = theme[k]; });
     if (chosen.accent) { t.accent = chosen.accent; }
-    var layout = LAYOUT[chosen.layout] ? chosen.layout : 'classic';
     if (ART_LAYOUTS.indexOf(layout) < 0) { delete t.far; }     // no picture in the corner, so no light edge
     var font = find(FONTS, chosen.font) || FONTS[0];
     var items = [], add = adder(items, font, t);
@@ -946,11 +1152,17 @@
     if (fi < 0) { fi = 1; }
     var f = { title: facts.title || 'Meeting results', line: facts.line || '', lane: facts.lane, course: facts.course, counts: counts };
     var o = { headline: (chosen.headline || theme.eyebrow || '').toUpperCase(), feature: counts[fi], featureId: counts[fi].id,
-              sticker: !!(stickerOf(chosen.sticker) && stickerOf(chosen.sticker).id !== 'none') };
+              sticker: !!(stickerOf(chosen.sticker) && stickerOf(chosen.sticker).id !== 'none') &&
+                       !(stickerOf(chosen.sticker).id === 'teddy' && teddyShows({ theme: theme.id, layout: layout })) };
     // the background, a photo faded into it, and a pattern
     var bg = [];
     if (layout !== 'scoreboard') {
       bg.push({ kind: 'rect', x: 0, y: 0, w: W, h: H, colour: t.bg });
+      if (t.scene && !chosen.photo) {
+        bg.push({ kind: 'svg', svg: t.scene() });
+        // the scene keeps its left side dark for the words; where they sit right too, dim it all
+        if (SCENE_DIM.indexOf(layout) >= 0) { bg.push({ kind: 'svg', svg: R(0, 0, W, H, t.bg, 0.55) }); }
+      }
       if (chosen.photo) {
         bg.push({ kind: 'photo', url: chosen.photo, x: chosen.focusX == null ? 50 : chosen.focusX,
                   y: chosen.focus == null ? 50 : chosen.focus, zoom: chosen.zoom > 1 ? chosen.zoom : 1 });
@@ -972,6 +1184,17 @@
       });
       items.push({ kind: 'badge', src: t.badge, x: bd[0] - br, y: bd[1] - br, w: 2 * br, h: 2 * br, drop: true });
     }
+    // Teddy, with the words beside him narrowed to end before him
+    if (t.mascot && TEDDY_AT[layout]) {
+      var ta = TEDDY_AT[layout], tw = r1(ta[2] * TEDDY_RATIO), tb = { x: ta[0], y: ta[1], w: tw, h: ta[2] };
+      items.forEach(function (i) {
+        if (i.kind !== 'text') { return; }
+        var b = textBox(i);
+        if (b.x >= tb.x + tb.w || b.x + b.w <= tb.x - 8 || b.y >= tb.y + tb.h || b.y + b.h <= tb.y) { return; }
+        if (!i.align || i.align === 'left') { i.max = Math.max(60, Math.min(i.max, tb.x - 10 - i.x - (i.rotate ? 24 : 0))); }
+      });
+      items.push({ kind: 'svg', svg: teddy(ta[0], ta[1], ta[2]), block: true, x: tb.x, y: tb.y, w: tb.w, h: tb.h });
+    }
     var front = [], placed = null;
     if (o.sticker) {
       placed = placeSticker(items, spot.sticker);
@@ -988,6 +1211,7 @@
     FONTS: FONTS, FEATURES: FEATURES, featuresFor: featuresFor, stickersFor: stickersFor, HEADLINE_MAX: HEADLINE_MAX, ACCENT_MIN: ACCENT_MIN, MATARIKI: MATARIKI,
     theme: function (id) { return BY_ID[id] || null; }, find: find,
     easter: easter, showDay: showDay, occasion: occasion, season: season, suggestTheme: suggestTheme,
+    STRIP_LAYOUTS: STRIP_LAYOUTS, fitTheme: fitTheme, TEDDY_AT: TEDDY_AT, teddyShows: teddyShows,
     suggest: suggest, resolve: resolve, toSave: toSave, contrast: contrast, onColour: onColour, accentReads: accentReads,
     wrap: wrap, build: build
   };
