@@ -4920,16 +4920,18 @@ table.schedule.manage-mem { min-width: 640px; }
 .recap-hl { border-radius: var(--radius); padding: 1.1rem 1.2rem 1.2rem; box-shadow: var(--shadow-sm); }
 .recap-hl p { margin: 0; }
 .recap-hl--green { background: var(--green-800); color: rgba(255, 255, 255, .85); }
-.recap-hl--yellow { background: var(--yellow-500); color: var(--green-900); }
+.recap-hl--yellow { background: var(--surface-warm); color: var(--text); box-shadow: inset 0 4px 0 var(--yellow-500), var(--shadow-sm); }
 .recap-hl--green .recap-chip--pb { background: var(--yellow-500); color: var(--green-900); }
 .recap-hl--green .recap-chip--first { background: rgba(255, 255, 255, .16); color: #fff; }
 .recap-hl--yellow .recap-chip--record,
 .recap-hl--yellow .recap-chip--pb { background: var(--green-800); color: #fff; }
-.recap-hl--yellow .recap-chip--first { background: rgba(6, 42, 32, .12); color: var(--green-900); }
+.recap-hl--yellow .recap-chip--first { background: var(--line); color: var(--heading); }
 .recap-hl--yellow [class*="recap-chip--medal"] { box-shadow: inset 0 0 0 1px rgba(6, 42, 32, .35); }
 .recap-hl .recap-hl__chips { margin-bottom: .6rem; }
 .recap-hl .recap-hl__name { font-family: var(--font-display); font-weight: 800; font-size: 1.2rem; line-height: 1.2; }
 .recap-hl--green .recap-hl__name { color: #fff; }
+.recap-hl--yellow .recap-hl__name, .recap-hl--yellow .recap-hl__mark { color: var(--heading); }
+.recap-hl--yellow .recap-hl__more { color: var(--text-soft); }
 .recap-hl .recap-hl__event { font-size: .9rem; }
 .recap-hl .recap-hl__mark { font-family: var(--font-display); font-weight: 800; font-size: 2.1rem; line-height: 1.1; margin-top: .4rem; font-variant-numeric: tabular-nums; }
 .recap-hl--green .recap-hl__mark { color: var(--yellow-500); }
