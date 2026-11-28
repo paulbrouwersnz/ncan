@@ -41,11 +41,18 @@
       .map(function (k) { return k.name.toLowerCase(); });
     return ks.length > 1 ? ks.slice(0, -1).join(', ') + ' and ' + ks[ks.length - 1] : ks[0] || '';
   }
-  // a location's colours: [{kind, colour}] for each kind of event held there
+  function colourFor(l, k) { return (k === 'track' ? l.colour : (l.courses || {})[k]) || null; }
+  // a location's colours: [{kind, colour}] for each kind of event its meetings are
+  // (`held`; an API without it gives `kinds`, which counts a kind with a colour saved)
   function kindsAt(l) {
-    return (l.kinds && l.kinds.length ? l.kinds : ['track']).map(function (k) {
-      return { kind: k, colour: k === 'track' ? l.colour || null : (l.courses || {})[k] || null };
-    });
+    var ks = l.held ? l.held : (l.kinds && l.kinds.length ? l.kinds : ['track']);
+    return ks.map(function (k) { return { kind: k, colour: colourFor(l, k) }; });
+  }
+  // colours saved for a kind no meeting there is: left from earlier, to clear
+  function strayAt(l) {
+    if (!l.held) { return []; }
+    return (l.kinds || []).filter(function (k) { return l.held.indexOf(k) < 0 && colourFor(l, k); })
+      .map(function (k) { return { kind: k, colour: colourFor(l, k) }; });
   }
   function coloursAt(l) {
     var out = [];
@@ -180,7 +187,7 @@
     var ul = $('tracks-locations');
     ul.textContent = '';
     var shown = state.locations.filter(function (l) {
-      return !$('tracks-unset').checked || kindsAt(l).some(function (k) { return !k.colour; });
+      return !$('tracks-unset').checked || strayAt(l).length || kindsAt(l).some(function (k) { return !k.colour; });
     });
     if (!state.locations.length) {
       ul.appendChild(el('li', null, 'No meeting has a location yet. Add them on the results sources page.'));
@@ -188,11 +195,11 @@
     }
     if (!shown.length) { ul.appendChild(el('li', null, 'Every location has a colour.')); }
     shown.forEach(function (l, n) {
-      var li = el('li', 'track-location');
+      var li = el('li', 'track-location track-location--place');
       var what = el('div', 'track-location__what');
       var id = 'tracks-loc-' + n;
       var label = el('label', null, l.location);
-      label.htmlFor = id + '-' + kindsAt(l)[0].kind;
+      if (kindsAt(l).length) { label.htmlFor = id + '-' + kindsAt(l)[0].kind; }
       what.appendChild(label);
       what.appendChild(el('span', 'access-how', [l.city, l.meetings ? (l.meetings === 1 ? '1 meeting' : l.meetings + ' meetings')
         : 'No meeting has this location now'].filter(Boolean).join(' · ')));
@@ -221,6 +228,25 @@
         box.appendChild(row);
         picks.appendChild(box);
       });
+      // a colour left for a kind of event not held there any more
+      var stray = strayAt(l);
+      var strays = el('div', 'track-strays');
+      stray.forEach(function (k) {
+        var p = el('p', 'track-stray');
+        p.appendChild(swatch(colourHex(k.colour)));
+        p.appendChild(el('span', null, kindName(k.kind) + ' colour ' + nameOf(k.colour) + ' is still saved, but no ' +
+          kindName(k.kind).toLowerCase() + ' meeting is here.'));
+        var clear = el('button', 'btn btn--ghost btn--sm', 'Clear');
+        clear.type = 'button';
+        clear.setAttribute('aria-label', 'Clear the ' + kindName(k.kind).toLowerCase() + ' colour at ' + l.location);
+        clear.addEventListener('click', function () {
+          clear.disabled = true;
+          send('/admin/track-colours/location', { location: l.location, colour: '', kind: k.kind },
+               'tracks-location-said', l.location + ': its ' + kindName(k.kind).toLowerCase() + ' colour is cleared.');
+        });
+        p.appendChild(clear);
+        strays.appendChild(p);
+      });
       var edit = el('button', 'btn btn--ghost btn--sm', 'Edit');
       edit.type = 'button';
       edit.setAttribute('aria-label', 'Edit ' + l.location);
@@ -234,10 +260,13 @@
         send('/admin/locations/change', { location: l.location, new_location: '' }, 'tracks-location-said',
              function (b) { return removedWords(l, b); });
       });
+      var acts = el('div', 'track-location__acts');
+      acts.appendChild(edit);
+      acts.appendChild(rm);
       li.appendChild(what);
-      li.appendChild(picks);
-      li.appendChild(edit);
-      li.appendChild(rm);
+      li.appendChild(acts);
+      if (picks.childNodes.length) { li.appendChild(picks); }
+      if (stray.length) { li.appendChild(strays); }
       ul.appendChild(li);
     });
   }
@@ -326,5 +355,6 @@
   }
 
   window.AdminTracks = { start: start, removeWords: removeWords, changedWords: changedWords,
+                         kindsAt: kindsAt, strayAt: strayAt,
                          _state: state };
 }());

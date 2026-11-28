@@ -4451,9 +4451,18 @@ html:has(.plan-editor:not([hidden])) { scroll-padding-bottom: 5rem; }
 .track-kind__name { font-size: .8rem; color: var(--text-soft); font-weight: 400; }
 .track-kind__pick { display: flex; gap: .5rem; align-items: center; }
 .track-kind select { flex: 0 1 13rem; }
+/* each location: its name and Edit / Remove on top, then a colour for each kind, left-aligned */
+.access-list li.track-location--place { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; gap: .6rem 1rem; }
+.track-location__acts { display: flex; gap: .5rem; }
+.track-location--place .track-kinds { grid-column: 1 / -1; justify-content: flex-start; gap: .6rem 1.5rem; }
+.track-location--place .track-kind select { flex: 0 1 15rem; width: 15rem; max-width: 100%; }
+.track-strays { grid-column: 1 / -1; display: grid; gap: .4rem; }
+.track-stray { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem .6rem; margin: 0; font-size: .9rem; color: var(--text-soft); }
+.track-stray .track-swatch { width: 1.1rem; height: 1.1rem; }
 @media (max-width: 540px) {
   .track-location { flex-wrap: wrap; } .track-location select { flex-basis: 100%; }
   .track-kinds { flex-basis: 100%; justify-content: flex-start; } .track-kind { flex: 1 1 100%; }
+  .track-location--place .track-kind select { flex: 1 1 auto; width: auto; }
 }
 
 /* Charts shared publicly: Shared charts (athlete page), Your shared charts

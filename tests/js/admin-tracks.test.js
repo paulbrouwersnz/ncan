@@ -31,3 +31,18 @@ test('a rename says where it went and the colour it kept', () => {
   assert.equal(T.changedWords({ location: 'QEII' }, { location: 'QEII', meetings: 1, colour: null }),
     '“QEII” saved on 1 meeting.');
 });
+
+test('a colour saved for a kind no meeting there is shows as one to clear', () => {
+  const park = { location: 'Hagley Park', meetings: 4, colour: 'red', courses: { 'cross-country': 'blue' },
+                 kinds: ['track', 'cross-country'], held: ['cross-country'] };
+  assert.deepEqual(JSON.parse(JSON.stringify(T.kindsAt(park))), [{ kind: 'cross-country', colour: 'blue' }]);
+  assert.deepEqual(JSON.parse(JSON.stringify(T.strayAt(park))), [{ kind: 'track', colour: 'red' }]);
+  // renamed away: every saved colour is left over
+  const old = { location: 'Old', meetings: 0, colour: 'red', courses: {}, kinds: ['track'], held: [] };
+  assert.equal(T.kindsAt(old).length, 0);
+  assert.equal(T.strayAt(old).length, 1);
+  // an API from before `held`: every kind it lists, nothing stray
+  const before = { location: 'QEII', meetings: 1, colour: 'red', kinds: ['track'] };
+  assert.equal(T.kindsAt(before).length, 1);
+  assert.equal(T.strayAt(before).length, 0);
+});
