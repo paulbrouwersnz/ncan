@@ -450,6 +450,7 @@
       if (i.kind === 'svg') { return i.svg ? load(svgSrc(i.svg, W, H)) : Promise.resolve(null); }
       if (i.kind === 'photo') { return load(i.url, true); }
       if (i.kind === 'logo') { return load(i.dark ? '/assets/img/logo-dark.svg' : '/assets/img/logo.svg'); }
+      if (i.kind === 'badge') { return load(i.src); }
       return Promise.resolve(null);
     });
     var rgba = function (hex, a) {
@@ -519,6 +520,13 @@
           c.fillRect(0, 0, W, H);
         } else if (i.kind === 'logo') {
           if (img) { c.drawImage(img, i.x, i.y, i.w, i.h); }
+        } else if (i.kind === 'badge') {
+          // an event's logo on a white disc (its shadow from the item's drop)
+          if (!img) { return; }
+          c.fillStyle = '#FFFFFF';
+          c.beginPath(); c.arc(i.x + i.w / 2, i.y + i.h / 2, i.w / 2, 0, Math.PI * 2); c.fill();
+          c.shadowColor = 'transparent';
+          c.drawImage(img, i.x + i.w * 0.04, i.y + i.h * 0.04, i.w * 0.92, i.h * 0.92);
         } else if (i.kind === 'text') {
           // too wide: smaller, down to two-thirds, then squeezed
           var size = i.size, sq = i.squeeze || 1;

@@ -143,12 +143,12 @@ test('a sticker never covers the words or the crest, in any layout', () => {
       for (const st of L.STICKERS.filter((x) => x.id !== 'none')) {
         for (const font of ['bold', 'condensed']) {
           const style = L.STICKER_STYLES[(ly.id.length + st.id.length) % 4].id;
-          const card = L.build(facts, L.resolve({ theme: 'childrens', layout: ly.id, font, sticker: L.stickerValue(st.id, style) }, {}, {}));
+          const card = L.build(facts, L.resolve({ theme: ly.id.length % 2 ? 'colgate' : 'childrens', layout: ly.id, font, sticker: L.stickerValue(st.id, style) }, {}, {}));
           const s = card.sticker;
           assert.ok(s, ly.id + ' ' + st.id);
           assert.ok(card.items.some((i) => i.kind === 'svg' && i.svg.includes('rotate(-12)')), ly.id + ' ' + st.id);
-          card.items.filter((i) => (i.kind === 'text' && !i.sticker) || i.kind === 'logo').forEach((i) => {
-            const b = i.kind === 'logo' ? { x: i.x, y: i.y, w: i.w, h: i.h } : L.textBox(i);
+          card.items.filter((i) => (i.kind === 'text' && !i.sticker) || i.kind === 'logo' || i.kind === 'badge').forEach((i) => {
+            const b = i.kind === 'text' ? L.textBox(i) : { x: i.x, y: i.y, w: i.w, h: i.h };
             assert.ok(!L.hitsCircle(b, s.x, s.y, s.r), ly.id + ' ' + st.id + ' ' + font + ': covers "' + (i.words || 'the crest') + '"');
           });
         }
@@ -174,4 +174,18 @@ test('out of the stadium: no PBs; kilometres, race wins and top 10s to feature, 
   const w = words({ layout: 'classic', feature: 'wins' });
   assert.ok(w.includes('Race wins') && !w.includes('Podiums') && w.includes('Kilometres'));
   assert.ok(words({ layout: 'podium', feature: 'top10' }).includes('Top 10s'));
+});
+
+test('the Colgate Games theme shows the event logo, clear of the words', () => {
+  const facts = { title: 'South Island Colgate Games Day One Results', line: 'Friday 15 January 2027', counts: [] };
+  for (const ly of ['classic', 'big-number', 'poster', 'podium']) {
+    const card = L.build(facts, L.resolve({ theme: 'colgate', layout: ly }, {}, {}));
+    const b = card.items.find((i) => i.kind === 'badge');
+    assert.equal(b && b.src, '/assets/img/colgate-games.png', ly);
+    card.items.filter((i) => i.kind === 'text').forEach((i) => {
+      assert.ok(!L.hitsCircle(L.textBox(i), b.x + b.w / 2, b.y + b.h / 2, b.w / 2), ly + ': covers "' + i.words + '"');
+    });
+  }
+  // not on the layouts without the corner picture
+  assert.ok(!L.build(facts, L.resolve({ theme: 'colgate', layout: 'race-bib' }, {}, {})).items.some((i) => i.kind === 'badge'));
 });
