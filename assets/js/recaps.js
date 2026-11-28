@@ -423,6 +423,7 @@
   /* The preview card: drawn here, uploaded when publishing ------------------------- */
   // chosen: the card's look (card-looks.js resolve). Resolves the canvas; canvas.photoFailed
   // if the photo couldn't be loaded (the card is drawn without it).
+  var SCENES = {};      // a theme scene's loaded picture, by scale and svg
   function drawCard(data, chosen) {
     var Lay = Looks.build(D.cardFacts(data), chosen), scale = Lay.scale, W = Lay.w, H = Lay.h;
     var css = function (i, size) {
@@ -447,7 +448,14 @@
       if (i.kind === 'strip') {
         return load('data:image/svg+xml;charset=utf-8,' + encodeURIComponent(S.svg(i.course, i.colour, i.w, i.h, { scale: scale })));
       }
-      if (i.kind === 'svg') { return i.svg ? load(svgSrc(i.svg, W, H)) : Promise.resolve(null); }
+      if (i.kind === 'svg') {
+        if (!i.svg) { return Promise.resolve(null); }
+        if (i.svg.length < 20000) { return load(svgSrc(i.svg, W, H)); }
+        // a theme's scene is the same picture every time: load it once
+        var key = scale + ':' + i.svg;
+        if (!SCENES[key]) { SCENES[key] = load(svgSrc(i.svg, W, H)); }
+        return SCENES[key];
+      }
       if (i.kind === 'photo') { return load(i.url, true); }
       if (i.kind === 'logo') { return load(i.dark ? '/assets/img/logo-dark.svg' : '/assets/img/logo.svg'); }
       if (i.kind === 'badge') { return load(i.src); }
