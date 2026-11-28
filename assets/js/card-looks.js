@@ -136,12 +136,18 @@
     return spots.map(function (p) { return R(p[0], p[1], 9, 9, p[2], 1, 'rx="2" transform="rotate(20 ' + p[0] + ' ' + p[1] + ')"'); }).join('');
   }
 
-  // the club singlet: bottle green, the white panel down the side and its sweep across
-  // the chest, edged in gold pinstripes, with a band of white hatching above it
-  var SINGLET = R(0, 0, 330, 1.7, '#E2BD2F') + P('301,0 330,0 330,173 291.5,173', '#F7F7F2') +
-    P('193.6,173 248.6,173 330,93.5 330,38.5', '#F7F7F2') +
-    L(181.5, 173, 330, 24.2, '#FFFFFF', 5.5, 0.85, 'stroke-dasharray="1.6 2.75"') +
-    L(190.3, 173, 330, 33.5, '#E2BD2F', 2.2) + L(254, 173, 330, 99, '#E2BD2F', 2.2) + L(260.7, 173, 330, 105.6, '#E2BD2F', 1.1);
+  // the club singlet: bottle green, the white sweep up across the chest to the bottom
+  // right, edged in gold pinstripes, with a band of white hatching above it
+  var SINGLET = R(0, 0, 330, 1.7, '#E2BD2F') +
+    P('220,173 258.5,173 330,99 330,52.25', '#F7F7F2') +
+    L(207.9, 173, 330, 39, '#FFFFFF', 5.5, 0.85, 'stroke-dasharray="1.6 2.75"') +
+    L(215.6, 173, 330, 47.3, '#E2BD2F', 2.2) + L(265.1, 173, 330, 105.6, '#E2BD2F', 2.2) + L(271.7, 173, 330, 112.2, '#E2BD2F', 1.1);
+  // where the sweep is on the card (600 x 315), hatching and pinstripes included: words
+  // go left of its upper edge, or right of its lower one
+  var SWEEP = {
+    upper: function (y) { return 370 + (315 - y) * (230 / 253); },
+    lower: function (y) { return 500 + (315 - y) * (100 / 105); }
+  };
 
   /* Themes: colours (bg the background, band the counts' band, accent, soft for quieter
      words, text), the line across the top, and the picture in the top right corner. */
@@ -150,9 +156,9 @@
     { id: 'club', name: 'Club', group: 'Club', bg: '#0B3B2E', band: '#0F4C39', accent: '#FFC629', soft: '#B8D4C8', text: '#FFFFFF',
       eyebrow: 'MEETING RESULTS', art: '' },
     { id: 'singlet', name: 'Club singlet', group: 'Club', bg: '#0E4634', band: '#0A3727', accent: '#E2BD2F', soft: '#CFE3D8', text: '#FFFFFF',
-      eyebrow: 'NORTH CANTERBURY', strip: 'none', far: '#0E4634', art: SINGLET },
+      eyebrow: 'NORTH CANTERBURY', strip: 'none', far: '#0E4634', sweep: true, art: SINGLET },
     { id: 'singlet-track', name: 'Club singlet, with the track', group: 'Club', bg: '#0E4634', band: '#0A3727', accent: '#E2BD2F', soft: '#CFE3D8',
-      text: '#FFFFFF', eyebrow: 'NORTH CANTERBURY', far: '#0E4634', art: SINGLET },
+      text: '#FFFFFF', eyebrow: 'NORTH CANTERBURY', far: '#0E4634', sweep: true, art: SINGLET },
 
     { id: 'new-year', name: 'New Year', group: 'Occasions', bg: '#0D0B2E', band: '#1A1747', accent: '#FFD34D', soft: '#C9C6F2', text: '#FFFFFF',
       eyebrow: 'HAPPY NEW YEAR', art: burst(268, 22, 16, '#FFD34D') + burst(306, 36, 13, '#FF6FB5') + burst(296, 10, 8, '#5BE0F0') },
@@ -684,13 +690,13 @@
 
   /* The layouts: each adds its items to `it`. f: the card's facts; t: the colours;
      o: { headline, feature: { n, words }, featureId, sticker }. */
-  // t.far: the colour for words at the right-hand edge, where a theme's picture is light
-  // (the singlet's white side panel)
+  // t.far: the colour for words that sit on a light part of a theme's picture (the
+  // podium's right-hand column, on the singlet's sweep)
   function adder(items, font, t) {
     var add = function (words, x, y, size, o) {
       if (words === '' || words == null) { return; }
       o = o || {};
-      if (t.far && (o.far || (o.align === 'right' && x >= 500))) { o.colour = t.far; }
+      if (t.far && o.far) { o.colour = t.far; }
       var disp = o.font === 'display';
       var it = { kind: 'text', words: String(words), x: r1(x), y: r1(y), size: size, weight: o.weight || 400,
                  font: o.font || 'sans', colour: o.colour, align: o.align || 'left', max: o.max || W - 72, spacing: o.spacing || 0 };
@@ -701,6 +707,7 @@
         if (font.dots) { it.dots = true; }
       }
       if (o.rotate) { it.rotate = o.rotate; }
+      if (o.onBand) { it.onBand = true; }           // on a solid shape of its own, so the picture behind doesn't matter
       items.push(it);
     };
     return add;
@@ -716,7 +723,7 @@
     items.push({ kind: 'strip', x: 0, y: H - LANE, w: W, h: LANE, course: f.course || 'track', colour: f.lane || '#0072B5' });
   }
   function logoAt(items, t, x, y, h) {
-    items.push({ kind: 'logo', x: x, y: y, h: h, w: r1(h * LOGO_RATIO), dark: !(t.light || (t.far && x >= 440)) });
+    items.push({ kind: 'logo', x: x, y: y, h: h, w: r1(h * LOGO_RATIO), dark: !t.light });
   }
   function clubLine(items, add, t, y) {
     logoAt(items, t, 36, y, 36);
@@ -804,7 +811,7 @@
       });
       var c = f.counts;
       add([o.headline].concat(c.map(function (x) { return x.n + ' ' + x.words.toUpperCase(); })).filter(Boolean).join('  ·  '),
-          36, 252, 16, { weight: 800, colour: onColour(t.accent), spacing: 2, max: 520, rotate: -7.6 });
+          36, 252, 16, { weight: 800, colour: onColour(t.accent), spacing: 2, max: 520, rotate: -7.6, onBand: true });
       add(f.line, 36, 302, 13, { colour: t.soft, max: 360 });
       logoAt(items, t, 446, 268, 34);
       add('ncan.nz', W - 36, 302, 14, { weight: 700, colour: t.text, align: 'right', max: 100 });
@@ -842,13 +849,38 @@
         add(String(c.n), x + 60, y + 44, 36, { font: 'display', colour: ink, align: 'center', max: 108 });
         add(c.words, x + 60, y + 64, 13, { weight: 700, colour: ink, align: 'center', max: 108 });
       });
+      // on the singlet, the club's column has a panel of its own, clear of the sweep
+      if (t.sweep) { items.push({ kind: 'rect', x: 446, y: 150, w: 130, h: 114, colour: t.band, round: 10 }); }
       logoAt(items, t, 456, 160, 32);
-      add('North Canterbury', 456, 214, 13, { weight: 700, colour: t.text, max: 110, far: true });
-      add('Athletic Club', 456, 230, 13, { weight: 700, colour: t.text, max: 110, far: true });
-      add('ncan.nz', 456, 252, 13, { weight: 600, colour: t.soft, max: 110, far: true });
+      add('North Canterbury', 456, 214, 13, { weight: 700, colour: t.text, max: 110 });
+      add('Athletic Club', 456, 230, 13, { weight: 700, colour: t.text, max: 110 });
+      add('ncan.nz', 456, 252, 13, { weight: 600, colour: t.soft, max: 110 });
       return { sticker: [526, 66] };
     }
   };
+
+  /* Keep words off the singlet's white sweep: narrowed to end before it, or moved left
+     of it (words set from the right), or in the theme's dark ink when they have to start
+     on it. Words on a solid shape of their own (a band or a podium block) are left be;
+     a crest on it is the one for light backgrounds. */
+  function clearSweep(items, t) {
+    var solid = items.filter(function (i) { return i.kind === 'rect' && !(i.x === 0 && i.y === 0 && i.w === W && i.h === H); });
+    var inside = function (b) {
+      return solid.some(function (r) { return b.x >= r.x && b.y >= r.y && b.x + b.w <= r.x + r.w && b.y + b.h <= r.y + r.h; });
+    };
+    items.forEach(function (i) {
+      if (i.kind !== 'text' && i.kind !== 'logo') { return; }
+      var b = i.kind === 'logo' ? { x: i.x, y: i.y, w: i.w, h: i.h } : textBox(i);
+      var bottom = b.y + b.h, up = SWEEP.upper(bottom);
+      if (b.x + b.w <= up || b.x >= SWEEP.lower(b.y) || i.onBand || inside(b)) { return; }
+      if (i.kind === 'logo') { i.dark = false; return; }
+      var room = up - 8 - b.x;
+      if ((!i.align || i.align === 'left') && room >= 70) { i.max = Math.min(i.max, room - (i.rotate ? 16 : 0)); return; }
+      if (i.align === 'center' && 2 * (up - 8 - i.x) >= 70) { i.max = Math.min(i.max, 2 * (up - 8 - i.x)); return; }
+      if (i.align === 'right' && up - 8 - b.w > 230) { i.x = r1(up - 8); return; }
+      if (t.far) { i.colour = t.far; }
+    });
+  }
 
   // the layouts that show the theme's picture
   var ART_LAYOUTS = ['classic', 'big-number', 'poster', 'podium'];
@@ -883,6 +915,7 @@
       if (pt) { bg.push({ kind: 'svg', svg: pt }); }
     }
     var spot = LAYOUT[layout](items, add, t, f, o);
+    if (t.sweep && ART_LAYOUTS.indexOf(layout) >= 0) { clearSweep(items, t); }
     var front = [], placed = null;
     if (o.sticker) {
       placed = placeSticker(items, spot.sticker);
