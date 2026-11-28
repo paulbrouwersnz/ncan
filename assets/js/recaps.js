@@ -471,9 +471,9 @@
           if (img) { c.drawImage(img, i.x, i.y, i.w, i.h); } else { c.fillRect(i.x, i.y, i.w, i.h); }
         } else if (i.kind === 'photo') {
           if (!img) { canvas.photoFailed = true; return; }
-          // covering the card, cut at the focus (0 the top of the photo, 100 the bottom)
-          var k = Math.max(W / img.naturalWidth, H / img.naturalHeight), dw = img.naturalWidth * k, dh = img.naturalHeight * k;
-          c.drawImage(img, (W - dw) / 2, (H - dh) * (i.focus / 100), dw, dh);
+          // covering the card, zoomed, cut at x and y (0 the photo's left or top edge, 100 its right or bottom)
+          var k = Math.max(W / img.naturalWidth, H / img.naturalHeight) * i.zoom, dw = img.naturalWidth * k, dh = img.naturalHeight * k;
+          c.drawImage(img, (W - dw) * (i.x / 100), (H - dh) * (i.y / 100), dw, dh);
         } else if (i.kind === 'shade') {
           if (canvas.photoFailed) { return; }
           if (i.mode === 'side') {
@@ -977,7 +977,7 @@
       var n = ++drawn;
       canvas = null;
       drawPublish();
-      drawCard(data, S.chosen).then(function (cv) {
+      drawCard(data, withPhoto()).then(function (cv) {
         if (n !== drawn) { return; }               // a newer look is being drawn
         canvas = cv;
         cardBox.textContent = '';
@@ -991,11 +991,12 @@
         drawPublish();
       });
     }
-    function changed() {
+    // quick: while dragging the photo, redraw sooner
+    function changed(quick) {
       said.textContent = '';
       fillLook();
       clearTimeout(redrawAt);
-      redrawAt = setTimeout(redraw, 120);
+      redrawAt = setTimeout(redraw, quick ? 30 : 120);
     }
 
     function fillPreview() {
@@ -1083,85 +1084,77 @@
       field('headline', 'Line at the top', head);
       look.headline = head;
 
-      // a photo from the club's gallery, faded into the theme
+      // a photo from the staff member's device, moved and zoomed on the card, faded into the
+      // theme. It stays on the device: it's in the card that's published, not kept with the recap.
       var ph = el('div', 'recap-look__photo');
       ph.appendChild(el('h4', 'recap-look__sub', 'A photo behind it (optional)'));
-      ph.appendChild(el('p', 'mem-help', 'Pick an album from the club’s gallery, then a photo. It’s faded into the theme’s colour.'));
-      var albumP = el('p', 'records-field recap-look__field');
-      var albumLab = el('label', null, 'Album');
-      var album = el('select');
-      album.id = 'recap-look-album';
-      albumLab.htmlFor = album.id;
-      var none = el('option', null, 'Choose an album');
-      none.value = '';
-      album.appendChild(none);
-      albumP.appendChild(albumLab); albumP.appendChild(album);
-      ph.appendChild(albumP);
-      var thumbs = el('ul', 'recap-look__thumbs');
-      var more = button('More photos');
-      more.hidden = true;
-      var chosenP = el('div', 'recap-look__chosen');
-      var focusP = el('p', 'records-field recap-look__field');
-      var focusLab = el('label', null, 'Photo position (top to bottom)');
-      var focus = el('input');
-      focus.type = 'range'; focus.min = '0'; focus.max = '100'; focus.step = '5'; focus.id = 'recap-look-focus';
-      focusLab.htmlFor = focus.id;
-      focus.addEventListener('input', function () { S.chosen.focus = +focus.value; changed(); });
-      focusP.appendChild(focusLab); focusP.appendChild(focus);
+      ph.appendChild(el('p', 'mem-help', 'Add a photo from your device. Drag the card to move the photo, and zoom to fit; ' +
+        'it’s faded into the theme’s colour. The photo stays on this device: it’s in the card you publish, ' +
+        'but isn’t kept with the recap, so add it again if you change the card later.'));
+      var fileP = el('p', 'records-field recap-look__field');
+      var fileLab = el('label', null, 'Photo');
+      var file = el('input');
+      file.type = 'file'; file.accept = 'image/jpeg,image/png,image/webp'; file.id = 'recap-look-file';
+      fileLab.htmlFor = file.id;
+      fileP.appendChild(fileLab); fileP.appendChild(file);
+      ph.appendChild(fileP);
+      var photoSaid = status('recap-look__said');
+      ph.appendChild(photoSaid);
+      var zoomP = el('p', 'records-field recap-look__field');
+      var zoomLab = el('label', null, 'Zoom');
+      var zoom = el('input');
+      zoom.type = 'range'; zoom.min = '1'; zoom.max = '3'; zoom.step = '0.05'; zoom.id = 'recap-look-zoom';
+      zoomLab.htmlFor = zoom.id;
+      zoom.addEventListener('input', function () { if (S.upload) { S.upload.zoom = +zoom.value; changed(); } });
+      zoomP.appendChild(zoomLab); zoomP.appendChild(zoom);
       var drop = button('Remove the photo', 'btn btn--ghost btn--sm');
-      drop.addEventListener('click', function () { S.chosen.photo = ''; S.chosen.focus = 50; changed(); });
-      ph.appendChild(thumbs); ph.appendChild(more); ph.appendChild(chosenP); ph.appendChild(focusP); ph.appendChild(drop);
-      lookBox.appendChild(ph);
-      look.focus = focus; look.focusP = focusP; look.drop = drop; look.chosenP = chosenP;
-
-      var photos = [], shown = 0, PAGE = 24;
-      function showThumbs() {
-        photos.slice(shown, shown + PAGE).forEach(function (url) {
-          var li = el('li');
-          var b = el('button', 'recap-look__thumb');
-          b.type = 'button';
-          b.setAttribute('aria-label', 'Use this photo');
-          var img = el('img');
-          img.alt = ''; img.loading = 'lazy'; img.decoding = 'async';
-          img.src = url.replace('/gallery/', '/thumbs/');
-          b.appendChild(img);
-          b.addEventListener('click', function () { S.chosen.photo = url; S.chosen.focus = 50; changed(); });
-          b.dataset.url = url;
-          li.appendChild(b);
-          thumbs.appendChild(li);
-        });
-        shown = Math.min(photos.length, shown + PAGE);
-        more.hidden = shown >= photos.length;
-        fillLook();
-      }
-      more.addEventListener('click', showThumbs);
-      album.addEventListener('change', function () {
-        thumbs.textContent = ''; photos = []; shown = 0; more.hidden = true;
-        if (!album.value) { return; }
-        thumbs.appendChild(el('li', 'mem-help', 'Loading the album…'));
-        fetch('/gallery/' + encodeURIComponent(album.value) + '/').then(function (r) {
-          if (!r.ok) { throw new Error(r.status); }
-          return r.text();
-        }).then(function (html) {
-          var seen = {};
-          (html.match(/https:\/\/photos\.ncan\.nz\/gallery\/[^"'()\s]+?\.jpg/gi) || []).forEach(function (u) {
-            if (!seen[u]) { seen[u] = true; photos.push(u); }
-          });
-          thumbs.textContent = '';
-          if (!photos.length) { thumbs.appendChild(el('li', 'mem-help', 'No photos found in that album.')); return; }
-          showThumbs();
-        }).then(null, function () {
-          thumbs.textContent = '';
-          thumbs.appendChild(el('li', 'mem-help', 'Sorry, that album couldn’t be loaded.'));
-        });
+      drop.addEventListener('click', function () {
+        if (S.upload) { URL.revokeObjectURL(S.upload.url); }
+        S.upload = null; file.value = ''; photoSaid.textContent = '';
+        changed();
       });
-      fetch('/assets/data/album-cards.json').then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
-        Object.keys((j && j.albums) || {}).sort().reverse().forEach(function (slug) {
-          var o = el('option', null, slug.replace(/-/g, ' ').replace(/\b[a-z]/g, function (c) { return c.toUpperCase(); }));
-          o.value = slug;
-          album.appendChild(o);
-        });
-      }).then(null, function () {});
+      ph.appendChild(zoomP); ph.appendChild(drop);
+      lookBox.appendChild(ph);
+      look.zoom = zoom; look.zoomP = zoomP; look.drop = drop;
+      file.addEventListener('change', function () {
+        var f = file.files && file.files[0];
+        photoSaid.textContent = '';
+        if (!f) { return; }
+        var url = URL.createObjectURL(f), img = new Image();
+        img.onload = function () {
+          if (S.upload) { URL.revokeObjectURL(S.upload.url); }
+          S.upload = { url: url, iw: img.naturalWidth, ih: img.naturalHeight, x: 50, y: 50, zoom: 1 };
+          photoSaid.textContent = 'Drag the card to move the photo.';
+          changed();
+        };
+        img.onerror = function () {
+          URL.revokeObjectURL(url);
+          photoSaid.textContent = 'That photo couldn’t be opened here. Try a JPEG or PNG.';
+        };
+        img.src = url;
+      });
+
+      // dragging the card moves the photo under it
+      var dragFrom = null;
+      cardBox.addEventListener('pointerdown', function (e) {
+        var cv = cardBox.querySelector('canvas');
+        if (!S.upload || !cv || e.target !== cv) { return; }
+        dragFrom = { x: e.clientX, y: e.clientY, px: S.upload.x, py: S.upload.y, per: Looks.W / cv.clientWidth };
+        cv.setPointerCapture(e.pointerId);
+        e.preventDefault();
+      });
+      cardBox.addEventListener('pointermove', function (e) {
+        if (!dragFrom || !S.upload) { return; }
+        var u = S.upload, k = Math.max(Looks.W / u.iw, Looks.H / u.ih) * u.zoom;
+        var spareX = u.iw * k - Looks.W, spareY = u.ih * k - Looks.H;
+        var clamp = function (v) { return Math.max(0, Math.min(100, v)); };
+        if (spareX > 0) { u.x = clamp(dragFrom.px - (e.clientX - dragFrom.x) * dragFrom.per / spareX * 100); }
+        if (spareY > 0) { u.y = clamp(dragFrom.py - (e.clientY - dragFrom.y) * dragFrom.per / spareY * 100); }
+        changed(true);
+      });
+      var dragEnd = function () { dragFrom = null; };
+      cardBox.addEventListener('pointerup', dragEnd);
+      cardBox.addEventListener('pointercancel', dragEnd);
 
       use.addEventListener('click', function () { S.chosen = Looks.resolve({}, data.meeting, data.counts); changed(); });
       shuffle.addEventListener('click', function () {
@@ -1186,18 +1179,17 @@
       look.warn.textContent = Looks.accentReads(accent, bg) ? '' : 'This colour is hard to read on the theme’s background.';
       if (document.activeElement !== look.headline) { look.headline.value = ch.headline; }
       look.headline.placeholder = theme.eyebrow.charAt(0) + theme.eyebrow.slice(1).toLowerCase();
-      look.focusP.hidden = look.drop.hidden = !ch.photo;
-      look.focus.value = String(ch.focus);
-      look.chosenP.textContent = '';
-      if (ch.photo) {
-        var img = el('img', 'recap-look__chosen-img');
-        img.alt = ''; img.src = ch.photo.replace('/gallery/', '/thumbs/');
-        look.chosenP.appendChild(img);
-        look.chosenP.appendChild(el('span', 'mem-help', 'The photo behind the card.'));
-      }
-      Array.prototype.forEach.call(lookBox.querySelectorAll('.recap-look__thumb'), function (b) {
-        b.setAttribute('aria-pressed', b.dataset.url === ch.photo ? 'true' : 'false');
-      });
+      look.zoomP.hidden = look.drop.hidden = !S.upload;
+      if (S.upload) { look.zoom.value = String(S.upload.zoom); }
+      cardBox.classList.toggle('recap-cardpv--drag', !!S.upload);
+    }
+    // the look to draw: what's chosen, with the photo from this device if there is one
+    function withPhoto() {
+      var u = S.upload, out = {};
+      Object.keys(S.chosen).forEach(function (k) { out[k] = S.chosen[k]; });
+      out.photo = ''; out.focusX = 50; out.focus = 50; out.zoom = 1;
+      if (u) { out.photo = u.url; out.focusX = u.x; out.focus = u.y; out.zoom = u.zoom; }
+      return out;
     }
 
     function drawPublish() {
@@ -1231,7 +1223,9 @@
         pubSaid.textContent = 'Publishing…';
         save().then(function (ok) {
           if (!ok) { FormLock.lock(pubForm, false); pubSaid.textContent = ''; return null; }
-          return new Promise(function (done) { canvas.toBlob(done, 'image/png'); }).then(function (blob) {
+          return new Promise(function (done) {
+            if (S.upload) { canvas.toBlob(done, 'image/jpeg', 0.9); } else { canvas.toBlob(done, 'image/png'); }
+          }).then(function (blob) {
             if (!blob) { throw new Error('Sorry, the card couldn’t be made in this browser.'); }
             return NCAN.sendFile('/recaps/' + encodeURIComponent(id) + '/publish?confirm=1', blob);
           }).then(function (r) {

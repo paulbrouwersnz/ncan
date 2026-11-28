@@ -5055,13 +5055,10 @@ table.schedule.recap-names { min-width: 0; }
 .recap-look__warn:empty { display: none; }
 .recap-look__sub { margin: 1rem 0 .2rem; font-size: 1rem; }
 .recap-look__photo { border-top: 1px solid var(--line); margin-top: 1rem; }
-.recap-look__thumbs { list-style: none; margin: .5rem 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: .4rem; }
-.recap-look__thumb { display: block; width: 100%; aspect-ratio: 4 / 3; padding: 0; border: 2px solid transparent; border-radius: 6px; overflow: hidden; cursor: pointer; background: var(--surface-warm); }
-.recap-look__thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.recap-look__thumb[aria-pressed="true"] { border-color: var(--accent, #0B3B2E); box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--accent, #0B3B2E); }
-.recap-look__chosen { display: flex; gap: .6rem; align-items: center; margin: .4rem 0; }
-.recap-look__chosen:empty { display: none; }
-.recap-look__chosen-img { width: 96px; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 6px; }
+.recap-look__field input[type="file"] { width: 100%; font: inherit; }
+.recap-look__field input[type="range"] { width: 100%; }
+.recap-cardpv--drag .recap-cardpv__canvas { cursor: grab; touch-action: none; }
+.recap-cardpv--drag .recap-cardpv__canvas:active { cursor: grabbing; }
 .recap-publish { margin-top: 1.5rem; }
 .recap-confirm { margin: 0 0 .8rem; }
 .recap-confirm input { width: 1.2rem; height: 1.2rem; accent-color: var(--green-700); }
