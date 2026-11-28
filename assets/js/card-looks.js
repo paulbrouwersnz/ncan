@@ -770,20 +770,21 @@
     'race-bib': function (items, add, t, f, o) {
       var band = t.accent, ink = '#141414';
       var from = items.length;
-      items.push({ kind: 'rect', x: 60, y: 22, w: 480, h: 232, colour: '#FBFAF5', round: 14, drop: true });
-      items.push({ kind: 'svg', svg: R(60, 22, 480, 58, band, 1, 'rx="14"') + R(60, 58, 480, 22, band) +
-        [[78, 96], [522, 96], [78, 238], [522, 238]].map(function (p) {
+      items.push({ kind: 'rect', x: 60, y: 18, w: 480, h: 216, colour: '#FBFAF5', round: 14, drop: true });
+      items.push({ kind: 'svg', svg: R(60, 18, 480, 56, band, 1, 'rx="14"') + R(60, 52, 480, 22, band) +
+        [[78, 90], [522, 90], [78, 218], [522, 218]].map(function (p) {
           return C(p[0], p[1], 6.5, '#D9D9D9', 1, 'stroke="#8A8A8A" stroke-width="1.5"') + L(p[0] - 9, p[1], p[0] + 9, p[1], '#8A8A8A', 1.5);
         }).join('') });
-      add(f.title, 84, 60, 22, { font: 'display', colour: onColour(band), max: 360 });
-      add('NCAN', 516, 60, 18, { weight: 900, colour: onColour(band), align: 'right', max: 80 });
-      add(String(o.feature.n), W / 2, 200, 124, { font: 'display', colour: ink, align: 'center', max: 360 });
-      add(o.feature.words.toUpperCase() + (o.headline ? ' · ' + o.headline : ''), W / 2, 236, 14,
+      add(f.title, 84, 54, 22, { font: 'display', colour: onColour(band), max: 360 });
+      add('NCAN', 516, 54, 18, { weight: 900, colour: onColour(band), align: 'right', max: 80 });
+      add(String(o.feature.n), W / 2, 186, 116, { font: 'display', colour: ink, align: 'center', max: 360 });
+      add(o.feature.words.toUpperCase() + (o.headline ? ' · ' + o.headline : ''), W / 2, 218, 14,
           { weight: 800, colour: ink, align: 'center', spacing: 3, max: 400 });
       // pinned on a little crooked, as bibs always are
-      items.slice(from).forEach(function (i) { i.tilt = [W / 2, 138, -2.5]; });
-      logoAt(items, t, 36, 266, 32);
-      add(f.line, W - 36, 288, 13, { colour: t.soft, align: 'right', max: 400 });
+      items.slice(from).forEach(function (i) { i.tilt = [W / 2, 126, -2.5]; });
+      // the crest clear of the bib's lower corner, which the tilt brings down
+      logoAt(items, t, 36, 274, 30);
+      add(f.line, W - 36, 290, 13, { colour: t.soft, align: 'right', max: 400 });
       add('ncan.nz', W - 36, 305, 12, { weight: 600, colour: t.text, align: 'right', max: 120 });
       return { sticker: [548, 168], plain: true };
     },
