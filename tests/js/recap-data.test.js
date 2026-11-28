@@ -200,7 +200,7 @@ test('preview card: 1200 x 630, counts, lane stripe in the track colour, all on 
     counts: { athletes: 23, results: 61, pbs: 1, medals: 9 } };
   const f = R.cardFacts(data);
   assert.equal(f.lane, '#1F5FA8');
-  assert.deepEqual(f.counts.map((c) => c.n + ' ' + c.words), ['1 PB', '9 Medals', '23 Athletes']);
+  assert.deepEqual(f.counts.map((c) => c.n + ' ' + c.words), ['23 Athletes', '1 PB', '9 Podiums']);
   const L = R.cardLayout(f);
   assert.equal(L.w * L.scale, 1200);
   assert.equal(L.h * L.scale, 630);
