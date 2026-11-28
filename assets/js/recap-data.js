@@ -222,8 +222,8 @@
     return { picked: out, full: out.length >= HIGHLIGHTS_MAX };
   }
 
-  /* Showing every result of a kind as a highlight, beyond the 12 picked: first places,
-     podium places, new PBs, first times (the API adds them after the picks). */
+  /* Highlights as whole groups, instead of picking up to 12: every first place, podium
+     place, new PB or first time (the API gives the results in them). */
   var INCLUDE = [
     { id: 'win', label: 'Every first place' },
     { id: 'podium', label: 'Every podium place (1st to 3rd)' },

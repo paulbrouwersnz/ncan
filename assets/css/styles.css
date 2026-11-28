@@ -4995,6 +4995,9 @@ table.schedule.manage-mem { min-width: 640px; }
 .recap-include__opt { display: inline-flex; align-items: center; gap: .4rem; margin: .25rem 1.4rem .25rem 0; font-weight: 400; cursor: pointer; }
 .recap-include__opt input { width: 1.1rem; height: 1.1rem; accent-color: var(--green-700); }
 .recap-include__n { color: var(--text-soft); font-size: .9rem; }
+.recap-include__groups { margin: .4rem 0 0 1.6rem; padding-top: .4rem; border-top: 1px solid var(--line); }
+.recap-include__groups[hidden] { display: none; }
+.recap-pick--all { padding-left: 1.9rem; }
 .recap-pick--all label { cursor: default; }
 .recap-pick { display: flex; align-items: flex-start; gap: .7rem; padding: .6rem 0; border-bottom: 1px solid var(--line); }
 .recap-pick input { width: 1.2rem; height: 1.2rem; margin-top: .25rem; flex: 0 0 auto; accent-color: var(--green-700); }
