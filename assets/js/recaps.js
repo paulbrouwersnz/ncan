@@ -461,7 +461,7 @@
     var out = $('recap-edit-out');
     var keys = D.recordKeys(recordList, (data.meeting || {}).meet);
     var S = { step: 0, picked: (data.recap.highlights || []).slice(), title: data.recap.title || '', intro: data.recap.intro || '',
-              names: data.recap.names || 'first' };
+              names: data.recap.names || 'first', include: (data.recap.include || []).slice() };
     var said = status('access-status recap-edit__said');
     var down = null;
     var stateLine = el('p', 'recap-edit__state');
@@ -482,7 +482,8 @@
     function dirty() {
       var h = D.checkHeadline(S.title, S.intro);
       return h.title !== (data.recap.title || '') || h.intro !== (data.recap.intro || '') ||
-        S.picked.join('\n') !== (data.recap.highlights || []).join('\n') || S.names !== (data.recap.names || 'first');
+        S.picked.join('\n') !== (data.recap.highlights || []).join('\n') || S.names !== (data.recap.names || 'first') ||
+        S.include.join(' ') !== (data.recap.include || []).join(' ');
     }
     // POST /v1/recaps/<id>: resolves true when saved (or nothing to save), false if not
     function save() {
@@ -491,13 +492,13 @@
       if (h.error) { said.textContent = h.error; return Promise.resolve(false); }
       FormLock.lock(out, true);
       said.textContent = 'Saving…';
-      return NCAN.send('/recaps/' + encodeURIComponent(id), { title: h.title, intro: h.intro, highlights: S.picked, names: S.names,
+      return NCAN.send('/recaps/' + encodeURIComponent(id), { title: h.title, intro: h.intro, highlights: S.picked, include: S.include, names: S.names,
                                                               since: data.recap.updated }).then(function (r) {
         FormLock.lock(out, false);
         if (r.status === 200) {
           data = r.body;
           S.title = data.recap.title || ''; S.intro = data.recap.intro || ''; S.picked = (data.recap.highlights || []).slice();
-          S.names = data.recap.names || 'first';
+          S.names = data.recap.names || 'first'; S.include = (data.recap.include || []).slice();
           said.textContent = 'Saved.';
           heading();
           return true;
@@ -604,24 +605,56 @@
     var hlCount = el('p', 'recap-count');
     var hlList = el('ul', 'recap-picks');
     panes[1].appendChild(el('p', 'mem-help', 'Tick up to ' + D.HIGHLIGHTS_MAX + ' results to show as highlights, ' +
-      'in the order you tick them. Suggested: club records, medals (1st to 3rd), new personal bests and first-time events. ' +
-      'Every result is on the page either way.'));
+      'in the order you tick them. Suggested: club records, podium places (1st to 3rd), new personal bests and first-time ' +
+      'events. Every result is on the page either way.'));
+    // show every result of a kind as well, beyond the 12: after the picks, best first
+    var hlAll = el('fieldset', 'recap-include');
+    hlAll.appendChild(el('legend', null, 'Or show all of them, as well as your picks'));
+    var allCounts = D.includeCounts(data.results);
+    D.INCLUDE.forEach(function (k) {
+      var lab = el('label', 'recap-include__opt');
+      var box = el('input');
+      box.type = 'checkbox'; box.checked = S.include.indexOf(k.id) >= 0;
+      box.disabled = !allCounts[k.id] && !box.checked;
+      box.addEventListener('change', function () {
+        S.include = D.INCLUDE.map(function (x) { return x.id; }).filter(function (id) {
+          return id === k.id ? box.checked : S.include.indexOf(id) >= 0;
+        });
+        said.textContent = '';
+        fillHighlights();
+      });
+      lab.appendChild(box);
+      lab.appendChild(document.createTextNode(' ' + k.label + ' '));
+      lab.appendChild(el('span', 'recap-include__n', '(' + allCounts[k.id] + ')'));
+      hlAll.appendChild(lab);
+    });
+    panes[1].appendChild(hlAll);
     panes[1].appendChild(hlCount);
     panes[1].appendChild(hlList);
     function fillHighlights() {
       hlList.textContent = '';
       var sug = D.suggest(data.results, keys);
       var known = {};
+      var byKey = {};
+      (data.results || []).forEach(function (r) { byKey[r.key] = r; });
       sug.forEach(function (s) { known[s.key] = true; });
       // anything picked that isn't suggested (picked before, say) still shows, so it can be unticked
       (data.results || []).forEach(function (r) {
         if (S.picked.indexOf(r.key) >= 0 && !known[r.key]) { sug.push({ key: r.key, result: r, reasons: D.reasons(r, keys) }); }
       });
+      // the results the switches show don't count towards the 12, and can't be unticked here
       function counted() {
+        var mine = S.picked.filter(function (k) { return !byKey[k] || !D.included(byKey[k], S.include); });
+        var also = (data.results || []).filter(function (r) { return D.included(r, S.include); }).length;
         var full = S.picked.length >= D.HIGHLIGHTS_MAX;
-        hlCount.textContent = S.picked.length + ' of ' + D.HIGHLIGHTS_MAX + ' picked.' + (full ? ' That’s the most a recap can have.' : '');
+        hlCount.textContent = mine.length + ' of ' + D.HIGHLIGHTS_MAX + ' picked' +
+          (also ? ', and ' + also + ' shown by the choices above.' : '.') + (full ? ' That’s the most you can pick.' : '');
         Array.prototype.forEach.call(hlList.querySelectorAll('input'), function (box) {
-          box.disabled = full && !box.checked;
+          var r = byKey[box.value];
+          var all = r && D.included(r, S.include);
+          box.checked = all || S.picked.indexOf(box.value) >= 0;
+          box.disabled = all || (full && !box.checked);
+          box.closest('li').classList.toggle('recap-pick--all', !!all);
         });
       }
       if (!sug.length) {
@@ -632,7 +665,7 @@
         var r = s.result;
         var li = el('li', 'recap-pick');
         var box = el('input');
-        box.type = 'checkbox'; box.id = 'recap-pick-' + i; box.checked = S.picked.indexOf(s.key) >= 0;
+        box.type = 'checkbox'; box.id = 'recap-pick-' + i; box.value = s.key; box.checked = S.picked.indexOf(s.key) >= 0;
         var lab = el('label');
         lab.htmlFor = box.id;
         var c = chips(r, keys);
@@ -642,7 +675,6 @@
         if (c) { lab.appendChild(c); }
         box.addEventListener('change', function () {
           S.picked = D.toggle(S.picked, s.key, box.checked).picked;
-          box.checked = S.picked.indexOf(s.key) >= 0;
           said.textContent = '';
           counted();
         });

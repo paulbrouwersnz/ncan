@@ -222,6 +222,33 @@
     return { picked: out, full: out.length >= HIGHLIGHTS_MAX };
   }
 
+  /* Showing every result of a kind as a highlight, beyond the 12 picked: first places,
+     podium places, new PBs, first times (the API adds them after the picks). */
+  var INCLUDE = [
+    { id: 'win', label: 'Every first place' },
+    { id: 'podium', label: 'Every podium place (1st to 3rd)' },
+    { id: 'pb', label: 'Every new PB' },
+    { id: 'first', label: 'Every first time' }
+  ];
+  function includeKinds(r) {
+    var out = [];
+    if (r && r.medal === 1) { out.push('win'); }
+    if (r && r.medal >= 1 && r.medal <= 3) { out.push('podium'); }
+    if (r && r.pb === 'new') { out.push('pb'); }
+    if (r && r.pb === 'first') { out.push('first'); }
+    return out;
+  }
+  // is a result shown by the kinds switched on?
+  function included(r, include) {
+    return includeKinds(r).some(function (k) { return (include || []).indexOf(k) >= 0; });
+  }
+  // how many results each kind would add: {win: 4, podium: 9, ...}
+  function includeCounts(results) {
+    var out = { win: 0, podium: 0, pb: 0, first: 0 };
+    (results || []).forEach(function (r) { includeKinds(r).forEach(function (k) { out[k]++; }); });
+    return out;
+  }
+
   // a highlight card is yellow for a club record or a medal, green for a PB or first time
   function cardTone(why) { return why[0] === 'record' || why[0] === 'medal' ? 'yellow' : 'green'; }
 
@@ -425,6 +452,7 @@
     groupByEvent: groupByEvent, meetOf: meetOf, recordKeys: recordKeys, isClubRecord: isClubRecord,
     reasons: reasons, chipWords: chipWords, suggest: suggest, toggle: toggle, cardTone: cardTone,
     namesCheck: namesCheck, NAME_STYLES: NAME_STYLES, nameStyle: nameStyle, excludedWords: excludedWords, recapFor: recapFor, startBody: startBody,
+    INCLUDE: INCLUDE, includeKinds: includeKinds, included: included, includeCounts: includeCounts,
     paragraphs: paragraphs, checkHeadline: checkHeadline, laneColour: laneColour, courseKind: courseKind,
     COURSE_COLOURS: COURSE_COLOURS, adminPick: adminPick,
     wrap: wrap, cardFacts: cardFacts, cardLayout: cardLayout
