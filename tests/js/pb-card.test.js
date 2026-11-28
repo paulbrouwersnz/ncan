@@ -239,10 +239,10 @@ test('where the meeting was: under the meeting and date, New Zealand left off', 
   const full = PB.facts({ name: 'Sam Brown', surname: true, result: run({ place: 1, wind: 1.8 }),
     prev: run({ value: 14.42, mark: '14.42' }), group: 'U16 women', pbsThisSeason: 3, kind: 'newpb',
     where: { location: 'Ngā Puna Wai', city: 'Christchurch, New Zealand' } });
-  for (const style of ['podium', 'photo', 'event']) {
+  for (const style of ['podium', 'photo', 'event', 'bib']) {
     for (const shape of ['square', 'story']) {
       const L = PB.layout(full, shape, style, 'blue');
-      const line = L.items.find((i) => i.kind === 'text' && i.words === 'Ngā Puna Wai · Christchurch');
+      const line = L.items.find((i) => i.kind === 'text' && i.words.endsWith('Ngā Puna Wai · Christchurch'));   // the bib: after the date
       assert.ok(line, style + ' ' + shape);
       assert.ok(line.y < L.h, style + ' ' + shape);
       assert.deepEqual(PB.overlaps(L), [], style + ' ' + shape);
@@ -333,4 +333,26 @@ test('the Progress line leaves out empty months quietly, as the progress chart d
   const r = { event: '100m', field: false, value: 14.5, date: '2026-10-01', mark: '14.50' };
   assert.deepEqual(PB.facts({ name: 'Sam', result: r, progress: { points: pts, hide: winter } }).progress.hide, winter);
   assert.deepEqual(PB.facts({ name: 'Sam', result: r, progress: { points: pts, hide: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] } }).progress.hide, []);
+});
+
+test('race bib: the mark on a bib pinned to the club singlet, the crest and ncan.nz kept', () => {
+  const f = PB.facts({ name: 'Sam Brown', surname: true, result: run({ place: 1, wind: 1.8 }),
+    prev: run({ value: 14.42, mark: '14.42' }), group: 'U16 women', pbsThisSeason: 3, kind: 'newpb', showPlace: true,
+    where: { location: 'Ngā Puna Wai', city: 'Christchurch, New Zealand' } });
+  for (const shape of ['square', 'story']) {
+    const L = PB.layout(f, shape, 'bib');
+    const words = L.items.filter((i) => i.kind === 'text').map((i) => i.words);
+    assert.ok(L.items.some((i) => i.kind === 'singlet') && L.items.some((i) => i.kind === 'pins'), shape);
+    assert.ok(L.items.some((i) => i.kind === 'logo') && words.includes('ncan.nz'), shape);
+    for (const w of ['14.10', '100m', 'PB −0.32s', 'Interclub 5', 'Previous best 14.42 · +1.8 m/s', '3rd PB this season']) {
+      assert.ok(words.includes(w), shape + ': ' + w);
+    }
+    assert.ok(L.items.some((i) => i.kind === 'medal'), shape);
+    assert.deepEqual(PB.overlaps(L), [], shape);
+    L.items.filter((i) => i.kind === 'text').forEach((i) => assert.ok(i.y > 0 && i.y < L.h, shape + ' ' + i.words));
+  }
+  // a plain result: no ribbon, still a bib
+  const r = PB.layout(PB.facts({ kind: 'result', name: 'Sam', result: run() }), 'square', 'bib');
+  assert.ok(!r.items.some((i) => i.kind === 'text' && /^PB /.test(i.words)));
+  assert.ok(PB.STYLES.includes('bib'));
 });

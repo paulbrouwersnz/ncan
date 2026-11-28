@@ -9,6 +9,9 @@
   for the athlete's GameDay contacts and admins - a public link through the same
   share API as charts (POST /v1/athletes/<address>/shares, view=pb-card).
 
+  Race bib: the mark as the number on a white race bib, the event across its gold top,
+  pinned to the club singlet (bottle green, its white panel and sweep, gold pinstripes).
+
   The first design is the Podium card: square (1080 x 1080, for Instagram and
   Facebook) or a 9:16 story (1080 x 1920). The card is laid out as a list of plain
   shapes and words (layout()), which the Node tests check without a browser
@@ -191,6 +194,7 @@
     }
     if (style === 'thennow' && f.then) { return thenNowLayout(f, shape); }
     if (style === 'progress' && f.progress) { return progressLayout(f, shape); }
+    if (style === 'bib') { return bibLayout(f, shape); }
     var S = SIZES[shape] || SIZES.square, W = S.w, H = S.h, pad = 40, story = shape === 'story';
     var items = [];
     var t = function (words, x, y, size, o) {
@@ -277,6 +281,97 @@
       return { w: W, h: H, items: items };
     };
     return { W: W, H: H, pad: pad, story: story, items: items, t: t, crest: crest };
+  }
+
+  /* Race bib: the club singlet behind, the headline, name and group at the top, then a
+     white bib pinned on: the event on its gold top, the mark as its number, the gap on a
+     gold ribbon, the meeting and date. The other lines under it, the crest at the foot. */
+  var SINGLET = { green: '#0E4634', white: '#F7F7F2', gold: '#E2BD2F', ink: '#141414', inkSoft: '#4A4A4A' };
+  function bibLayout(f, shape) {
+    var S = SIZES[shape] || SIZES.square, W = S.w, H = S.h, pad = 40, story = shape === 'story';
+    var items = [];
+    var t = function (words, x, y, size, o) {
+      if (!words) { return; }
+      o = o || {};
+      items.push({ kind: 'text', words: words, x: x, y: y, size: size, weight: o.weight || 400,
+                   font: o.font || 'sans', colour: o.colour || COLOURS.text, align: o.align || 'left',
+                   max: o.max || W - 2 * pad, spacing: o.spacing || 0 });
+    };
+    var P = story
+      ? { head: 84, headSize: 22, name: 140, nameSize: 44, group: 174, bib: [50, 256, 440, 452], top: 78, event: 307, eventSize: 32,
+          ncan: 20, mark: 506, markSize: 144, rib: [540, 240, 56, 29], meet: 650, meetSize: 20, date: 682, dateSize: 17,
+          pins: [[78, 362], [462, 362], [78, 682], [462, 682]], lines: 768, step: 34, size: 20, logo: 60 }
+      : { head: 70, headSize: 18, name: 106, nameSize: 32, group: 130, bib: [60, 146, 420, 258], top: 48, event: 178, eventSize: 22,
+          ncan: 16, mark: 282, markSize: 88, rib: [298, 176, 32, 18], meet: 356, meetSize: 14, date: 377, dateSize: 13,
+          pins: [[78, 212], [462, 212], [78, 386], [462, 386]], lines: 428, step: 19, size: 14, logo: 46 };
+    items.push({ kind: 'rect', x: 0, y: 0, w: W, h: H, colour: SINGLET.green });
+    items.push({ kind: 'singlet', w: W, h: H });
+    var md = f.medal ? medalItem(f.medal, W, pad, story) : null, narrow = W - 2 * pad - (md ? 2 * md.r + 16 : 0);
+    t(f.headline || (f.untitled ? '' : 'PERSONAL BEST'), pad, P.head, P.headSize, { weight: 800, font: 'display', colour: SINGLET.gold, spacing: 2, max: narrow });
+    t(f.name, pad, P.name, P.nameSize, { weight: 800, font: 'display', max: narrow });
+    t(f.group, pad, P.group, P.headSize - 3, { colour: COLOURS.soft, max: narrow });
+    if (md) { items.push(md); }
+
+    // the bib
+    var bx = P.bib[0], by = P.bib[1], bw = P.bib[2], bh = P.bib[3], cx = bx + bw / 2;
+    items.push({ kind: 'rect', x: bx, y: by, w: bw, h: bh, colour: '#FBFAF5', round: 14 });
+    items.push({ kind: 'rect', x: bx, y: by, w: bw, h: P.top, colour: SINGLET.gold, round: 14 });
+    items.push({ kind: 'rect', x: bx, y: by + P.top - 16, w: bw, h: 16, colour: SINGLET.gold });
+    items.push({ kind: 'pins', pts: P.pins, r: story ? 8 : 6.5 });
+    t(f.event, bx + 24, P.event, P.eventSize, { weight: 800, font: 'display', colour: SINGLET.ink, max: bw - 60 - P.ncan * 4.2 });
+    t('ncan.nz', bx + bw - 24, P.event, P.ncan, { weight: 800, font: 'display', colour: SINGLET.ink, align: 'right', max: P.ncan * 4.2 });
+    t(f.mark, cx, P.mark, P.markSize, { weight: 800, font: 'display', colour: SINGLET.ink, align: 'center', max: bw - 60 });
+    if (f.better) {
+      var rw = P.rib[1], rh = P.rib[2];
+      items.push({ kind: 'rect', x: cx - rw / 2, y: P.rib[0], w: rw, h: rh, colour: SINGLET.gold, round: rh / 2 });
+      t('PB ' + f.better, cx, P.rib[0] + rh * 0.7, P.rib[3], { weight: 800, font: 'display', colour: SINGLET.ink, align: 'center' });
+    }
+    t(f.meeting, cx, P.meet, P.meetSize, { weight: 700, colour: SINGLET.ink, align: 'center', max: bw - 120 });
+    t([f.date, f.where].filter(Boolean).join(' · '), cx, P.date, P.dateSize, { colour: SINGLET.inkSoft, align: 'center', max: bw - 120 });
+
+    // under the bib, left of the singlet's sweep: the earlier best, place and wind, the season
+    var y = P.lines;
+    [[[f.was ? 'Previous best ' + f.was : '', f.place, f.wind].filter(Boolean).join(' · '), { weight: 600 }],
+     [f.season, { colour: COLOURS.goldSoft, weight: 600 }]].forEach(function (l) {
+      if (l[0]) { t(l[0], pad, y, P.size, { weight: l[1].weight, colour: l[1].colour, max: W * 0.5 }); y += P.step; }
+    });
+
+    // the club's crest and name (ncan.nz is on the bib)
+    var lh = P.logo;
+    items.push({ kind: 'logo', x: pad, y: H - pad - lh, h: lh, w: lh * 888 / 508 });
+    t('North Canterbury', pad + lh * 888 / 508 + 10, H - pad - lh * 0.52, 14, { weight: 700, font: 'display', max: 150 });
+    t('Athletic Club', pad + lh * 888 / 508 + 10, H - pad - lh * 0.12, 14, { weight: 700, font: 'display', max: 150 });
+    return { w: W, h: H, items: items };
+  }
+
+  // the club singlet, filling the card: the white panel down the right, its sweep up
+  // across the chest edged with gold pinstripes, white hatching above, gold trim at the top
+  function drawSinglet(c, i) {
+    var W = i.w, H = i.h;
+    var poly = function (col, pts) {
+      c.fillStyle = col; c.beginPath();
+      pts.forEach(function (p, k) { if (k) { c.lineTo(p[0], p[1]); } else { c.moveTo(p[0], p[1]); } });
+      c.closePath(); c.fill();
+    };
+    var line = function (col, wd, a, b, dash) {
+      c.save(); c.strokeStyle = col; c.lineWidth = wd; if (dash) { c.setLineDash(dash); }
+      c.beginPath(); c.moveTo(a[0], a[1]); c.lineTo(b[0], b[1]); c.stroke(); c.restore();
+    };
+    poly(SINGLET.white, [[W * 0.9, 0], [W, 0], [W, H], [W * 0.87, H]]);
+    poly(SINGLET.white, [[W * 0.56, H], [W * 0.74, H], [W, H * 0.5], [W, H * 0.22]]);
+    line('rgba(255,255,255,.85)', 10, [W * 0.52, H], [W, H * 0.14], [3, 5]);
+    line(SINGLET.gold, 4, [W * 0.545, H], [W, H * 0.19]);
+    line(SINGLET.gold, 4, [W * 0.765, H], [W, H * 0.53]);
+    line(SINGLET.gold, 2, [W * 0.785, H], [W, H * 0.565]);
+    c.fillStyle = SINGLET.gold; c.fillRect(0, 0, W, 5);
+  }
+  // safety pins at the bib's corners
+  function drawPins(c, i) {
+    i.pts.forEach(function (p) {
+      c.fillStyle = '#D9D9D9'; c.strokeStyle = '#8A8A8A'; c.lineWidth = 1.5;
+      c.beginPath(); c.arc(p[0], p[1], i.r, 0, Math.PI * 2); c.fill(); c.stroke();
+      c.beginPath(); c.moveTo(p[0] - i.r * 1.4, p[1]); c.lineTo(p[0] + i.r * 1.4, p[1]); c.stroke();
+    });
   }
 
   /* Then and now: the earlier mark (faded) and the new one (bold, gold) side by side, an
@@ -889,7 +984,7 @@
   function render(f, shape, fonts, opts) {
     opts = opts || {};
     var style = opts.style === 'photo' && opts.photo ? 'photo'
-      : ['event', 'thennow', 'progress'].indexOf(opts.style) >= 0 ? opts.style : 'podium';
+      : ['event', 'thennow', 'progress', 'bib'].indexOf(opts.style) >= 0 ? opts.style : 'podium';
     var L = layout(f, shape, style, opts.surface), scale = 2;
     var family = function (i) { return i.font === 'display' ? fonts.display : fonts.sans; };
     var css = function (i, size) { return i.weight + ' ' + size + 'px ' + family(i); };
@@ -929,6 +1024,10 @@
           }
         } else if (i.kind === 'scene') {
           drawScene(c, i);
+        } else if (i.kind === 'singlet') {
+          drawSinglet(c, i);
+        } else if (i.kind === 'pins') {
+          drawPins(c, i);
         } else if (i.kind === 'medal') {
           drawMedal(c, i, i.font || fonts.display);
         } else if (i.kind === 'arrow') {
@@ -960,7 +1059,7 @@
 
   var api = { SIZES: SIZES, COLOURS: COLOURS, day: day, placeWord: placeWord, medalFor: medalFor, improvement: improvement,
            cardName: cardName, surnameByDefault: surnameByDefault, seasonWords: seasonWords, facts: facts, whereWords: whereWords,
-           caption: caption, fileName: fileName, headlineFor: headlineFor, cover: cover, parseFocus: parseFocus, move: move, ZOOM_MAX: ZOOM_MAX, STYLES: ['podium', 'photo', 'event', 'thennow', 'progress'], chartPoints: chartPoints,
+           caption: caption, fileName: fileName, headlineFor: headlineFor, cover: cover, parseFocus: parseFocus, move: move, ZOOM_MAX: ZOOM_MAX, STYLES: ['podium', 'photo', 'event', 'thennow', 'progress', 'bib'], chartPoints: chartPoints,
            SURFACES: Object.keys(SURFACES), setTracks: setTracks, sceneFor: sceneFor, sceneHasTrack: sceneHasTrack, layout: layout, overlaps: overlaps, render: render };
   return api;
 }));
