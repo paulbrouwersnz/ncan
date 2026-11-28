@@ -4898,7 +4898,7 @@ table.schedule.manage-mem { min-width: 640px; }
 
 .recap-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-block: 0 clamp(1.5rem, 4vw, 2.5rem); }
 .recap-stats .stat { padding: clamp(.9rem, 2.5vw, 1.6rem); text-align: center; }
-.recap-intro { max-width: 62ch; font-size: clamp(1.02rem, .4vw + .95rem, 1.15rem); margin-bottom: clamp(1.5rem, 4vw, 2.5rem); }
+.recap-intro { font-size: clamp(1.02rem, .4vw + .95rem, 1.15rem); margin-bottom: clamp(1.5rem, 4vw, 2.5rem); }
 .recap-block { margin-top: clamp(1.8rem, 5vw, 3rem); }
 .recap-block__head { font-size: clamp(1.5rem, 3vw, 2.1rem); }
 
@@ -4990,6 +4990,11 @@ table.schedule.manage-mem { min-width: 640px; }
 .recap-help, .recap-count { font-size: .85rem; color: var(--text-soft); }
 .recap-count { margin: .6rem 0; }
 .recap-picks { max-width: 46rem; }
+.recap-hl-mode { max-width: 22rem; margin: 1rem 0 .2rem; }
+.recap-hl-mode select { width: 100%; padding: .5rem .6rem; border: 1px solid var(--line-strong); border-radius: 6px; font: inherit; background: var(--surface); color: inherit; }
+/* a whole group: its results ticked, the list greyed and fixed */
+.recap-picks--locked { opacity: .6; }
+.recap-picks--locked label { cursor: default; }
 .recap-pick { display: flex; align-items: flex-start; gap: .7rem; padding: .6rem 0; border-bottom: 1px solid var(--line); }
 .recap-pick input { width: 1.2rem; height: 1.2rem; margin-top: .25rem; flex: 0 0 auto; accent-color: var(--green-700); }
 .recap-pick label { display: flex; flex-wrap: wrap; align-items: center; gap: .2rem .6rem; cursor: pointer; }

@@ -193,6 +193,16 @@ test('admin filter', () => {
   assert.deepEqual(R.adminPick(list, 'all', 'interclub').map((s) => s.title), ['Draft one']);
 });
 
+test('showing every first place, podium place, new PB or first time', () => {
+  const rs = [res({ key: 'w', medal: 1, place: 1, pb: 'new' }), res({ key: 's', medal: 2, place: 2 }),
+    res({ key: 'p', pb: 'new' }), res({ key: 'f', pb: 'first' }), res({ key: 'n' })];
+  assert.deepEqual(rs.map((r) => R.includeKinds(r).join('+')), ['win+podium+pb', 'podium', 'pb', 'first', '']);
+  assert.deepEqual(R.includeCounts(rs), { win: 1, podium: 2, pb: 2, first: 1 });
+  assert.deepEqual(rs.filter((r) => R.included(r, ['win', 'first'])).map((r) => r.key), ['w', 'f']);
+  assert.equal(R.included(rs[4], ['win', 'podium', 'pb', 'first']), false);
+  assert.deepEqual(R.INCLUDE.map((k) => k.label), ['Personal bests', 'First time competing', 'Podium finishes', 'First places']);
+});
+
 test('preview card: 1200 x 630, counts, the track strip in its colour, all on the card', () => {
   const data = { recap: { title: 'Canterbury Children’s Interclub, Programme 4' },
     meeting: { first: '2026-11-07', last: '2026-11-07', location: 'Ngā Puna Wai', city: 'Christchurch, New Zealand',

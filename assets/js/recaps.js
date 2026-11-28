@@ -461,7 +461,7 @@
     var out = $('recap-edit-out');
     var keys = D.recordKeys(recordList, (data.meeting || {}).meet);
     var S = { step: 0, picked: (data.recap.highlights || []).slice(), title: data.recap.title || '', intro: data.recap.intro || '',
-              names: data.recap.names || 'first' };
+              names: data.recap.names || 'first', include: (data.recap.include || []).slice() };
     var said = status('access-status recap-edit__said');
     var down = null;
     var stateLine = el('p', 'recap-edit__state');
@@ -482,7 +482,8 @@
     function dirty() {
       var h = D.checkHeadline(S.title, S.intro);
       return h.title !== (data.recap.title || '') || h.intro !== (data.recap.intro || '') ||
-        S.picked.join('\n') !== (data.recap.highlights || []).join('\n') || S.names !== (data.recap.names || 'first');
+        S.picked.join('\n') !== (data.recap.highlights || []).join('\n') || S.names !== (data.recap.names || 'first') ||
+        S.include.join(' ') !== (data.recap.include || []).join(' ');
     }
     // POST /v1/recaps/<id>: resolves true when saved (or nothing to save), false if not
     function save() {
@@ -491,13 +492,13 @@
       if (h.error) { said.textContent = h.error; return Promise.resolve(false); }
       FormLock.lock(out, true);
       said.textContent = 'Saving…';
-      return NCAN.send('/recaps/' + encodeURIComponent(id), { title: h.title, intro: h.intro, highlights: S.picked, names: S.names,
+      return NCAN.send('/recaps/' + encodeURIComponent(id), { title: h.title, intro: h.intro, highlights: S.picked, include: S.include, names: S.names,
                                                               since: data.recap.updated }).then(function (r) {
         FormLock.lock(out, false);
         if (r.status === 200) {
           data = r.body;
           S.title = data.recap.title || ''; S.intro = data.recap.intro || ''; S.picked = (data.recap.highlights || []).slice();
-          S.names = data.recap.names || 'first';
+          S.names = data.recap.names || 'first'; S.include = (data.recap.include || []).slice();
           said.textContent = 'Saved.';
           heading();
           return true;
@@ -600,15 +601,43 @@
       pane.appendChild(ip);
     }());
 
-    /* 2. Highlights */
+    /* 2. Highlights: handpicked (up to 12), or one whole group: every personal best,
+       first time competing, podium finish or first place. With a group, its results
+       are ticked and the list can't be changed. The picks are kept while a group is
+       shown, so going back to Handpicked finds them as they were. */
     var hlCount = el('p', 'recap-count');
     var hlList = el('ul', 'recap-picks');
-    panes[1].appendChild(el('p', 'mem-help', 'Tick up to ' + D.HIGHLIGHTS_MAX + ' results to show as highlights, ' +
-      'in the order you tick them. Suggested: club records, medals (1st to 3rd), new personal bests and first-time events. ' +
-      'Every result is on the page either way.'));
+    var allCounts = D.includeCounts(data.results);
+    panes[1].appendChild(el('p', 'mem-help', 'Show the results that stand out: pick up to ' + D.HIGHLIGHTS_MAX +
+      ' yourself, or show every result in one group. Every result is on the page either way.'));
+    var hlPick = el('p', 'records-field recap-hl-mode');
+    var hlSel = el('select');
+    hlSel.id = 'recap-hl-mode';
+    var hlLab = el('label', null, 'Highlights');
+    hlLab.htmlFor = hlSel.id;
+    var handOpt = el('option', null, 'Handpicked (up to ' + D.HIGHLIGHTS_MAX + ')');
+    handOpt.value = '';
+    hlSel.appendChild(handOpt);
+    D.INCLUDE.forEach(function (k) {
+      var o = el('option', null, k.label + ' (' + allCounts[k.id] + ')');
+      o.value = k.id;
+      o.disabled = !allCounts[k.id] && S.include[0] !== k.id;
+      hlSel.appendChild(o);
+    });
+    hlSel.addEventListener('change', function () {
+      S.include = hlSel.value ? [hlSel.value] : [];
+      said.textContent = '';
+      fillHighlights();
+    });
+    hlPick.appendChild(hlLab);
+    hlPick.appendChild(hlSel);
+    panes[1].appendChild(hlPick);
     panes[1].appendChild(hlCount);
     panes[1].appendChild(hlList);
     function fillHighlights() {
+      var group = S.include[0] || '';
+      hlSel.value = group;
+      hlList.classList.toggle('recap-picks--locked', !!group);
       hlList.textContent = '';
       var sug = D.suggest(data.results, keys);
       var known = {};
@@ -618,6 +647,11 @@
         if (S.picked.indexOf(r.key) >= 0 && !known[r.key]) { sug.push({ key: r.key, result: r, reasons: D.reasons(r, keys) }); }
       });
       function counted() {
+        if (group) {
+          var n = sug.filter(function (s) { return D.included(s.result, S.include); }).length;
+          hlCount.textContent = (n === 1 ? '1 result' : n + ' results') + ' shown, every one in the group.';
+          return;
+        }
         var full = S.picked.length >= D.HIGHLIGHTS_MAX;
         hlCount.textContent = S.picked.length + ' of ' + D.HIGHLIGHTS_MAX + ' picked.' + (full ? ' That’s the most a recap can have.' : '');
         Array.prototype.forEach.call(hlList.querySelectorAll('input'), function (box) {
@@ -625,14 +659,16 @@
         });
       }
       if (!sug.length) {
-        hlList.appendChild(el('li', 'mem-help', 'Nothing stands out on its own at this meeting: no club records, medals, ' +
+        hlList.appendChild(el('li', 'mem-help', 'Nothing stands out on its own at this meeting: no club records, podium finishes, ' +
           'new PBs or first-time events. The results are all still on the page.'));
       }
       sug.forEach(function (s, i) {
         var r = s.result;
         var li = el('li', 'recap-pick');
         var box = el('input');
-        box.type = 'checkbox'; box.id = 'recap-pick-' + i; box.checked = S.picked.indexOf(s.key) >= 0;
+        box.type = 'checkbox'; box.id = 'recap-pick-' + i;
+        box.checked = group ? D.included(r, S.include) : S.picked.indexOf(s.key) >= 0;
+        box.disabled = !!group;
         var lab = el('label');
         lab.htmlFor = box.id;
         var c = chips(r, keys);
