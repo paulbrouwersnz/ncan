@@ -601,91 +601,57 @@
       pane.appendChild(ip);
     }());
 
-    /* 2. Highlights: pick up to 12 results, or show whole groups (every first place,
-       podium place, new PB or first time), not both. The picks are kept while groups
-       are shown, so switching back finds them as they were. */
+    /* 2. Highlights: handpicked (up to 12), or one whole group: every personal best,
+       first time competing, podium finish or first place. With a group, its results
+       are ticked and the list can't be changed. The picks are kept while a group is
+       shown, so going back to Handpicked finds them as they were. */
     var hlCount = el('p', 'recap-count');
     var hlList = el('ul', 'recap-picks');
     var allCounts = D.includeCounts(data.results);
-    var lastGroups = S.include.length ? S.include.slice() : [];
     panes[1].appendChild(el('p', 'mem-help', 'Show the results that stand out: pick up to ' + D.HIGHLIGHTS_MAX +
-      ' yourself, or show every result in one or more groups. Every result is on the page either way.'));
-    var hlMode = el('fieldset', 'recap-include');
-    hlMode.appendChild(el('legend', null, 'Highlights'));
-    var modes = {};
-    [['pick', 'Pick up to ' + D.HIGHLIGHTS_MAX + ' results'], ['groups', 'Show whole groups']].forEach(function (m) {
-      var lab = el('label', 'recap-include__opt');
-      var r = el('input');
-      r.type = 'radio'; r.name = 'recap-hl-mode'; r.value = m[0];
-      r.addEventListener('change', function () {
-        if (!r.checked) { return; }
-        if (m[0] === 'pick') {
-          if (S.include.length) { lastGroups = S.include.slice(); }
-          S.include = [];
-        } else {
-          // the groups chosen before, or the first that has results
-          var first = D.INCLUDE.filter(function (k) { return allCounts[k.id]; })[0];
-          S.include = lastGroups.length ? lastGroups.slice() : first ? [first.id] : [];
-        }
-        said.textContent = '';
-        fillHighlights();
-      });
-      modes[m[0]] = r;
-      lab.appendChild(r);
-      lab.appendChild(document.createTextNode(' ' + m[1]));
-      hlMode.appendChild(lab);
-    });
-    var hlGroups = el('div', 'recap-include__groups');
-    var groupBoxes = {};
+      ' yourself, or show every result in one group. Every result is on the page either way.'));
+    var hlPick = el('p', 'records-field recap-hl-mode');
+    var hlSel = el('select');
+    hlSel.id = 'recap-hl-mode';
+    var hlLab = el('label', null, 'Highlights');
+    hlLab.htmlFor = hlSel.id;
+    var handOpt = el('option', null, 'Handpicked (up to ' + D.HIGHLIGHTS_MAX + ')');
+    handOpt.value = '';
+    hlSel.appendChild(handOpt);
     D.INCLUDE.forEach(function (k) {
-      var lab = el('label', 'recap-include__opt');
-      var box = el('input');
-      box.type = 'checkbox'; box.value = k.id;
-      box.addEventListener('change', function () {
-        S.include = D.INCLUDE.map(function (x) { return x.id; }).filter(function (id) {
-          return id === k.id ? box.checked : S.include.indexOf(id) >= 0;
-        });
-        lastGroups = S.include.slice();
-        said.textContent = '';
-        fillHighlights();
-      });
-      groupBoxes[k.id] = box;
-      lab.appendChild(box);
-      lab.appendChild(document.createTextNode(' ' + k.label + ' '));
-      lab.appendChild(el('span', 'recap-include__n', '(' + allCounts[k.id] + ')'));
-      hlGroups.appendChild(lab);
+      var o = el('option', null, k.label + ' (' + allCounts[k.id] + ')');
+      o.value = k.id;
+      o.disabled = !allCounts[k.id] && S.include[0] !== k.id;
+      hlSel.appendChild(o);
     });
-    hlMode.appendChild(hlGroups);
-    panes[1].appendChild(hlMode);
+    hlSel.addEventListener('change', function () {
+      S.include = hlSel.value ? [hlSel.value] : [];
+      said.textContent = '';
+      fillHighlights();
+    });
+    hlPick.appendChild(hlLab);
+    hlPick.appendChild(hlSel);
+    panes[1].appendChild(hlPick);
     panes[1].appendChild(hlCount);
     panes[1].appendChild(hlList);
     function fillHighlights() {
-      var groups = S.include.length > 0;
-      modes.pick.checked = !groups;
-      modes.groups.checked = groups;
-      hlGroups.hidden = !groups;
-      D.INCLUDE.forEach(function (k) {
-        var box = groupBoxes[k.id];
-        box.checked = S.include.indexOf(k.id) >= 0;
-        // at least one group stays chosen (choose Pick to go back to picking)
-        box.disabled = (!allCounts[k.id] && !box.checked) || (box.checked && S.include.length === 1);
-      });
+      var group = S.include[0] || '';
+      hlSel.value = group;
+      hlList.classList.toggle('recap-picks--locked', !!group);
       hlList.textContent = '';
       var sug = D.suggest(data.results, keys);
       var known = {};
       sug.forEach(function (s) { known[s.key] = true; });
-      if (groups) {
-        // every result in the groups, as the page will show them; nothing to tick
-        sug = sug.filter(function (s) { return D.included(s.result, S.include); });
-        hlCount.textContent = sug.length === 1 ? '1 result shown.' : sug.length + ' results shown.';
-      } else {
-        // anything picked that isn't suggested (picked before, say) still shows, so it can be unticked
-        (data.results || []).forEach(function (r) {
-          if (S.picked.indexOf(r.key) >= 0 && !known[r.key]) { sug.push({ key: r.key, result: r, reasons: D.reasons(r, keys) }); }
-        });
-      }
+      // anything picked that isn't suggested (picked before, say) still shows, so it can be unticked
+      (data.results || []).forEach(function (r) {
+        if (S.picked.indexOf(r.key) >= 0 && !known[r.key]) { sug.push({ key: r.key, result: r, reasons: D.reasons(r, keys) }); }
+      });
       function counted() {
-        if (groups) { return; }
+        if (group) {
+          var n = sug.filter(function (s) { return D.included(s.result, S.include); }).length;
+          hlCount.textContent = (n === 1 ? '1 result' : n + ' results') + ' shown, every one in the group.';
+          return;
+        }
         var full = S.picked.length >= D.HIGHLIGHTS_MAX;
         hlCount.textContent = S.picked.length + ' of ' + D.HIGHLIGHTS_MAX + ' picked.' + (full ? ' That’s the most a recap can have.' : '');
         Array.prototype.forEach.call(hlList.querySelectorAll('input'), function (box) {
@@ -693,30 +659,30 @@
         });
       }
       if (!sug.length) {
-        hlList.appendChild(el('li', 'mem-help', 'Nothing stands out on its own at this meeting: no club records, podium places, ' +
+        hlList.appendChild(el('li', 'mem-help', 'Nothing stands out on its own at this meeting: no club records, podium finishes, ' +
           'new PBs or first-time events. The results are all still on the page.'));
       }
       sug.forEach(function (s, i) {
         var r = s.result;
-        var li = el('li', 'recap-pick' + (groups ? ' recap-pick--all' : ''));
+        var li = el('li', 'recap-pick');
+        var box = el('input');
+        box.type = 'checkbox'; box.id = 'recap-pick-' + i;
+        box.checked = group ? D.included(r, S.include) : S.picked.indexOf(s.key) >= 0;
+        box.disabled = !!group;
         var lab = el('label');
+        lab.htmlFor = box.id;
         var c = chips(r, keys);
         lab.appendChild(el('span', 'recap-pick__name', r.athlete));
         lab.appendChild(el('span', 'recap-pick__what', [D.eventLabel(r), D.groupLabel(r), r.mark,
           r.pb === 'new' && r.prev ? 'was ' + r.prev : ''].filter(Boolean).join(' · ')));
         if (c) { lab.appendChild(c); }
-        if (!groups) {
-          var box = el('input');
-          box.type = 'checkbox'; box.id = 'recap-pick-' + i; box.checked = S.picked.indexOf(s.key) >= 0;
-          lab.htmlFor = box.id;
-          box.addEventListener('change', function () {
-            S.picked = D.toggle(S.picked, s.key, box.checked).picked;
-            box.checked = S.picked.indexOf(s.key) >= 0;
-            said.textContent = '';
-            counted();
-          });
-          li.appendChild(box);
-        }
+        box.addEventListener('change', function () {
+          S.picked = D.toggle(S.picked, s.key, box.checked).picked;
+          box.checked = S.picked.indexOf(s.key) >= 0;
+          said.textContent = '';
+          counted();
+        });
+        li.appendChild(box);
         li.appendChild(lab);
         hlList.appendChild(li);
       });

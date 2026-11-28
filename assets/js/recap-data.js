@@ -222,13 +222,14 @@
     return { picked: out, full: out.length >= HIGHLIGHTS_MAX };
   }
 
-  /* Highlights as whole groups, instead of picking up to 12: every first place, podium
-     place, new PB or first time (the API gives the results in them). */
-  var INCLUDE = [
-    { id: 'win', label: 'Every first place' },
-    { id: 'podium', label: 'Every podium place (1st to 3rd)' },
-    { id: 'pb', label: 'Every new PB' },
-    { id: 'first', label: 'Every first time' }
+  /* Highlights as one whole group, instead of handpicking up to 12: every personal
+     best, first time competing, podium finish or first place (the API gives the
+     results in it). */
+  var INCLUDE = [            // in the order the Highlights menu lists them
+    { id: 'pb', label: 'Personal bests' },
+    { id: 'first', label: 'First time competing' },
+    { id: 'podium', label: 'Podium finishes' },
+    { id: 'win', label: 'First places' }
   ];
   function includeKinds(r) {
     var out = [];

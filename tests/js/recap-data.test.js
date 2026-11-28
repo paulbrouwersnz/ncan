@@ -200,7 +200,7 @@ test('showing every first place, podium place, new PB or first time', () => {
   assert.deepEqual(R.includeCounts(rs), { win: 1, podium: 2, pb: 2, first: 1 });
   assert.deepEqual(rs.filter((r) => R.included(r, ['win', 'first'])).map((r) => r.key), ['w', 'f']);
   assert.equal(R.included(rs[4], ['win', 'podium', 'pb', 'first']), false);
-  assert.deepEqual(R.INCLUDE.map((k) => k.id), ['win', 'podium', 'pb', 'first']);
+  assert.deepEqual(R.INCLUDE.map((k) => k.label), ['Personal bests', 'First time competing', 'Podium finishes', 'First places']);
 });
 
 test('preview card: 1200 x 630, counts, the track strip in its colour, all on the card', () => {
