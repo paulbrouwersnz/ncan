@@ -301,12 +301,41 @@
         }
         out.appendChild(staff);
       }
+      // the link to share: the API's /r/ page, which carries the recap's card. This
+      // page's own address can't: sharing sites never see the part after #.
+      if (recap.state === 'public' && recap.share_url) { out.appendChild(shareRow(recap)); }
       var body = el('div', 'recap');
       out.appendChild(body);
       drawRecap(body, data, { keys: keys });
       $('recap-view').hidden = false;
       $('recap-join').hidden = false;
     }, function (err) { failed(err, 'this recap'); });
+  }
+
+  // Share this recap: the phone's own share sheet where there is one, and the link to copy
+  function shareRow(recap) {
+    var box = el('div', 'recap-share recap-share--page');
+    var row = el('p', 'recap-share__row');
+    row.appendChild(el('span', 'recap-share__label', 'Share this recap'));
+    var lab = el('label', 'visually-hidden', 'Share link');
+    lab.htmlFor = 'recap-page-share-url';
+    var input = el('input', 'recap-share__url');
+    input.type = 'text'; input.readOnly = true; input.id = 'recap-page-share-url'; input.value = recap.share_url;
+    input.addEventListener('focus', function () { input.select(); });
+    var cp = button('Copy link', 'btn btn--ghost btn--sm');
+    cp.addEventListener('click', function () { copy(input, cp); });
+    row.appendChild(lab); row.appendChild(input); row.appendChild(cp);
+    if (navigator.share) {
+      var sh = button('Share…', 'btn btn--accent btn--sm');
+      sh.addEventListener('click', function () {
+        navigator.share({ title: recap.title || 'Meeting recap', url: recap.share_url }).catch(function () {});
+      });
+      row.appendChild(sh);
+    }
+    box.appendChild(row);
+    box.appendChild(el('p', 'mem-help', 'Use this link, not the address bar’s: it shows the recap’s card on Facebook, ' +
+      'Messenger and WhatsApp, and opens this page.'));
+    return box;
   }
 
   /* /recaps/ -------------------------------------------------------------------------- */
