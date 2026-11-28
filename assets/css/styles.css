@@ -4898,7 +4898,7 @@ table.schedule.manage-mem { min-width: 640px; }
 
 .recap-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-block: 0 clamp(1.5rem, 4vw, 2.5rem); }
 .recap-stats .stat { padding: clamp(.9rem, 2.5vw, 1.6rem); text-align: center; }
-.recap-intro { max-width: 62ch; font-size: clamp(1.02rem, .4vw + .95rem, 1.15rem); margin-bottom: clamp(1.5rem, 4vw, 2.5rem); }
+.recap-intro { font-size: clamp(1.02rem, .4vw + .95rem, 1.15rem); margin-bottom: clamp(1.5rem, 4vw, 2.5rem); }
 .recap-block { margin-top: clamp(1.8rem, 5vw, 3rem); }
 .recap-block__head { font-size: clamp(1.5rem, 3vw, 2.1rem); }
 
